@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------------------
+# Archivos generados al compilar el documento LaTeX (pdflatex/bibtex/latexmk)
+# ---------------------------------------------------------------------------
+
+# Auxiliares de compilación
+*.aux
+*.lof
+*.log
+*.lot
+*.lol
+*.fls
+*.out
+*.toc
+*.fdb_latexmk
+*.synctex.gz
+*.synctex.gz(busy)
+*.nav
+*.snm
+*.vrb
+
+# Bibliografía (bibtex/biblatex)
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+
+# Índices, glosarios, acrónimos
+*.idx
+*.ind
+*.ilg
+*.glo
+*.gls
+*.glg
+*.glsdefs
+*.ist
+*.acn
+*.acr
+*.alg
+
+# Otros
+*.upa
+*.upb
+*.xdv
+*.dvi
+*.bak
+*~
+
+# PDF compilado en la raíz del proyecto (se regenera con latexmk/Overleaf).
+# No afecta a los PDF que sí forman parte del contenido, como los logos
+# institucionales en Figuras/logos/.
+/*.pdf
+
+# Archivos del sistema operativo / editores
+.DS_Store
+*.swp
