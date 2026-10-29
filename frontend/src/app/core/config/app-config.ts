@@ -1,0 +1,16 @@
+/**
+ * Runtime settings of the web app. In development the API is reached through the Angular dev-server proxy
+ * (proxy.conf.json), so API calls use relative URLs and need no CORS.
+ */
+export const APP_CONFIG = {
+  apiBaseUrl: '',
+  keycloak: {
+    url: 'http://localhost:8080',
+    realm: 'verivoto',
+    clientId: 'verivoto-admin',
+  },
+  languages: ['es', 'en'] as const,
+  defaultLanguage: 'es' as const,
+};
+
+export type AppLanguage = (typeof APP_CONFIG.languages)[number];

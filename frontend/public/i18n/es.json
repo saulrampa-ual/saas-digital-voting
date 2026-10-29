@@ -1,0 +1,66 @@
+{
+  "language": {
+    "label": "Idioma",
+    "es": "Español",
+    "en": "Inglés"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "loadError": "No se han podido cargar los datos. Inténtalo de nuevo."
+  },
+  "admin": {
+    "menu": {
+      "label": "Menú de gestión",
+      "open": "Abrir menú",
+      "home": "Inicio",
+      "organizations": "Organizaciones",
+      "censuses": "Censos"
+    },
+    "logout": "Cerrar sesión",
+    "home": {
+      "title": "Inicio",
+      "welcome": "Hola, {{name}}",
+      "roles": "Roles",
+      "organization": "Organización"
+    },
+    "organizations": {
+      "title": "Organizaciones",
+      "empty": "Todavía no hay organizaciones.",
+      "status": {
+        "ACTIVE": "Activa",
+        "SUSPENDED": "Suspendida"
+      }
+    },
+    "censuses": {
+      "title": "Censos",
+      "empty": "Todavía no hay censos.",
+      "voters": "{{count}} personas",
+      "frozen": "Congelado"
+    },
+    "forbidden": {
+      "title": "Sin permiso",
+      "message": "Tu rol no permite acceder a esta sección."
+    }
+  },
+  "voter": {
+    "welcome": {
+      "title": "Bienvenida a la votación",
+      "pending": "Esta pantalla se completará en la rebanada del voto (P4.5)."
+    },
+    "footer": {
+      "secure": "Conexión segura · Tu voto es secreto"
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "Página no encontrada",
+      "message": "La dirección no existe. Revisa el enlace o vuelve al inicio."
+    }
+  },
+  "roles": {
+    "SUPERADMIN": "Superadministrador/a",
+    "ADMIN": "Administrador/a",
+    "CENSUS_MANAGER": "Gestor/a de censo",
+    "AUDITOR": "Auditor/a"
+  }
+}

@@ -102,3 +102,24 @@ Tipografía Inter con `system-ui` de reserva. Paleta: cabecera `#0F2A47` (`terti
 `#14365C` (`primary`), acción principal `#1F7A5A` (`secondary`), error `#8F1F14` sobre `#FCE9E7`
 (`danger`), aviso `#7A4B00` sobre `#FFF4DC` (`warning`), éxito `#14573F` sobre `#E6F4EE` (`success`).
 Detalle y contrastes en `Elections · Revisión UI UX y flujo definitivo.md`.
+
+## 6. Aplicación en P3.4 (frontend base)
+
+Revisado el 2026-10-29 contra la guía de adaptación, la revisión UI/UX y las recomendaciones para Ionic.
+
+| Punto de los prototipos | Estado |
+| --- | --- |
+| Paleta en variables Ionic (`primary`, `secondary`, `tertiary`, `success`, `warning`, `danger`, `medium`), fondo y texto | Hecho (`src/theme/variables.scss`) |
+| Tipografía Inter con `system-ui` de reserva | Hecho, autoalojada (`@fontsource-variable/inter`) |
+| Escala (h1 24/28 px, h2 18 px, cuerpo 16 px, ayuda ≥ 14 px), radios 10/12 px, borde `#C9D1DB`, foco 3 px `#14365C`, botones ≥ 44 px | Hecho (`src/styles.scss`) |
+| `mode: 'md'` en todos los dispositivos | Hecho |
+| `ion-split-pane` desde 992 px + hamburguesa en móvil; menú único filtrado por rol | Hecho (`AdminShellComponent`) |
+| Cabecera de gestión con organización, rol y usuario, distinta de la del votante | Hecho desde 768 px (`AdminPageComponent`) |
+| Selector ES/EN de 44 px; cambio en caliente (ngx-translate) | Hecho |
+| «Conexión segura» en el pie del votante | Hecho (`VoterEntryPage`) |
+| Foco al `h1` al cambiar de pantalla | Hecho (`FocusOnNavigationService`) |
+| Áreas por rol con carga bajo demanda y `canMatch` | Hecho (rutas `/admin/...`, ver D-28) |
+| `ErrorState` | Hecho; `LoadingState`, `StatusBadge`, `StepIndicator`, `StatusBar`, `ReceiptCard`, `VoteOption` se crean en P4.5 |
+| Login D1 con el aspecto de los prototipos | Pendiente: lo pinta Keycloak con su tema (IMP-14) |
+| Aviso antes de caducar la sesión | Pendiente (IMP-15) |
+| Tarjeta «Próximos eventos» (`Mejora.png`) | En el panel A1 (P5) |

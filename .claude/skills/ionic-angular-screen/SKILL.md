@@ -43,7 +43,9 @@ frontend/src/app/
   confirmación); color nunca como único portador de significado; texto mínimo 14 px.
 - **Móvil primero:** usable desde 360 px; en gestión, tablas → tarjetas en móvil.
 - **Idiomas:** todo texto visible pasa por el mecanismo i18n (es/en). Cambiar de idioma no pierde
-  datos del formulario (RF-20). El mecanismo concreto se decide en P3.4.
+  datos del formulario (RF-20). Mecanismo (D-28): `@ngx-translate/core` con
+  claves en `public/i18n/{es,en}.json` (pipe `translate` en plantillas, `TranslateService` en código);
+  toda clave nueva se añade a ambos ficheros. Idioma actual: `LanguageService.current`.
 - **Votante:** indicador de 4 pasos (RNF-9), estado del proceso y hora de cierre visibles, confirmación
   explícita en pantalla propia (RNF-7), botón de votar desactivado al pulsarlo, lenguaje no técnico
   (RNF-6). Nunca mostrar recuentos por opción antes del cierre.

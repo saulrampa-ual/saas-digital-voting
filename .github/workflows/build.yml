@@ -44,3 +44,23 @@ jobs:
         run: |
           sed -E 's/=\r?$/=ci-placeholder/' infra/.env.example > "$RUNNER_TEMP/ci.env"
           docker compose -f infra/compose.yaml --env-file "$RUNNER_TEMP/ci.env" config --quiet
+
+  frontend:
+    name: Frontend (Angular build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+
+      - name: Production build (no tests)
+        run: npm run build

@@ -1,0 +1,66 @@
+{
+  "language": {
+    "label": "Language",
+    "es": "Spanish",
+    "en": "English"
+  },
+  "common": {
+    "loading": "Loading…",
+    "loadError": "The data could not be loaded. Please try again."
+  },
+  "admin": {
+    "menu": {
+      "label": "Management menu",
+      "open": "Open menu",
+      "home": "Home",
+      "organizations": "Organizations",
+      "censuses": "Censuses"
+    },
+    "logout": "Sign out",
+    "home": {
+      "title": "Home",
+      "welcome": "Hello, {{name}}",
+      "roles": "Roles",
+      "organization": "Organization"
+    },
+    "organizations": {
+      "title": "Organizations",
+      "empty": "There are no organizations yet.",
+      "status": {
+        "ACTIVE": "Active",
+        "SUSPENDED": "Suspended"
+      }
+    },
+    "censuses": {
+      "title": "Censuses",
+      "empty": "There are no censuses yet.",
+      "voters": "{{count}} people",
+      "frozen": "Frozen"
+    },
+    "forbidden": {
+      "title": "No permission",
+      "message": "Your role does not give access to this section."
+    }
+  },
+  "voter": {
+    "welcome": {
+      "title": "Welcome to the vote",
+      "pending": "This screen will be completed in the voting slice (P4.5)."
+    },
+    "footer": {
+      "secure": "Secure connection · Your vote is secret"
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "Page not found",
+      "message": "This address does not exist. Check the link or go back to the start."
+    }
+  },
+  "roles": {
+    "SUPERADMIN": "Super administrator",
+    "ADMIN": "Administrator",
+    "CENSUS_MANAGER": "Census manager",
+    "AUDITOR": "Auditor"
+  }
+}
