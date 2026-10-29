@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P2 sin commitear) · Último commit: `efe8afc`
+Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P3.2 sin commitear) · Último commit: `835bdde`
 
 ## Hitos
 
@@ -8,8 +8,8 @@
 | --- | --- | --- | --- |
 | P0 | 29/10 – 02/11 | Línea base y memoria de la IA | Hecho (`da2e6db`) |
 | P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho (CI en verde, `efe8afc`) |
-| P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (pendiente de commit) |
-| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Pendiente |
+| P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
+| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | En curso (P3.2 hecho, sin probar) |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Pendiente |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Pendiente |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
@@ -62,6 +62,12 @@
   flujo del voto con token de un solo uso, riesgos residuales); contratos OpenAPI 3.1 de identity,
   election, voter-access y ballot-box en `src/main/resources/openapi/` (validados con
   `openapi-spec-validator`); ADR-0001 a ADR-0009 en `docs/adr/`; decisiones D-16 a D-23.
+- P3.2: realm `verivoto` en `infra/keycloak/realm/verivoto-realm.json` (roles, flujo contraseña + Email OTP,
+  bloqueo, política de contraseñas, clientes `verivoto-admin`, `identity-service`, `election-service`,
+  `ballot-box-service`, claims `roles` y `organization_id`, perfil de usuario, superadministrador inicial).
+  Importación en el compose con secretos por variables (D-24). Validado: JSON, referencias internas y
+  `docker compose config`; los nombres de autenticadores, mappers y campos se comprobaron en el código fuente
+  de Keycloak 26.8.1 y de Email OTP v1.8.1. Falta el arranque real y el login de prueba.
 
 ## En curso
 
@@ -84,9 +90,8 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Revisar `docs/architecture/data-model.md` (secciones 6 y 7) y los contratos OpenAPI; validar con el tutor
-   las desviaciones D-18 (sin horas en la urna) y D-21 (censo congelado desde `SCHEDULED`).
-2. Commit de P2 en `docs/design-slice-1` e integración en `dev`.
-3. Lanzar **P3.2** antes que P3.1: realm `verivoto` de Keycloak versionado (roles, claim `organization_id`,
-   flujo contraseña + Email OTP, bloqueo tras 5 fallos, cliente `verivoto-admin` y clientes de servicio).
-   P3.1 (organizaciones y usuarios) lo necesita para crear usuarios y validar tokens.
+1. Añadir a `infra/.env` las 5 variables nuevas de `.env.example`, recrear Keycloak y comprobar el realm según
+   `docs/architecture/keycloak-realm.md` (login del superadministrador con OTP y token de servicio).
+2. Commit de P3.2 en `feat/keycloak-realm` e integración en `dev`.
+3. Lanzar **P3.1**: `identity-service` con organizaciones (`/api/v1/organizations`, migración V2
+   `tenants` → `organizations`, administrador inicial) y usuarios de gestión vía Admin API de Keycloak.
