@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `dev` (pruebas de API sin commitear) · Último commit: `2a44fa0`
+Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P3.3 sin commitear; `dev` 2 commits por delante de `origin`) · Último commit: `4dc0128`
 
 ## Hitos
 
@@ -9,7 +9,7 @@
 | P0 | 29/10 – 02/11 | Línea base y memoria de la IA | Hecho (`da2e6db`) |
 | P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho (CI en verde, `efe8afc`) |
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
-| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | En curso (P3.1 y P3.2 compilados e integrados; falta la prueba funcional) |
+| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | En curso (P3.1–P3.2 integrados; P3.3 escrito, sin compilar; falta P3.4) |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Pendiente |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Pendiente |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
@@ -79,7 +79,15 @@
   con Maven y probar contra Keycloak. Compilado por el autor e integrado (`f1a9683`).
 - Pruebas manuales de API (D-26): cliente `verivoto-dev-swagger` (en el realm y como importación parcial en
   `infra/keycloak/dev/`), Swagger UI de identity con OAuth2 + PKCE, `scripts/Import-DotEnv.ps1` y la guía
-  `docs/architecture/api-testing.md`.
+  `docs/architecture/api-testing.md`. Integrado (`3e03b8b`).
+- P3.3: censo en `election-service` (RF-03): dominio (`Census`, `Voter`, `VoterData`, `ImportSummary`, `Caller`),
+  `CensusService` (alta y edición manual, duplicados, importación CSV con `dryRun` y descarte de líneas
+  inválidas), JPA y Flyway V1 (`censuses`, `voters` con índices únicos por censo), REST según contrato con
+  `VoterCsvReader`, seguridad JWT, Swagger con Keycloak, ruta del gateway (`/api/v1/censuses`,
+  `/api/v1/processes`), CSV de ejemplo en `scripts/samples/`. La congelación usa una política provisional que
+  nunca congela (`NoProcessesCensusFreezePolicy`) hasta que existan procesos (P4.1). Verificado en el entorno
+  de la IA: `domain`, `application` y el lector CSV compilan con `javac`; comprobación manual del CSV de ejemplo
+  (resumen, rechazo, descarte, aislamiento por organización, rol y censo congelado); V1 en PostgreSQL 16.
 
 ## En curso
 
@@ -102,6 +110,7 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Importación parcial del cliente `verivoto-dev-swagger` y recorrido de `docs/architecture/api-testing.md`.
-2. Commit en `chore/api-testing-swagger` e integración en `dev`.
-3. Siguiente: **P3.3** (censo en `election-service`, RF-03), con seguridad JWT y Swagger UI igual que identity.
+1. `git push origin dev` (hay 2 commits sin publicar).
+2. Compilar (`.\mvnw.cmd -DskipTests compile`) y seguir la sección 4 de `docs/architecture/api-testing.md`.
+3. Commit en `feat/election-census` e integración en `dev`.
+4. Siguiente: **P3.4**, base del frontend (Angular 22 + Ionic 9, PWA, i18n es/en) y login de gestión con Keycloak.

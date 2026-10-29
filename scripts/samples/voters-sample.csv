@@ -1,0 +1,9 @@
+full_name,email,phone,institutional_id,preferred_language
+Ana Pérez,ana.perez@ual.test,600111222,A0001,es
+Luis Gil,luis.gil@ual.test,,A0002,es
+María López,maria.lopez@ual.test,,A0003,en
+"Ruiz, Carmen",carmen.ruiz@ual.test,,A0004,es
+Repetida,ANA.PEREZ@ual.test,,,es
+,sin.nombre@ual.test,,,es
+Correo Malo,no-es-un-correo,,,es
+Idioma Raro,idioma@ual.test,,,fr
