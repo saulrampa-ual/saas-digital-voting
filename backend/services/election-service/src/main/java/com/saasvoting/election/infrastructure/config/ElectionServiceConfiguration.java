@@ -2,8 +2,13 @@ package com.saasvoting.election.infrastructure.config;
 
 import com.saasvoting.election.application.port.out.CensusFreezePolicy;
 import com.saasvoting.election.application.port.out.CensusRepository;
+import com.saasvoting.election.application.port.out.ProcessRepository;
+import com.saasvoting.election.application.port.out.ProcessSyncOutbox;
+import com.saasvoting.election.application.port.out.UnitOfWork;
 import com.saasvoting.election.application.port.out.VoterRepository;
 import com.saasvoting.election.application.service.CensusService;
+import com.saasvoting.election.application.service.LifecycleService;
+import com.saasvoting.election.application.service.ProcessService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,5 +27,17 @@ public class ElectionServiceConfiguration {
     CensusService censusService(
             CensusRepository censuses, VoterRepository voters, CensusFreezePolicy freezePolicy, Clock clock) {
         return new CensusService(censuses, voters, freezePolicy, clock);
+    }
+
+    @Bean
+    ProcessService processService(ProcessRepository processes, CensusRepository censuses, Clock clock) {
+        return new ProcessService(processes, censuses, clock);
+    }
+
+    @Bean
+    LifecycleService lifecycleService(
+            ProcessRepository processes, VoterRepository voters, ProcessSyncOutbox outbox, UnitOfWork unitOfWork,
+            Clock clock) {
+        return new LifecycleService(processes, voters, outbox, unitOfWork, clock);
     }
 }

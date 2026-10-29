@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P3.4 sin commitear) · Último commit: `3d47530`
+Última actualización: 2026-10-29 · Rama de trabajo: `feat/process-ballot` (P4.1 + P4.2 sin commitear) · Último commit: `b7aea1c`
 
 ## Hitos
 
@@ -9,8 +9,8 @@
 | P0 | 29/10 – 02/11 | Línea base y memoria de la IA | Hecho (`da2e6db`) |
 | P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho (CI en verde, `efe8afc`) |
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
-| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | En curso (P3.1–P3.3 integrados; P3.4 escrito, pendiente de prueba de login y commit) |
-| P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Pendiente |
+| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Hecho (P3.4 en `feat/frontend-base`, `f0ae0cf`) |
+| P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | En curso (P4.1 y P4.2 probados por la IA, sin commitear) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Pendiente |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
@@ -96,6 +96,24 @@
 
 ## En curso
 
+- P4.1: procesos y papeletas en `election-service` (RF-06, RF-20; D-29): dominio (`VotingProcess`, `ProcessData`,
+  `Ballot`, `BallotOption`, `LocalizedText`, `ProcessStatus`, `VoteType`, `ResultsVisibility`, `StatusChange`),
+  `ProcessService` (listar con filtro de estado, crear en `DRAFT`, consultar, editar solo en `DRAFT`, historial),
+  Flyway V2 (`processes`, `process_texts`, `ballots`, `ballot_texts`, `ballot_options`, `ballot_option_texts`,
+  `process_status_changes`), JPA, REST según contrato y errores con campo y mensaje. La congelación del censo ya
+  consulta los procesos `SCHEDULED`/`OPEN` (`ProcessCensusFreezePolicy` sustituye a la provisional). Verificado en
+  el entorno de la IA: `domain` y `application` compilan con `javac` y una comprobación manual de las reglas; V1 + V2
+  en PostgreSQL 16 (restricción diferida y `CHECK` de fechas). Prueba de extremo a extremo (29/29) con el servicio
+  real contra PostgreSQL y tokens firmados de prueba.
+- Corrección: con Spring Boot 4 la autoconfiguración de Flyway está en `spring-boot-starter-flyway`; election,
+  voter-access y ballot-box solo tenían `flyway-core`, así que sus migraciones nunca se ejecutaban (identity ya lo
+  tenía). Corregido en los cuatro `pom.xml`.
+- P4.2: ciclo de vida (RF-07, D-30): `schedule` (validación completa con 422, congelación, instantáneas en el
+  *outbox*), apertura y cierre automáticos (`LifecycleScheduler`), `archive` (`TALLIED → ARCHIVED`), historial con
+  usuario o `SYSTEM`, Flyway V3 (`process_sync`) y entrega del *outbox* (`ProcessSyncDispatcher`, token
+  *client credentials*). Prueba de extremo a extremo (22/22) con receptores simulados: orden, reintentos tras 503,
+  contenido de las instantáneas (ballot-box sin datos de votantes) y borrado del `payload`.
+
 
 ## Pendiente
 
@@ -118,5 +136,6 @@
 1. `git push origin dev` (hay 2 commits sin publicar).
 2. Compilar (`.\mvnw.cmd -DskipTests compile`) y seguir la sección 4 de `docs/architecture/api-testing.md`.
 3. Commit en `feat/election-census` e integración en `dev`.
-4. Probar P3.4 en local (`cd frontend; npm ci; npm start` → `http://localhost:4200/admin`) y commitear en `feat/frontend-base`.
-5. Siguiente: **P4.1**, procesos electorales y papeleta, con la política real de congelación del censo (sustituye a `NoProcessesCensusFreezePolicy`).
+4. Compilar con Maven, probar (`api-testing.md` §5 y §6) y commitear P4.1 + P4.2 en `feat/process-ballot`.
+5. Siguiente: **P4.3**, voter-access: recibir la instantánea, enlace personal y código OTP (RF-08), token de voto;
+   después P4.4 (urna) y P4.5 (pantallas del votante). Pantallas A3/A4 de gestión en paralelo.

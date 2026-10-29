@@ -10,6 +10,7 @@ public record Caller(UUID userId, Optional<String> organizationId, Set<String> r
 
     public static final String ADMIN = "ADMIN";
     public static final String CENSUS_MANAGER = "CENSUS_MANAGER";
+    public static final String AUDITOR = "AUDITOR";
 
     public Caller {
         Objects.requireNonNull(userId, "userId must not be null");
@@ -21,7 +22,7 @@ public record Caller(UUID userId, Optional<String> organizationId, Set<String> r
         return roles.contains(role);
     }
 
-    /** Organization of the caller; operations on censuses always happen inside it (RNF-15). */
+    /** Organization of the caller; operations on censuses and processes always happen inside it (RNF-15). */
     public String requireOrganization() {
         return organizationId.orElseThrow(() -> new OperationNotAllowedException("no organization"));
     }
@@ -32,5 +33,14 @@ public record Caller(UUID userId, Optional<String> organizationId, Set<String> r
 
     public boolean canEditCensus() {
         return hasRole(CENSUS_MANAGER);
+    }
+
+    /** RF-06, RF-07: administrators manage processes; auditors only read them. */
+    public boolean canReadProcesses() {
+        return hasRole(ADMIN) || hasRole(AUDITOR);
+    }
+
+    public boolean canManageProcesses() {
+        return hasRole(ADMIN);
     }
 }

@@ -7,12 +7,12 @@ Pantallas: códigos de `docs/ai/PROTOTYPES.md`.
 | --- | --- | --- | --- | --- | --- | --- |
 | RF-01 | Gestionar organizaciones | Sí | identity-service | `POST/GET /api/v1/organizations`, `GET/PATCH /api/v1/organizations/{id}`  | E1, E2 | Hecho (falta compilar y probar) |
 | RF-02 | Gestionar roles y permisos | Sí | identity-service + Keycloak | `GET/POST /api/v1/organizations/{id}/users`, `PUT …/users/{userId}/role` | E3 | Hecho (falta compilar y probar) |
-| RF-03 | Gestionar censo | Sí | election-service | `/api/v1/censuses`, `…/{censusId}/voters`, `…/{censusId}/imports` | A2, G1 | Hecho salvo congelación por proceso (P4.1); falta compilar y probar |
+| RF-03 | Gestionar censo | Sí | election-service | `/api/v1/censuses`, `…/{censusId}/voters`, `…/{censusId}/imports` | A2, G1 | Hecho (congelación con procesos `SCHEDULED`/`OPEN` desde P4.1) |
 | RF-04 | Autenticar usuario de gestión | Sí | Keycloak (configuración) | Flujo `verivoto browser` (contraseña + Email OTP) | D1; login en `frontend/src/app/core/auth` | Hecho (configuración + UI; pendiente de prueba manual) |
 | RF-05a | Iniciar sesión de gestión (SSO) | Sí | Keycloak (identity provider) | `identity-provider-redirector` en el flujo; IdP por organización | D1 | Parcial: falta un IdP externo de prueba |
 | RF-05b | Iniciar sesión de votante (SSO) | Sí (si da tiempo, P6) | voter-access-service | TBD | B1 (alternativa SSO) | Pendiente |
-| RF-06 | Crear y configurar proceso | Sí | election-service | `POST/GET /api/v1/processes`, `GET/PUT /api/v1/processes/{id}` | A3, F3, Gestión de candidatos | Pendiente |
-| RF-07 | Programar y gestionar ciclo de vida | Sí | election-service | `POST /api/v1/processes/{id}/schedule`, `…/archive`, `GET …/status-history`; internos `PUT /internal/v1/processes/{id}/status` | A4 | Pendiente |
+| RF-06 | Crear y configurar proceso | Sí | election-service | `POST/GET /api/v1/processes`, `GET/PUT /api/v1/processes/{id}` | A3, F3, Gestión de candidatos | Backend hecho (P4.1, D-29); pantallas A3/F3 pendientes |
+| RF-07 | Programar y gestionar ciclo de vida | Sí | election-service | `POST /api/v1/processes/{id}/schedule`, `…/archive`, `GET …/status-history`; internos `PUT /internal/v1/processes/{id}/status` | A4 | Backend hecho (P4.2, D-30): programar, abrir y cerrar automáticamente, archivar, historial; `TALLIED` llega con el escrutinio (P5); pantalla A4 pendiente |
 | RF-08 | Acceder a la papeleta | Sí | voter-access-service | `GET /api/v1/voter-access/links/{linkToken}`, `POST …/otp`, `POST …/otp/verify` | V1, B1, V2, C2, C3, C4, V5, V6 | Pendiente |
 | RF-09 | Emitir voto | Sí | ballot-box-service | `GET /api/v1/ballot-box/processes/{id}/ballot`, `POST …/votes`; interno `POST /internal/v1/voting-tokens/consume` y `…/revert` | B2, B3, C1, V3, V7 | Pendiente |
 | RF-10 | Verificar recibo | Sí | ballot-box-service | `GET /api/v1/ballot-box/processes/{id}/receipts/{receiptCode}` | B4, B5 | Pendiente |

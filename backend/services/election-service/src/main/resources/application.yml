@@ -12,6 +12,10 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+    properties:
+      # Loads texts and options of several processes in one query when listing (avoids N+1)
+      hibernate:
+        default_batch_fetch_size: 50
   flyway:
     enabled: true
   servlet:
@@ -31,6 +35,20 @@ management:
         include: health
 
 verivoto:
+  lifecycle:
+    # RF-07: how often the system opens and closes the processes whose time has arrived
+    interval: PT30S
+  sync:
+    # D-21, D-22: delivery of the outbox to voter-access and ballot-box (client credentials, role SERVICE)
+    enabled: ${ELECTION_SYNC_ENABLED:true}
+    voter-access-url: ${ELECTION_VOTER_ACCESS_URL:http://localhost:8083}
+    ballot-box-url: ${ELECTION_BALLOT_BOX_URL:http://localhost:8084}
+    keycloak-base-url: ${ELECTION_KEYCLOAK_BASE_URL:http://localhost:8080}
+    realm: verivoto
+    client-id: election-service
+    client-secret: ${ELECTION_SERVICE_CLIENT_SECRET:}
+    interval: PT10S
+    max-backoff: PT5M
   swagger:
     keycloak-realm-url: ${ELECTION_KEYCLOAK_BASE_URL:http://localhost:8080}/realms/verivoto
 

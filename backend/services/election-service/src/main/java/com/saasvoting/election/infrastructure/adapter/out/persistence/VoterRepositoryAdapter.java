@@ -68,6 +68,12 @@ public class VoterRepositoryAdapter implements VoterRepository {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Voter> findAllActiveInCensus(long censusId) {
+        return voters.findAllActiveInCensus(censusId).stream().map(VoterJpaEntity::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Set<String> institutionalIds(long censusId) {
         return new HashSet<>(voters.institutionalIds(censusId));
     }

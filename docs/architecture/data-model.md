@@ -100,8 +100,6 @@ erDiagram
         bigint id PK
         varchar20 organization_id
         bigint census_id FK
-        varchar150 title
-        varchar1000 description
         timestamptz opens_at
         timestamptz closes_at
         varchar20 status
@@ -124,11 +122,11 @@ erDiagram
 | Tabla | RI | Notas |
 | --- | --- | --- |
 | `censuses`, `voters` | RI-3 | Duplicados por censo: `UNIQUE (census_id, lower(email))` y `UNIQUE (census_id, institutional_id)` si no es nulo. |
-| `processes` | RI-4 | `CHECK (closes_at > opens_at)`. Estados: `DRAFT`, `SCHEDULED`, `OPEN`, `CLOSED`, `TALLIED`, `ARCHIVED`. **Desviación (D-03):** sin «re-votación permitida». Título y descripción en el idioma por defecto; sus traducciones en `process_texts` (process_id, language, title, description). |
+| `processes` | RI-4 | `CHECK (closes_at > opens_at)`. Estados: `DRAFT`, `SCHEDULED`, `OPEN`, `CLOSED`, `TALLIED`, `ARCHIVED`. **Desviación (D-03):** sin «re-votación permitida». Título y descripción de cada idioma en `process_texts` (process_id, language, title, description); el idioma por defecto siempre está (D-29). |
 | `processes.results_visibility` | RF-13, RF-15 | `CENSUS_ONLY` (por defecto) o `PUBLIC_LINK` (D-16). `results_public_id` es un UUID aleatorio que forma el enlace público. |
-| `ballots`, `ballot_texts`, `ballot_options`, `ballot_option_texts` | RI-5, RF-20 | `vote_type`: `SINGLE_CHOICE` o `YES_NO_ABSTAIN` (opciones fijas generadas). Pregunta 300 y opción 200 caracteres; `es` y `en` como mínimo. |
+| `ballots`, `ballot_texts`, `ballot_options`, `ballot_option_texts` | RI-5, RF-20 | `vote_type`: `SINGLE_CHOICE` o `YES_NO_ABSTAIN` (opciones fijas generadas). Pregunta 300 y opción 200 caracteres; entre 2 y 50 opciones; `UNIQUE (process_id, position)` diferida. En borrador basta el idioma por defecto; `es` y `en` se exigen al programar (D-29). |
 | `process_status_changes` | RF-07, RF-19 | Quién (usuario o `SYSTEM`), cuándo y qué transición. |
-| `process_sync` | — | *Outbox*: cambios de estado pendientes de comunicar a voter-access y ballot-box; el *scheduler* reintenta hasta confirmar. |
+| `process_sync` | — | *Outbox* (D-30): destino (`VOTER_ACCESS`, `BALLOT_BOX`), tipo (`SNAPSHOT`, `STATUS`), `payload` JSON (se borra al entregar), estado (`PENDING`, `DELIVERED`, `FAILED`), intentos y próximo intento. Entrega en orden por proceso y destino. |
 
 **Congelación del censo.** **Desviación:** el censo se congela desde `SCHEDULED`, no desde `OPEN`, porque RF-17
 envía las invitaciones con el enlace personal al programar el proceso. Al programar, election envía a voter-access la

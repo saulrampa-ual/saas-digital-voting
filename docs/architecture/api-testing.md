@@ -73,3 +73,58 @@ superadministrador no pertenece a ninguna organización, así que no ve censos.
 8. `POST .../voters` con el correo de una persona ya existente (en mayúsculas) → **409**.
 9. Como `ana@ual.test` (ADMIN): `GET /api/v1/censuses` → **200**; `POST /api/v1/censuses` → **403**.
 
+## 5. Procesos y papeletas (RF-06) en election-service
+
+Solo el **Administrador** crea y edita procesos; el **Auditor** los consulta. Con election-service arrancado
+(apartado 4) y autorizado en Swagger como `ana@ual.test` (ADMIN de `ual`):
+
+1. `POST /api/v1/processes` → **201** en `DRAFT` (usa el `id` del censo del apartado 4):
+   ```json
+   {
+     "censusId": 1,
+     "title": { "es": "Elección de representantes 2026", "en": "Representatives election 2026" },
+     "description": { "es": "Claustro de estudiantes" },
+     "opensAt": "2026-12-01T09:00:00+01:00",
+     "closesAt": "2026-12-03T21:00:00+01:00",
+     "defaultLanguage": "es",
+     "resultsVisibility": "CENSUS_ONLY",
+     "ballot": {
+       "voteType": "SINGLE_CHOICE",
+       "question": { "es": "¿Qué candidatura eliges?" },
+       "blankVoteEnabled": true,
+       "options": [
+         { "position": 1, "text": { "es": "Candidatura A" } },
+         { "position": 2, "text": { "es": "Candidatura B" } }
+       ]
+     }
+   }
+   ```
+2. Repetir con `"voteType": "YES_NO_ABSTAIN"` y sin `options` → las opciones «Sí», «No» y «Abstención» (es/en) las
+   genera el sistema.
+3. Errores esperados (**400** con `errors[].field`): una sola opción (`ballot.options`), cierre antes de la apertura
+   (`closesAt`), título sin el idioma por defecto (`title`), idioma `fr` (`title`).
+4. `PUT /api/v1/processes/{id}` con otros datos → **200**; los identificadores de las opciones cambian (normal en un
+   borrador).
+5. `GET /api/v1/processes` y `GET /api/v1/processes?status=DRAFT` → el proceso; `GET .../status-history` → `[]`
+   (las transiciones llegan con P4.2).
+6. Como `luis@ual.test` (CENSUS_MANAGER): `GET /api/v1/processes` → **403**. Con un `censusId` de otra organización
+   → **404**.
+7. El censo sigue editable: solo se congela cuando el proceso pase a `SCHEDULED` (P4.2).
+
+## 6. Ciclo de vida (RF-07) en election-service
+
+Programar valida el proceso, congela el censo y deja en el *outbox* (`process_sync`) la instantánea para
+voter-access y la papeleta para ballot-box. Mientras esos servicios no existan (P4.3, P4.4), los mensajes se
+reintentan cada vez más espaciados (máx. 5 min) y aparece un aviso en el log; para silenciarlo:
+`$env:ELECTION_SYNC_ENABLED = "false"`.
+
+1. Crear un proceso (apartado 5) con todos los textos en `es` y `en`, apertura dentro de 2 minutos y cierre 2
+   minutos después.
+2. Crear otro sin inglés y con apertura pasada → `POST /api/v1/processes/{id}/schedule` → **422** con `errors`
+   (cada campo que falta: `opensAt`, `censusId` si el censo está vacío, `title`, `ballot.options[n].text`…).
+3. `POST /api/v1/processes/{id}/schedule` del completo → **200** `SCHEDULED`. Repetir → **409**
+   (`currentStatus: SCHEDULED`). El censo aparece `frozen: true` y no admite altas (**409**).
+4. Esperar: en ≤ 30 s tras la apertura pasa a `OPEN` y tras el cierre a `CLOSED`.
+   `GET .../status-history` → `DRAFT→SCHEDULED` (tu usuario), `SCHEDULED→OPEN` y `OPEN→CLOSED` (`SYSTEM`).
+5. `POST .../archive` → **409** «Solo se puede archivar un proceso escrutado» (el escrutinio llega en P5).
+6. En la BD: `SELECT target, message_type, state, attempts FROM process_sync;` → 2 mensajes por transición.

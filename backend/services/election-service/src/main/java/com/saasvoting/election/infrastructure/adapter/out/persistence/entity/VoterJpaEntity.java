@@ -45,6 +45,10 @@ public class VoterJpaEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    /** Set by the RF-18 anonymization (P6). Read-only here, so editing a voter never clears it. */
+    @Column(name = "anonymized_at", insertable = false, updatable = false)
+    private Instant anonymizedAt;
+
     protected VoterJpaEntity() {
         // Required by JPA.
     }
