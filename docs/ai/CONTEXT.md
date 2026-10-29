@@ -40,7 +40,7 @@ criptográfica completa.
 | Keycloak 26.8.1 | RF-04, RF-05a por configuración | `keycloak_db` en `pg-main` | 8080 |
 | `election-service` | RF-03, RF-06, RF-07, RF-20 | `election_db` en `pg-main` | 8082 |
 | `voter-access-service` | RF-05b, RF-08, RF-14, RF-17 | `voter_access_db` en `pg-main` | 8083 |
-| `ballot-box-service` | RF-09, RF-10, RF-12, RF-13, RF-15, RF-16 | `ballot_box_db` en `pg-ballot` | 8084 |
+| `ballot-box-service` | RF-09, RF-10, RF-12, RF-13, RF-15, RF-16 | `ballot_box_db` en `pg-ballot` (puerto 5433) | 8084 |
 | `frontend` (Angular 22 + Ionic 9, PWA) | Pantallas | — | 4200 |
 
 Reglas estructurales:

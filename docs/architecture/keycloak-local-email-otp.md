@@ -13,7 +13,9 @@ producción.
 
 La imagen personalizada descarga el JAR versionado durante su construcción y
 verifica su SHA-256. La extensión permite limitar reenvíos y códigos emitidos;
-ambos límites vienen desactivados por defecto. Al configurar el flujo se deben
+ambos límites vienen desactivados por defecto.
+La imagen también fija en tiempo de build `KC_DB=postgres` y `KC_HEALTH_ENABLED=true` (health en el
+puerto de gestión 9000, no publicado). Al configurar el flujo se deben
 activar y dejar desactivadas las opciones de confianza de IP y dispositivo para
 que cada acceso siga solicitando el segundo factor.
 
@@ -28,26 +30,12 @@ que cada acceso siga solicitando el segundo factor.
 Los puertos se enlazan únicamente a `127.0.0.1`. Para el servidor de correo del
 realm, usar host `mailpit`, puerto `1025`, sin autenticación y sin TLS.
 
-## Preparación antes de arrancar
+## Arranque
 
-En PowerShell, definir una contraseña temporal para el administrador local antes
-de ejecutar Compose:
-
-```powershell
-$env:KC_BOOTSTRAP_ADMIN_PASSWORD = Read-Host "Contraseña temporal de Keycloak"
-```
-
-El nombre del administrador local por defecto es `local-admin`; puede cambiarse
-con `KC_BOOTSTRAP_ADMIN_USERNAME`. No guardar la contraseña en el repositorio.
-
-Cuando se decida arrancar el entorno, desde la raíz del repositorio:
-
-```powershell
-docker compose -f infra/keycloak/compose.yaml up --build -d
-```
-
-No se ha ejecutado este comando. Para el primer arranque, Keycloak creará la
-base de datos de desarrollo en el volumen local `keycloak-data`.
+Keycloak forma parte de la infraestructura local común (`infra/compose.yaml`) y guarda sus datos en
+la base `keycloak_db` de `pg-main`. Los pasos de arranque están en `local-infrastructure.md`.
+La contraseña del administrador local se define en `infra/.env` (`KC_BOOTSTRAP_ADMIN_PASSWORD`),
+que no se versiona.
 
 ## Configuración pendiente en la consola
 
