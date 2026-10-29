@@ -36,7 +36,7 @@ criptográfica completa.
 | Servicio | RF | Base de datos | Puerto local |
 | --- | --- | --- | --- |
 | `api-gateway` | RF-21 (enrutado, CORS, límites, validación de API key) | — | 8000 |
-| `identity-service` (hoy `tenant-service`) | RF-01, RF-02, RF-18, RF-19, RF-21 (emisión de claves) | `identity_db` en `pg-main` | 8081 |
+| `identity-service` (antes `tenant-service`) | RF-01, RF-02, RF-18, RF-19, RF-21 (emisión de claves) | `identity_db` en `pg-main` | 8081 |
 | Keycloak 26.8.1 | RF-04, RF-05a por configuración | `keycloak_db` en `pg-main` | 8080 |
 | `election-service` | RF-03, RF-06, RF-07, RF-20 | `election_db` en `pg-main` | 8082 |
 | `voter-access-service` | RF-05b, RF-08, RF-14, RF-17 | `voter_access_db` en `pg-main` | 8083 |

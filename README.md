@@ -8,7 +8,7 @@ organizaciones: segura, auditable y con API abierta.
 
 ## Estado
 
-Fase P0 (línea base). Existe `tenant-service` (creación de organizaciones) y el entorno local de
+Fase P1 (plataforma). Existe `identity-service` (creación de organizaciones) y el entorno local de
 Keycloak. El seguimiento detallado está en [`docs/ai/PROGRESS.md`](docs/ai/PROGRESS.md).
 
 ## Stack
@@ -27,7 +27,7 @@ Keycloak. El seguimiento detallado está en [`docs/ai/PROGRESS.md`](docs/ai/PROG
 | Servicio | Responsabilidad |
 | --- | --- |
 | `api-gateway` | Entrada única, CORS, límites, claves de API |
-| `identity-service` | Organizaciones, roles, RGPD, trazabilidad administrativa (hoy `tenant-service`) |
+| `identity-service` | Organizaciones, roles, RGPD, trazabilidad administrativa |
 | `election-service` | Censo, procesos, papeleta, ciclo de vida |
 | `voter-access-service` | Acceso del votante, OTP, token de voto, participación, notificaciones |
 | `ballot-box-service` | Urna, recibos, registro encadenado, escrutinio, actas |
