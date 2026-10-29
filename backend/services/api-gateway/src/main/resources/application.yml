@@ -1,0 +1,21 @@
+server:
+  port: ${GATEWAY_SERVER_PORT:8000}
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: identity-tenants
+              uri: ${IDENTITY_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=/api/v1/tenants/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

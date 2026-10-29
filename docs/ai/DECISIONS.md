@@ -16,3 +16,6 @@ Registro de decisiones cerradas. Una decisión solo cambia con una entrada nueva
 | D-10 | 2026-10-29 | Desarrollo por rebanadas verticales; la rebanada del voto (P4) debe funcionar el 30/11/2026 | Calendario del Gantt: desarrollo hasta el 31/12/2026 | Backend completo y después frontend |
 | D-11 | 2026-10-29 | Sin Lombok ni MapStruct; `record` y mappers manuales | El código existente ya sigue ese estilo | Lombok + MapStruct |
 | D-12 | 2026-10-29 | Frontend PWA sin Capacitor en el MVP | RNF-18 (PWA instalable) no requiere app nativa | Capacitor |
+| D-13 | 2026-10-29 | Puertos PostgreSQL locales: `pg-main` 5432, `pg-ballot` 5433 | Dos instancias en la misma máquina (D-08) | — |
+| D-14 | 2026-10-29 | Gateway con Spring Cloud Gateway Server WebFlux (`spring-cloud-starter-gateway-server-webflux`) | Variante de referencia del gateway, con filtros globales para API keys y límites | Gateway Server Web MVC |
+| D-15 | 2026-10-29 | springdoc-openapi 3.1.1 gestionado en el parent pom | Última versión publicada de la línea que se actualizó a Spring Boot 4.1 | springdoc 3.2.x (sin confirmar su compatibilidad con Boot 4.1) |

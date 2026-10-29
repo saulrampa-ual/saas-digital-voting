@@ -1,0 +1,22 @@
+server:
+  port: ${VOTER_ACCESS_SERVER_PORT:8083}
+
+spring:
+  application:
+    name: voter-access-service
+  datasource:
+    url: ${VOTER_ACCESS_DB_URL:jdbc:postgresql://localhost:5432/voter_access_db}
+    username: ${VOTER_ACCESS_DB_USERNAME}
+    password: ${VOTER_ACCESS_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

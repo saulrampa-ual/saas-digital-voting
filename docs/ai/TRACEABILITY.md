@@ -5,7 +5,7 @@ Pantallas: códigos de `docs/ai/PROTOTYPES.md`.
 
 | RF | Nombre | MVP | Servicio | Endpoint | Pantalla | Estado |
 | --- | --- | --- | --- | --- | --- | --- |
-| RF-01 | Gestionar organizaciones | Sí | identity-service | `POST /api/v1/tenants` (existente; se revisa en P2) | E1, E2 | Parcial: solo alta |
+| RF-01 | Gestionar organizaciones | Sí | identity-service | `POST /api/v1/tenants` (existente; enrutado por el gateway; se revisa en P2) | E1, E2 | Parcial: solo alta |
 | RF-02 | Gestionar roles y permisos | Sí | identity-service + Keycloak | TBD | E3 | Pendiente |
 | RF-03 | Gestionar censo | Sí | election-service | TBD | A2, G1 | Pendiente |
 | RF-04 | Autenticar usuario de gestión | Sí | Keycloak (configuración) | Flujo OIDC de Keycloak | D1 | Parcial: entorno local listo, realm sin configurar |
