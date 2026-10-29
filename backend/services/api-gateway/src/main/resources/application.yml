@@ -9,10 +9,10 @@ spring:
       server:
         webflux:
           routes:
-            - id: identity-tenants
+            - id: identity-organizations
               uri: ${IDENTITY_SERVICE_URI:http://localhost:8081}
               predicates:
-                - Path=/api/v1/tenants/**
+                - Path=/api/v1/organizations,/api/v1/organizations/**
 
 management:
   endpoints:

@@ -5,7 +5,7 @@ Estados: propuesta / aprobada / descartada / hecha.
 
 | ID | Fecha | Propuesta | Beneficio | Coste / riesgo | Hito | Estado |
 | --- | --- | --- | --- | --- | --- | --- |
-| IMP-01 | 2026-10-29 | `TenantApiExceptionHandler` convierte cualquier `IllegalStateException` en 409 «ya existe». Usar una excepción de dominio propia (p. ej. `TenantAlreadyExistsException`) | Errores correctos (RNF-8); evita ocultar fallos reales | Bajo; cambia el comportamiento ante otros `IllegalStateException` | P3.1 | Propuesta |
+| IMP-01 | 2026-10-29 | `TenantApiExceptionHandler` convierte cualquier `IllegalStateException` en 409 «ya existe». Usar una excepción de dominio propia (p. ej. `TenantAlreadyExistsException`) | Errores correctos (RNF-8); evita ocultar fallos reales | Bajo; cambia el comportamiento ante otros `IllegalStateException` | P3.1 | Hecha (P3.1: excepciones de dominio y `ApiExceptionHandler`) |
 | IMP-02 | 2026-10-29 | Corregir el Gantt del TFM: la iteración 3 dice «Emisión, recibo y re-voto (RF-09–RF-11)» | Coherencia memoria–plan tras D-03 | Ninguno | P8 | Propuesta |
 | IMP-03 | 2026-10-29 | Activar solo las pruebas de propiedades críticas (unicidad, cadena de hashes, secreto) al terminar P4 y P5, en vez de esperar a enero | Detectar fallos del núcleo del TFM a tiempo; el Gantt ya prevé pruebas incrementales | Tiempo de desarrollo; requiere `ACTIVAR TESTS` | P4 | Propuesta |
 | IMP-04 | 2026-10-29 | El identificador de organización es un `VARCHAR(20)` alfanumérico usado como clave primaria. Decidir si `organization_id` en el resto de servicios es ese identificador o un UUID | Contrato de multi-tenancy estable entre servicios | Migración Flyway si se cambia | P2 | Descartada: se mantiene el identificador de RI-1 (D-17) |
@@ -14,3 +14,6 @@ Estados: propuesta / aprobada / descartada / hecha.
 | IMP-07 | 2026-10-29 | Eventos asíncronos (Kafka u otro broker) para el cambio de estado de procesos | Desacoplamiento | Infraestructura adicional | P9 | Propuesta |
 | IMP-09 | 2026-10-29 | Escaneo de secretos (p. ej. gitleaks) en la CI y como hook de pre-commit | Habría evitado que entraran contraseñas en `infra/.env.example` | Bajo; herramienta externa adicional | P1.6 | Propuesta |
 | IMP-08 | 2026-10-29 | Cuando se active P7, añadir ArchUnit para comprobar las reglas de dependencia hexagonales | Auditoría automática de la arquitectura (P9.2 del plan anterior) | Es una prueba: requiere `ACTIVAR TESTS` | P7 | Propuesta |
+| IMP-10 | 2026-10-29 | Devolver el estado real del usuario (`LOCKED` por fuerza bruta, `INACTIVE` si está deshabilitado) leyendo `attack-detection` y `enabled` de Keycloak; hoy siempre `ACTIVE` | Información fiel en la pantalla E3 | Una llamada extra a Keycloak por usuario listado | P6 | Propuesta |
+| IMP-11 | 2026-10-29 | Al suspender una organización, deshabilitar sus usuarios en Keycloak y rechazar operaciones de sus miembros | RF-01 completo (hoy solo cambia el estado) | Bajo | P6 | Propuesta |
+| IMP-12 | 2026-10-29 | La regla del último administrador no está protegida frente a dos cambios de rol simultáneos; usar bloqueo de fila o una restricción en BD | Elimina una carrera poco probable | Bajo | P6 | Propuesta |

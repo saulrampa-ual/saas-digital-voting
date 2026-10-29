@@ -30,7 +30,10 @@ erDiagram
     }
     management_users {
         uuid id PK "id de Keycloak"
-        varchar20 organization_id FK "null = Superadministrador"
+        varchar20 organization_id FK
+        varchar60 full_name
+        varchar100 email
+        varchar20 role
         timestamptz created_at
     }
     admin_actions {
@@ -55,8 +58,8 @@ erDiagram
 
 | Tabla | RI | Notas |
 | --- | --- | --- |
-| `organizations` | RI-1 | Hoy se llama `tenants` (V1). En P3.1 una migración V2 la renombra y el dominio pasa de `Tenant` a `Organization`. |
-| `management_users` | RI-2 | **Desviación (D-02):** nombre, correo, teléfono, rol, contraseña, 2FA, estado y último acceso viven en Keycloak. Aquí solo el vínculo usuario–organización para consultas y RF-18. |
+| `organizations` | RI-1 | Creada como `tenants` en V1 y renombrada en V2 (columna `identifier` → `id`). |
+| `management_users` | RI-2 | **Desviación (D-02, D-25):** contraseña, segundo factor, estado y último acceso viven en Keycloak. Aquí se guarda una copia de organización, nombre, correo y rol para listar usuarios, aplicar la regla del último administrador y atender RF-18 sin consultar Keycloak. El Superadministrador no tiene fila (pertenece a la plataforma). Correo único sin distinguir mayúsculas. |
 | `admin_actions` | RI-13 | Solo inserción: el rol `identity` no tiene `UPDATE` ni `DELETE`, y un *trigger* rechaza ambas operaciones. |
 | `api_keys` | RF-21 (P6) | Solo se guarda el hash; la clave se muestra una vez al crearla. |
 
