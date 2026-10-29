@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P3.2 sin commitear) · Último commit: `835bdde`
+Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P3.1 sin commitear) · Último commit: `947ad90`
 
 ## Hitos
 
@@ -9,7 +9,7 @@
 | P0 | 29/10 – 02/11 | Línea base y memoria de la IA | Hecho (`da2e6db`) |
 | P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho (CI en verde, `efe8afc`) |
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
-| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | En curso (P3.2 hecho, sin probar) |
+| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | En curso (P3.2 importado; P3.1 escrito, sin compilar) |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Pendiente |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Pendiente |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
@@ -67,7 +67,16 @@
   `ballot-box-service`, claims `roles` y `organization_id`, perfil de usuario, superadministrador inicial).
   Importación en el compose con secretos por variables (D-24). Validado: JSON, referencias internas y
   `docker compose config`; los nombres de autenticadores, mappers y campos se comprobaron en el código fuente
-  de Keycloak 26.8.1 y de Email OTP v1.8.1. Falta el arranque real y el login de prueba.
+  de Keycloak 26.8.1 y de Email OTP v1.8.1. Importado por el autor (`947ad90`); el primer login de
+  `superadmin` falló por credenciales (4 intentos), probablemente al teclear la contraseña inicial.
+- P3.1: `identity-service` con organizaciones (RF-01) y usuarios de gestión (RF-02) según el contrato:
+  `Tenant` → `Organization` (ficheros renombrados con `mv`), `Caller` con las reglas de acceso por
+  organización (RNF-15), puertos `IdentityProvider`, `OrganizationRepository` y `ManagementUserRepository`,
+  adaptador `KeycloakAdminClient` (Admin API con *client credentials*), controladores, `ApiExceptionHandler`
+  (IMP-01), migraciones V2 (renombrado) y V3 (`management_users`), ruta del gateway `/api/v1/organizations`.
+  Realm: `firstName` y `lastName` dejan de ser obligatorios (requiere reimportar). Verificado en el entorno de
+  la IA: `domain` y `application` compilan con `javac`; V1–V3 se aplican sobre PostgreSQL 16. Falta compilar
+  con Maven y probar contra Keycloak.
 
 ## En curso
 
@@ -90,8 +99,9 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Añadir a `infra/.env` las 5 variables nuevas de `.env.example`, recrear Keycloak y comprobar el realm según
-   `docs/architecture/keycloak-realm.md` (login del superadministrador con OTP y token de servicio).
-2. Commit de P3.2 en `feat/keycloak-realm` e integración en `dev`.
-3. Lanzar **P3.1**: `identity-service` con organizaciones (`/api/v1/organizations`, migración V2
-   `tenants` → `organizations`, administrador inicial) y usuarios de gestión vía Admin API de Keycloak.
+1. Compilar: `.\mvnw.cmd -DskipTests compile` en `backend/`.
+2. Reimportar el realm (borrar `verivoto` en la consola y reiniciar Keycloak) y entrar como `superadmin`.
+3. Arrancar `identity-service` con `IDENTITY_DB_USERNAME`, `IDENTITY_DB_PASSWORD` e
+   `IDENTITY_SERVICE_CLIENT_SECRET` y probar alta de organización y de usuario (ver resumen de la sesión).
+4. Commit en `feat/identity-organizations-users` e integración en `dev`.
+5. Siguiente: **P3.3** (censo en `election-service`, RF-03).

@@ -15,7 +15,7 @@ El realm está versionado en `infra/keycloak/realm/verivoto-realm.json` y Keyclo
 | Sesiones | Access token 5 min; inactividad 30 min; máximo 8 h | RNF-14 |
 | Idiomas | `es` (por defecto) y `en` | RNF-5 |
 | SMTP | `mailpit:1025` sin TLS (solo desarrollo) | RF-04 |
-| Perfil de usuario | `username`, `email`, `firstName`, `lastName` y `organization_id` (solo lo edita un administrador, máx. 20) | D-17 |
+| Perfil de usuario | `username`, `email` (obligatorio), `firstName` (nombre completo), `lastName` (opcional) y `organization_id` (solo lo edita un administrador, máx. 20) | D-17, D-25 |
 
 ## Clientes
 

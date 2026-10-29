@@ -45,7 +45,7 @@ Variables de entorno (por ejemplo, en la configuración de ejecución de Intelli
 
 | Servicio | Variables |
 | --- | --- |
-| identity-service | `IDENTITY_DB_USERNAME=identity`, `IDENTITY_DB_PASSWORD`, `IDENTITY_OIDC_ISSUER_URI` (por defecto `http://localhost:8080/realms/verivoto`) |
+| identity-service | `IDENTITY_DB_USERNAME=identity`, `IDENTITY_DB_PASSWORD`, `IDENTITY_OIDC_ISSUER_URI` (por defecto `http://localhost:8080/realms/verivoto`), `IDENTITY_SERVICE_CLIENT_SECRET` (el mismo de `infra/.env`) |
 | election-service | `ELECTION_DB_USERNAME=election`, `ELECTION_DB_PASSWORD` |
 | voter-access-service | `VOTER_ACCESS_DB_USERNAME=voter_access`, `VOTER_ACCESS_DB_PASSWORD` |
 | ballot-box-service | `BALLOT_BOX_DB_USERNAME=ballot_box`, `BALLOT_BOX_DB_PASSWORD` |

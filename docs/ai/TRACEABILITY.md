@@ -5,8 +5,8 @@ Pantallas: códigos de `docs/ai/PROTOTYPES.md`.
 
 | RF | Nombre | MVP | Servicio | Endpoint | Pantalla | Estado |
 | --- | --- | --- | --- | --- | --- | --- |
-| RF-01 | Gestionar organizaciones | Sí | identity-service | `POST/GET /api/v1/organizations`, `GET/PATCH /api/v1/organizations/{id}` (contrato P2; hoy `POST /api/v1/tenants`) | E1, E2 | Parcial: solo alta |
-| RF-02 | Gestionar roles y permisos | Sí | identity-service + Keycloak | `GET/POST /api/v1/organizations/{id}/users`, `PUT …/users/{userId}/role` | E3 | Pendiente |
+| RF-01 | Gestionar organizaciones | Sí | identity-service | `POST/GET /api/v1/organizations`, `GET/PATCH /api/v1/organizations/{id}`  | E1, E2 | Hecho (falta compilar y probar) |
+| RF-02 | Gestionar roles y permisos | Sí | identity-service + Keycloak | `GET/POST /api/v1/organizations/{id}/users`, `PUT …/users/{userId}/role` | E3 | Hecho (falta compilar y probar) |
 | RF-03 | Gestionar censo | Sí | election-service | `/api/v1/censuses`, `…/{censusId}/voters`, `…/{censusId}/imports` | A2, G1 | Pendiente |
 | RF-04 | Autenticar usuario de gestión | Sí | Keycloak (configuración) | Flujo `verivoto browser` (contraseña + Email OTP) | D1 | Hecho (configuración; pendiente de prueba manual) |
 | RF-05a | Iniciar sesión de gestión (SSO) | Sí | Keycloak (identity provider) | `identity-provider-redirector` en el flujo; IdP por organización | D1 | Parcial: falta un IdP externo de prueba |
