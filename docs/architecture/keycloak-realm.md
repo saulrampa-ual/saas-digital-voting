@@ -25,6 +25,7 @@ El realm está versionado en `infra/keycloak/realm/verivoto-realm.json` y Keyclo
 | `identity-service` | Confidencial, *service account* con `manage-users`, `view-users`, `query-users` de `realm-management` y rol `SERVICE` | Crear usuarios de gestión y asignar roles por la Admin API (RF-02) |
 | `election-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access y ballot-box |
 | `ballot-box-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access |
+| `verivoto-dev-swagger` | Público, Authorization Code + PKCE. **Solo desarrollo** | Swagger UI de los servicios (puertos 8081–8084). Ver `api-testing.md` |
 
 Todos los clientes llevan dos mappers propios que añaden al token:
 

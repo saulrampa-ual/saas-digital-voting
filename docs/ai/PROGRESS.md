@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P3.1 sin commitear) · Último commit: `947ad90`
+Última actualización: 2026-10-29 · Rama de trabajo: `dev` (pruebas de API sin commitear) · Último commit: `2a44fa0`
 
 ## Hitos
 
@@ -9,7 +9,7 @@
 | P0 | 29/10 – 02/11 | Línea base y memoria de la IA | Hecho (`da2e6db`) |
 | P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho (CI en verde, `efe8afc`) |
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
-| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | En curso (P3.2 importado; P3.1 escrito, sin compilar) |
+| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | En curso (P3.1 y P3.2 compilados e integrados; falta la prueba funcional) |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Pendiente |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Pendiente |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
@@ -76,7 +76,10 @@
   (IMP-01), migraciones V2 (renombrado) y V3 (`management_users`), ruta del gateway `/api/v1/organizations`.
   Realm: `firstName` y `lastName` dejan de ser obligatorios (requiere reimportar). Verificado en el entorno de
   la IA: `domain` y `application` compilan con `javac`; V1–V3 se aplican sobre PostgreSQL 16. Falta compilar
-  con Maven y probar contra Keycloak.
+  con Maven y probar contra Keycloak. Compilado por el autor e integrado (`f1a9683`).
+- Pruebas manuales de API (D-26): cliente `verivoto-dev-swagger` (en el realm y como importación parcial en
+  `infra/keycloak/dev/`), Swagger UI de identity con OAuth2 + PKCE, `scripts/Import-DotEnv.ps1` y la guía
+  `docs/architecture/api-testing.md`.
 
 ## En curso
 
@@ -99,9 +102,6 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Compilar: `.\mvnw.cmd -DskipTests compile` en `backend/`.
-2. Reimportar el realm (borrar `verivoto` en la consola y reiniciar Keycloak) y entrar como `superadmin`.
-3. Arrancar `identity-service` con `IDENTITY_DB_USERNAME`, `IDENTITY_DB_PASSWORD` e
-   `IDENTITY_SERVICE_CLIENT_SECRET` y probar alta de organización y de usuario (ver resumen de la sesión).
-4. Commit en `feat/identity-organizations-users` e integración en `dev`.
-5. Siguiente: **P3.3** (censo en `election-service`, RF-03).
+1. Importación parcial del cliente `verivoto-dev-swagger` y recorrido de `docs/architecture/api-testing.md`.
+2. Commit en `chore/api-testing-swagger` e integración en `dev`.
+3. Siguiente: **P3.3** (censo en `election-service`, RF-03), con seguridad JWT y Swagger UI igual que identity.
