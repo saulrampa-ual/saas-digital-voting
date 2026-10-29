@@ -16,6 +16,6 @@ This service validates tokens; it does not implement the management login,
 password storage, email one-time codes, or token issuance required by RF-04.
 Those responsibilities belong to the identity provider. The local development
 provider is Keycloak with the Email OTP Authenticator extension; its setup is
-documented in `keycloak-local-email-otp.md`. The browser flow, SMTP settings,
-OIDC client, and role claim still need to be configured in the realm before the
-end-to-end authentication contract is complete.
+documented in `keycloak-local-email-otp.md`. The realm `verivoto` (browser flow with email OTP, SMTP, OIDC clients and the `roles` and
+`organization_id` claims) is versioned in `infra/keycloak/realm/verivoto-realm.json`; see
+`keycloak-realm.md`.

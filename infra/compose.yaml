@@ -46,7 +46,7 @@ services:
     build:
       context: ./keycloak
       dockerfile: Dockerfile
-    command: ["start-dev"]
+    command: ["start-dev", "--import-realm"]
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:-local-admin}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:?Define KC_BOOTSTRAP_ADMIN_PASSWORD in infra/.env}
@@ -56,8 +56,16 @@ services:
       KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Define KEYCLOAK_DB_PASSWORD in infra/.env}
       KC_HEALTH_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
+      # Placeholders resolved by the realm import (infra/keycloak/realm/verivoto-realm.json)
+      VERIVOTO_SUPERADMIN_EMAIL: ${VERIVOTO_SUPERADMIN_EMAIL:?Define VERIVOTO_SUPERADMIN_EMAIL in infra/.env}
+      VERIVOTO_SUPERADMIN_INITIAL_PASSWORD: ${VERIVOTO_SUPERADMIN_INITIAL_PASSWORD:?Define VERIVOTO_SUPERADMIN_INITIAL_PASSWORD in infra/.env}
+      IDENTITY_SERVICE_CLIENT_SECRET: ${IDENTITY_SERVICE_CLIENT_SECRET:?Define IDENTITY_SERVICE_CLIENT_SECRET in infra/.env}
+      ELECTION_SERVICE_CLIENT_SECRET: ${ELECTION_SERVICE_CLIENT_SECRET:?Define ELECTION_SERVICE_CLIENT_SECRET in infra/.env}
+      BALLOT_BOX_SERVICE_CLIENT_SECRET: ${BALLOT_BOX_SERVICE_CLIENT_SECRET:?Define BALLOT_BOX_SERVICE_CLIENT_SECRET in infra/.env}
     ports:
       - "127.0.0.1:8080:8080"
+    volumes:
+      - ./keycloak/realm:/opt/keycloak/data/import:ro
     depends_on:
       pg-main:
         condition: service_healthy

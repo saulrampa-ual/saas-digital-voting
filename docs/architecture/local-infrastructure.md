@@ -12,6 +12,8 @@ puertos enlazados a `127.0.0.1`.
 | `keycloak` | `quay.io/keycloak/keycloak:26.8.1` + Email OTP v1.8.1 | 8080 | Identidad de gestión (OIDC) |
 | `mailpit` | `axllent/mailpit:v1.31.5` | 1025 (SMTP), 8025 (web) | Correo de pruebas |
 
+Keycloak importa el realm `verivoto` en el primer arranque (`keycloak-realm.md`).
+
 Cada base de datos tiene su propio rol, que solo puede conectarse a ella (`REVOKE ALL ... FROM PUBLIC`).
 Los roles se crean en el primer arranque con `infra/postgres/*/01-*.sh`.
 
@@ -43,7 +45,7 @@ Variables de entorno (por ejemplo, en la configuración de ejecución de Intelli
 
 | Servicio | Variables |
 | --- | --- |
-| identity-service | `IDENTITY_DB_USERNAME=identity`, `IDENTITY_DB_PASSWORD`, `IDENTITY_OIDC_ISSUER_URI=http://localhost:8080/realms/verivoto` (cuando exista el realm, P3.2) |
+| identity-service | `IDENTITY_DB_USERNAME=identity`, `IDENTITY_DB_PASSWORD`, `IDENTITY_OIDC_ISSUER_URI` (por defecto `http://localhost:8080/realms/verivoto`) |
 | election-service | `ELECTION_DB_USERNAME=election`, `ELECTION_DB_PASSWORD` |
 | voter-access-service | `VOTER_ACCESS_DB_USERNAME=voter_access`, `VOTER_ACCESS_DB_PASSWORD` |
 | ballot-box-service | `BALLOT_BOX_DB_USERNAME=ballot_box`, `BALLOT_BOX_DB_PASSWORD` |

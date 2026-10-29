@@ -8,8 +8,8 @@ Pantallas: códigos de `docs/ai/PROTOTYPES.md`.
 | RF-01 | Gestionar organizaciones | Sí | identity-service | `POST/GET /api/v1/organizations`, `GET/PATCH /api/v1/organizations/{id}` (contrato P2; hoy `POST /api/v1/tenants`) | E1, E2 | Parcial: solo alta |
 | RF-02 | Gestionar roles y permisos | Sí | identity-service + Keycloak | `GET/POST /api/v1/organizations/{id}/users`, `PUT …/users/{userId}/role` | E3 | Pendiente |
 | RF-03 | Gestionar censo | Sí | election-service | `/api/v1/censuses`, `…/{censusId}/voters`, `…/{censusId}/imports` | A2, G1 | Pendiente |
-| RF-04 | Autenticar usuario de gestión | Sí | Keycloak (configuración) | Flujo OIDC de Keycloak | D1 | Parcial: entorno local listo, realm sin configurar |
-| RF-05a | Iniciar sesión de gestión (SSO) | Sí | Keycloak (identity provider) | Flujo OIDC de Keycloak | D1 | Pendiente |
+| RF-04 | Autenticar usuario de gestión | Sí | Keycloak (configuración) | Flujo `verivoto browser` (contraseña + Email OTP) | D1 | Hecho (configuración; pendiente de prueba manual) |
+| RF-05a | Iniciar sesión de gestión (SSO) | Sí | Keycloak (identity provider) | `identity-provider-redirector` en el flujo; IdP por organización | D1 | Parcial: falta un IdP externo de prueba |
 | RF-05b | Iniciar sesión de votante (SSO) | Sí (si da tiempo, P6) | voter-access-service | TBD | B1 (alternativa SSO) | Pendiente |
 | RF-06 | Crear y configurar proceso | Sí | election-service | `POST/GET /api/v1/processes`, `GET/PUT /api/v1/processes/{id}` | A3, F3, Gestión de candidatos | Pendiente |
 | RF-07 | Programar y gestionar ciclo de vida | Sí | election-service | `POST /api/v1/processes/{id}/schedule`, `…/archive`, `GET …/status-history`; internos `PUT /internal/v1/processes/{id}/status` | A4 | Pendiente |
