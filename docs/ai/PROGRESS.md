@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `feat/process-ballot` (P4.1 + P4.2 sin commitear) · Último commit: `b7aea1c`
+Última actualización: 2026-10-29 · Rama de trabajo: `feat/voter-access` (P4.3 sin commitear) · Último commit: `b5ba2d3`
 
 ## Hitos
 
@@ -10,7 +10,7 @@
 | P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho (CI en verde, `efe8afc`) |
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
 | P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Hecho (P3.4 en `feat/frontend-base`, `f0ae0cf`) |
-| P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | En curso (P4.1 y P4.2 probados por la IA, sin commitear) |
+| P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | En curso (P4.1–P4.2 en `b5ba2d3`; P4.3 probado por la IA, sin commitear) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Pendiente |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
@@ -108,6 +108,13 @@
 - Corrección: con Spring Boot 4 la autoconfiguración de Flyway está en `spring-boot-starter-flyway`; election,
   voter-access y ballot-box solo tenían `flyway-core`, así que sus migraciones nunca se ejecutaban (identity ya lo
   tenía). Corregido en los cuatro `pom.xml`.
+- P4.3: voter-access (RF-08, D-31): recepción idempotente de la instantánea y de los estados, censo congelado
+  con credencial, participación e invitación por persona, invitación por correo con enlace personal (solo hash),
+  código de 6 cifras por correo con límites y bloqueo (RNF-14), token de voto de un solo uso, `consume`/`revert`
+  para ballot-box con bloqueo de fila (RNF-12) y día sin hora (D-18), seguridad (`/internal/**` con rol `SERVICE`,
+  voter público), Flyway V1, ruta del gateway `/api/v1/voter-access/**`. Prueba de extremo a extremo (36/36) con
+  election real, voter-access real y ballot-box simulado: invitaciones, idiomas, hashes, 404/410/422/423/429/503,
+  consumo doble, reversión y «ya has votado».
 - P4.2: ciclo de vida (RF-07, D-30): `schedule` (validación completa con 422, congelación, instantáneas en el
   *outbox*), apertura y cierre automáticos (`LifecycleScheduler`), `archive` (`TALLIED → ARCHIVED`), historial con
   usuario o `SYSTEM`, Flyway V3 (`process_sync`) y entrega del *outbox* (`ProcessSyncDispatcher`, token
@@ -136,6 +143,7 @@
 1. `git push origin dev` (hay 2 commits sin publicar).
 2. Compilar (`.\mvnw.cmd -DskipTests compile`) y seguir la sección 4 de `docs/architecture/api-testing.md`.
 3. Commit en `feat/election-census` e integración en `dev`.
-4. Compilar con Maven, probar (`api-testing.md` §5 y §6) y commitear P4.1 + P4.2 en `feat/process-ballot`.
-5. Siguiente: **P4.3**, voter-access: recibir la instantánea, enlace personal y código OTP (RF-08), token de voto;
-   después P4.4 (urna) y P4.5 (pantallas del votante). Pantallas A3/A4 de gestión en paralelo.
+4. Compilar con Maven, probar (`api-testing.md` §7) y commitear P4.3 en `feat/voter-access` (antes, merge de
+   `feat/process-ballot` a `dev`).
+5. Siguiente: **P4.4**, ballot-box: recibir la papeleta, emitir el voto consumiendo el token (D-20), recibo y
+   cadena de eventos sin hora (D-18); después P4.5 (pantallas del votante) y A3/A4.

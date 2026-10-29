@@ -17,6 +17,11 @@ spring:
               uri: ${ELECTION_SERVICE_URI:http://localhost:8082}
               predicates:
                 - Path=/api/v1/censuses,/api/v1/censuses/**,/api/v1/processes,/api/v1/processes/**
+            # Only the public voter endpoints; /internal/** is never routed (D-22)
+            - id: voter-access
+              uri: ${VOTER_ACCESS_SERVICE_URI:http://localhost:8083}
+              predicates:
+                - Path=/api/v1/voter-access/**
 
 management:
   endpoints:

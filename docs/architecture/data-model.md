@@ -183,10 +183,10 @@ erDiagram
 | --- | --- | --- |
 | `process_snapshots` (+ `process_snapshot_texts`) | RI-4 | Copia mínima para validar enlaces y mostrar título, estado y cierre (pantallas V1, C3, V4). |
 | `roll_entries` | RI-3, RI-12 | Instantánea del censo congelado: solo los datos necesarios para avisar (RNF-16). `id` UUID aleatorio. |
-| `access_credentials` | RI-12 | Enlace de 64 caracteres y OTP de 6 dígitos guardados como hash. Bloqueo temporal tras 5 fallos (RNF-14). |
+| `access_credentials` | RI-12 | Enlace de 64 caracteres y OTP de 6 dígitos guardados como hash SHA-256 (`VARCHAR(64)`). El enlace se genera al enviar la invitación. Límites de envío del código y bloqueo temporal tras 5 fallos (RNF-14, D-31). |
 | `participation` | RI-7 | **Desviación (D-18):** sin hora del voto, solo `voted_on` (día). La pantalla «Ya has votado» muestra la fecha sin hora. Canal implícito: en línea. |
-| `voting_tokens` | — | Token de voto de un solo uso: `ISSUED` → `CONSUMED` (o `REVERTED`). Caducidad corta. |
-| `notifications`, `notification_templates` | RI-11 | Tipo `INVITATION`, `REMINDER`, `CLOSING`; canal `EMAIL`; estado `PENDING`, `DELIVERED`, `FAILED`; reintentos. Nunca incluyen la opción votada. |
+| `voting_tokens` | — | Token de voto de un solo uso (hash): `ISSUED` → `CONSUMED` (o `REVERTED`, que admite reintento); `REVOKED` si se emite otro. Caducidad 15 min (D-31). |
+| `notifications`, `notification_templates` | RI-11 | Tipo `INVITATION`, `REMINDER`, `CLOSING`; canal `EMAIL`; estado `PENDING`, `DELIVERED`, `FAILED`; hasta 9 intentos con espera creciente (`next_attempt_at`). Nunca incluyen la opción votada. En P4.3 solo invitaciones con texto fijo; `notification_templates` llega con RF-17 (P6). |
 
 ## 5. ballot-box-service · `ballot_box_db` (pg-ballot)
 

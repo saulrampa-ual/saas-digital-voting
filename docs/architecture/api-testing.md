@@ -128,3 +128,37 @@ reintentan cada vez más espaciados (máx. 5 min) y aparece un aviso en el log; 
    `GET .../status-history` → `DRAFT→SCHEDULED` (tu usuario), `SCHEDULED→OPEN` y `OPEN→CLOSED` (`SYSTEM`).
 5. `POST .../archive` → **409** «Solo se puede archivar un proceso escrutado» (el escrutinio llega en P5).
 6. En la BD: `SELECT target, message_type, state, attempts FROM process_sync;` → 2 mensajes por transición.
+
+## 7. Acceso del votante (RF-08) en voter-access-service
+
+El votante no usa Keycloak: su enlace personal y el código de 6 cifras lo identifican. Los correos llegan a
+Mailpit (`http://localhost:8025`).
+
+1. Arrancar voter-access (con infraestructura, election y gateway en marcha):
+   ```powershell
+   . .\scripts\Import-DotEnv.ps1
+   $env:VOTER_ACCESS_DB_USERNAME = "voter_access"
+   cd backend
+   .\mvnw.cmd -pl services/voter-access-service spring-boot:run
+   ```
+   election necesita `ELECTION_SERVICE_CLIENT_SECRET` (en `.env`) para enviarle el proceso.
+2. Programar un proceso (apartado 6) con apertura dentro de 2 minutos. En ≤ 10 s llegan a Mailpit las
+   invitaciones, en el idioma de cada persona, con el enlace `http://localhost:4200/votar/{enlace}`.
+3. Con el enlace (64 caracteres), en `http://localhost:8000` (gateway) o Swagger `http://localhost:8083/swagger-ui.html`:
+   - `GET /api/v1/voter-access/links/{enlace}` → **200** `SCHEDULED`; `POST …/otp` → **422** (aún no abierta).
+   - Tras la apertura: `POST …/otp` → **202** (`a•••@ual.es`) y el código llega a Mailpit; repetir enseguida →
+     **429**.
+   - `POST …/otp/verify` con un código erróneo → **400** `remainingAttempts`; con el correcto → **200** con
+     `votingToken` (válido 15 min); repetir con el mismo código → **410**.
+   - 5 códigos erróneos seguidos → **423** durante 15 minutos.
+4. Los endpoints `/internal/v1/**` exigen un token de servicio (rol `SERVICE`) y no pasan por el gateway. Se
+   prueban con un token *client credentials* de `election-service` (PowerShell):
+   ```powershell
+   $t = (Invoke-RestMethod -Method Post http://localhost:8080/realms/verivoto/protocol/openid-connect/token `
+     -Body @{ grant_type = "client_credentials"; client_id = "election-service"; client_secret = $env:ELECTION_SERVICE_CLIENT_SECRET }).access_token
+   Invoke-RestMethod -Method Post http://localhost:8083/internal/v1/voting-tokens/consume `
+     -Headers @{ Authorization = "Bearer $t" } -ContentType application/json `
+     -Body (@{ votingToken = "<token>"; processId = 1 } | ConvertTo-Json)
+   ```
+   La primera vez → 204; la segunda → **409**. Tras consumirlo, pedir otro código y verificarlo →
+   `hasVoted: true` con la fecha, sin token.

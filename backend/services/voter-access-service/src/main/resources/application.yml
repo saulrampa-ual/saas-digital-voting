@@ -12,11 +12,46 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+    properties:
+      hibernate:
+        # The frozen census of a process can have tens of thousands of voters (D-27)
+        jdbc:
+          batch_size: 100
+        order_inserts: true
   flyway:
     enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${VOTER_ACCESS_OIDC_ISSUER_URI:http://localhost:8080/realms/verivoto}
+  mail:
+    # Mailpit in local development (infra/compose.yaml); real SMTP with TLS and credentials in production
+    host: ${VOTER_ACCESS_SMTP_HOST:localhost}
+    port: ${VOTER_ACCESS_SMTP_PORT:1025}
+    properties:
+      "[mail.smtp.connectiontimeout]": 5000
+      "[mail.smtp.timeout]": 10000
+      "[mail.smtp.writetimeout]": 10000
 
 management:
   endpoints:
     web:
       exposure:
         include: health
+
+verivoto:
+  access:
+    # D-31: voter PWA (personal links /votar/{token}), dates and voting day in this zone (D-18)
+    public-base-url: ${VOTER_ACCESS_PUBLIC_BASE_URL:http://localhost:4200}
+    zone: Europe/Madrid
+    mail-from: ${VOTER_ACCESS_MAIL_FROM:no-reply@verivoto.local}
+    invitation-interval: PT10S
+    code-validity: PT10M
+    resend-delay: PT60S
+    code-window: PT15M
+    max-codes-per-window: 5
+    max-failed-attempts: 5
+    lock-duration: PT15M
+    voting-token-validity: PT15M
+    link-validity-after-close: P30D
