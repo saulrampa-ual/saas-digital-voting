@@ -49,3 +49,27 @@ En IntelliJ, la configuración de ejecución equivalente necesita esas tres vari
    `ana@ual.test` y pedir `GET /api/v1/organizations` → **403**; `GET /api/v1/organizations/OTRA` → **404**.
 
 En la consola de Keycloak, los usuarios creados aparecen con el atributo `organization_id = UAL` y su rol.
+
+## 4. Censo (RF-03) en election-service
+
+El censo solo lo modifica un **Gestor de censo** de la organización (el Administrador puede consultarlo). El
+superadministrador no pertenece a ninguna organización, así que no ve censos.
+
+1. Fijar la contraseña de `luis@ual.test` (creado en el paso 3.7 con rol `CENSUS_MANAGER`) desde su correo en Mailpit.
+2. Arrancar election-service:
+   ```powershell
+   . .\scripts\Import-DotEnv.ps1
+   $env:ELECTION_DB_USERNAME = "election"
+   cd backend
+   .\mvnw.cmd -pl services/election-service spring-boot:run
+   ```
+3. `http://localhost:8082/swagger-ui.html` → **Authorize** como `luis@ual.test`.
+4. `POST /api/v1/censuses` con `{ "name": "Claustro 2026" }` → **201**.
+5. `POST /api/v1/censuses/{id}/imports` con el fichero `scripts/samples/voters-sample.csv` (sin cambiar
+   `dryRun`) → resumen: `toCreate = 4`, 1 duplicado (línea 6, `EMAIL`) y 3 líneas inválidas (7, 8 y 9).
+   No se guarda nada (`applied = false`).
+6. Repetir con `dryRun=false` → `applied = false` (hay líneas inválidas).
+7. Repetir con `dryRun=false&discardInvalidLines=true` → `applied = true`; `GET .../voters` devuelve 4 personas.
+8. `POST .../voters` con el correo de una persona ya existente (en mayúsculas) → **409**.
+9. Como `ana@ual.test` (ADMIN): `GET /api/v1/censuses` → **200**; `POST /api/v1/censuses` → **403**.
+

@@ -14,9 +14,28 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${ELECTION_OIDC_ISSUER_URI:http://localhost:8080/realms/verivoto}
 
 management:
   endpoints:
     web:
       exposure:
         include: health
+
+verivoto:
+  swagger:
+    keycloak-realm-url: ${ELECTION_KEYCLOAK_BASE_URL:http://localhost:8080}/realms/verivoto
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: verivoto-dev-swagger
+      use-pkce-with-authorization-code-grant: true
