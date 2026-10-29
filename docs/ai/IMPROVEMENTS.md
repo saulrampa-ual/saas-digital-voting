@@ -12,4 +12,5 @@ Estados: propuesta / aprobada / descartada / hecha.
 | IMP-05 | 2026-10-29 | Prototipos: quitar del alcance MVP los elementos de revoto («Cambiar mi voto», recibo sustituido, texto «hasta que se publique la huella final») de V1, V3 y B4 | Coherencia con D-03 | Ninguno en código; solo al implementar P4.5 | P4.5 | Propuesta |
 | IMP-06 | 2026-10-29 | Prototipar las pantallas que faltan: notificaciones fallidas (RF-17) y claves de API (RF-21) | Cobertura completa del MVP | Tiempo de diseño | P6 | Propuesta |
 | IMP-07 | 2026-10-29 | Eventos asíncronos (Kafka u otro broker) para el cambio de estado de procesos | Desacoplamiento | Infraestructura adicional | P9 | Propuesta |
+| IMP-09 | 2026-10-29 | Escaneo de secretos (p. ej. gitleaks) en la CI y como hook de pre-commit | Habría evitado que entraran contraseñas en `infra/.env.example` | Bajo; herramienta externa adicional | P1.6 | Propuesta |
 | IMP-08 | 2026-10-29 | Cuando se active P7, añadir ArchUnit para comprobar las reglas de dependencia hexagonales | Auditoría automática de la arquitectura (P9.2 del plan anterior) | Es una prueba: requiere `ACTIVAR TESTS` | P7 | Propuesta |

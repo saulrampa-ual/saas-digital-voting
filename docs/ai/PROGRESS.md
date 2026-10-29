@@ -1,13 +1,13 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `dev` (cambios de P1.4 sin commitear) · Último commit: `d061b56`
+Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P1.6 sin commitear; corrección de `infra/.env.example` pendiente) · Último commit: `66d2b55` (sin publicar)
 
 ## Hitos
 
 | Hito | Fechas | Objetivo | Estado |
 | --- | --- | --- | --- |
 | P0 | 29/10 – 02/11 | Línea base y memoria de la IA | Hecho (`da2e6db`) |
-| P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | En curso (P1.2–P1.3 compilados con Java 25; P1.4 hecho, sin compilar) |
+| P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho salvo verificación: falta la primera ejecución de la CI en GitHub |
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Pendiente |
 | P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Pendiente |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Pendiente |
@@ -44,10 +44,23 @@
   `package-info.java`, `application.yml`, `/actuator/health`, Flyway sin migraciones, springdoc 3.1.1).
   `identity-service` recibe Actuator, springdoc y acceso público a `/actuator/health` y a la
   documentación OpenAPI. Plantilla documentada en `docs/architecture/hexagonal-template.md`.
+  Compilado por el autor: los 5 módulos con `BUILD SUCCESS` (commit `d6f6bc6`).
+- P1.5: `infra/compose.yaml` (proyecto `verivoto`) con `pg-main` y `pg-ballot` (`postgres:18.6`),
+  Keycloak 26.8.1 con BD en `keycloak_db` y health en el puerto 9000, Mailpit. Scripts de inicialización
+  con un rol por base de datos (probados con PostgreSQL 16 en el entorno de la IA), `infra/.env.example`,
+  `.gitattributes` para los `.sh` y `docs/architecture/local-infrastructure.md`. Commit `14a2b33`
+  (borra `infra/keycloak/compose.yaml`). El autor corrigió el Dockerfile de Keycloak: `USER root` y
+  permisos 644 del jar del OTP, que `ADD` desde URL deja ilegible para el usuario `keycloak`.
+  Incidencia: `14a2b33` incluía contraseñas locales en `infra/.env.example`; se restaura la plantilla
+  vacía y se corrige el commit antes de publicarlo (no llegó a GitHub).
+- P1.6: `.github/workflows/build.yml` con dos jobs: compilación del backend con Temurin 25
+  (`actions/checkout@v7`, `actions/setup-java@v6`, caché Maven, `mvnw -DskipTests verify`) y
+  validación de `infra/compose.yaml` con `docker compose config` y valores de prueba. Validado en el
+  entorno de la IA: YAML del workflow y `docker compose config` (Compose v5.6.1).
 
 ## En curso
 
-- P1: compilación local de P1.4 por el autor; después P1.5 (compose) y P1.6 (CI).
+- P1: primera ejecución verde de la CI en GitHub.
 
 ## Pendiente
 
@@ -68,8 +81,8 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Desde `backend/`: `.\mvnw.cmd -DskipTests compile`. Deben compilar los 5 módulos. Si falla,
-   pasar la salida completa a la IA.
-2. Commit de P1.4 en `chore/service-skeletons` e integración en `dev`.
-3. Lanzar **P1.5**: `infra/compose.yaml` con `pg-main` y `pg-ballot` (`postgres:18.6`), Keycloak con su
-   BD en `pg-main`, Mailpit y `.env.example`.
+1. Corregir el commit `14a2b33` (contraseñas en `infra/.env.example`) antes de publicar `dev`.
+2. Commit de P1.6 en `ci/build-workflow`, integración en `dev`, `git push` y comprobar en la pestaña
+   Actions que los jobs `backend` e `infra` terminan en verde.
+3. Lanzar **P2**: modelo de datos por servicio con la sección «Separación de secreto», contratos
+   OpenAPI de la rebanada 1 y ADRs de D-01 a D-07. Antes, responder qué significa «público» en RF-13.
