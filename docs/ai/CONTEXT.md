@@ -45,8 +45,10 @@ criptográfica completa.
 
 Reglas estructurales:
 - Hexagonal por servicio; el dominio no depende de Spring.
-- REST síncrono entre servicios. Llamadas previstas: election → voter-access (instantánea del censo
-  congelado al abrir el proceso); ballot-box → voter-access (consumo del token de voto de un solo uso).
+- REST síncrono entre servicios (`/internal/v1/**`, no enrutado por el gateway). Llamadas: election →
+  voter-access (instantánea del censo al programar y cambios de estado), election → ballot-box (papeleta al
+  programar y cambios de estado), ballot-box → voter-access (consumo y reversión del token de voto).
+- Modelo de datos, flujo del voto y riesgos residuales: `docs/architecture/data-model.md`. ADRs en `docs/adr/`.
 - `voter-access` (participación, RI-7) y `ballot-box` (urna, RI-6) no comparten proceso, base de
   datos ni instancia PostgreSQL (RNF-11).
 - Toda entidad de negocio lleva `organization_id` (RNF-15).

@@ -87,7 +87,8 @@ cuando hay conflicto (ver «Incoherencias»).
 | 2 | Las guías citan Ionic 8.6 (`ion-input-otp` «desde 8.6», importaciones `@ionic/angular/standalone`) | Guía de adaptación y recomendaciones | Se usa Ionic 9: importaciones desde `@ionic/angular`, zoneless y `OnPush` por defecto (skill `ionic-angular-screen`) |
 | 3 | Selector ES/EN de 40 px de alto | Cabecera del votante | Subir a 44 px (objetivo táctil de RNF-1/RNF-2) |
 | 4 | Textos de 13 px | B2, B3, B4 | Subir a 14 px o más |
-| 5 | V8 «Resultados públicos» depende de qué significa «público» en RF-13 | V8 | Pregunta abierta, se decide en P2 |
+| 5 | V8 «Resultados públicos» dependía de qué significa «público» en RF-13 | V8 | Resuelto (D-16): V8 se muestra con `PUBLIC_LINK`; con `CENSUS_ONLY` el votante entra con enlace + OTP |
+| 8 | V3 «Ya has votado el 12 nov a las 10:14» muestra la hora | V3 | D-18: mostrar solo la fecha («Ya has votado el 12 nov») |
 | 6 | El campo de 2FA se llama «Código de verificación» y el recibo «código de recibo» | B1, B4 | Usar «código de acceso» y «código de recibo» (propuesta de la propia revisión) |
 | 7 | La marca aparece como «Elections» y como «VeriVoto» | Títulos de los ficheros | Usar VeriVoto (nombre del proyecto) |
 
