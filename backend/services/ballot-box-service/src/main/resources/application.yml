@@ -1,0 +1,22 @@
+server:
+  port: ${BALLOT_BOX_SERVER_PORT:8084}
+
+spring:
+  application:
+    name: ballot-box-service
+  datasource:
+    url: ${BALLOT_BOX_DB_URL:jdbc:postgresql://localhost:5433/ballot_box_db}
+    username: ${BALLOT_BOX_DB_USERNAME}
+    password: ${BALLOT_BOX_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

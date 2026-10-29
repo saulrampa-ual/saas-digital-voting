@@ -1,0 +1,22 @@
+server:
+  port: ${ELECTION_SERVER_PORT:8082}
+
+spring:
+  application:
+    name: election-service
+  datasource:
+    url: ${ELECTION_DB_URL:jdbc:postgresql://localhost:5432/election_db}
+    username: ${ELECTION_DB_USERNAME}
+    password: ${ELECTION_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

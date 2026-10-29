@@ -19,3 +19,9 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${IDENTITY_OIDC_ISSUER_URI}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
