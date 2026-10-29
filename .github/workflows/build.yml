@@ -1,0 +1,46 @@
+# Compilation-only CI (no tests until "ACTIVAR TESTS", see CLAUDE.md).
+name: build
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (Java 25)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+          cache-dependency-path: backend/**/pom.xml
+
+      - name: Compile and package all services (tests skipped)
+        run: ./mvnw --batch-mode --no-transfer-progress -DskipTests verify
+
+  infra:
+    name: Infrastructure (Compose config)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Validate infra/compose.yaml with placeholder values
+        run: |
+          sed -E 's/=\r?$/=ci-placeholder/' infra/.env.example > "$RUNNER_TEMP/ci.env"
+          docker compose -f infra/compose.yaml --env-file "$RUNNER_TEMP/ci.env" config --quiet
