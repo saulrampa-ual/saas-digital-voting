@@ -32,3 +32,11 @@ verivoto:
     realm: verivoto
     client-id: identity-service
     client-secret: ${IDENTITY_SERVICE_CLIENT_SECRET}
+  swagger:
+    keycloak-realm-url: ${IDENTITY_KEYCLOAK_BASE_URL:http://localhost:8080}/realms/verivoto
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: verivoto-dev-swagger
+      use-pkce-with-authorization-code-grant: true
