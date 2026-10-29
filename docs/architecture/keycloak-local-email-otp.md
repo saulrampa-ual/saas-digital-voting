@@ -55,7 +55,7 @@ La instalación de la extensión no activa por sí sola el flujo de autenticaci�
 El siguiente paso será configurar un realm de desarrollo, el servidor SMTP de
 Mailpit y un flujo de navegador que solicite contraseña y luego Email OTP. Allí
 se fijarán el código de seis dígitos, su caducidad y límites de emisión; también
-se configurará el cliente OIDC y la emisión de roles que consume `tenant-service`.
+se configurará el cliente OIDC y la emisión de roles que consume `identity-service`.
 
 No reutilizar el usuario de prueba ni el almacenamiento integrado de desarrollo
 en un despliegue real. El proveedor de OTP es software comunitario y requiere

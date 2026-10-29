@@ -1,13 +1,13 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `dev` (cambios de P0 sin commitear) · Último commit: `09f21e1`
+Última actualización: 2026-10-29 · Rama de trabajo: `dev` (cambios de P1.2–P1.3 sin commitear) · Último commit: `1ecd12d`
 
 ## Hitos
 
 | Hito | Fechas | Objetivo | Estado |
 | --- | --- | --- | --- |
-| P0 | 29/10 – 02/11 | Línea base y memoria de la IA | En curso |
-| P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Pendiente |
+| P0 | 29/10 – 02/11 | Línea base y memoria de la IA | Hecho (`da2e6db`) |
+| P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | En curso (P1.2 y P1.3 hechos, sin compilar con Maven) |
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Pendiente |
 | P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Pendiente |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Pendiente |
@@ -28,10 +28,20 @@
 - P0.2: `CLAUDE.md`.
 - P0.3: `docs/ai/` (CONTEXT, PROGRESS, DECISIONS, TRACEABILITY, IMPROVEMENTS, PROTOTYPES).
 - P0.4: skills en `.claude/skills/`.
+- P1.2: `backend/pom.xml` padre (`verivoto-backend`): Spring Boot 4.1.2, `java.version=25`, BOM Spring
+  Cloud 2025.1.3, módulo `services/identity-service`. Maven Wrapper 3.3.4 (*only-script*, Maven 3.9.16)
+  en `backend/` y `backend/.gitattributes` para los finales de línea de `mvnw` y `mvnw.cmd`.
+- P1.3: `tenant-service` → `identity-service`. Paquete `com.saasvoting.tenant` → `com.saasvoting.identity`;
+  puertos en `application/port`, adaptadores en `infrastructure/adapter`, configuración en
+  `infrastructure/config`. Renombradas `IdentityServiceApplication` e `IdentityServiceConfiguration`.
+  Sin cambios de lógica. `domain` y `application` compilados con `javac` de forma aislada; el módulo
+  completo no se ha compilado con Maven (sin acceso a Maven Central desde el entorno de la IA).
+  Cambios de configuración: `application.properties` → `application.yml`; variables `TENANT_*` →
+  `IDENTITY_*`; BD por defecto `tenant_service` → `identity_db` (D-08); puerto 8081 (D-09).
 
 ## En curso
 
-- Cierre de P0: commit de la línea base (lo ejecuta el autor).
+- P1: compilación local de P1.2–P1.3 por el autor; después P1.4 (esqueletos), P1.5 (compose) y P1.6 (CI).
 
 ## Pendiente
 
@@ -49,7 +59,10 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. El autor hace commit de P0 en la rama `chore/baseline` y la integra en `dev`.
-2. Instalar Temurin JDK 25 y configurarlo en IntelliJ (Project SDK, language level y Maven runner).
-3. Lanzar **P1.2 + P1.3**: parent pom en `backend/` (Boot 4.1.2, Java 25, Spring Cloud 2025.1.3,
-   Maven Wrapper) y migración de `tenant-service` a `identity-service` sin cambios de comportamiento.
+1. El autor instala Temurin JDK 25 y lo configura en IntelliJ (Project SDK, language level 25, JRE del
+   runner de Maven).
+2. Desde `backend/`: `.\mvnw.cmd -v` (debe mostrar Maven 3.9.16 y Java 25) y
+   `.\mvnw.cmd -DskipTests compile`. Si falla, pasar la salida completa a la IA.
+3. Commit de P1.2–P1.3 en `chore/maven-parent-identity-service` e integración en `dev`.
+4. Lanzar **P1.4**: esqueletos de `api-gateway`, `election-service`, `voter-access-service` y
+   `ballot-box-service`.
