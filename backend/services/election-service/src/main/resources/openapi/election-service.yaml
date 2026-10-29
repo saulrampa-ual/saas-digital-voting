@@ -1,0 +1,570 @@
+openapi: 3.1.0
+info:
+  title: VeriVoto election-service API
+  version: v1
+  description: |
+    Census (RF-03), voting processes and ballots (RF-06, RF-20) and lifecycle (RF-07).
+    Every resource belongs to the caller's organization (`organization_id` claim, RNF-15).
+    Error `detail` texts are written in plain Spanish (RNF-8).
+servers:
+  - url: http://localhost:8000
+    description: Local API gateway
+tags:
+  - name: censuses
+    description: RF-03
+  - name: processes
+    description: RF-06, RF-07, RF-20
+security:
+  - bearerAuth: []
+paths:
+  /api/v1/censuses:
+    get:
+      tags: [censuses]
+      operationId: listCensuses
+      summary: List the censuses of the organization
+      description: "Roles: ADMIN, CENSUS_MANAGER. RF-03."
+      responses:
+        '200':
+          description: Censuses
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Census' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [censuses]
+      operationId: createCensus
+      summary: Create an empty census
+      description: "Role: CENSUS_MANAGER. RF-03."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateCensusRequest' }
+      responses:
+        '201':
+          description: Census created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Census' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/censuses/{censusId}:
+    parameters:
+      - $ref: '#/components/parameters/CensusId'
+    get:
+      tags: [censuses]
+      operationId: getCensus
+      summary: Get a census
+      description: "Roles: ADMIN, CENSUS_MANAGER. RF-03."
+      responses:
+        '200':
+          description: Census
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Census' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/censuses/{censusId}/voters:
+    parameters:
+      - $ref: '#/components/parameters/CensusId'
+    get:
+      tags: [censuses]
+      operationId: listVoters
+      summary: List voters of a census
+      description: "Roles: ADMIN, CENSUS_MANAGER. RF-03."
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+        - name: search
+          in: query
+          description: Filter by name, email or institutional identifier
+          schema: { type: string, maxLength: 100 }
+      responses:
+        '200':
+          description: Page of voters
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VoterPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [censuses]
+      operationId: addVoter
+      summary: Add a voter manually
+      description: |
+        Role: CENSUS_MANAGER. RF-03.
+        409 if the email or institutional identifier already exists in the census, or if the census
+        is frozen because a process using it is SCHEDULED or OPEN.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VoterData' }
+      responses:
+        '201':
+          description: Voter added
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Voter' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/censuses/{censusId}/voters/{voterId}:
+    parameters:
+      - $ref: '#/components/parameters/CensusId'
+      - name: voterId
+        in: path
+        required: true
+        schema: { type: integer, format: int64, minimum: 1 }
+    put:
+      tags: [censuses]
+      operationId: updateVoter
+      summary: Modify a voter
+      description: "Role: CENSUS_MANAGER. 409 if the census is frozen or the change creates a duplicate. RF-03."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VoterData' }
+      responses:
+        '200':
+          description: Voter updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Voter' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    delete:
+      tags: [censuses]
+      operationId: removeVoter
+      summary: Remove a voter
+      description: "Role: CENSUS_MANAGER. 409 if the census is frozen. RF-03."
+      responses:
+        '204':
+          description: Voter removed
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/censuses/{censusId}/imports:
+    parameters:
+      - $ref: '#/components/parameters/CensusId'
+    post:
+      tags: [censuses]
+      operationId: importVoters
+      summary: Validate or import a CSV of voters
+      description: |
+        Role: CENSUS_MANAGER. RF-03.
+        With `dryRun=true` (default) nothing is stored and the summary is returned (screen A2).
+        With `dryRun=false` valid new voters are stored; duplicates are skipped and listed. If the file
+        has invalid lines, the import is rejected unless `discardInvalidLines=true`.
+        CSV columns: `full_name,email,phone,institutional_id,preferred_language` (header required).
+      parameters:
+        - name: dryRun
+          in: query
+          schema: { type: boolean, default: true }
+        - name: discardInvalidLines
+          in: query
+          schema: { type: boolean, default: false }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  contentMediaType: text/csv
+      responses:
+        '200':
+          description: Import summary
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ImportSummary' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/processes:
+    get:
+      tags: [processes]
+      operationId: listProcesses
+      summary: List voting processes of the organization
+      description: "Roles: ADMIN, AUDITOR. RF-06, RF-07."
+      parameters:
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/ProcessStatus' }
+      responses:
+        '200':
+          description: Processes
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ProcessSummary' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [processes]
+      operationId: createProcess
+      summary: Create a voting process in DRAFT
+      description: "Role: ADMIN. RF-06, RF-20."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProcessData' }
+      responses:
+        '201':
+          description: Process created
+          headers:
+            Location:
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Process' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/processes/{processId}:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [processes]
+      operationId: getProcess
+      summary: Get a voting process with its ballot
+      description: "Roles: ADMIN, AUDITOR. RF-06."
+      responses:
+        '200':
+          description: Process
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Process' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [processes]
+      operationId: updateProcess
+      summary: Replace the configuration of a DRAFT process
+      description: "Role: ADMIN. 409 if the process is not in DRAFT. RF-06."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProcessData' }
+      responses:
+        '200':
+          description: Process updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Process' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/processes/{processId}/schedule:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    post:
+      tags: [processes]
+      operationId: scheduleProcess
+      summary: Move a complete DRAFT process to SCHEDULED
+      description: |
+        Role: ADMIN. RF-07.
+        Validates completeness (opening in the future, census not empty, valid ballot, both languages).
+        Freezes the census and sends the census snapshot to voter-access and the ballot to ballot-box.
+        Opening and closing then happen automatically; there is no manual open or close.
+      responses:
+        '200':
+          description: Process scheduled
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Process' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+  /api/v1/processes/{processId}/archive:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    post:
+      tags: [processes]
+      operationId: archiveProcess
+      summary: Archive a TALLIED process
+      description: "Role: ADMIN. 409 if the process is not TALLIED. RF-07."
+      responses:
+        '200':
+          description: Process archived
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Process' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/processes/{processId}/status-history:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [processes]
+      operationId: getStatusHistory
+      summary: Status changes of a process
+      description: "Roles: ADMIN, AUDITOR. RF-07."
+      responses:
+        '200':
+          description: Status changes, oldest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/StatusChange' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Keycloak access token with claims `roles` and `organization_id`.
+  parameters:
+    CensusId:
+      name: censusId
+      in: path
+      required: true
+      schema: { type: integer, format: int64, minimum: 1 }
+    ProcessId:
+      name: processId
+      in: path
+      required: true
+      schema: { type: integer, format: int64, minimum: 1 }
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 0, default: 0 }
+    Size:
+      name: size
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: The caller's role or organization does not allow this operation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Resource not found in the caller's organization
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: The operation conflicts with the current state
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unprocessable:
+      description: The resource is incomplete or incoherent for this operation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Language:
+      type: string
+      enum: [es, en]
+    LocalizedText:
+      type: object
+      description: Text per language (RF-20). Spanish and English are required to schedule a process.
+      minProperties: 1
+      propertyNames: { $ref: '#/components/schemas/Language' }
+      additionalProperties: { type: string, minLength: 1 }
+    Census:
+      type: object
+      required: [id, name, voterCount, frozen, createdAt]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string, maxLength: 100 }
+        voterCount: { type: integer }
+        frozen:
+          type: boolean
+          description: True while a process using this census is SCHEDULED or OPEN.
+        createdAt: { type: string, format: date-time }
+    CreateCensusRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 100 }
+    VoterData:
+      type: object
+      required: [fullName, email]
+      properties:
+        fullName: { type: string, minLength: 1, maxLength: 60 }
+        email: { type: string, format: email, maxLength: 100 }
+        phone: { type: [string, 'null'], pattern: '^[0-9]{1,15}$' }
+        institutionalId: { type: [string, 'null'], maxLength: 50 }
+        preferredLanguage: { $ref: '#/components/schemas/Language' }
+    Voter:
+      allOf:
+        - type: object
+          required: [id]
+          properties:
+            id: { type: integer, format: int64 }
+        - $ref: '#/components/schemas/VoterData'
+    VoterPage:
+      type: object
+      required: [items, page, size, totalItems]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Voter' }
+        page: { type: integer }
+        size: { type: integer }
+        totalItems: { type: integer }
+    ImportSummary:
+      type: object
+      required: [applied, toCreate, duplicates, invalidLines]
+      properties:
+        applied:
+          type: boolean
+          description: False for a dry run or when the import was rejected.
+        toCreate: { type: integer, description: New voters that are (or would be) stored }
+        duplicates:
+          type: array
+          items:
+            type: object
+            required: [line, reason]
+            properties:
+              line: { type: integer }
+              reason: { type: string, enum: [EMAIL, INSTITUTIONAL_ID] }
+        invalidLines:
+          type: array
+          items:
+            type: object
+            required: [line, message]
+            properties:
+              line: { type: integer }
+              message: { type: string }
+    ProcessStatus:
+      type: string
+      enum: [DRAFT, SCHEDULED, OPEN, CLOSED, TALLIED, ARCHIVED]
+    ResultsVisibility:
+      type: string
+      enum: [CENSUS_ONLY, PUBLIC_LINK]
+      default: CENSUS_ONLY
+      description: Who can see the published result (D-16). The final hash is always public.
+    VoteType:
+      type: string
+      enum: [SINGLE_CHOICE, YES_NO_ABSTAIN]
+    BallotData:
+      type: object
+      required: [voteType, question, blankVoteEnabled]
+      properties:
+        voteType: { $ref: '#/components/schemas/VoteType' }
+        question: { $ref: '#/components/schemas/LocalizedText' }
+        blankVoteEnabled: { type: boolean }
+        options:
+          type: array
+          description: Required for SINGLE_CHOICE (at least 2). Ignored for YES_NO_ABSTAIN, whose options are fixed.
+          items:
+            type: object
+            required: [position, text]
+            properties:
+              position: { type: integer, minimum: 1 }
+              text: { $ref: '#/components/schemas/LocalizedText' }
+    ProcessData:
+      type: object
+      required: [censusId, title, opensAt, closesAt, defaultLanguage, ballot]
+      properties:
+        censusId: { type: integer, format: int64 }
+        title: { $ref: '#/components/schemas/LocalizedText' }
+        description: { $ref: '#/components/schemas/LocalizedText' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time, description: Must be after opensAt }
+        defaultLanguage: { $ref: '#/components/schemas/Language' }
+        resultsVisibility: { $ref: '#/components/schemas/ResultsVisibility' }
+        ballot: { $ref: '#/components/schemas/BallotData' }
+    ProcessSummary:
+      type: object
+      required: [id, title, status, opensAt, closesAt]
+      properties:
+        id: { type: integer, format: int64 }
+        title: { $ref: '#/components/schemas/LocalizedText' }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+    Process:
+      allOf:
+        - $ref: '#/components/schemas/ProcessData'
+        - type: object
+          required: [id, status, ballot]
+          properties:
+            id: { type: integer, format: int64 }
+            status: { $ref: '#/components/schemas/ProcessStatus' }
+            ballot:
+              allOf:
+                - $ref: '#/components/schemas/BallotData'
+                - type: object
+                  properties:
+                    options:
+                      type: array
+                      items:
+                        type: object
+                        required: [id, position, text]
+                        properties:
+                          id: { type: integer, format: int64 }
+                          position: { type: integer }
+                          text: { $ref: '#/components/schemas/LocalizedText' }
+    StatusChange:
+      type: object
+      required: [from, to, changedAt, changedBy]
+      properties:
+        from: { $ref: '#/components/schemas/ProcessStatus' }
+        to: { $ref: '#/components/schemas/ProcessStatus' }
+        changedAt: { type: string, format: date-time }
+        changedBy: { type: string, description: Management user id, or SYSTEM for automatic transitions }
+    Problem:
+      type: object
+      description: RFC 9457 problem details. `detail` is plain Spanish for the end user (RNF-8).
+      required: [title, status]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }

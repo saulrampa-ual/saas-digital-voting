@@ -1,0 +1,340 @@
+openapi: 3.1.0
+info:
+  title: VeriVoto voter-access-service API
+  version: v1
+  description: |
+    Voter access with personal link + email one-time code (RF-08, RNF-14) and single-use voting
+    tokens. Voter endpoints need no account: the personal link and the code identify the voter.
+    This service never receives the chosen option nor the receipt (RNF-11).
+    Error `detail` texts are written in plain Spanish (RNF-8).
+servers:
+  - url: http://localhost:8000
+    description: Local API gateway (public endpoints only)
+tags:
+  - name: voter
+    description: RF-08 (public, used by the voter PWA)
+  - name: internal
+    description: Service-to-service endpoints (not exposed by the gateway)
+paths:
+  /api/v1/voter-access/links/{linkToken}:
+    parameters:
+      - $ref: '#/components/parameters/LinkToken'
+    get:
+      tags: [voter]
+      operationId: getLinkStatus
+      summary: Process information for a personal link
+      description: |
+        RF-08 step 2. Returns the process title, status and calendar (screens V1, C3, V4).
+        Whether the voter has already voted is only revealed after the code is verified.
+      security: []
+      responses:
+        '200':
+          description: Link is valid
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LinkStatus' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '410': { $ref: '#/components/responses/Gone' }
+  /api/v1/voter-access/links/{linkToken}/otp:
+    parameters:
+      - $ref: '#/components/parameters/LinkToken'
+    post:
+      tags: [voter]
+      operationId: sendAccessCode
+      summary: Send (or resend) the 6-digit access code by email
+      description: RF-08 step 3.1. Only while the process is OPEN.
+      security: []
+      responses:
+        '202':
+          description: Code sent
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CodeSent' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '423': { $ref: '#/components/responses/Locked' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+  /api/v1/voter-access/links/{linkToken}/otp/verify:
+    parameters:
+      - $ref: '#/components/parameters/LinkToken'
+    post:
+      tags: [voter]
+      operationId: verifyAccessCode
+      summary: Verify the access code and obtain a voting token
+      description: |
+        RF-08 steps 3.2–4. If the voter has not voted yet, returns a single-use, short-lived voting
+        token that only proves eligibility. If the voter already voted, returns `hasVoted = true` and
+        the date (screen V3), without a token. A wrong code returns 400 with the remaining attempts;
+        after 5 failures access is locked temporarily (423).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code: { type: string, pattern: '^[0-9]{6}$' }
+      responses:
+        '200':
+          description: Code accepted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AccessGranted' }
+        '400':
+          description: Wrong code
+          content:
+            application/problem+json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Problem'
+                  - type: object
+                    properties:
+                      remainingAttempts: { type: integer, minimum: 0 }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '423': { $ref: '#/components/responses/Locked' }
+  /internal/v1/processes/{processId}:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    put:
+      tags: [internal]
+      operationId: upsertProcessSnapshot
+      summary: Receive the process snapshot and frozen census when the process is scheduled
+      description: Called by election-service. Idempotent. The roll can only be replaced before the process opens.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProcessSnapshot' }
+      responses:
+        '204':
+          description: Snapshot stored
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /internal/v1/processes/{processId}/status:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    put:
+      tags: [internal]
+      operationId: updateProcessStatus
+      summary: Receive a lifecycle change (open, close, tallied, archived)
+      description: Called by election-service. Idempotent.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/StatusUpdate' }
+      responses:
+        '204':
+          description: Status stored
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /internal/v1/voting-tokens/consume:
+    post:
+      tags: [internal]
+      operationId: consumeVotingToken
+      summary: Atomically consume a voting token and mark the voter as having voted
+      description: |
+        Called by ballot-box-service before storing a vote (RF-09, RNF-12). Only the token and the
+        process are sent; nothing about the vote. A second call with the same token returns 409.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TokenOperation' }
+      responses:
+        '204':
+          description: Token consumed; voter marked as having voted today
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+  /internal/v1/voting-tokens/revert:
+    post:
+      tags: [internal]
+      operationId: revertVotingToken
+      summary: Undo a consumption when the vote could not be stored
+      description: Compensation step of RF-09. Idempotent. Marks the token REVERTED and the voter as not having voted.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TokenOperation' }
+      responses:
+        '204':
+          description: Consumption reverted
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    serviceAuth:
+      type: oauth2
+      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE). Internal endpoints are never routed by the gateway.
+      flows:
+        clientCredentials:
+          tokenUrl: http://localhost:8080/realms/verivoto/protocol/openid-connect/token
+          scopes: {}
+  parameters:
+    LinkToken:
+      name: linkToken
+      in: path
+      required: true
+      description: Personal link token (RI-12). Never logged.
+      schema: { type: string, pattern: '^[A-Za-z0-9_-]{64}$' }
+    ProcessId:
+      name: processId
+      in: path
+      required: true
+      schema: { type: integer, format: int64, minimum: 1 }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Not found (also returned for invalid personal links, without saying why)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: The operation conflicts with the current state
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Gone:
+      description: Expired link, code or token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Locked:
+      description: Access temporarily blocked after too many failed attempts (RNF-14)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unprocessable:
+      description: The process is not in a state that allows this operation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    TooManyRequests:
+      description: Wait before requesting a new code
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid service token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Language:
+      type: string
+      enum: [es, en]
+    LocalizedText:
+      type: object
+      minProperties: 1
+      propertyNames: { $ref: '#/components/schemas/Language' }
+      additionalProperties: { type: string, minLength: 1 }
+    ProcessStatus:
+      type: string
+      enum: [SCHEDULED, OPEN, CLOSED, TALLIED, ARCHIVED]
+    ResultsVisibility:
+      type: string
+      enum: [CENSUS_ONLY, PUBLIC_LINK]
+    StatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+    LinkStatus:
+      type: object
+      required: [processId, title, status, opensAt, closesAt, defaultLanguage]
+      properties:
+        processId: { type: integer, format: int64 }
+        title: { $ref: '#/components/schemas/LocalizedText' }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+        defaultLanguage: { $ref: '#/components/schemas/Language' }
+    CodeSent:
+      type: object
+      required: [maskedEmail, expiresAt, resendAvailableAt]
+      properties:
+        maskedEmail: { type: string, examples: ['l•••@universidad.edu'] }
+        expiresAt: { type: string, format: date-time }
+        resendAvailableAt: { type: string, format: date-time }
+    AccessGranted:
+      type: object
+      required: [hasVoted]
+      properties:
+        hasVoted: { type: boolean }
+        votedOn:
+          type: [string, 'null']
+          format: date
+          description: Day of the vote, without time (D-18). Only when hasVoted is true.
+        votingToken:
+          type: [string, 'null']
+          description: Single-use voting token. Only when hasVoted is false.
+        votingTokenExpiresAt:
+          type: [string, 'null']
+          format: date-time
+    ProcessSnapshot:
+      type: object
+      required: [organizationId, title, status, opensAt, closesAt, defaultLanguage, resultsVisibility, roll]
+      properties:
+        organizationId: { type: string, pattern: '^[A-Za-z0-9]{1,20}$' }
+        title: { $ref: '#/components/schemas/LocalizedText' }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+        defaultLanguage: { $ref: '#/components/schemas/Language' }
+        resultsVisibility: { $ref: '#/components/schemas/ResultsVisibility' }
+        roll:
+          type: array
+          description: Frozen census. Only the data needed to contact the voter (RNF-16).
+          items:
+            type: object
+            required: [voterRef, displayName, email, language]
+            properties:
+              voterRef: { type: integer, format: int64 }
+              displayName: { type: string, maxLength: 60 }
+              email: { type: string, format: email, maxLength: 100 }
+              language: { $ref: '#/components/schemas/Language' }
+    TokenOperation:
+      type: object
+      required: [votingToken, processId]
+      properties:
+        votingToken: { type: string }
+        processId: { type: integer, format: int64 }
+    Problem:
+      type: object
+      description: RFC 9457 problem details. `detail` is plain Spanish for the end user (RNF-8).
+      required: [title, status]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }

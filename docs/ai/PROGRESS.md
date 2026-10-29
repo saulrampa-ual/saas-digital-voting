@@ -1,14 +1,14 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P1.6 sin commitear; corrección de `infra/.env.example` pendiente) · Último commit: `66d2b55` (sin publicar)
+Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P2 sin commitear) · Último commit: `efe8afc`
 
 ## Hitos
 
 | Hito | Fechas | Objetivo | Estado |
 | --- | --- | --- | --- |
 | P0 | 29/10 – 02/11 | Línea base y memoria de la IA | Hecho (`da2e6db`) |
-| P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho salvo verificación: falta la primera ejecución de la CI en GitHub |
-| P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Pendiente |
+| P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho (CI en verde, `efe8afc`) |
+| P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (pendiente de commit) |
 | P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Pendiente |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Pendiente |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Pendiente |
@@ -56,11 +56,15 @@
 - P1.6: `.github/workflows/build.yml` con dos jobs: compilación del backend con Temurin 25
   (`actions/checkout@v7`, `actions/setup-java@v6`, caché Maven, `mvnw -DskipTests verify`) y
   validación de `infra/compose.yaml` con `docker compose config` y valores de prueba. Validado en el
-  entorno de la IA: YAML del workflow y `docker compose config` (Compose v5.6.1).
+  entorno de la IA: YAML del workflow y `docker compose config` (Compose v5.6.1). Primera ejecución en
+  GitHub en verde (confirmado por el autor). El commit con contraseñas se rehízo sin ellas (`9ebbf84`).
+- P2: `docs/architecture/data-model.md` (modelo por servicio con diagramas ER, separación de secreto,
+  flujo del voto con token de un solo uso, riesgos residuales); contratos OpenAPI 3.1 de identity,
+  election, voter-access y ballot-box en `src/main/resources/openapi/` (validados con
+  `openapi-spec-validator`); ADR-0001 a ADR-0009 en `docs/adr/`; decisiones D-16 a D-23.
 
 ## En curso
 
-- P1: primera ejecución verde de la CI en GitHub.
 
 ## Pendiente
 
@@ -75,14 +79,14 @@
 ## Bloqueos / preguntas abiertas
 
 - ¿Se activan las pruebas de propiedades críticas al terminar P4? (IMP-03)
-- ¿Qué significa «público» en RF-13? (P2)
 - Librería para el acta PDF (RF-16). (P5)
 - Retraso respecto al Gantt: la iteración 1 (RF-01–RF-03) acababa el 31/10.
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Corregir el commit `14a2b33` (contraseñas en `infra/.env.example`) antes de publicar `dev`.
-2. Commit de P1.6 en `ci/build-workflow`, integración en `dev`, `git push` y comprobar en la pestaña
-   Actions que los jobs `backend` e `infra` terminan en verde.
-3. Lanzar **P2**: modelo de datos por servicio con la sección «Separación de secreto», contratos
-   OpenAPI de la rebanada 1 y ADRs de D-01 a D-07. Antes, responder qué significa «público» en RF-13.
+1. Revisar `docs/architecture/data-model.md` (secciones 6 y 7) y los contratos OpenAPI; validar con el tutor
+   las desviaciones D-18 (sin horas en la urna) y D-21 (censo congelado desde `SCHEDULED`).
+2. Commit de P2 en `docs/design-slice-1` e integración en `dev`.
+3. Lanzar **P3.2** antes que P3.1: realm `verivoto` de Keycloak versionado (roles, claim `organization_id`,
+   flujo contraseña + Email OTP, bloqueo tras 5 fallos, cliente `verivoto-admin` y clientes de servicio).
+   P3.1 (organizaciones y usuarios) lo necesita para crear usuarios y validar tokens.

@@ -1,0 +1,285 @@
+openapi: 3.1.0
+info:
+  title: VeriVoto ballot-box-service API
+  version: v1
+  description: |
+    Ballot (RF-09), vote casting with receipt (RF-09, RF-10) and receipt verification (RF-10).
+    The ballot box stores no identity, no voting token and no time of votes (RNF-11, D-18).
+    The receipt proves that a vote is present in the ballot box; it does not prove that the stored
+    vote is the one the voter intended (not cast-as-intended).
+    Error `detail` texts are written in plain Spanish (RNF-8).
+servers:
+  - url: http://localhost:8000
+    description: Local API gateway (public endpoints only)
+tags:
+  - name: voter
+    description: RF-09, RF-10 (public, used by the voter PWA)
+  - name: internal
+    description: Service-to-service endpoints (not exposed by the gateway)
+paths:
+  /api/v1/ballot-box/processes/{processId}/ballot:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [voter]
+      operationId: getBallot
+      summary: Ballot of a process, in every available language
+      description: RF-09 step 1, RF-20. All translations are returned so that changing language does not lose the selection.
+      security: []
+      responses:
+        '200':
+          description: Ballot
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Ballot' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/ballot-box/processes/{processId}/votes:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    post:
+      tags: [voter]
+      operationId: castVote
+      summary: Cast a vote with a voting token and get the receipt
+      description: |
+        RF-09 steps 5–9, RF-10 step 1-2. The voting token is consumed in voter-access first; then the
+        vote, the receipt hash and the audit event are stored in one transaction. If storing fails, the
+        token consumption is reverted and 503 is returned: retrying with the same token is safe and
+        never creates a second vote (RNF-12). The receipt code is shown only in this response.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CastVoteRequest' }
+      responses:
+        '201':
+          description: Vote recorded
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VoteReceipt' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+  /api/v1/ballot-box/processes/{processId}/receipts/{receiptCode}:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+      - name: receiptCode
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/ReceiptCode' }
+    get:
+      tags: [voter]
+      operationId: verifyReceipt
+      summary: Check whether a receipt is present in the ballot box
+      description: RF-10 steps 3–5. Never reveals the content of the vote.
+      security: []
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [present]
+                properties:
+                  present: { type: boolean }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /internal/v1/processes/{processId}:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    put:
+      tags: [internal]
+      operationId: upsertBallotSnapshot
+      summary: Receive the ballot when the process is scheduled
+      description: Called by election-service. Idempotent. Rejected once the process is OPEN.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BallotSnapshot' }
+      responses:
+        '204':
+          description: Ballot stored
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /internal/v1/processes/{processId}/status:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    put:
+      tags: [internal]
+      operationId: updateProcessStatus
+      summary: Receive a lifecycle change
+      description: |
+        Called by election-service. Idempotent. OPEN appends the OPENED audit event; CLOSED appends
+        CLOSED and publishes the final hash (RF-12, P5). Votes are also rejected after `closesAt`
+        even if this call has not arrived yet.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/StatusUpdate' }
+      responses:
+        '204':
+          description: Status stored
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    serviceAuth:
+      type: oauth2
+      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE). Internal endpoints are never routed by the gateway.
+      flows:
+        clientCredentials:
+          tokenUrl: http://localhost:8080/realms/verivoto/protocol/openid-connect/token
+          scopes: {}
+  parameters:
+    ProcessId:
+      name: processId
+      in: path
+      required: true
+      schema: { type: integer, format: int64, minimum: 1 }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Not found (also returned for invalid personal links, without saying why)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: The operation conflicts with the current state
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Gone:
+      description: Expired link, code or token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unprocessable:
+      description: The process is not in a state that allows this operation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unavailable:
+      description: The vote could not be recorded; nothing was stored and the token can be used again
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid service token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Language:
+      type: string
+      enum: [es, en]
+    LocalizedText:
+      type: object
+      minProperties: 1
+      propertyNames: { $ref: '#/components/schemas/Language' }
+      additionalProperties: { type: string, minLength: 1 }
+    ProcessStatus:
+      type: string
+      enum: [SCHEDULED, OPEN, CLOSED, TALLIED, ARCHIVED]
+    ResultsVisibility:
+      type: string
+      enum: [CENSUS_ONLY, PUBLIC_LINK]
+    StatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+    VoteType:
+      type: string
+      enum: [SINGLE_CHOICE, YES_NO_ABSTAIN]
+    BallotOption:
+      type: object
+      required: [id, position, text]
+      properties:
+        id: { type: integer, format: int64 }
+        position: { type: integer, minimum: 1 }
+        text: { $ref: '#/components/schemas/LocalizedText' }
+    Ballot:
+      type: object
+      required: [processId, voteType, question, options, blankVoteEnabled, closesAt]
+      properties:
+        processId: { type: integer, format: int64 }
+        voteType: { $ref: '#/components/schemas/VoteType' }
+        question: { $ref: '#/components/schemas/LocalizedText' }
+        options:
+          type: array
+          items: { $ref: '#/components/schemas/BallotOption' }
+        blankVoteEnabled: { type: boolean }
+        closesAt: { type: string, format: date-time }
+    CastVoteRequest:
+      type: object
+      required: [votingToken, selection]
+      properties:
+        votingToken: { type: string, description: Single-use token from voter-access. Never stored or logged. }
+        selection:
+          oneOf:
+            - type: object
+              required: [optionId]
+              properties:
+                optionId: { type: integer, format: int64 }
+              additionalProperties: false
+            - type: object
+              required: [blank]
+              properties:
+                blank: { const: true }
+              additionalProperties: false
+    ReceiptCode:
+      type: string
+      pattern: '^[0-9a-f]{64}$'
+    VoteReceipt:
+      type: object
+      required: [receiptCode]
+      properties:
+        receiptCode: { $ref: '#/components/schemas/ReceiptCode' }
+    BallotSnapshot:
+      type: object
+      required: [organizationId, status, opensAt, closesAt, voteType, question, options, blankVoteEnabled, eligibleVoters, resultsVisibility]
+      properties:
+        organizationId: { type: string, pattern: '^[A-Za-z0-9]{1,20}$' }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+        voteType: { $ref: '#/components/schemas/VoteType' }
+        question: { $ref: '#/components/schemas/LocalizedText' }
+        options:
+          type: array
+          items: { $ref: '#/components/schemas/BallotOption' }
+        blankVoteEnabled: { type: boolean }
+        eligibleVoters: { type: integer, minimum: 1, description: Census size, used for participation (RF-13) }
+        resultsVisibility: { $ref: '#/components/schemas/ResultsVisibility' }
+        resultsPublicId: { type: [string, 'null'], format: uuid }
+    Problem:
+      type: object
+      description: RFC 9457 problem details. `detail` is plain Spanish for the end user (RNF-8).
+      required: [title, status]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }

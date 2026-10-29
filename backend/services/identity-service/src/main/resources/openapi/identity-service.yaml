@@ -1,0 +1,316 @@
+openapi: 3.1.0
+info:
+  title: VeriVoto identity-service API
+  version: v1
+  description: |
+    Organizations (RF-01), management users and roles (RF-02).
+    Authentication of management users is delegated to Keycloak (RF-04, RF-05a); this service only
+    validates bearer tokens. Error `detail` texts are written in plain Spanish (RNF-8).
+servers:
+  - url: http://localhost:8000
+    description: Local API gateway
+tags:
+  - name: organizations
+    description: RF-01
+  - name: users
+    description: RF-02
+security:
+  - bearerAuth: []
+paths:
+  /api/v1/organizations:
+    post:
+      tags: [organizations]
+      operationId: createOrganization
+      summary: Create an organization with its initial administrator
+      description: "Role: SUPERADMIN. RF-01."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateOrganizationRequest' }
+      responses:
+        '201':
+          description: Organization created
+          headers:
+            Location:
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    get:
+      tags: [organizations]
+      operationId: listOrganizations
+      summary: List organizations
+      description: "Role: SUPERADMIN. RF-01."
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: Page of organizations
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OrganizationPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/organizations/{organizationId}:
+    parameters:
+      - $ref: '#/components/parameters/OrganizationId'
+    get:
+      tags: [organizations]
+      operationId: getOrganization
+      summary: Get an organization
+      description: "Roles: SUPERADMIN, or any management role of the same organization. RF-01, RNF-15."
+      responses:
+        '200':
+          description: Organization
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [organizations]
+      operationId: updateOrganizationStatus
+      summary: Suspend or reactivate an organization
+      description: "Role: SUPERADMIN. RF-01."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateOrganizationStatusRequest' }
+      responses:
+        '200':
+          description: Organization updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/organizations/{organizationId}/users:
+    parameters:
+      - $ref: '#/components/parameters/OrganizationId'
+    get:
+      tags: [users]
+      operationId: listUsers
+      summary: List management users of an organization with their role
+      description: "Roles: SUPERADMIN, ADMIN of the organization. RF-02."
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: Page of users
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ManagementUserPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [users]
+      operationId: createUser
+      summary: Create a management user with a role
+      description: "Roles: SUPERADMIN, ADMIN of the organization. The user is created in Keycloak and must set a password and the email second factor on first login. RF-02."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateManagementUserRequest' }
+      responses:
+        '201':
+          description: User created
+          headers:
+            Location:
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ManagementUser' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/organizations/{organizationId}/users/{userId}/role:
+    parameters:
+      - $ref: '#/components/parameters/OrganizationId'
+      - name: userId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    put:
+      tags: [users]
+      operationId: changeUserRole
+      summary: Change the role of a management user
+      description: |
+        Roles: SUPERADMIN, ADMIN of the organization. RF-02.
+        Rejected with 409 if the organization would be left without any ADMIN.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChangeRoleRequest' }
+      responses:
+        '200':
+          description: Role changed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ManagementUser' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Keycloak access token with claims `roles` and `organization_id`.
+  parameters:
+    OrganizationId:
+      name: organizationId
+      in: path
+      required: true
+      schema: { $ref: '#/components/schemas/OrganizationIdentifier' }
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 0, default: 0 }
+    Size:
+      name: size
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: The caller's role or organization does not allow this operation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Resource not found in the caller's organization
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: The operation conflicts with the current state
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    OrganizationIdentifier:
+      type: string
+      pattern: '^[A-Za-z0-9]{1,20}$'
+      description: RI-1 organization identifier (also `organization_id` everywhere else).
+    OrganizationStatus:
+      type: string
+      enum: [ACTIVE, SUSPENDED]
+    ManagementRole:
+      type: string
+      enum: [ADMIN, CENSUS_MANAGER, AUDITOR]
+      description: SUPERADMIN belongs to the platform and is not assignable inside an organization.
+    CreateOrganizationRequest:
+      type: object
+      required: [id, name, initialAdministrator]
+      properties:
+        id: { $ref: '#/components/schemas/OrganizationIdentifier' }
+        name: { type: string, minLength: 1, maxLength: 100 }
+        initialAdministrator: { $ref: '#/components/schemas/PersonData' }
+    UpdateOrganizationStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/OrganizationStatus' }
+    Organization:
+      type: object
+      required: [id, name, status, createdAt]
+      properties:
+        id: { $ref: '#/components/schemas/OrganizationIdentifier' }
+        name: { type: string, maxLength: 100 }
+        status: { $ref: '#/components/schemas/OrganizationStatus' }
+        createdAt: { type: string, format: date-time }
+    OrganizationPage:
+      type: object
+      required: [items, page, size, totalItems]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Organization' }
+        page: { type: integer }
+        size: { type: integer }
+        totalItems: { type: integer }
+    PersonData:
+      type: object
+      required: [fullName, email]
+      properties:
+        fullName: { type: string, minLength: 1, maxLength: 60 }
+        email: { type: string, format: email, maxLength: 100 }
+    CreateManagementUserRequest:
+      allOf:
+        - $ref: '#/components/schemas/PersonData'
+        - type: object
+          required: [role]
+          properties:
+            role: { $ref: '#/components/schemas/ManagementRole' }
+    ChangeRoleRequest:
+      type: object
+      required: [role]
+      properties:
+        role: { $ref: '#/components/schemas/ManagementRole' }
+    ManagementUser:
+      type: object
+      required: [id, organizationId, fullName, email, role, status]
+      properties:
+        id: { type: string, format: uuid }
+        organizationId: { $ref: '#/components/schemas/OrganizationIdentifier' }
+        fullName: { type: string, maxLength: 60 }
+        email: { type: string, format: email, maxLength: 100 }
+        role: { $ref: '#/components/schemas/ManagementRole' }
+        status:
+          type: string
+          enum: [ACTIVE, LOCKED, INACTIVE]
+    ManagementUserPage:
+      type: object
+      required: [items, page, size, totalItems]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ManagementUser' }
+        page: { type: integer }
+        size: { type: integer }
+        totalItems: { type: integer }
+    Problem:
+      type: object
+      description: RFC 9457 problem details. `detail` is plain Spanish for the end user (RNF-8).
+      required: [title, status]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }
