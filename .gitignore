@@ -1,4 +1,3 @@
-@'
 # === Java / Maven ===
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -41,4 +40,9 @@ infra/data/
 
 # === Informes locales ===
 environment-report.txt
-'@ | Out-File -FilePath .gitignore -Encoding utf8
+
+# === Claude Code (ajustes locales) ===
+.claude/settings.local.json
+
+# === Herramientas locales de IDE ===
+.github/modernize/

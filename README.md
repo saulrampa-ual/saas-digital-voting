@@ -1,40 +1,53 @@
-@'
-# SaaS de votación digital
+# VeriVoto · Plataforma SaaS de votación digital
 
-Plataforma SaaS de votación digital. Estado: **estructura inicial**, sin código de aplicación todavía.
+Trabajo Fin de Máster (Máster en Ingeniería Informática, Universidad de Almería, 2026/2027).
+Autor: Saul David Ramos Pacheco · Tutor: Javier Criado Rodríguez.
 
-## Stack objetivo
+Plataforma SaaS multi-tenant para votaciones internas de universidades, asociaciones y
+organizaciones: segura, auditable y con API abierta.
 
-- **Backend**: Java + Spring Boot (versión por confirmar: JDK 17 ya instalado, JDK 25 según plan).
-- **Frontend**: Angular (versión por confirmar; se aborda al final).
-- **Base de datos**: PostgreSQL 18 en Docker.
-- **Infraestructura**: Docker / Docker Compose.
-- **CI**: GitHub Actions.
+## Estado
+
+Fase P0 (línea base). Existe `tenant-service` (creación de organizaciones) y el entorno local de
+Keycloak. El seguimiento detallado está en [`docs/ai/PROGRESS.md`](docs/ai/PROGRESS.md).
+
+## Stack
+
+| Capa | Tecnología |
+| --- | --- |
+| Backend | Java 25 LTS, Spring Boot 4.1.2, Spring Cloud 2025.1.3, arquitectura hexagonal por servicio |
+| Identidad (gestión) | Keycloak 26.8.1 con Email OTP |
+| Datos | PostgreSQL 18.6, Flyway |
+| Frontend | Angular 22 + Ionic 9 (PWA) |
+| Infraestructura | Docker Compose |
+| CI | GitHub Actions (solo compilación por ahora) |
+
+## Arquitectura del MVP
+
+| Servicio | Responsabilidad |
+| --- | --- |
+| `api-gateway` | Entrada única, CORS, límites, claves de API |
+| `identity-service` | Organizaciones, roles, RGPD, trazabilidad administrativa (hoy `tenant-service`) |
+| `election-service` | Censo, procesos, papeleta, ciclo de vida |
+| `voter-access-service` | Acceso del votante, OTP, token de voto, participación, notificaciones |
+| `ballot-box-service` | Urna, recibos, registro encadenado, escrutinio, actas |
+
+La participación (`voter-access`) y la urna (`ballot-box`) nunca comparten base de datos.
 
 ## Estructura del repositorio
 
-- `backend/` — aplicación Spring Boot (pendiente).
-- `frontend/` — aplicación Angular (pendiente).
-- `infra/` — Docker Compose y configuración de infraestructura (pendiente).
-- `scripts/` — utilidades de desarrollo (pendiente).
-- `docs/` — documentación del proyecto.
-    - `architecture/` — decisiones de arquitectura.
-    - `requirements/` — requisitos y especificación.
-    - `security/` — políticas y análisis de seguridad.
-    - `adr/` — Architecture Decision Records.
+- `backend/services/` — servicios Spring Boot.
+- `frontend/` — aplicación Angular + Ionic (pendiente).
+- `infra/` — Docker Compose y Keycloak.
+- `docs/` — arquitectura, ADR, seguridad, requisitos y memoria de trabajo con IA (`docs/ai/`).
+- `prototiposPantallas/` — prototipos de pantallas (referencia del frontend; no modificar).
+- `Plantilla-TFM-Informatica-UAL/` — memoria del TFM en LaTeX.
+- `scripts/` — utilidades de desarrollo.
 
-## Documentos de referencia
+## Flujo de trabajo
 
-- `Informe plataforma SaaS de votación digital.md`
-- `Proyecto_plataforma_SaaS_de_votacion_digital.pdf.md`
+1. Ramas `feat/*`, `fix/*` o `chore/*` desde `dev`; `dev` → `main` en cada hito.
+2. Commits en inglés con Conventional Commits.
+3. Nunca commitear secretos (`.env`, credenciales). Usar `.env.example`.
 
-## Estado actual
-
-Repositorio inicializado. Ramas `main` y `dev` creadas. Carpetas de alto nivel creadas. Sin archivos de aplicación todavía.
-
-## Cómo contribuir (provisional)
-
-1. Trabajar sobre `dev`.
-2. Commits pequeños y descriptivos.
-3. No commitear secretos (`.env`, credenciales). Usar `.env.example` cuando exista.
-   '@ | Out-File -FilePath README.md -Encoding utf8
+Las reglas para trabajar con asistentes de IA están en [`CLAUDE.md`](CLAUDE.md).
