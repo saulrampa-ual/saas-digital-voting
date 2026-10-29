@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P3.3 sin commitear; `dev` 2 commits por delante de `origin`) · Último commit: `4dc0128`
+Última actualización: 2026-10-29 · Rama de trabajo: `dev` (P3.4 sin commitear) · Último commit: `3d47530`
 
 ## Hitos
 
@@ -9,7 +9,7 @@
 | P0 | 29/10 – 02/11 | Línea base y memoria de la IA | Hecho (`da2e6db`) |
 | P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho (CI en verde, `efe8afc`) |
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
-| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | En curso (P3.1–P3.2 integrados; P3.3 escrito, sin compilar; falta P3.4) |
+| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | En curso (P3.1–P3.3 integrados; P3.4 escrito, pendiente de prueba de login y commit) |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Pendiente |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Pendiente |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
@@ -80,6 +80,11 @@
 - Pruebas manuales de API (D-26): cliente `verivoto-dev-swagger` (en el realm y como importación parcial en
   `infra/keycloak/dev/`), Swagger UI de identity con OAuth2 + PKCE, `scripts/Import-DotEnv.ps1` y la guía
   `docs/architecture/api-testing.md`. Integrado (`3e03b8b`).
+- P3.4: base del frontend en `frontend/` (D-28): Angular 22 + Ionic 9 PWA, i18n es/en con selector en cabecera,
+  login de gestión con Keycloak (PKCE) y menú filtrado por rol (`roleGuard` → `/admin/sin-permiso`),
+  listados de organizaciones (SUPERADMIN) y censos (ADMIN, CENSUS_MANAGER), página de votante `/votar/:linkToken`
+  (provisional hasta P4.5) y 404. `ng build` limpio (inicial 802 kB / 183 kB transferidos); smoke test a 360 px con
+  Playwright (idioma, 404, redirección de `/admin` al login de Keycloak, sin errores de consola). CI: job `frontend`.
 - P3.3: censo en `election-service` (RF-03): dominio (`Census`, `Voter`, `VoterData`, `ImportSummary`, `Caller`),
   `CensusService` (alta y edición manual, duplicados, importación CSV con `dryRun` y descarte de líneas
   inválidas), JPA y Flyway V1 (`censuses`, `voters` con índices únicos por censo), REST según contrato con
@@ -113,4 +118,5 @@
 1. `git push origin dev` (hay 2 commits sin publicar).
 2. Compilar (`.\mvnw.cmd -DskipTests compile`) y seguir la sección 4 de `docs/architecture/api-testing.md`.
 3. Commit en `feat/election-census` e integración en `dev`.
-4. Siguiente: **P3.4**, base del frontend (Angular 22 + Ionic 9, PWA, i18n es/en) y login de gestión con Keycloak.
+4. Probar P3.4 en local (`cd frontend; npm ci; npm start` → `http://localhost:4200/admin`) y commitear en `feat/frontend-base`.
+5. Siguiente: **P4.1**, procesos electorales y papeleta, con la política real de congelación del censo (sustituye a `NoProcessesCensusFreezePolicy`).

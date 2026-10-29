@@ -1,0 +1,53 @@
+/* Ionic core and recommended CSS (Ionic 9) */
+@import '@ionic/angular/css/core.css';
+@import '@ionic/angular/css/normalize.css';
+@import '@ionic/angular/css/structure.css';
+@import '@ionic/angular/css/typography.css';
+@import '@ionic/angular/css/padding.css';
+@import '@ionic/angular/css/flex-utils.css';
+@import '@ionic/angular/css/text-alignment.css';
+@import '@ionic/angular/css/display.css';
+
+/*
+ * Minimal style guide of the prototypes ("Recomendaciones de mejora para Ionic", section 7) and RNF-1:
+ * body 16 px, help text never below 14 px, h1 24 px (mobile) / 28 px (desktop), subtitle 18 px,
+ * 4 px spacing scale, radius 10 px in fields and buttons and 12 px in cards, 1 px border #C9D1DB,
+ * 3 px focus outline in the primary color, touch targets of at least 44 px.
+ */
+:root {
+  --vv-border-color: #c9d1db;
+  --vv-radius-control: 10px;
+  --vv-radius-card: 12px;
+  --vv-font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+html { font-size: 100%; }
+body { font-size: 1rem; }
+h1 { font-size: 1.5rem; font-weight: 700; }
+h2 { font-size: 1.125rem; font-weight: 600; }
+small, .help, ion-note { font-size: 0.875rem; }
+@media (min-width: 768px) {
+  h1 { font-size: 1.75rem; }
+}
+
+:focus-visible { outline: 3px solid var(--ion-color-primary); outline-offset: 2px; }
+/* Headings receive the focus programmatically on navigation (FocusOnNavigationService); no outline for them. */
+h1[tabindex='-1']:focus { outline: none; }
+
+ion-button {
+  --min-height: 44px;
+  --border-radius: var(--vv-radius-control);
+  min-height: 44px;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+}
+ion-item[button] { --min-height: 48px; }
+ion-input, ion-textarea, ion-select { --border-radius: var(--vv-radius-control); }
+ion-card {
+  border: 1px solid var(--vv-border-color);
+  border-radius: var(--vv-radius-card);
+  box-shadow: none;
+}
+.mono { font-family: var(--vv-font-mono); }
