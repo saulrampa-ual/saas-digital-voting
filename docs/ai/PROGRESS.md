@@ -1,0 +1,55 @@
+# PROGRESS · VeriVoto
+
+Última actualización: 2026-10-29 · Rama de trabajo: `dev` (cambios de P0 sin commitear) · Último commit: `09f21e1`
+
+## Hitos
+
+| Hito | Fechas | Objetivo | Estado |
+| --- | --- | --- | --- |
+| P0 | 29/10 – 02/11 | Línea base y memoria de la IA | En curso |
+| P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Pendiente |
+| P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Pendiente |
+| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Pendiente |
+| P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Pendiente |
+| P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Pendiente |
+| P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
+| P8 | 01/12 – 27/01/2027 | Memoria del TFM | Pendiente |
+| P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
+
+## Hecho
+
+- Antes de P0 (commits hasta `09f21e1`): estructura de carpetas; `tenant-service` con el caso de uso
+  «crear organización» (dominio, puertos, servicio, JPA, Flyway V1, REST, resource server JWT con
+  `ROLE_SUPERADMIN`); entorno local de Keycloak 26.8.1 + Email OTP v1.8.1 + Mailpit v1.31.5 con su
+  documentación; prototipos en `prototiposPantallas/`. No se ha compilado ni arrancado nada.
+- P0.1: `README.md` y `.gitignore` sin el envoltorio de PowerShell; el script del antiguo `.gitkeep`
+  movido a `scripts/create-folders.ps1`.
+- P0.2: `CLAUDE.md`.
+- P0.3: `docs/ai/` (CONTEXT, PROGRESS, DECISIONS, TRACEABILITY, IMPROVEMENTS, PROTOTYPES).
+- P0.4: skills en `.claude/skills/`.
+
+## En curso
+
+- Cierre de P0: commit de la línea base (lo ejecuta el autor).
+
+## Pendiente
+
+- Validar con el tutor la reducción a 5 servicios (D-05) y la exclusión del revoto (D-03).
+- Corregir el Gantt del TFM (`plan_gantt.tex`): la iteración 3 debe quedar en RF-09–RF-10.
+- Verificar el último parche de Spring Cloud 2025.1.x, springdoc 3.1.x y Maven (P1.1); de Ionic 9 (P3.4).
+- Prototipos: pantallas que faltan para RF-17 y RF-21 (ver `PROTOTYPES.md`).
+
+## Bloqueos / preguntas abiertas
+
+- ¿Se activan las pruebas de propiedades críticas al terminar P4? (IMP-03)
+- ¿Qué significa «público» en RF-13? (P2)
+- Librería para el acta PDF (RF-16). (P5)
+- Retraso respecto al Gantt: la iteración 1 (RF-01–RF-03) acababa el 31/10.
+
+## Cómo continuar (siguiente paso exacto)
+
+1. El autor hace commit de P0 en la rama `chore/baseline` y la integra en `dev`.
+2. Instalar Temurin JDK 25 y configurarlo en IntelliJ (Project SDK, language level y Maven runner).
+3. Lanzar **P1.2 + P1.3**: parent pom en `backend/` (Boot 4.1.2, Java 25, Spring Cloud 2025.1.3,
+   Maven Wrapper) y migración de `tenant-service` a `identity-service` sin cambios de comportamiento.
