@@ -1,0 +1,79 @@
+\chapter{Mapeo de los requisitos no funcionales con ISO/IEC 25010:2023}
+\label{cap:rnf-iso25010}
+
+La norma ISO/IEC 25010:2023 define un modelo de calidad de producto con nueve
+características y subcaracterísticas que sirven de referencia para especificar y
+evaluar la calidad del software \citep{isoiec25010_2023}. La tabla~\ref{tab:rnf-iso25010}
+relaciona los RNF de la plataforma con las características que describen mejor
+su intención. El mapeo es una clasificación razonada, no una certificación de
+conformidad con la norma.
+
+RNF-8 y RNF-10 son transversales a todos los casos de uso (RF-01 a RF-19) y a
+todas las pantallas; no se asocian a un caso de uso concreto. Esta
+transversalidad se aplica en la especificación y en la verificación del
+producto.
+
+\small
+\begin{longtable}{|p{0.07\textwidth}|p{0.20\textwidth}|p{0.21\textwidth}|p{0.34\textwidth}|p{0.12\textwidth}|}
+\caption{Correspondencia de los RNF con ISO/IEC 25010:2023.}\label{tab:rnf-iso25010}\\
+\hline
+\textbf{RNF} & \textbf{Característica} & \textbf{Subcaracterística} & \textbf{Justificación} & \textbf{Prioridad (MoSCoW)} \\
+\hline
+\endfirsthead
+\hline
+\textbf{RNF} & \textbf{Característica} & \textbf{Subcaracterística} & \textbf{Justificación} & \textbf{Prioridad (MoSCoW)} \\
+\hline
+\endhead
+\hline
+\multicolumn{5}{r}{Continúa en la página siguiente.}\\
+\endfoot
+\hline
+\endlastfoot
+RNF-1 & Capacidad de interacción & Inclusivity; User assistance & WCAG 2.2 AA, teclado y lector de pantalla facilitan el uso a personas con distintas capacidades. & Por validar \\
+\hline
+RNF-2 & Capacidad de interacción; Flexibilidad; Compatibilidad & Operability; Adaptability; Interoperability & El diseño para 360 px exige adaptación; el soporte de varios navegadores requiere interoperabilidad y operación coherente. & Por validar \\
+\hline
+RNF-3 & Capacidad de interacción & Learnability; Operability & Mide si una persona sin formación aprende y completa el flujo de voto con eficacia. & Por validar \\
+\hline
+RNF-4 & Capacidad de interacción & Learnability; Operability & Mide si un administrador aprende a configurar un proceso sin asistencia. & Por validar \\
+\hline
+RNF-5 & Capacidad de interacción & Inclusivity & La disponibilidad en español e inglés contempla diferencias lingüísticas entre usuarios. & Por validar \\
+\hline
+RNF-6 & Capacidad de interacción & Self-descriptiveness & El lenguaje no técnico permite entender, sin ayuda externa, qué indica la verificación. & Por validar \\
+\hline
+RNF-7 & Capacidad de interacción & User error protection & El resumen, la confirmación y la detección temprana de selecciones inválidas previenen errores de voto. & Por validar \\
+\hline
+RNF-8 & Capacidad de interacción & Self-descriptiveness; User assistance & Los mensajes claros, el progreso y la confirmación explican el estado y la siguiente acción; el RNF no especifica tolerancia técnica a fallos. & Por validar \\
+\hline
+RNF-9 & Capacidad de interacción & Operability; Self-descriptiveness & El indicador de pasos y el estado del proceso orientan al votante durante la operación. & Por validar \\
+\hline
+RNF-10 & Capacidad de interacción & Operability & La terminología y los controles consistentes hacen predecible la navegación entre pantallas. & Por validar \\
+\hline
+RNF-11 & Seguridad & Confidentiality & Separar la urna de la participación evita que usuarios no autorizados relacionen identidad y voto. & Por validar \\
+\hline
+RNF-12 & Seguridad; Fiabilidad & Integrity; Faultlessness & La unicidad impide que un envío concurrente altere el estado correcto de contabilización. & Por validar \\
+\hline
+RNF-13 & Seguridad & Integrity; Accountability; Non-repudiation & El encadenamiento detecta alteraciones y los registros inmutables permiten atribuir y probar acciones. & Por validar \\
+\hline
+RNF-14 & Seguridad & Authenticity; Resistance; Confidentiality & La autenticación y los controles frente a intentos indebidos protegen las sesiones y la información. & Por validar \\
+\hline
+RNF-15 & Seguridad & Confidentiality & El aislamiento entre tenants restringe el acceso a datos a los usuarios de cada organización. & Por validar \\
+\hline
+RNF-16 & Seguridad & Confidentiality & La minimización y eliminación limitan la exposición de datos personales; el RGPD es una restricción normativa, no una subcaracterística de ISO 25010. & Por validar \\
+\hline
+RNF-17 & Eficiencia de desempeño & Time behaviour; Capacity & El umbral de respuesta mide el comportamiento temporal y los 500 usuarios simultáneos expresan capacidad. & Por validar \\
+\hline
+RNF-18 & Flexibilidad & Installability; Adaptability & La instalación como PWA en móviles requiere instalabilidad y adaptación a distintas plataformas. & Could \\
+\hline
+\end{longtable}
+\normalsize
+
+\noindent\footnotesize Las prioridades RNF no consignadas en la especificación
+se muestran como «Por validar»; RNF-18 conserva la prioridad Could allí
+indicada.\normalsize
+
+Los nombres de subcaracterísticas se conservan en inglés para mantener la
+terminología de la edición 2023. En particular, el requisito RNF-2 también se
+relaciona con Compatibilidad porque especifica funcionamiento en distintos
+navegadores; y RNF-8 no se asigna a Fiabilidad, pues describe realimentación de
+interfaz, pero no continuidad del servicio ante fallos.

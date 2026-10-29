@@ -1,413 +1,589 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% CONTENIDO DE EJEMPLO DE LA PLANTILLA
-% Sustituye este archivo por los capítulos reales de tu TFG/TFM. Se ha
-% dejado como guía práctica de los elementos de LaTeX más habituales en
-% este tipo de memorias, junto con una guía de estilo y redacción general.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Memoria del proyecto SaaS de votación digital.
+% Basada en la especificación de requisitos versión 1.0 (07/10/2026).
 
-\chapter{Ejemplos prácticos de la plantilla}
-\label{cap:ejemplos}
+\chapter{Introducción}
+\label{cap:introduccion}
 
-Este capítulo reúne, de forma práctica y directamente reutilizable, los elementos de \LaTeX{} que con más frecuencia se necesitan al escribir un TFG o un TFM: acrónimos, figuras, tablas, ecuaciones, listados de código y citas bibliográficas. Puedes copiar el código fuente de \texttt{contenido1.tex} y adaptarlo a tu propio contenido.
+Las universidades, asociaciones y comunidades necesitan procesos de votación
+que permitan gestionar el censo, emitir votos y publicar resultados de forma
+comprensible y verificable. En la práctica, algunas organizaciones combinan
+hojas de cálculo, formularios genéricos y comunicaciones por correo. Ese
+enfoque puede dificultar la comprobación de la identidad y elegibilidad de
+quienes participan, la protección del secreto del voto y la auditoría del
+escrutinio.
 
-\section{Acrónimos y abreviaturas}
-\label{sec:acronimos}
+Este trabajo plantea una plataforma de votación digital ofrecida como
+Software as a Service (SaaS). El sistema permitirá a distintas organizaciones
+configurar procesos electorales en una infraestructura compartida con
+aislamiento lógico de sus datos. La especificación de requisitos del proyecto
+constituye la base para el análisis y el diseño que se desarrollarán en la
+memoria.
 
-La primera vez que se usa un acrónimo en el texto debe escribirse completo, seguido de sus siglas entre paréntesis. Por ejemplo, esta plantilla se edita con un Entorno de Desarrollo Integrado (IDE). En las siguientes apariciones basta con usar la sigla: el IDE empleado permite compilar el documento sin salir del editor.
+\section{Problema y motivación}
+\label{sec:problema}
 
-Además de definir el acrónimo la primera vez que se usa, se recomienda incluir al principio del documento una tabla con todas las abreviaturas empleadas, ordenadas alfabéticamente (véase la sección ``ABREVIATURAS'' al inicio de este documento, definida en \texttt{indicesyrefe.tex}).
+El flujo habitual comienza con la preparación manual del censo y de las
+opciones de voto. Después, el organizador configura una herramienta externa y
+envía enlaces por correo electrónico. El votante selecciona una opción, pero
+puede no recibir evidencia de que el voto se registró correctamente. Al cierre,
+el organizador obtiene un resultado cuya integridad y trazabilidad pueden ser
+difíciles de comprobar por terceros.
 
-\section{Figuras}
-\label{sec:figuras}
+La propuesta aborda estas limitaciones mediante controles de acceso, gestión
+del ciclo de vida de la votación, separación entre identidad y urna, recibos de
+verificación, registros de auditoría y una interfaz accesible. La verificación
+debe presentarse de forma comprensible para personas sin conocimientos
+criptográficos. La resistencia a la coacción y las garantías formales de
+verificabilidad extremo a extremo requieren un análisis específico y se
+consideran límites que deberán concretarse en el diseño.
 
-\subsection{Figura simple}
+\section{Objetivos}
+\label{sec:objetivos}
 
-Para incluir una imagen se usa el entorno \texttt{figure} junto con \lstinline[language=enparrafo]!\includegraphics!. La figura~\ref{fig:arquitectura} muestra un ejemplo de diagrama sencillo.
+El objetivo general es diseñar, implementar y evaluar un prototipo funcional
+de plataforma SaaS de votación digital segura y auditable para organizaciones,
+con arquitectura cloud multi-tenant y API abierta, que responda a los huecos
+identificados en autenticación, experiencia móvil y verificación comprensible.
+La implementación y su evaluación se presentan como trabajo previsto hasta que
+existan evidencias experimentales. Los objetivos del sistema son:
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.75\textwidth]{ejemplo-arquitectura}
-  \caption{Ejemplo de diagrama de arquitectura (elaboración propia).}
-  \label{fig:arquitectura}
-\end{figure}
+\begin{description}
+  \item[OBJ-1.] Diseñar la arquitectura SaaS multi-tenant y la gestión de
+  organizaciones, identidad, roles, permisos e integración SSO.
+  \item[OBJ-2.] Diseñar la gestión del censo, la configuración y el ciclo de
+  vida de votaciones, junto con una API abierta documentada.
+  \item[OBJ-3.] Diseñar un flujo accesible de participación que proteja el
+  secreto y la unicidad y proporcione una evidencia comprensible al votante.
+  \item[OBJ-4.] Diseñar el escrutinio, la trazabilidad, las actas y la
+  evaluación de calidad del prototipo conforme al modelo ISO/IEC 25010:2023.
+\end{description}
 
-\subsection{Subfiguras}
+\subsection{Objetivos específicos}
+\label{sec:objetivos-especificos}
 
-Cuando se quieren mostrar varias imágenes relacionadas de forma conjunta se puede usar el paquete \texttt{subcaption}, ya cargado en esta plantilla. La figura~\ref{fig:subfiguras} muestra un ejemplo con dos subfiguras.
+Los objetivos del sistema se concretan en los siguientes objetivos específicos
+de análisis y diseño:
+\begin{description}
+  \item[OE1.] Definir la gestión multi-organización y el control de acceso
+  mediante roles, permisos y aislamiento de datos.
+  \item[OE2.] Especificar la gestión del censo y el ciclo de vida de los
+  procesos, desde su configuración hasta el cierre.
+  \item[OE3.] Diseñar el flujo accesible de autenticación, emisión del voto y
+  obtención y verificación de un recibo comprensible.
+  \item[OE4.] Definir el escrutinio, la publicación de resultados y las
+  evidencias de auditoría que permitan revisar su integridad.
+\end{description}
 
-\begin{figure}[H]
-  \centering
-  \begin{subfigure}[b]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{ejemplo-arquitectura}
-    \caption{Arquitectura cliente-servidor.}
-    \label{fig:sub-arquitectura}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[b]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{ejemplo-modulos}
-    \caption{Módulos del sistema.}
-    \label{fig:sub-modulos}
-  \end{subfigure}
-  \caption{Ejemplo de figura compuesta por dos subfiguras.}
-  \label{fig:subfiguras}
-\end{figure}
+\section{Preguntas de investigación}
+\label{sec:preguntas-investigacion}
 
-Cada subfigura se referencia igual que una figura normal: la figura~\ref{fig:sub-modulos} muestra los módulos del sistema, mientras que la figura~\ref{fig:subfiguras} agrupa ambas.
+\begin{description}
+  \item[RQ1.] ¿Cómo puede una plataforma SaaS garantizar la verificación del
+  voto de forma comprensible para usuarios no técnicos?
+  \item[RQ2.] ¿Qué mecanismos de separación de identidad y urna permiten
+  proteger el secreto del voto y controlar la unicidad de la participación?
+  \item[RQ3.] ¿Cómo se puede evaluar la calidad del producto software
+  resultante tomando ISO/IEC 25010:2023 como modelo de referencia?
+\end{description}
 
-\section{Tablas}
-\label{sec:tablas}
+\section{Trazabilidad de objetivos, preguntas y evaluación}
+\label{sec:trazabilidad-investigacion}
 
-\subsection{Tabla simple}
+La tabla~\ref{tab:trazabilidad-investigacion} conecta cada objetivo
+específico con las preguntas que aborda, los casos de uso implicados y las
+evidencias de calidad que se proponen para evaluarlo. Los umbrales son los
+recogidos en los RNF del proyecto y siguen pendientes de validación.
 
-\begin{table}[H]
-  \centering
-  \begin{tabular}{l l r}
-    \hline
-    \textbf{Tecnología} & \textbf{Tipo} & \textbf{Año} \\
-    \hline
-    Ejemplo A & Backend        & 2022 \\
-    Ejemplo B & Frontend       & 2023 \\
-    Ejemplo C & Base de datos  & 2021 \\
-    \hline
-  \end{tabular}
-  \caption{Ejemplo de tabla simple.}
-  \label{tab:simple}
-\end{table}
-
-Como toda tabla, se referencia en el texto antes de que aparezca; por ejemplo, la tabla~\ref{tab:simple} resume tres tecnologías de ejemplo.
-
-\subsection{Tabla con celdas combinadas}
-
-El paquete \texttt{multirow}, ya cargado en \texttt{main.tex}, permite combinar celdas verticalmente; \lstinline[language=enparrafo]!\multicolumn! (del núcleo de \LaTeX{}) permite combinarlas horizontalmente. La tabla~\ref{tab:multirow} combina ambos.
-
-\begin{table}[H]
-  \centering
-  \begin{tabular}{l l c c}
-    \hline
-    \multirow{2}{*}{\textbf{Módulo}} & \multirow{2}{*}{\textbf{Responsable}} & \multicolumn{2}{c}{\textbf{Estado}} \\
-    \cline{3-4}
-     & & Diseño & Implementado \\
-    \hline
-    \multirow{2}{*}{Interfaz} & Persona A & Sí & Sí \\
-     & Persona B & Sí & No \\
-    Lógica de negocio & Persona C & Sí & Sí \\
-    \hline
-  \end{tabular}
-  \caption{Ejemplo de tabla con celdas combinadas.}
-  \label{tab:multirow}
-\end{table}
-
-\subsection{Tabla larga (longtable)}
-
-Cuando una tabla puede ocupar más de una página se debe usar el entorno \texttt{longtable} (paquete cargado en \texttt{main.tex}) en lugar de \texttt{table}, ya que este último no puede partirse entre páginas. La tabla~\ref{tab:longtable} es un ejemplo mínimo.
-
-\begin{center}
-\begin{longtable}{l l}
-  \hline
-  \textbf{Elemento} & \textbf{Descripción} \\
-  \hline
-  \endfirsthead
-  \textbf{Elemento} & \textbf{Descripción} \\
-  \hline
-  \endhead
-  Fila 1 & Descripción de ejemplo de la fila 1 \\
-  Fila 2 & Descripción de ejemplo de la fila 2 \\
-  Fila 3 & Descripción de ejemplo de la fila 3 \\
-  \hline
-  \caption{Ejemplo de tabla larga con \texttt{longtable}.}
-  \label{tab:longtable}
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{longtable}{|p{0.08\textwidth}|p{0.14\textwidth}|p{0.23\textwidth}|p{0.20\textwidth}|p{0.25\textwidth}|}
+\caption{Trazabilidad entre objetivos, preguntas, casos de uso y evaluación.}\label{tab:trazabilidad-investigacion}\\
+\hline
+\textbf{Objetivo} & \textbf{Pregunta} & \textbf{Casos de uso} & \textbf{RNF} & \textbf{Métrica o evidencia propuesta} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Objetivo} & \textbf{Pregunta} & \textbf{Casos de uso} & \textbf{RNF} & \textbf{Métrica o evidencia propuesta} \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+OE1 (OBJ-1) & RQ2, RQ3 & RF-01, RF-02, RF-04, RF-05a, RF-19 & RNF-14, RNF-15 & Pruebas de autorización por rol y de aislamiento entre organizaciones; sin accesos cruzados autorizados. \\
+\hline
+OE2 (OBJ-2) & RQ2, RQ3 & RF-03, RF-06, RF-07, RF-17, RF-21 & RNF-8, RNF-10, RNF-17 & Configuración válida y transiciones de estado correctas; revisión de mensajes, contrato OpenAPI y medición de respuesta bajo carga. \\
+\hline
+OE3 (OBJ-3) & RQ1, RQ2, RQ3 & RF-05b, RF-08, RF-09, RF-10, RF-11, RF-20, RF-23 & RNF-1, RNF-3, RNF-6, RNF-7, RNF-11, RNF-12 & Auditoría WCAG 2.2 AA y revisión manual; éxito de tareas y comprensión del recibo; unicidad, idiomas y separación de identidad y urna. \\
+\hline
+OE4 (OBJ-4) & RQ2, RQ3 & RF-12, RF-13, RF-14, RF-15, RF-16, RF-19, RF-22 & RNF-11, RNF-13, RNF-17 & Recalcular el resultado desde votos contabilizables; verificar huellas y registro; medir respuesta del escrutinio. \\
+\hline
 \end{longtable}
-\end{center}
+\setlength{\tabcolsep}{6pt}
+\normalsize
 
-\section{Ecuaciones}
-\label{sec:ecuaciones}
+La contribución académica se centra en una experiencia móvil accesible, SSO
+institucional, una API REST documentada y una explicación comprensible de las
+evidencias de voto. La verificación \emph{cast-as-intended} y la criptografía
+extremo a extremo no se consideran resueltas por el diseño actual; la
+transparencia de precios y las integraciones avanzadas quedan como líneas de
+trabajo futuro.
 
-Las fórmulas sencillas pueden escribirse en línea, por ejemplo $x^2 + y^2 = r^2$. Si conviene numerarlas para referenciarlas después, se usa el entorno \texttt{equation}, como en la ecuación~\eqref{ec:cuadratica}.
+\section{Alcance y supuestos}
+\label{sec:alcance}
 
-\begin{equation}
-  \label{ec:cuadratica}
-  x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
-\end{equation}
+El alcance propuesto cubre organizaciones y usuarios, censos, configuración
+de procesos, autenticación, emisión, recibos, auditoría, escrutinio,
+resultados, actas, notificaciones y atención de solicitudes sobre datos
+personales. El servicio se concibe como una aplicación en la nube con
+arquitectura multi-tenant. La sustitución de voto se conserva en la
+especificación vigente, pero no se incluye en el MVP provisional; la
+delimitación se concreta en la sección~\ref{sec:alcance-mvp}.
 
-\section{Listados de código}
-\label{sec:codigo}
+La especificación identifica como propuestos varios umbrales cuantitativos,
+entre ellos la carga de 500 votantes simultáneos y los tiempos de respuesta.
+Estos valores deben validarse con el cliente y el tutor antes de considerarse
+criterios definitivos de aceptación. La especificación no acredita que la
+plataforma esté implementada ni que los objetivos de calidad se hayan
+verificado; la memoria deberá incorporar esos resultados cuando existan.
 
-Esta plantilla incluye un estilo (\texttt{codigo.sty}) para formatear código fuente con el paquete \texttt{listings}: numeración de línea, resaltado de sintaxis y su propio índice de listados. Los archivos de código de ejemplo se guardan en la carpeta \texttt{Codigo/}.
+\section{Delimitación: qué no es este TFM}
+\label{sec:delimitacion}
 
-\lstinputlisting[language=C, caption={Ejemplo de listado en C incluido desde un archivo externo.}, label=lst:holamundo]{holamundo.c}
+Este trabajo no plantea un sistema de votación presencial ni sustituye las
+garantías legales y organizativas exigibles a una elección oficial. No propone
+usar blockchain: la trazabilidad se aborda mediante registros de auditoría y
+huellas encadenadas cuya arquitectura deberá detallarse. Tampoco demuestra
+resistencia a la coacción, verificabilidad extremo a extremo ni anonimato
+frente a un adversario con control de la infraestructura. El alcance actual
+es la especificación y el diseño conceptual de una plataforma SaaS; la
+implementación y las mediciones de calidad solo podrán afirmarse cuando se
+disponga de un prototipo y de evidencias experimentales.
 
-También se puede escribir el código directamente dentro del documento:
+\section{Metodología}
+\label{sec:metodologia}
 
-\begin{lstlisting}[language=C, caption={Ejemplo de listado escrito directamente en el documento.}]
-#include <stdio.h>
+Se adopta \emph{Design Science Research} (DSR), porque el objetivo es diseñar
+y evaluar un artefacto, en este caso la especificación y el diseño de una
+plataforma SaaS de votación, para responder a un problema concreto. DSR estructura el trabajo
+en la identificación del problema, la definición de objetivos, el diseño del
+artefacto, su demostración mediante escenarios, su evaluación y la
+comunicación de resultados \citep{hevner2004,peffers2007}. La elección es
+coherente con un TFM cuyo resultado inmediato es una propuesta técnica
+trazable; no presupone que el producto esté ya implementado.
 
-int main() {
-    printf("Hola mundo");
-    return 0;
-}
-\end{lstlisting}
+La aplicación al proyecto se organiza en cinco actividades: (1) caracterizar
+los riesgos de la gestión manual, el secreto y la verificación; (2) derivar
+objetivos, preguntas, requisitos y criterios de calidad; (3) diseñar los
+casos de uso, la arquitectura y los flujos de voto y escrutinio; (4) demostrar
+el diseño con escenarios y prototipos cuando estén disponibles; y (5) evaluar
+la evidencia con las métricas de la sección~\ref{sec:plan-evaluacion}. Las
+iteraciones de diseño podrán incorporar revisiones del tutor, sin presentarlas
+como una metodología ágil completa ni como sustituto del ciclo DSR.
 
-El listado~\ref{lst:holamundo} y el anterior producen el mismo resultado; la diferencia está en si el código vive en un archivo aparte (recomendado para código largo o reutilizado) o se escribe en línea. También existe un lenguaje de ejemplo para pseudocódigo, definido en \texttt{codigo.sty}:
+\section{Plan de evaluación}
+\label{sec:plan-evaluacion}
 
-\lstinputlisting[language=pseudo, caption={Ejemplo de listado en pseudocódigo.}, label=lst:pseudo]{holamundo.psc}
+La evaluación se ejecutará cuando exista un prototipo funcional. Las
+siguientes hipótesis y umbrales son criterios iniciales derivados de los RNF;
+deben acordarse con el tutor y no representan resultados obtenidos.
 
-\section{Citas y bibliografía}
-\label{sec:citas}
+\begin{description}
+  \item[H1a.] El flujo de voto satisface los criterios de accesibilidad
+  WCAG~2.2 AA definidos para las pantallas incluidas en la evaluación.
+  \item[H0a.] El flujo incumple al menos uno de esos criterios.
+  \item[H1b.] Al menos el 90\% de los participantes no técnicos completa el
+  acceso, la emisión y la obtención del recibo en un máximo de tres minutos,
+  y al menos el 80\% interpreta correctamente el resultado de la verificación.
+  \item[H0b.] No se alcanzan uno o ambos umbrales de usabilidad.
+  \item[H1c.] Con 500 usuarios concurrentes, al menos el 95\% de las
+  peticiones de emisión responde en menos de dos segundos.
+  \item[H0c.] La prueba de carga no alcanza el umbral de respuesta o concurrencia.
+\end{description}
 
-Las referencias bibliográficas se gestionan con \texttt{natbib} a partir del archivo \texttt{referencias.bib}. Cada entrada del \texttt{.bib} se cita con \lstinline[language=enparrafo]!\cite{clave}! o \lstinline[language=enparrafo]!\citep{clave}!. Por ejemplo, se puede citar un artículo de revista \citep{ejemploarticulo}, un libro \citep{ejemplolibro} o una comunicación en congreso \citep{ejemploconferencia}. El estilo configurado en esta plantilla (\lstinline[language=enparrafo]!\bibliographystyle{IEEEtran}!) es numérico, por lo que las citas aparecen como números entre corchetes; comandos de \texttt{natbib} pensados para estilos autor-año, como \lstinline[language=enparrafo]!\citet!, no deben usarse con este estilo.
-
-Todas las citas insertadas con \texttt{cite}/\texttt{citep}/\texttt{citet} generan automáticamente la lista de referencias que aparece en el capítulo ``BIBLIOGRAFÍA'' al final del documento, ya ordenada y formateada según el estilo indicado en \lstinline[language=enparrafo]!\bibliographystyle{IEEEtran}! (\texttt{main.tex}). El apéndice \ref{sec:bib} resume los tipos de entrada disponibles en un archivo \texttt{.bib} y sus campos.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% A partir de aquí: guía de estilo y redacción para TFG/TFM. Es contenido
-% genérico y orientativo; consulta siempre las normas concretas de tu
-% titulación y las indicaciones de tu director/a.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\chapter{Normas fundamentales del formato}
-\label{sec:funda}
-
-La memoria del Trabajo Fin de Grado/Máster se presentará en formato  UNE  A4,  salvo  que  las  características  especiales  del  trabajo  presentado  no  lo permitieran.
-
-\section {Estilo,  Tipografía y    Maquetado}
-
-Se podrán utilizar las siguientes familias de tipos de letras \url{https://tug.org/FontCatalogue/}, no se recomiendan tipos de letras con decoración excesiva:
-
-	\begin{center}
-	\begin{tabular}{p{2cm}p{7.5cm}c}
-		\textbf{Tipo} & \textbf{Fuente} & \textbf{Anchura} \\ \hline
-         Familia 1 & Arial, Helvética, Tahoma  	\ldots & Variable \\
-         Familia 2 & Times New Roman, Palatino  Linotype,  	\ldots & Variable  \\
-         Familia 3 & Courier  New,  Miriam Fixed \ldots & Fija\\
-         \hline
-	\end{tabular}
-	\end{center}
-
-
-
-\begin{table}
-	\begin{center}
-	\begin{tabular}{l c c}
-		\textbf{Tipo} & \textbf{Fuente} & \textbf{Anchura} \\ \hline
-         Familia 1 & Arial, Helvética, Tahoma  	\ldots & Variable \\
-         Familia 2 & Times New Roman, Palatino  Linotype,  	\ldots & Variable  \\
-         Familia 3 & Courier  New,  Miriam Fixed \ldots & Fija \\
-         \hline
-	\end{tabular}
-	\end{center}
-
-	\caption{\label{tab:letras}Tipos de letras.}
-\end{table}
-
-
-La familia 1 se recomienda para los títulos de las distintas secciones del documento.
-
-La familia 2 se recomienda para los párrafos normales.
-
-La familia 3 se recomienda para escribir, por ejemplo, porciones de código, debido a su tamaño fijo donde es necesario un texto tabulado y se alinee perfectamente, así como cualquier otro uso de texto de tamaño de letra fijo.
-
-Se recomienda el uso del tipo de letra Palatino Linotype en itálica para la escritura de fórmulas sencillas, para aquellas que sean más complejas se podrá usar un editor de ecuaciones, ejemplos:
-
-$ x^2+y^2=r^2,    a+b=c$
-
-Si fuese necesario se puede utilizar un entorno ecuación para después poder referenciarlo en el texto, como se ha mostrado en la sección~\ref{sec:ecuaciones}. La potencia de \LaTeX{} para la edición de ecuaciones supera el alcance de este documento, se sugiere consultar otras fuentes para ampliar la información sobre su uso.
-
-Las dimensiones del la zona de texto se definen a través del \emph{geometry}, \lstinline[language=enparrafo]!geometry!, un paquete de latex que en este caso se incluye en el estilo \textbf{UAL}, \lstinline[language=enparrafo]!\usepackage{UAL}!.
-
-\section {Estilo ual de latex}
-
-En el estilo se define la portada y contraportada según las recomendaciones de la escuela superior de ingeniería, véase la figura \ref{fig:facultad}.
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width = 0.5\textwidth]{facultad.png}
-	\end{center}
-	\caption{\label{fig:facultad} Logotipo de la Escuela Superior de ingeniería }
-\end{figure}
-
-
-
-El estilo generado permite definir un documento a una cara o doble cara para lo que se tiene que seleccionar la opción "print" al incluir el paquete estilo (\lstinline[language=enparrafo]!\usepackage[print]{UAL}!). De esta forma se podrá personalizar, el pasar al la página impar en cada sección o bien a la páginas siguiente. Además se fija la marca de agua. Otras cuestiones incorporados en el estilo son los distintos tipos de cabeceras y pies de página necesarios.
-
-Un aspecto importante son los elementos flotantes de latex, en especial tablas y figuras. Estos son los elementos que después pueden incorporarse en los índices de la cabecera del documento. En los casos que se utilicen "códigos" también se puede incluir un índice de listados, \lstinline[language=enparrafo]!\usepackage{listing}!.
-
-Si es necesario se puede trabajar con los paquetes para tablas largas o con aquellos que permiten hacer subfiguras (véase la sección~\ref{sec:figuras} y la sección~\ref{sec:tablas}).
-
- \section{Figuras y tablas}
-
-Las  figuras  (o  gráficos)  y  tablas  (cuadros)  que  se  incorporen  deben  ir  numerados  (números  arábigos)  y  tener  un  título,  y  siempre  tendrán  que  tener  relación  con el contenido expuesto.  Todo elemento flotante debe referenciarse en el texto y debe colocarse  preferiblemente después de la primera vez que se cita en el texto.
-
-Las  gráficas, fotografías,  los  diagramas,  mapas,  dibujos,  etc.serán  considerados como  figuras. Es importante que se incluya el origen de la figura, en la etiqueta, si la ha hecho el autor se coloca el texto "elaboración propia".
-
-No se deben poner gráficos, figuras y fotos sólo para rellenar siempre se nota demasiado. Los gráficos y figuras deben ir referenciados en el texto, sino es mejor no incorporarlas en la memoria.
-
-
-
- \section{Listados de código}
-
-En el dominio de la informática es habitual que un TFG/TFM deba incluir porciones de código fomateado. Incluso que se definan como un un elemento flotante especial. En \LaTeX{} existen muchas formas de resolver esta cuestión. Se ha definido un estilo llamado \lstinline[language=enparrafo]!codigo.sty! que implementa un ejemplo, véase la sección~\ref{sec:codigo}. Los archivos de código están una carpeta aparte igual que las figuras. \footnote{Se puede sincronizar con repositorios de código tipo \url{www.github.com} se emplea overleaf, pero es necesario mantener dos proyectos}
-
-\subsection{Utilización del entorno verbatim}
-Lo que en latex se coloca dentro de un entorno verbatim deja de ser código latex y se representan tal como aparece. Pero suele tener interacciones con el paquete  gráfico tikz. por lo que no es recomendable, es mejor usar \lstinline[language=enparrafo]!\lstinline!
-
-\begin{verbatim}
-#include <stdio.h>
-
-int main()
-{
-        printf("Hola mundo");
-        return 0;
-}
-\end{verbatim}
-
-\subsection{Utilización de paquete listing}
-
-
-Se puede escribir directamente el código dentro de un entorno y si no se especifica nada se utilizan los parámetros por defecto. Para detalle de como configurar esta utilidad es conveniente revisar la documentación del paquete. Ejemplo de inclusión sin utilizar un objeto flotante. No aparecerá en el índice por poner \lstinline[language=enparrafo]!nolol=true!.
-
-\lstinputlisting[firstline=1, firstnumber=1, nolol=true]{holamundo.c}
-
-Realmente se trata de un paquete muy complejo que se puede complementar con el uso de entornos personalizados, cuya explotación exhaustiva queda fuera de este libro de estilo.
-
-
-\chapter {Buenas prácticas}
-
-
-En esta sección se incluyen una serie de cuestiones o buenas prácticas que se derivan de la experiencia, de normas básicas de elaboración de textos científicos \cite{ejemploarticulo}, y de las normas gramaticales básicas.
-
+El procedimiento previsto es el siguiente:
 \begin{enumerate}
-    \item Cuidado con el espacio entre palabras, utilizar \emph{hyphenation} para cortar o no palabras con los guiones. Aunque por defecto el paquete de español de latex lo gestiona aceptablemente bien.
-
-\item Los signos de puntuación (comas, puntos, puntos y comas, dos puntos) así   como   el   cierre  de   comillas, paréntesis e   interrogaciones han   de   ir inmediatamente   a   continuación   (sin   espacios)   de   la   palabra   anterior   y separados  por  un  espacio  de  la  palabra siguiente.  De  modo  contrario,  los signos   de   apertura   de   comillas, paréntesis e   interrogaciones deben   ir separados  por  un  espacio  de  la  palabra  anterior e inmediatamente  antes  (sin espacio) de la palabra posterior.
-
-
-\item En las listas \lstinline[language=enparrafo]!\begin{itemize}! \lstinline[language=enparrafo]!end{itemize}! o enumeraciones \lstinline[language=enparrafo]!\begin{enumerate}! donde no aparezca un verbo, es decir no se a una oración completa no se pone punto al final. Sólo se pone punto en el último item de la lista para finalizar el párrafo.
-
-\item Por la misma razón no se deben acabar los títulos y los subtitulos con un punto. En los pies de figuras y tablas queda a criterio del autor y tutor, pero la recomendación es no ponerlo.
-
-\item Aunque en español las siglas puedan marcarse con puntos entre letra y letra,  se  recomienda  utilizarlas  siempre  en  mayúscula  (siempre  sin  tilde) y  sin los    puntos.
-
-\item La  primera  vez  se emplea una acrónimo debe  ser  definido, incluyendo   el   texto   de   la   definición   entre   paréntesis   y   marcando   con mayúsculas  las  letras  que  dan  lugar  al  acrónimo.  Ejemplo:  MCU  (Multipoint Control  Unit).  En  subsiguientes  apariciones  del  acrónimo  no  debe  volverse  a incluir  la  definición.  Se  recomienda  adjuntar  al  principio  del  proyecto  una relación    detallada    de    los    acrónimos    y    su    significado,    ordenados alfabéticamente.
-
-
-\item Existen tres tipos de comillas: las españolas o latinas (<<comillas >>), las inglesas ("comillas") y las simples ('comillas' ). Use un único tipo a lo largo del texto. En escritos científicos es más común encontrar las inglesas o las simples. Empléelas siempre que efectúe citas textuales extraídas de algún documento.  También están las comillas abiertas y cerradas ``comillas ''.
-
-
-\item Evite   emplear   innecesariamente   palabras   o   expresiones   en   inglés cuando  en  español  exista  un  equivalente.  El  uso  de  términos  ingleses  no aceptados debe circunscribirse al campo técnico. Por ejemplo "planning del proyecto" en lugar de "planificación del proyecto".
-
-\item No se deben traducir sin comprobar la validez términos técnicos muy específicos si dichas traducciones no se encuentran más o menos asumidas por la comunidad científica (es decir, las   ha   leído   o   escuchado   repetidas   veces).   En   el   texto   los   términos   y expresiones inglesas no aceptados deben aparecer en cursiva.
-
-\item Cuando  se  referencien  símbolos  matemáticos  en  el  texto,  estos  han  de aparecer   en   cursiva   y   de   la   misma   manera   a   como   aparecen   en   las ecuaciones.
-
-\item No se deben usar frases con el verbo principal en infinitivo y sin articular. Por ejemplo no se debe escribir  “En  primer  lugar,  destacar  que  los  resultados  se  obtuvieron  por simulación”. En su lugar  “En primer  lugar se ha  de  reseñar que  los resultados...” (o “se debe”, “es preciso”, “hemos de”, “cabe” reseñar).
-
-\item El sujeto (salvo que se intercale una frase subordinada) no se puede separar por comas del predicado.
-
-\item Se ha de ser   coherente  con  el  uso  de  los  tiempos  verbales.  Si  describe  lo  que  se  ha hecho en pasado, se ha de continuar  con ese tiempo a lo largo de la memoria.
-
-\item No se debe abusar del  anidamiento  de oraciones  subordinadas.  En  su  lugar  es recomendable  usar  una  secuencia  de  oraciones  cortas,  que  son  de  más  fácil compresión. Asimismo, se deben evitar las negaciones encadenadas
-“no  aumentar  el  parámetro  beta  implica  que  no  se  aumenta  la  ganancia”, siendo preferible afirmar “reducir el parámetro beta reduce la ganancia”.
-
-\item Se han de reescribir   las  formas pasivas.  Utilice,  en  su  lugar,  la  pasiva  refleja.  Es preferible “se ha desarrollado un sistema” a “un sistema ha sido desarrollado”. La construcción en pasiva es típicamente inglesa y su abuso denota que estás traduciendo algo (lo cual no es pecado si dices de quien lo traduces). Lo mejor es escribir en castellano. Ejemplo: “Puede  que  sean  retrasadas...”    se  debería  escribir  “Pueden  retrasarse”  o  “puede  que  se retrasen”.
-
-\item Todos los párrafos concluyen con un punto final.
-
-\item En  el  texto,  si se utilizan números se han de expresar   con  palabras   si  son  menores  o  iguales  que veinte y con números si son superiores a ese valor o presentan decimales.
-
-\item A  la  hora  de  emplear  la  coma  o  el  punto  para  expresar  los decimales en los números se debe ser congruente, no usarlos indistintamente.
-
-\item  Los términos  (adjetivos  y  adverbios)  valorativos  que  resulten  exagerados  o poco científicos deben evitarse. Por ejemplo,  “notablemente” o “sustancialmente” antes que “espectacularmente”, “enormemente”, “aplastantemente”, “drásticamente”o “fenomenalmente”. Al hablar de un resultado  o  de  un  producto  de  Ingeniería, es preferible “de forma adecuada o muy conveniente” antes que “perfectamente”.
-
-\item En un texto científico es preferible, para concluir una relación que se sabe que es muy larga, emplear “etc.” que los puntos suspensivos (“...”).
-
-\item El  vocabulario debe ser rico y no repetir términos dentro de la misma frase o  párrafo.  Por  ejemplo,  para comentar  lo  que  una  figura  enseña,  puede  decir “en  la  figura  se  muestra,  se  refleja,  se  indica,  se  ilustra,  se  presenta,  se observa, se detecta, se comprueba, se contempla, se evidencia, se confirma,...”
-
-\item Las  frases han de concordar en  sujeto y predicado.
-
-\item  El término “demostrar” es muy riguroso (salvo  que  exista  una  auténtica demostración). Una figura muestra pero no suele demostrar nada.
-
-\item Salvo en casos muy puntuales (citas textuales, por ejemplo), detrás de los dos puntos (“:”) se sigue en minúsculas.
-
-\item No se debe utilizar la palabra \emph{optimizar} en vano.
-
-\item Escribir  un  trabajo  de  investigación,  no  es  hacer  literatura  barroca.  Cada  frase  y  cada  palabra debe servir para algo. Si no limitamos nuestra verborrea, nos podemos meter en un lío.
-
-\item Si  se  va  a  hacer  una  descripción  de,  por  ejemplo,  siete  etapas  de  algo,  no  está  de  más, primero listarlas y luego iniciar la descripción.
-
-
-
+  \item Ejecutar una auditoría automática de accesibilidad (por ejemplo,
+  axe) en las pantallas del flujo; no registrar incumplimientos críticos y
+  completar una revisión manual con teclado y lector de pantalla. La auditoría
+  automática por sí sola no prueba conformidad WCAG.
+  \item Realizar pruebas moderadas con al menos cinco personas no técnicas.
+  Pedirles que accedan a una votación de prueba, emitan un voto y comprueben
+  el recibo. Registrar éxito sin ayuda, duración, errores y comprensión del
+  mensaje; recoger consentimiento y no usar votos reales.
+  \item Ejecutar una prueba de carga en un entorno aislado con datos
+  sintéticos y hasta 500 sesiones concurrentes. Medir latencia por percentiles,
+  errores y consumo de recursos durante varias ejecuciones reproducibles.
+  \item Contrastar la unicidad, la separación entre identidad y urna, la
+  integridad del registro y la exactitud del escrutinio mediante revisión del
+  diseño y pruebas funcionales; conservar informes, configuración y
+  limitaciones como evidencias.
 \end{enumerate}
 
- Otra lista de errores y/o consideraciones se muestra en la figura \ref{fig:errores}.
+\section{Amenazas a la validez}
+\label{sec:amenazas-validez}
 
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width = 0.95\textwidth]{Figuras/errores}
-	\end{center}
-	\caption{\label{fig:errores} Errores habituales}
+\textbf{Validez interna.} Una muestra pequeña, la ayuda del moderador, el
+aprendizaje entre tareas y la variabilidad del entorno pueden influir en los
+tiempos y errores observados. Se mitigará usando instrucciones uniformes,
+tareas equivalentes, registro de incidencias y separación entre resultados
+automáticos y observaciones del evaluador.
+
+\textbf{Validez externa.} Una prueba piloto con pocos participantes y una
+carga sintética no representan todas las edades, capacidades, dispositivos,
+redes, organizaciones ni patrones de tráfico reales. Los resultados se
+limitarán al prototipo, configuración y población evaluados; no se
+generalizarán a elecciones oficiales ni a despliegues de producción.
+
+\textbf{Validez de constructo.} Una puntuación de axe no equivale a una
+certificación WCAG; completar una tarea no demuestra por sí solo que la
+verificación sea comprensible o confiable; y un test de carga no demuestra
+disponibilidad ni resistencia a ataques. Para reducir estas amenazas se
+combinarán métricas observables, revisión manual y evidencias de diseño, y se
+declararán los criterios y límites antes de interpretar los resultados.
+
+\section{Organización de la memoria}
+\label{sec:organizacion}
+
+Los capítulos~\ref{cap:estado-arte} y~\ref{cap:dafo} presentan el estado del
+arte, los huecos de mercado, el análisis DAFO, el encaje con el máster y la
+delimitación del MVP. El capítulo~\ref{cap:contexto-requisitos} describe el dominio, los perfiles y
+los requisitos del sistema. El capítulo~\ref{cap:analisis-diseno} presenta
+los casos de uso y los principales conceptos de información. Los capítulos
+posteriores incluyen la correspondencia de los requisitos no funcionales con
+ISO/IEC 25010:2023, los diagramas, el plan de evaluación, la revisión del
+diagrama de casos de uso y el plan de trabajo.
+
+\input{estado_arte}
+\input{dafo_justificacion}
+
+\chapter{Contexto y requisitos del sistema}
+\label{cap:contexto-requisitos}
+
+\section{Dominio del problema}
+\label{sec:dominio}
+
+Un proceso de votación electrónica debe controlar la elegibilidad y unicidad
+de la participación, proteger el secreto del voto y ofrecer disponibilidad,
+accesibilidad y mecanismos de verificación. La solución propuesta combina
+cuentas de gestión y acceso de votantes, manteniendo separados los datos de
+participación y los votos almacenados en la urna.
+
+El proceso general comprende la preparación del censo, la definición de la
+papeleta y del calendario, la invitación a los votantes, la autenticación, la
+emisión del voto, el cierre, el escrutinio y la publicación de resultados y
+evidencias. El sistema también registra acciones administrativas y eventos de
+la urna para apoyar las tareas de auditoría.
+
+\section{Glosario}
+\label{sec:glosario}
+
+\begin{longtable}{|p{0.23\textwidth}|p{0.68\textwidth}|}
+\caption{Términos principales del dominio.}\label{tab:glosario}\\
+\hline
+\textbf{Término} & \textbf{Definición} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Término} & \textbf{Definición} \\
+\hline
+\endhead
+SaaS & Distribución de software como servicio accesible a través de Internet. \\
+\hline
+Multi-tenant & Modelo donde varias organizaciones comparten infraestructura con aislamiento lógico de sus datos y configuración. \\
+\hline
+SSO & Inicio de sesión único que permite autenticarse mediante una cuenta institucional. \\
+\hline
+OIDC & Protocolo de autenticación basado en OAuth 2.0 para verificar identidades. \\
+\hline
+OTP & Código temporal de un solo uso para reforzar la autenticación. \\
+\hline
+PWA & Aplicación web instalable que ofrece algunas capacidades propias de aplicaciones móviles. \\
+\hline
+WCAG 2.2 AA & Nivel de conformidad de pautas de accesibilidad web empleado como referencia para la interfaz. \\
+\hline
+RGPD & Reglamento General de Protección de Datos de la Unión Europea. \\
+\hline
+Huella (hash) & Resumen de longitud fija utilizado para detectar cambios en datos. \\
+\hline
+Recibo de voto & Evidencia que permite comprobar que un voto consta en la urna sin revelar su contenido. \\
+\hline
+Registro de auditoría & Secuencia de eventos de urna o acciones administrativas con trazabilidad y protección frente a modificaciones. \\
+\hline
+\end{longtable}
+
+\section{Actores y perfiles}
+\label{sec:actores}
+
+La especificación distingue cinco perfiles de usuario y dos sistemas externos.
+La tabla~\ref{tab:actores} resume sus responsabilidades principales.
+
+\begin{longtable}{|p{0.23\textwidth}|p{0.68\textwidth}|}
+\caption{Actores identificados en la especificación.}\label{tab:actores}\\
+\hline
+\textbf{Actor} & \textbf{Responsabilidad} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Actor} & \textbf{Responsabilidad} \\
+\hline
+\endhead
+Superadministrador & Gestiona organizaciones y la configuración global de la plataforma (ACT-1). \\
+\hline
+Administrador de organización & Administra usuarios, procesos y configuración dentro de su organización (ACT-2). \\
+\hline
+Auditor & Consulta registros y comprueba información y resultados electorales (ACT-3). \\
+\hline
+Votante & Accede a la papeleta, emite o sustituye su voto y consulta las evidencias permitidas (ACT-4). \\
+\hline
+Gestor de censo & Administra participantes, grupos y censos de la organización (ACT-5). \\
+\hline
+Proveedor de identidad & Sistema externo que proporciona autenticación institucional mediante OIDC (ACT-6). \\
+\hline
+Servicio de notificaciones & Sistema externo para enviar correos y notificaciones a participantes (ACT-7). \\
+\hline
+\end{longtable}
+
+\section{Requisitos funcionales}
+\label{sec:requisitos-funcionales}
+
+Los requisitos funcionales vigentes y los nuevos requisitos del proyecto se agrupan en la
+tabla~\ref{tab:catalogo-rf}, con prioridad MoSCoW normalizada. Las descripciones detalladas, precondiciones,
+flujos alternativos y excepciones se mantienen en el documento de
+especificación versión 1.0; este catálogo los resume para dar trazabilidad en
+la memoria. Para no romper la especificación, los identificadores RF-01 a
+RF-19 se conservan. RF-05 se desglosa en los subcasos RF-05a y RF-05b. Los nuevos RF-20 a RF-23 son identificadores locales; la
+columna final indica el código del informe complementario y el hueco que
+motiva cada requisito. Las prioridades nuevas y el alcance del MVP siguen
+pendientes de validación con el tutor.
+
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{longtable}{|p{0.08\textwidth}|p{0.18\textwidth}|p{0.30\textwidth}|p{0.12\textwidth}|p{0.20\textwidth}|}
+\caption{Catálogo resumido de requisitos funcionales.}\label{tab:catalogo-rf}\\
+\hline
+\textbf{Código} & \textbf{Nombre} & \textbf{Resumen} & \textbf{Prioridad (MoSCoW)} & \textbf{Origen / hueco} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Código} & \textbf{Nombre} & \textbf{Resumen} & \textbf{Prioridad (MoSCoW)} & \textbf{Origen / hueco} \\
+\hline
+\endhead
+RF-01 & Gestionar organizaciones & Crear organizaciones con espacio de datos aislado y administrador inicial. & Must* & Informe RF-01: arquitectura SaaS multi-tenant. \\
+\hline
+RF-02 & Gestionar roles y permisos & Asignar roles y aplicar permisos dentro del ámbito de cada organización. & Must & Informe RF-02: administración por perfiles. \\
+\hline
+RF-03 & Gestionar censo & Crear, importar y modificar participantes, detectando duplicados y errores. & Must & Informe RF-03: necesidades de universidades y asociaciones. \\
+\hline
+RF-04 & Autenticar usuario de gestión & Autenticar perfiles de gestión mediante credenciales y segundo factor. & Must & Informe RF-04: autenticación reforzada. \\
+\hline
+RF-05a & Iniciar sesión de gestión & Permitir que los perfiles de gestión inicien sesión; SSO/OIDC es una opción de diseño. & Should & Informe RF-05: hueco SSO en SaaS generalistas; Belenios ofrece CAS. \\
+\hline
+RF-05b & Iniciar sesión de votante & Permitir que el votante inicie sesión con el mecanismo previsto para su proceso; SSO/OIDC es una opción de diseño. & Should & Informe RF-05: hueco SSO en SaaS generalistas; Belenios ofrece CAS. \\
+\hline
+RF-06 & Crear y configurar proceso & Definir opciones, papeleta y calendario; los métodos avanzados quedan fuera del MVP. & Must & Informe RF-07/09: configuración y modalidades básicas. \\
+\hline
+RF-07 & Programar y gestionar ciclo de vida & Programar apertura y cierre, ejecutar esos cambios y archivar el proceso. & Must & Informe RF-08: ciclo de vida del proceso. \\
+\hline
+RF-08 & Acceder a la papeleta & Verificar el acceso del votante a un proceso abierto mediante enlace y código. & Must & Informe RF-14: identidad y elegibilidad del votante. \\
+\hline
+RF-09 & Emitir voto & Registrar una selección válida y evitar que la identidad quede asociada al voto. & Must & Informe RF-09/15: voto y secreto/unicidad. \\
+\hline
+RF-10 & Verificar recibo & Comprobar que el voto consta en la urna usando el recibo emitido. & Must & Informe RF-16: recibo verificable; Helios y Belenios. \\
+\hline
+RF-11 & Sustituir voto & Permitir cambiar el voto antes del cierre, conservando el anterior como no contabilizable. & Could & Informe RF-17: revoto; queda fuera del MVP por alcance. \\
+\hline
+RF-12 & Consultar registro de urna & Verificar el registro encadenado y la huella publicada del proceso. & Should & Informe RF-21: auditoría e integridad. \\
+\hline
+RF-13 & Escrutar y verificar resultado & Ejecutar el escrutinio al cierre y permitir comprobar el resultado publicado. & Must & Informe RF-22: escrutinio y verificación. \\
+\hline
+RF-14 & Consultar participación & Mostrar datos agregados de participación sin revelar las opciones elegidas. & Must & Informe RF-24: panel sin resultados parciales. \\
+\hline
+RF-15 & Consultar y exportar resultados & Presentar resultados y exportarlos tras el cierre, sin revelar datos personales. & Must & Informe RF-25: gráficos y exportación. \\
+\hline
+RF-16 & Generar acta & Crear el acta del proceso a partir del escrutinio realizado. & Should & Informe RF-23: acta PDF con huella. \\
+\hline
+RF-17 & Gestionar notificaciones & Enviar invitaciones, recordatorios y avisos de apertura o cierre. & Must & Informe RF-28: correo mínimo; SMS sujeto al alcance. \\
+\hline
+RF-18 & Atender derechos sobre datos personales & Exportar o eliminar datos personales cuando proceda conforme a la solicitud. & Should & Informe RF-29: RGPD, retención y minimización. \\
+\hline
+RF-19 & Consultar trazabilidad administrativa & Consultar el registro inmutable de acciones de administración. & Should & Informe RF-30: trazabilidad administrativa. \\
+\hline
+RF-20 & Gestionar idioma de papeleta & Mantener textos de la papeleta en español e inglés como mínimo. & Should & Informe RF-11: mercado hispanohablante y multidioma; MVP acotado. \\
+\hline
+RF-21 & Exponer API documentada & Ofrecer API REST con OpenAPI y claves aisladas por organización. & Should & Informe RF-26: hueco de API pública; webhooks pospuestos. \\
+\hline
+RF-22 & Aplicar métodos avanzados & Permitir voto preferencial, ponderado o por colegios electorales. & Could & Informe RF-10: funciones especializadas; trabajo futuro. \\
+\hline
+RF-23 & Cifrar papeleta en cliente & Cifrar el voto en cliente y permitir custodia umbral de claves de escrutinio. & Could & Informe RF-20: criptografía completa; trabajo futuro y revisión experta. \\
+\hline
+\end{longtable}
+\setlength{\tabcolsep}{6pt}
+\normalsize
+\noindent\footnotesize MoSCoW: Must (imprescindible), Should (importante),
+Could (deseable) y Won't (fuera de esta versión). El asterisco indica una
+prioridad propuesta por la memoria pendiente de validación. La correspondencia
+con los RF del informe se indica como origen y no reemplaza los identificadores
+vigentes; el alcance provisional se detalla en la tabla~\ref{tab:alcance-mvp}.\normalsize
+
+\section{Requisitos de información}
+\label{sec:requisitos-informacion}
+
+La especificación identifica 13 conjuntos de información. Su separación debe
+respetar el aislamiento entre organizaciones y la independencia entre la
+identidad del votante y la urna.
+
+\begin{itemize}
+  \item RI-1: organizaciones y configuración del servicio.
+  \item RI-2: usuarios, credenciales, roles y permisos.
+  \item RI-3: personas incluidas en los censos.
+  \item RI-4: procesos, calendario y parámetros de votación.
+  \item RI-5: opciones y estructura de las papeletas.
+  \item RI-6: votos recibidos y su estado de contabilización, sin identidad.
+  \item RI-7: participación por votante, almacenada separadamente de la urna.
+  \item RI-8: recibos de verificación sin asociación con la identidad.
+  \item RI-9: eventos encadenados de auditoría de la urna.
+  \item RI-10: resultados del escrutinio y actas generadas.
+  \item RI-11: notificaciones y estado de entrega.
+  \item RI-12: enlaces de acceso, códigos OTP y controles de intentos.
+  \item RI-13: trazabilidad de las acciones administrativas.
+\end{itemize}
+
+\section{Requisitos no funcionales}
+\label{sec:requisitos-no-funcionales}
+
+Los RNF cubren accesibilidad, usabilidad, idiomas, seguridad, privacidad,
+rendimiento y portabilidad. La especificación indica cómo verificar cada uno;
+varios umbrales son valores iniciales que aún deben validarse. La
+tabla~\ref{tab:rnf-iso25010} presenta su correspondencia razonada con
+ISO/IEC 25010:2023.
+
+RNF-8 y RNF-10 son transversales a los casos de uso RF-01--RF-19 y a todas las
+pantallas; no se asocian a un caso de uso concreto.
+
+\chapter{Análisis y diseño conceptual}
+\label{cap:analisis-diseno}
+
+\section{Casos de uso}
+\label{sec:casos-uso}
+
+Los casos de uso mantienen los identificadores RF-01 a RF-19 de la
+especificación. Los diagramas fuente PlantUML se incluyen en el
+capítulo~\ref{cap:refactorizacion-diagrama} y separan los actores internos de
+los servicios externos; además, representan la reutilización y la extensión
+del comportamiento. El proyecto considera especialmente relevantes los siguientes
+recorridos:
+
+\begin{enumerate}
+  \item El administrador configura el proceso, el censo, la papeleta y el
+  calendario.
+  \item El sistema abre el proceso y envía las notificaciones configuradas.
+  \item El votante accede, se valida y emite su voto; el sistema entrega un
+  recibo y conserva por separado la participación.
+  \item Al cierre, el sistema bloquea nuevas emisiones, ejecuta el escrutinio
+  y publica el resultado y las evidencias previstas.
+  \item El auditor consulta los registros y verifica la integridad del
+  proceso.
+\end{enumerate}
+
+La especificación contempla que un voto posterior sustituya al anterior antes
+del cierre. Solo los votos en estado contabilizable participan en el
+escrutinio; los registros de participación no enlazan con el contenido del
+voto.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Aplicación transversal de RNF-8 y RNF-10 en el diseño.}
+  \label{tab:rnf-transversales-diseno}
+  \small
+  \begin{tabular}{|p{0.12\textwidth}|p{0.32\textwidth}|p{0.42\textwidth}|}
+    \hline
+    \textbf{RNF} & \textbf{Alcance transversal} & \textbf{Aplicación en el diseño} \\
+    \hline
+    RNF-8 & RF-01--RF-19 y todas las pantallas & Mensajes, estados y confirmaciones explican el resultado y la siguiente acción. \\
+    \hline
+    RNF-10 & RF-01--RF-19 y todas las pantallas & Controles, navegación y terminología mantienen un comportamiento coherente. \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\section{Arquitectura de componentes}
+\label{sec:arquitectura-componentes}
+
+La figura~\ref{fig:arquitectura-componentes} resume la arquitectura SaaS
+propuesta: clientes web, una capa de entrada protegida, módulos de negocio,
+servicios externos, procesamiento asíncrono y almacenamiento segregado. El
+SSO mediante OIDC se representa como decisión de diseño para integrar el IdP
+con los módulos de gestión y de acceso del votante. El cifrado en cliente
+(RF-23) es opcional y queda como trabajo futuro; la criptografía de extremo a
+extremo aún no está resuelta. La arquitectura deberá concretarse durante la
+implementación.
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{0.98\textwidth}{!}{\input{Figuras/diagramas/arquitectura_componentes_saas_votacion.tex}}
+  \caption{Arquitectura de componentes de la plataforma SaaS de votación.}
+  \label{fig:arquitectura-componentes}
 \end{figure}
 
+\section{Secuencia de emisión y verificación del voto}
+\label{sec:secuencia-voto}
 
+La figura~\ref{fig:secuencia-emision-voto} representa el intercambio entre la
+PWA del votante, Acceso votante, Urna y recibos, PostgreSQL censo, Urna cifrada
+y Auditoría hash-chain. Durante la emisión, el sistema valida proceso abierto,
+elegibilidad y uso único, y registra por separado la participación. El token
+de voto es una autorización opaca de un solo uso: no contiene la identidad ni
+permite enlazarla con el voto (RNF-11). La verificación del recibo consulta la
+urna (RF-10); la integridad de la cadena de auditoría corresponde a RF-12 y es
+una comprobación independiente.
 
+\begin{figure}[p]
+  \centering
+  \resizebox{0.94\textwidth}{!}{\input{Figuras/diagramas/secuencia_emitir_voto_recibo.tex}}
+  \caption{Emisión del voto (pasos 1--7) y verificación del recibo (pasos 8--10).}
+  \label{fig:secuencia-emision-voto}
+\end{figure}
 
- \chapter{Apartado BIBLIOGRAFIA}
- Este apartado es de vital importancia para tener éxito en la consecución del trabajo fin de grado. Los tribunales suelen prestar gran atención a este apartado, probablemente por su formación académica.
+\section{Actividad de escrutinio y verificación del resultado}
+\label{sec:actividad-escrutinio}
 
- Es todo un mundo el de los estilos bibliográficos y la realización de las citas, se puede encontrar un tutorial en:  \url{http://ci2.ual.es/comunicar-la-informacion/citas-y-referencias-bibliograficas/}. No obstante en las siguientes secciones se indicarán las cuestiones básicas para iniciarse en el tema pero restringuiendose a la utilización de la presente plantilla. La gran ventaja de latex es que cada elemento en las referencias   \lstinline[language=enparrafo]!\bibitem! es considerado como un elemento de una base de datos, de forma que es el compilador el que reordena o coloca la cita de acuerdo con el estilo definido.
+La figura~\ref{fig:actividad-escrutinio} modela el cierre de la urna, la
+comprobación de integridad, el cálculo del escrutinio y la publicación o
+retención del resultado según la verificación de la cadena de auditoría
+(RF-13).
 
- \section{Como citar}
-A lo largo del texto de la memoria se incluirán citas a trabajos de otros autores. La inclusión de la cita tiene que ser justo después del texto donde se propone algo relativo al trabajo citado. Para citar, como para todo el \LaTeX{} existen numerosos paquetes, los dos mas conocidos son  biblatex y   natbib .
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.90\textwidth,height=0.68\textheight,keepaspectratio]{Figuras/diagramas/escrutinio_verificacion_actividad.pdf}
+  \caption{Actividad de escrutinio y verificación del resultado (RF-13).}
+  \label{fig:actividad-escrutinio}
+\end{figure}
 
-Además dada forma de citar y de incorporar items en el apartado referencias lleva asociado un estilo de bibliografía    \lstinline[language=enparrafo]!\bibliographystyle{XXX}!, que aun abre mucho mas el abanico de opciones.
+\section{Separación de información y confianza}
+\label{sec:separacion-informacion}
 
-Es recomendable consultar las ayudas de los paquetes \url{https://www.overleaf.com/learn/latex/Biblatex_bibliography_styles} y \url{https://www.overleaf.com/learn/latex/Bibliography_management_with_natbib}.
+El modelo conceptual distingue los datos de identidad y censo, los registros
+de participación, la urna, los recibos, los eventos de auditoría y los
+resultados. Esta separación persigue que el sistema pueda controlar la
+unicidad y mostrar la participación sin conservar una relación directa entre
+la persona y su opción elegida. La integridad del registro se apoya en huellas
+encadenadas; el diseño técnico deberá especificar su generación, protección,
+publicación y verificación.
 
-Lo habitual es utilizar la orden      \lstinline[language=enparrafo]!\cite{xxx}!, o   \lstinline[language=enparrafo]!\citep(xxx)!  en la ubicación en el texto donde se quiere colocar la cita, el compilador se encargá de procesarla según el estilo, tal como se ha mostrado en la sección~\ref{sec:citas}.
+\section{Criterios de calidad y validación}
+\label{sec:validacion-calidad}
 
- \section {Apartado referencias}
-  Existen dos formas de incorporar las referencias, directamente en el entorno   \lstinline[language=enparrafo]!\begin{bibliography}! y utilizando las ordenes del lenguaje o bien utilizando un archivo .bib para guardar esas referencias. Se generará un auxiliar .bbl que automáticamente se incorpora en el documento.
+La validación deberá relacionar cada requisito con evidencias concretas:
+pruebas de accesibilidad con teclado y lector de pantalla, pruebas de
+usabilidad, concurrencia y carga, revisión de aislamiento multi-tenant,
+comprobación de registros y evaluación de los flujos de protección de datos.
+Los criterios cuantitativos se tratarán como objetivos propuestos hasta su
+aprobación por las partes interesadas.
 
-  Este archivo auxiliar es el que tiene directamente las ordenes del lenguaje. Un ejemplo simplificado de su estructura sería:
+% Capítulos de apoyo elaborados a partir de los requisitos del proyecto.
+\input{especificacion_detallada}
+\input{rnf_iso25010}
+\input{cambios_diagrama}
+\input{plan_gantt}
 
- \begin{verbatim}
-
-\begin{thebibliography}{3}
-
-\bibitem{ejemplolibro}
-N.~Apellido, \emph{Título de ejemplo de un libro}, 2nd~ed.\hskip 1em plus
-  0.5em minus 0.4em\relax Editorial de Ejemplo, 2022.
-
-\bibitem{ejemploinforme}
-{Organización de Ejemplo}, ``Título de ejemplo de un informe técnico,''
-  Institución de Ejemplo, Tech. Rep., 2020.
-
-\bibitem{ejemploarticulo}
-N.~Apellido1 and N.~Apellido2, ``Título de ejemplo de un artículo de
-  revista,'' \emph{Nombre de la Revista}, vol.~10, no.~2, pp. 123--134, 2023.
-\end{thebibliography}
-
-  \end{verbatim}
-
-
-
- \section{Archivos .bib}
-
- BibTeX, y natbib por extensión, usan un archivo externo en texto plano como base de datos de referencias bibliográficas para generar las bibliografías y sus referencias en documentos con distintos formatos de artículos, libros, tesis, presentaciones, etc. Los nombres de archivos de referencias bibliográficas de BibTeX usualmente terminan o usan la extensión .bib. Los ítems bibliográficos incluidos en un .bib están separados por tipos.
-
- \begin{verbatim}
-@inbook{Berander2005,
-        address = {Berlin, Heidelberg},
-        author = {Berander, Patrik and Andrews, Anneliese},
-        booktitle = {Engineering and Managing Software Requirements},
-        pages = {69--94},
-        publisher = {Springer Berlin Heidelberg},
-        title = {{Requirements Prioritization}},
-        doi= {https://doi.org/10.1007/3-540-28244-0{\_}4},
-        year = {2005}
-}
- \end{verbatim}
-
- Los tipos que son reconocidos por virtualmente todos los estilos de BibTeX se muestran en el anexo \ref{sec:bib}. Pero igual que antes es recomendable recurrir a tutoriales o recursos donde se describan con detalle. Además se recomienda la utilización de algún gestor de referencias bibliográficas tipo Mendeley. \url{https://www.mendeley.com/}

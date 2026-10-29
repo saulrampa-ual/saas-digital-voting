@@ -22,10 +22,9 @@
 %---------------------------------------------------------------------------
 % Para las imagenes
 
-\usepackage[dvips]{graphicx}
+\usepackage{graphicx}
 \graphicspath{{Figuras/}} % se fija el camino para las figuras
 \usepackage{rotating}  %para poder rotar las figuras
-\usepackage{wrapfig}
 
 %---------------------------------------------------------------------------
 % PIES DE FOTOS Y TABLAS
@@ -36,20 +35,20 @@
 \captionsetup{font=small,labelfont=bf} % para tamaño y tipo fuentes pie de foto
 \usepackage{multirow} % para las tablas unir columnas
 \usepackage{multicol} %para escribir en multiples columnas
+\usepackage{tabularx} %tablas ajustadas al ancho del área de texto
+\usepackage{array}
 
 % Referencias y biblio
 
 \usepackage{pdfpages}
-%\usepackage[pdftex,breaklinks=true,hidelinks]{hyperref} % para referencias/indice en pdf
+% xurl permite partir direcciones largas y proporciona \UrlBreaks a UAL.sty.
+\usepackage{xurl}
+% Mejora la justificación y reduce desbordamientos de líneas largas.
+\usepackage{microtype}
+\setlength{\emergencystretch}{3em}
 
-\usepackage[
-breaklinks=true,colorlinks=true,
-linkcolor=blue,urlcolor=blue,citecolor=blue,% PDF VIEW
-linkcolor=black,urlcolor=black,citecolor=black,% PRINT
-bookmarks=true,bookmarksopenlevel=2]{hyperref}
-\usepackage{hyperref}
-\usepackage{emptypage}
 \usepackage{ragged2e} %Justificacion
+\usepackage{iftex} % Detecta el motor para opciones compatibles
 
 %\usepackage[toc,title,page]{appendix}
 
@@ -70,6 +69,12 @@ bookmarks=true,bookmarksopenlevel=2]{hyperref}
 
 
 \usepackage{UAL}
+\usetikzlibrary{arrows.meta,backgrounds}
+% Evita fallos al alternar motores cuando main.aux conserva transparencias
+% generadas por pdfTeX y el editor compila con XeTeX/Tectonic.
+\makeatletter
+\providecommand{\transparent@use}[1]{}
+\makeatother
 
 %\usepackage[print,doble]{UAL}
 \usepackage{codigo}
@@ -88,20 +93,31 @@ bookmarks=true,bookmarksopenlevel=2]{hyperref}
 % Datos identificativos del TFG                            %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\author{Nombre Apellido1 Apellido2}
-\titulo{Título del Trabajo Fin de Máster}
-\subTitulo{DEPARTAMENTO DE
-INFORMÁTICA\\  ÁREA DE [ÁREA DE CONOCIMIENTO]}
-\estudios{Grado/Máster en Informática}
+\author{Saul David Ramos Pacheco}
+\titulo{\raisebox{-52pt}[0pt][0pt]{\parbox{0.70\paperwidth}{\centering\fontsize{22}{27}\selectfont Diseño e implementación\\de una plataforma SaaS\\de votación digital segura\\y auditable para organizaciones\\con arquitectura cloud\\multi-tenant y API abierta}}}
+\subTitulo{DEPARTAMENTO DE INFORMÁTICA}
+\estudios{Máster en Informática}
 \universidad{UNIVERSIDAD DE ALMERÍA}
-\director{Nombre Apellidos (Director/a)}
-\direct{Nombre Apellidos (Director/a 2, si aplica)}
-\curso {AAAA/AAAA}
+\director{Javier Criado Rodríguez}
+\direct{}
+\curso {2026/2027}
 
 
 \pagestyle{cab}
 
 \usepackage{enumitem}
+% Columnas elásticas para tablas descriptivas de ancho completo.
+\newcolumntype{Y}[1]{>{\hsize=#1\hsize\linewidth=\hsize\RaggedRight\arraybackslash}X}
+\newcolumntype{Z}[1]{>{\hsize=#1\hsize\linewidth=\hsize\RaggedLeft\arraybackslash}X}
+% Los rótulos de los flujos usan una anchura fija para que los pasos largos
+% se ajusten al margen de texto en lugar de desplazar toda la lista.
+\setlist[enumerate]{labelwidth=2.6em,leftmargin=!,align=left}
+
+% Cargar hyperref una sola vez y al final para que enlace los paquetes previos.
+\usepackage[
+breaklinks=true,colorlinks=true,
+linkcolor=black,urlcolor=black,citecolor=black,
+bookmarks=true,bookmarksopenlevel=2]{hyperref}
 
 \begin{document}
 \frontmatter
@@ -110,14 +126,7 @@ INFORMÁTICA\\  ÁREA DE [ÁREA DE CONOCIMIENTO]}
 % (\author, \titulo, \director, \direct, \curso) a partir del fondo
 % institucional Figuras/logos/TFG_template.pdf
 \portada
-\begin{dedicatoria}
-% La dedicatoria es opcional. Aquí puedes agradecer a quien te haya
-% ayudado durante el trabajo: dirección, familia, compañeros, etc.
-% Sustituye este texto de ejemplo por el tuyo propio.
-
-Quiero expresar mi agradecimiento a ...
-
-\end{dedicatoria}
+% La dedicatoria es opcional; se omite hasta disponer de un texto personal.
 
 
 \input{indicesyrefe}
@@ -132,16 +141,21 @@ Quiero expresar mi agradecimiento a ...
 
 %se suelen utilizar archivos separados, por capitulos para agilizar la compilación en las versiones intermedias
 \mainmatter
-\marcagua
+% La marca de agua de UAL.sty usa transparent, compatible con pdfTeX.
+\ifPDFTeX
+  \marcagua
+\fi
 
 \input{contenido1}
 
 
 
- \addcontentsline{toc}{section}{BIBLIOGRAFÍA }
+ \cleardoublepage
+ \phantomsection
+ \addcontentsline{toc}{chapter}{BIBLIOGRAFÍA}
  \bibliography{referencias}
 
-\appendix
+ \appendix
 %\clearpage
 
 \input{apendices}

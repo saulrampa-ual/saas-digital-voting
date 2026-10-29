@@ -1,0 +1,178 @@
+\chapter{Plan de trabajo y cronograma}
+\label{cap:plan-gantt}
+
+El plan organiza el trabajo en cinco fases y conserva los hitos del calendario
+académico de referencia para 2026/2027. El cronograma se divide en dos figuras
+para mejorar la lectura: la figura~\ref{fig:gantt-fases-1-3} presenta el
+cierre de requisitos, el diseño y las iteraciones de desarrollo; la
+figura~\ref{fig:gantt-fases-4-5} presenta las pruebas, la memoria y el cierre.
+Las fechas internas son una planificación propuesta para revisar con el tutor.
+
+\begin{figure}[p]
+\centering
+\begin{ganttchart}[
+  time slot format=isodate,
+  x unit=0.070cm,
+  y unit title=0.50cm,
+  y unit chart=0.78cm,
+  bar height=0.52,
+  group height=0.45,
+  milestone height=0.52,
+  link tolerance=1pt,
+  bar label font=\scriptsize,
+  group label font=\scriptsize\bfseries,
+  milestone label font=\scriptsize,
+  bar label node/.append style={text width=5.6cm,align=right},
+  group label node/.append style={text width=5.6cm,align=right},
+  milestone label node/.append style={text width=5.6cm,align=right},
+  hgrid,
+  vgrid,
+  title/.append style={fill=Color2!20},
+  group/.append style={fill=Color2!45},
+  bar/.append style={fill=Color1!75},
+  milestone/.append style={fill=BackgroundColor,draw=ColorEtiqueta}
+]{2026-09-01}{2026-12-31}
+\gantttitlecalendar{year, month=shortname} \\
+\ganttgroup{Fase 1. Cierre de requisitos y validación}{2026-09-01}{2026-10-15} \\
+\ganttbar[name=rnf]{Mapeo RNF--ISO/IEC 25010 y justificación}{2026-09-01}{2026-09-25} \\
+\ganttbar[name=uc]{Refactorización del diagrama de casos de uso}{2026-09-01}{2026-09-25} \\
+\ganttbar[name=spec]{Corrección de especificaciones afectadas}{2026-09-15}{2026-10-14} \\
+\ganttmilestone[name=mreq]{H1. Requisitos y diagrama validados}{2026-10-15} \\
+\ganttnewline
+\ganttnewline
+\ganttgroup{Fase 2. Diseño}{2026-09-15}{2026-10-15} \\
+\ganttbar[name=design]{Modelo de datos, multi-tenant, urna y registro}{2026-09-15}{2026-10-14} \\
+\ganttmilestone[name=mdesign]{H2. Diseño técnico cerrado}{2026-10-15} \\
+\ganttnewline
+\ganttnewline
+\ganttgroup{Fase 3. Desarrollo por iteraciones}{2026-10-16}{2026-12-31} \\
+\ganttbar[name=i1]{Iteración 1. Organizaciones, roles y censo (RF-01--RF-03)}{2026-10-16}{2026-10-31} \\
+\ganttbar[name=i2]{Iteración 2. Procesos y acceso (RF-06--RF-08)}{2026-11-01}{2026-11-15} \\
+\ganttmilestone[name=mbase]{H3. Gestión y acceso funcionales}{2026-11-15} \\
+\ganttbar[name=i3]{Iteración 3. Emisión, recibo y re-voto (RF-09--RF-11)}{2026-11-16}{2026-11-30} \\
+\ganttbar[name=i4]{Iteración 4. Auditoría, escrutinio y resultados}{2026-12-01}{2026-12-15} \\
+\ganttbar[name=i5]{Iteración 5. Notificaciones y privacidad (RF-17--RF-18)}{2026-12-16}{2026-12-31} \\
+\ganttlink{rnf}{mreq}
+\ganttlink{uc}{mreq}
+\ganttlink{spec}{mreq}
+\ganttlink{design}{mdesign}
+\ganttlink{mdesign}{i1}
+\ganttlink{i1}{i2}
+\ganttlink{i2}{mbase}
+\ganttlink{mbase}{i3}
+\ganttlink{i3}{i4}
+\ganttlink{i4}{i5}
+\end{ganttchart}
+
+\vspace{0.5cm}
+\begin{tabular}{lll}
+  \tikz{\fill[Color2!45] (0,0) rectangle (0.45,0.22);} & Fase &
+  \tikz{\fill[Color1!75] (0,0) rectangle (0.45,0.22);} Tarea \\
+  \multicolumn{3}{c}{\tikz{\node[diamond,draw=ColorEtiqueta,fill=BackgroundColor,inner sep=2pt] {};}
+  \quad Hito de entrega o validación}
+\end{tabular}
+\caption{Plan de trabajo, fases 1 a 3.}
+\label{fig:gantt-fases-1-3}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\begin{ganttchart}[
+  time slot format=isodate,
+  x unit=0.070cm,
+  y unit title=0.50cm,
+  y unit chart=0.78cm,
+  bar height=0.52,
+  group height=0.45,
+  milestone height=0.52,
+  link tolerance=1pt,
+  bar label font=\scriptsize,
+  group label font=\scriptsize\bfseries,
+  milestone label font=\scriptsize,
+  bar label node/.append style={text width=5.6cm,align=right},
+  group label node/.append style={text width=5.6cm,align=right},
+  milestone label node/.append style={text width=5.6cm,align=right},
+  hgrid,
+  vgrid,
+  title/.append style={fill=Color2!20},
+  group/.append style={fill=Color2!45},
+  bar/.append style={fill=Color1!75},
+  milestone/.append style={fill=BackgroundColor,draw=ColorEtiqueta}
+]{2026-10-16}{2027-02-15}
+\gantttitlecalendar{year, month=shortname} \\
+\ganttgroup{Fase 4. Pruebas}{2026-10-16}{2027-01-06} \\
+\ganttbar[name=unit]{Pruebas unitarias incrementales por iteración}{2026-10-16}{2026-12-31} \\
+\ganttbar[name=integ]{Integración de urna y registro de participación}{2026-12-01}{2026-12-20} \\
+\ganttbar[name=perf]{Concurrencia (RNF-12) y carga (RNF-17)}{2026-12-16}{2027-01-03} \\
+\ganttbar[name=ux]{Accesibilidad y usabilidad (RNF-1, RNF-3, RNF-4, RNF-6)}{2026-12-16}{2027-01-03} \\
+\ganttmilestone[name=mtst]{H4. Evaluación y pruebas cerradas}{2027-01-06} \\
+\ganttnewline
+\ganttnewline
+\ganttgroup{Fase 5. Validación y cierre}{2026-12-01}{2027-02-15} \\
+\ganttbar[name=mem]{Memoria final, revisión del tutor y correcciones}{2026-12-01}{2027-01-17} \\
+\ganttmilestone[name=mdir]{H5. Entrega al director}{2027-01-18} \\
+\ganttbar[name=final]{Ajustes finales y entrega oficial}{2027-01-19}{2027-01-27} \\
+\ganttmilestone[name=marati]{H6. Entrega oficial en ARATÍES}{2027-01-27} \\
+\ganttmilestone[name=mvobo]{H7. Visto bueno del tutor}{2027-01-28} \\
+\ganttbar[name=defprep]{Preparación de la defensa}{2027-01-15}{2027-02-07} \\
+\ganttmilestone[name=mdef]{H8. Inicio del periodo de defensa}{2027-02-08} \\
+\ganttlink{unit}{mtst}
+\ganttlink{integ}{mtst}
+\ganttlink{perf}{mtst}
+\ganttlink{ux}{mtst}
+\ganttlink{mem}{mdir}
+\ganttlink{mtst}{mdir}
+\ganttlink{mdir}{final}
+\ganttlink{final}{marati}
+\ganttlink{marati}{mvobo}
+\ganttlink{mvobo}{mdef}
+\ganttlink{defprep}{mdef}
+\end{ganttchart}
+
+\vspace{0.5cm}
+\begin{tabular}{lll}
+  \tikz{\fill[Color2!45] (0,0) rectangle (0.45,0.22);} & Fase &
+  \tikz{\fill[Color1!75] (0,0) rectangle (0.45,0.22);} Tarea \\
+  \multicolumn{3}{c}{\tikz{\node[diamond,draw=ColorEtiqueta,fill=BackgroundColor,inner sep=2pt] {};}
+  \quad Hito de entrega o validación}
+\end{tabular}
+\caption{Plan de trabajo, fases 4 y 5.}
+\label{fig:gantt-fases-4-5}
+\end{figure}
+
+\begin{longtable}{|p{0.24\textwidth}|p{0.25\textwidth}|p{0.16\textwidth}|p{0.23\textwidth}|}
+\caption{Fechas, duraciones aproximadas y dependencias principales.}\label{tab:fechas-gantt}\\
+\hline
+\textbf{Tarea o hito} & \textbf{Inicio--fin} & \textbf{Duración} & \textbf{Dependencia} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Tarea o hito} & \textbf{Inicio--fin} & \textbf{Duración} & \textbf{Dependencia} \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+Cierre de requisitos y validación & 01/09/2026--15/10/2026 & 45 días & Inicio; revisión de requisitos \\
+\hline
+Diseño de datos y arquitectura & 15/09/2026--15/10/2026 & 31 días & En paralelo con el cierre de requisitos \\
+\hline
+Iteraciones 1--5 & 16/10/2026--31/12/2026 & 77 días & Diseño técnico y validación por módulos \\
+\hline
+Pruebas e integración & 16/10/2026--06/01/2027 & 83 días & Cada iteración; carga y accesibilidad tras disponer de módulos \\
+\hline
+Memoria y revisión del tutor & 01/12/2026--17/01/2027 & 48 días & Redacción progresiva; cierre tras H4 \\
+\hline
+Entrega al director & 18/01/2027 & Hito & Memoria y pruebas cerradas \\
+\hline
+Entrega oficial / visto bueno & 27/01/2027 / 28/01/2027 & Hitos & Entrega al director y correcciones finales \\
+\hline
+Preparación / defensa & 15/01/2027--08/02/2027 en adelante & 25 días hasta el inicio & Entrega oficial; defensa según convocatoria \\
+\hline
+\end{longtable}
+
+Las pruebas unitarias avanzan durante las iteraciones. El diseño puede
+comenzar mientras se cierra la validación de requisitos; los hitos H1--H8
+marcan las revisiones y entregas. Las fechas internas son estimaciones y los
+hitos oficiales deben confirmarse para la convocatoria correspondiente.

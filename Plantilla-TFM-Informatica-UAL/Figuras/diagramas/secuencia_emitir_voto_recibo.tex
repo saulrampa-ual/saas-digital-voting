@@ -1,0 +1,36 @@
+% Secuencia vectorial en TikZ. Emisión: 1--7; verificación del recibo: 8--10.
+\begin{tikzpicture}[x=1.1cm,y=0.75cm,font=\sffamily\scriptsize,
+  life/.style={draw=gray!70,dashed},
+  msg/.style={->,>=stealth,draw=blue!65!black,thick},
+  ret/.style={->,>=stealth,draw=gray!75,dashed},
+  actor/.style={draw=teal!60!black,fill=teal!6,rounded corners=2pt,align=center,
+    text width=1.5cm,minimum height=0.74cm,inner sep=2pt}]
+\node[actor] (pwa) at (0,0) {PWA\\votante};
+\node[actor] (acc) at (2,0) {Acceso\\votante};
+\node[actor] (rec) at (4,0) {Urna y\\recibos};
+\node[actor] (censo) at (6,0) {PostgreSQL\\censo};
+\node[actor] (urna) at (8,0) {Urna\\cifrada};
+\node[actor] (audit) at (10,0) {Auditoría\\hash-chain};
+\foreach \x in {0,2,4,6,8,10} \draw[life] (\x,-0.55)--(\x,-10.1);
+
+\draw[rounded corners,draw=blue!45,fill=blue!3] (-0.7,-0.9) rectangle (10.7,-7.15);
+\node[anchor=west,fill=white,text=blue!55!black] at (-0.6,-0.82) {Emisión (1--7)};
+\draw[rounded corners,draw=orange!60,fill=orange!3] (-0.7,-7.45) rectangle (10.7,-10.65);
+\node[anchor=west,fill=white,text=orange!65!black] at (-0.6,-7.38) {Verificación del recibo (8--10, RF-10)};
+
+\draw[msg] (0,-1.45)--node[above]{1. Solicita acceso}(2,-1.45);
+\draw[msg] (2,-2.15)--node[above]{2. Comprueba censo y proceso abierto}(6,-2.15);
+\draw[ret] (6,-2.85)--node[above]{3. Confirma elegibilidad}(2,-2.85);
+\draw[msg] (2,-3.55)--node[above]{4. Comprueba y marca «votó»}(6,-3.55);
+\draw[ret] (2,-4.25)--node[above]{5. Entrega token}(0,-4.25);
+\draw[msg] (0,-4.95)--node[above]{6. Envía voto cifrado y token}(8,-4.95);
+\draw[msg] (8,-5.65)--node[above]{Registra huella RF-12}(10,-5.65);
+\draw[ret] (8,-6.35)--node[above]{7. Devuelve recibo}(0,-6.35);
+
+\draw[msg] (0,-8.0)--node[above]{8. Pide verificar recibo}(4,-8.0);
+\draw[msg] (4,-8.8)--node[above]{9. Busca referencia en urna}(8,-8.8);
+\draw[ret] (8,-9.6)--node[above]{10. Devuelve presencia y estado}(0,-9.6);
+
+\node[draw=gray!60,fill=gray!4,rounded corners=2pt,align=left,text width=10.4cm,inner sep=4pt]
+  at (5,-11.15) {RF-09 comprueba proceso abierto, elegibilidad y uso único; en el paso 4 marca «votó». El token opaco de un uso no lleva identidad ni la enlaza con el voto (RNF-11). RF-10 comprueba el recibo en la urna. La cadena hash-chain se verifica aparte (RF-12). Leyenda: flecha sólida, petición/acción; discontinua, respuesta.};
+\end{tikzpicture}

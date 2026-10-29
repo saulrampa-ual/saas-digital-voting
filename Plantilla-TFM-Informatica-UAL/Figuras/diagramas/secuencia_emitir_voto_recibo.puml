@@ -1,0 +1,41 @@
+@startuml
+' Fuente PlantUML equivalente de la figura vectorial 5.2.
+title Emisión del voto y verificación del recibo (RF-09, RF-10 y RF-12)
+hide footbox
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam BoxPadding 12
+
+participant "PWA votante" as PWA
+participant "Acceso votante" as Acceso
+participant "Urna y recibos" as Recibos
+database "PostgreSQL censo" as Censo
+database "Urna cifrada" as Urna
+participant "Auditoría hash-chain" as Auditoria
+
+== Emisión (pasos 1--7) ==
+PWA -> Acceso : 1. Solicita acceso al proceso
+Acceso -> Censo : 2. Comprueba censo y proceso abierto
+Censo --> Acceso : 3. Confirma elegibilidad
+Acceso -> Censo : 4. Comprueba y marca voto registrado
+Acceso --> PWA : 5. Entrega token de voto de un solo uso
+PWA -> Urna : 6. Envía el voto cifrado con el token
+Urna -> Auditoria : Registra la huella del evento (RF-12)
+Urna --> PWA : 7. Devuelve recibo
+
+== Verificación del recibo (pasos 8--10, RF-10) ==
+PWA -> Recibos : 8. Solicita comprobar el recibo
+Recibos -> Urna : 9. Busca la referencia del recibo
+Urna --> PWA : 10. Devuelve presencia y estado
+
+note over PWA,Urna
+Token: autorización opaca y de un solo uso; no contiene identidad ni enlaza
+identidad y voto (RNF-11). RF-10 consulta la urna. La verificación de la
+cadena hash-chain corresponde a RF-12 y es independiente.
+end note
+legend bottom
+  --> petición o acción
+  ..> respuesta
+endlegend
+@enduml
