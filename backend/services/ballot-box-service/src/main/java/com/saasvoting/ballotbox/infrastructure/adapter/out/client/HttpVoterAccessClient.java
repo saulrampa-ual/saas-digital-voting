@@ -4,19 +4,11 @@ import com.saasvoting.ballotbox.application.port.out.VoterAccessClient;
 import com.saasvoting.ballotbox.domain.model.VoterAccessUnavailableException;
 import com.saasvoting.ballotbox.domain.model.VotingTokenRejectedException;
 import com.saasvoting.ballotbox.domain.model.VotingTokenRejectedException.Reason;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 
@@ -26,29 +18,14 @@ import java.util.Objects;
  */
 public class HttpVoterAccessClient implements VoterAccessClient {
 
-    private static final long EXPIRY_MARGIN_SECONDS = 30;
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    record TokenResponse(@JsonProperty("access_token") String accessToken, @JsonProperty("expires_in") long expiresIn) {
-    }
-
     private final RestClient voterAccess;
-    private final RestClient keycloak;
-    private final VoterAccessProperties properties;
-    private final Clock clock;
-    private String accessToken;
-    private Instant accessTokenExpiresAt = Instant.EPOCH;
+    private final ServiceTokenProvider tokens;
 
-    public HttpVoterAccessClient(VoterAccessProperties properties, Clock clock) {
-        this.properties = Objects.requireNonNull(properties, "properties must not be null");
-        this.clock = Objects.requireNonNull(clock, "clock must not be null");
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(Duration.ofSeconds(3));
-        requestFactory.setReadTimeout(Duration.ofSeconds(10));
-        this.voterAccess = RestClient.builder().requestFactory(requestFactory)
+    public HttpVoterAccessClient(VoterAccessProperties properties, ServiceTokenProvider tokens) {
+        Objects.requireNonNull(properties, "properties must not be null");
+        this.tokens = Objects.requireNonNull(tokens, "tokens must not be null");
+        this.voterAccess = RestClient.builder().requestFactory(ServiceTokenProvider.requestFactory())
                 .baseUrl(properties.url().toString()).build();
-        this.keycloak = RestClient.builder().requestFactory(requestFactory)
-                .baseUrl(properties.keycloakBaseUrl().toString()).build();
     }
 
     @Override
@@ -98,36 +75,10 @@ public class HttpVoterAccessClient implements VoterAccessClient {
     private void post(String path, String votingToken, long processId) {
         voterAccess.post()
                 .uri(path)
-                .headers(headers -> headers.setBearerAuth(token()))
+                .headers(headers -> headers.setBearerAuth(tokens.token()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("votingToken", votingToken, "processId", processId))
                 .retrieve()
                 .toBodilessEntity();
-    }
-
-    private synchronized String token() {
-        Instant now = clock.instant();
-        if (accessToken != null && now.isBefore(accessTokenExpiresAt)) {
-            return accessToken;
-        }
-        if (properties.clientSecret() == null || properties.clientSecret().isBlank()) {
-            throw new IllegalStateException("verivoto.voter-access.client-secret is empty (BALLOT_BOX_SERVICE_CLIENT_SECRET)");
-        }
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("grant_type", "client_credentials");
-        form.add("client_id", properties.clientId());
-        form.add("client_secret", properties.clientSecret());
-        TokenResponse response = keycloak.post()
-                .uri("/realms/{realm}/protocol/openid-connect/token", properties.realm())
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(form)
-                .retrieve()
-                .body(TokenResponse.class);
-        if (response == null || response.accessToken() == null) {
-            throw new IllegalStateException("Empty token response from Keycloak");
-        }
-        accessToken = response.accessToken();
-        accessTokenExpiresAt = now.plusSeconds(Math.max(0, response.expiresIn() - EXPIRY_MARGIN_SECONDS));
-        return accessToken;
     }
 }

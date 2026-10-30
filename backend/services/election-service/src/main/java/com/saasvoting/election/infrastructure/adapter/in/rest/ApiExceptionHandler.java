@@ -66,6 +66,7 @@ public class ApiExceptionHandler {
         String detail = switch (e.to()) {
             case SCHEDULED -> "Solo se puede programar un proceso en borrador.";
             case ARCHIVED -> "Solo se puede archivar un proceso escrutado.";
+            case TALLIED -> "Solo se puede escrutar un proceso cerrado.";
             default -> "El proceso ha cambiado de estado; recarga la página.";
         };
         ProblemDetail problem = problem(HttpStatus.CONFLICT, detail);

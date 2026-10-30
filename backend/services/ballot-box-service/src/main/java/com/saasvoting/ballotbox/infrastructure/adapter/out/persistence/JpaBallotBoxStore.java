@@ -2,15 +2,22 @@ package com.saasvoting.ballotbox.infrastructure.adapter.out.persistence;
 
 import com.saasvoting.ballotbox.application.port.out.BallotBoxStore;
 import com.saasvoting.ballotbox.application.port.out.BallotRepository;
+import com.saasvoting.ballotbox.application.port.out.ResultRepository;
 import com.saasvoting.ballotbox.domain.model.AuditEvent;
+import com.saasvoting.ballotbox.domain.model.AuditEventType;
+import com.saasvoting.ballotbox.domain.model.BallotOption;
 import com.saasvoting.ballotbox.domain.model.BallotNotFoundException;
 import com.saasvoting.ballotbox.domain.model.BallotSnapshot;
 import com.saasvoting.ballotbox.domain.model.ChainHead;
+import com.saasvoting.ballotbox.domain.model.CountedVote;
 import com.saasvoting.ballotbox.domain.model.IncidentKind;
+import com.saasvoting.ballotbox.domain.model.ProcessStatus;
+import com.saasvoting.ballotbox.domain.model.TallyResult;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.AuditEventJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.BallotSnapshotJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.IncidentJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.ReceiptJpaEntity;
+import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.ResultJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.VoteJpaEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
@@ -18,14 +25,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-/** JPA implementation of the ballot and urn ports. */
+/** JPA implementation of the ballot, urn and result ports. */
 @Repository
 @Transactional
-public class JpaBallotBoxStore implements BallotRepository, BallotBoxStore {
+public class JpaBallotBoxStore implements BallotRepository, BallotBoxStore, ResultRepository {
 
     private final EntityManager em;
 
@@ -105,5 +113,98 @@ public class JpaBallotBoxStore implements BallotRepository, BallotBoxStore {
     @Override
     public void recordIncident(long processId, IncidentKind kind, LocalDate day) {
         em.persist(new IncidentJpaEntity(processId, kind, day));
+    }
+
+    // ---- Results (RF-13, D-37) ----
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<TallyResult> findResult(long processId) {
+        ResultJpaEntity result = em.find(ResultJpaEntity.class, processId);
+        if (result == null) {
+            return Optional.empty();
+        }
+        BallotSnapshot ballot = find(processId).orElseThrow(() -> new BallotNotFoundException(processId));
+        return Optional.of(result.toDomain(ballot.finalHash(), ballot.options().stream().map(BallotOption::id).toList()));
+    }
+
+    @Override
+    public void saveResult(TallyResult result) {
+        em.persist(ResultJpaEntity.fromDomain(result));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Long> findClosedWithoutResult() {
+        return em.createQuery("""
+                        select b.processId from BallotSnapshotJpaEntity b
+                        where b.status = :closed
+                          and not exists (select r from ResultJpaEntity r where r.processId = b.processId)
+                        order by b.processId""", Long.class)
+                .setParameter("closed", ProcessStatus.CLOSED)
+                .getResultList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Long> findResultsNotNotified() {
+        return em.createQuery(
+                        "select r.processId from ResultJpaEntity r where r.electionNotified = false order by r.processId",
+                        Long.class)
+                .getResultList();
+    }
+
+    @Override
+    public void markNotified(long processId) {
+        ResultJpaEntity result = em.find(ResultJpaEntity.class, processId);
+        if (result != null) {
+            result.markNotified();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CountedVote> countedVotes(long processId) {
+        return em.createQuery("""
+                        select new com.saasvoting.ballotbox.domain.model.CountedVote(v.id, v.optionId)
+                        from VoteJpaEntity v where v.processId = :processId and v.status = 'COUNTABLE'""",
+                        CountedVote.class)
+                .setParameter("processId", processId)
+                .getResultList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<String> closedPayloadHash(long processId) {
+        return em.createQuery("""
+                        select e.payloadHash from AuditEventJpaEntity e
+                        where e.key.processId = :processId and e.eventType = :closed""", String.class)
+                .setParameter("processId", processId)
+                .setParameter("closed", AuditEventType.CLOSED)
+                .getResultStream()
+                .findFirst();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<BallotSnapshot> findByPublicId(UUID resultsPublicId) {
+        return em.createQuery(
+                        "select b from BallotSnapshotJpaEntity b where b.resultsPublicId = :publicId",
+                        BallotSnapshotJpaEntity.class)
+                .setParameter("publicId", resultsPublicId)
+                .getResultStream()
+                .findFirst()
+                .map(BallotSnapshotJpaEntity::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean hasIncident(long processId, IncidentKind kind) {
+        return em.createQuery(
+                        "select count(i) from IncidentJpaEntity i where i.processId = :processId and i.kind = :kind",
+                        Long.class)
+                .setParameter("processId", processId)
+                .setParameter("kind", kind)
+                .getSingleResult() > 0;
     }
 }

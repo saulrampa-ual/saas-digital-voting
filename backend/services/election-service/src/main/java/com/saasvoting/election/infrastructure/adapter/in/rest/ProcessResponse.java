@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /** {@code Process} of the contract: configuration, status and ballot with option identifiers. */
 public record ProcessResponse(
@@ -24,7 +25,8 @@ public record ProcessResponse(
         String defaultLanguage,
         ResultsVisibility resultsVisibility,
         ProcessStatus status,
-        BallotResponse ballot) {
+        BallotResponse ballot,
+        UUID resultsPublicId) {
 
     public record BallotResponse(
             VoteType voteType, Map<String, String> question, boolean blankVoteEnabled, List<OptionResponse> options) {
@@ -52,7 +54,9 @@ public record ProcessResponse(
                         ballot.blankVoteEnabled(),
                         ballot.options().stream()
                                 .map(option -> new OptionResponse(option.id(), option.position(), codes(option.text())))
-                                .toList()));
+                                .toList()),
+                // Only a PUBLIC_LINK process has a link to share (D-16); otherwise it is never shown
+                data.resultsVisibility() == ResultsVisibility.PUBLIC_LINK ? process.resultsPublicId() : null);
     }
 
     /** Language codes as keys, in the order of the {@code Language} enum. */

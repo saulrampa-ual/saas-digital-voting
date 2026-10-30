@@ -2,6 +2,7 @@ package com.saasvoting.ballotbox.infrastructure.adapter.in.rest;
 
 import com.saasvoting.ballotbox.domain.model.BallotNotFoundException;
 import com.saasvoting.ballotbox.domain.model.InvalidSelectionException;
+import com.saasvoting.ballotbox.domain.model.ResultNotAvailableException;
 import com.saasvoting.ballotbox.domain.model.SnapshotConflictException;
 import com.saasvoting.ballotbox.domain.model.VoteNotRecordedException;
 import com.saasvoting.ballotbox.domain.model.VotingClosedException;
@@ -52,6 +53,12 @@ public class ApiExceptionHandler {
     ProblemDetail notRecorded(VoteNotRecordedException e) {
         return problem(HttpStatus.SERVICE_UNAVAILABLE,
                 "Tu voto no se ha registrado. Puedes intentarlo de nuevo sin riesgo de votar dos veces.");
+    }
+
+    @ExceptionHandler(ResultNotAvailableException.class)
+    ProblemDetail noResult(ResultNotAvailableException e) {
+        return problem(HttpStatus.CONFLICT,
+                "Todavía no hay resultados: el escrutinio se hace automáticamente cuando se cierra la votación.");
     }
 
     @ExceptionHandler(SnapshotConflictException.class)
