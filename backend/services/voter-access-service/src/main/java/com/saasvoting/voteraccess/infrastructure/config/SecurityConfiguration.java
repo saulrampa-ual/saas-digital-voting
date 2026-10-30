@@ -2,6 +2,7 @@ package com.saasvoting.voteraccess.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -10,8 +11,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Voter endpoints are public: the personal link and the code identify the voter (RF-08). Internal endpoints need a
- * Keycloak client-credentials token with role SERVICE (D-22). Everything else is denied.
+ * Voter endpoints are public: the personal link and the code identify the voter (RF-08). The participation of a
+ * process needs a management token with ADMIN (RF-14). Internal endpoints need a Keycloak client-credentials token
+ * with role SERVICE (D-22). Everything else is denied.
  */
 @Configuration
 public class SecurityConfiguration {
@@ -23,6 +25,8 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.GET, "/api/v1/voter-access/processes/*/participation").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/voter-access/processes/**").denyAll()
                         .requestMatchers("/api/v1/voter-access/**").permitAll()
                         .requestMatchers("/actuator/health", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**")
                         .permitAll()

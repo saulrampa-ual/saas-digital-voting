@@ -3,7 +3,8 @@ info:
   title: VeriVoto ballot-box-service API
   version: v1
   description: |
-    Ballot (RF-09), vote casting with receipt (RF-09, RF-10), receipt verification (RF-10),
+    Ballot (RF-09), vote casting with receipt (RF-09, RF-10), receipt verification (RF-10), audit
+    chain and its verification (RF-12),
     automatic tally when the process closes and its publication (RF-13, RF-15, D-37).
     The ballot box stores no identity, no voting token and no time of votes (RNF-11, D-18).
     The receipt proves that a vote is present in the ballot box; it does not prove that the stored
@@ -15,6 +16,8 @@ servers:
 tags:
   - name: voter
     description: RF-09, RF-10 (public, used by the voter PWA)
+  - name: audit
+    description: RF-12 (auditor of the organization)
   - name: results
     description: RF-13, RF-15 (management with a Keycloak token; public fingerprints and public link)
   - name: internal
@@ -107,6 +110,72 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Fingerprints' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/ballot-box/processes/{processId}/audit-events:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [audit]
+      operationId: listAuditEvents
+      summary: Events of the hash chain of the ballot box
+      description: |
+        Role: AUDITOR of the organization of the process. RF-12 steps 1–2. In order of sequence. Vote events carry
+        no time and no data of the voter (D-18, RNF-11).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: size
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        '200':
+          description: Page of events
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuditEventPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/ballot-box/processes/{processId}/audit-events/verification:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [audit]
+      operationId: getLastChainCheck
+      summary: Result of the last verification of the chain
+      description: "Role: AUDITOR. RF-12 step 5. 404 if the chain was never verified."
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Last verification
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ChainCheck' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [audit]
+      operationId: verifyChain
+      summary: Verify the integrity of the chain now
+      description: |
+        Role: AUDITOR. RF-12 steps 3–5. Recomputes every event hash and link, and checks that the head stored with the
+        ballot, the number of vote events, votes and receipts and the CLOSED event agree. A broken chain records a
+        `CHAIN_BROKEN` incident (once per process, day only) and stops the tally (RF-12 exception 5, D-38).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Verification done (also when the chain is broken)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ChainCheck' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
   /api/v1/ballot-box/processes/{processId}/results:
     parameters:
@@ -409,6 +478,52 @@ components:
         eligibleVoters: { type: integer, minimum: 1, description: Census size, used for participation (RF-13) }
         resultsVisibility: { $ref: '#/components/schemas/ResultsVisibility' }
         resultsPublicId: { type: [string, 'null'], format: uuid }
+    AuditEventType:
+      type: string
+      enum: [OPENED, VOTE_RECEIVED, CLOSED, FINAL_HASH_PUBLISHED]
+    AuditEvent:
+      type: object
+      required: [sequence, type, occurredAt, payloadHash, previousHash, eventHash]
+      properties:
+        sequence: { type: integer, format: int64, minimum: 1 }
+        type: { $ref: '#/components/schemas/AuditEventType' }
+        occurredAt: { type: [string, 'null'], format: date-time, description: Null for vote events (D-18) }
+        payloadHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+        previousHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+        eventHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+    AuditEventPage:
+      type: object
+      required: [items, page, size, totalItems, status]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/AuditEvent' }
+        page: { type: integer }
+        size: { type: integer }
+        totalItems: { type: integer }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        closesAt: { type: string, format: date-time }
+        finalHash: { type: [string, 'null'], pattern: '^[0-9a-f]{64}$' }
+    ChainProblem:
+      type: object
+      required: [code]
+      properties:
+        sequence: { type: [integer, 'null'], format: int64, description: Event where the problem was found, if any }
+        code:
+          type: string
+          enum: [HASH_MISMATCH, BROKEN_LINK, SEQUENCE_GAP, HEAD_MISMATCH, BALLOT_MISMATCH, VOTE_COUNT_MISMATCH, CLOSED_COUNT_MISMATCH, FINAL_HASH_MISMATCH]
+    ChainCheck:
+      type: object
+      required: [processId, intact, eventsChecked, checkedAt, problems]
+      properties:
+        processId: { type: integer, format: int64 }
+        intact: { type: boolean }
+        eventsChecked: { type: integer, minimum: 0 }
+        checkedAt: { type: string, format: date-time }
+        finalHash: { type: [string, 'null'], pattern: '^[0-9a-f]{64}$' }
+        problems:
+          type: array
+          items: { $ref: '#/components/schemas/ChainProblem' }
     Fingerprints:
       type: object
       required: [processId, status]

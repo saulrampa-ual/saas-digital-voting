@@ -95,6 +95,9 @@ cuando hay conflicto (ver «Incoherencias»).
 | 10 | «12.400 de 20.000 líneas · 62 %» y «puedes seguir usando la aplicación» | G1 | La importación es síncrona: indicador indeterminado y cancelar solo durante la validación (D-36); progreso real en IMP-25 |
 | 11 | Teléfonos «+34 600 100 201» | A2 | RI-3 solo admite cifras (`^[0-9]{1,15}$`): el formulario lo indica y la tabla muestra el valor guardado |
 | 12 | El filtro «Todos» de la tabla del censo | A2 | Sin estados que filtrar en las personas guardadas: solo búsqueda por nombre, correo o identificador |
+| 13 | «Participación acumulada por hora» | A5 | D-18/D-38: la participación solo guarda el día; el gráfico es por día. La hora permitiría cruzarla con el orden de los eventos de la urna |
+| 14 | Fecha y hora en cada «Voto recibido» y evento «Voto sustituido» | H1 | D-18: los eventos de voto no llevan hora; revoto fuera del MVP (D-03) |
+| 15 | «Enviar recordatorio a quien no ha votado» (A5) y trazabilidad de acciones (H1) | A5, H1 | RF-17 y RF-19 en P6; en P5.3 no se muestran |
 
 Comprobado sin incoherencias: indicador de 4 pasos (RNF-9), confirmación explícita en pantalla propia
 (RNF-7), ES/EN (RNF-5), anchos de 390 px (cubre los 360 px de RNF-2 con diseño fluido), recuento por

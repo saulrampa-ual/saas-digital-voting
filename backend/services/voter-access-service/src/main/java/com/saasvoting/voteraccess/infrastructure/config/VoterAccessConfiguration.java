@@ -2,12 +2,14 @@ package com.saasvoting.voteraccess.infrastructure.config;
 
 import com.saasvoting.voteraccess.application.port.out.Mailer;
 import com.saasvoting.voteraccess.application.port.out.NotificationRepository;
+import com.saasvoting.voteraccess.application.port.out.ParticipationRepository;
 import com.saasvoting.voteraccess.application.port.out.RollRepository;
 import com.saasvoting.voteraccess.application.port.out.SecretGenerator;
 import com.saasvoting.voteraccess.application.port.out.SnapshotRepository;
 import com.saasvoting.voteraccess.application.port.out.UnitOfWork;
 import com.saasvoting.voteraccess.application.port.out.VotingTokenRepository;
 import com.saasvoting.voteraccess.application.service.InvitationService;
+import com.saasvoting.voteraccess.application.service.ParticipationService;
 import com.saasvoting.voteraccess.application.service.ProcessReceiverService;
 import com.saasvoting.voteraccess.application.service.VoterAccessService;
 import com.saasvoting.voteraccess.application.service.VoterMessages;
@@ -40,6 +42,12 @@ public class VoterAccessConfiguration {
     @Bean
     VoterMessages voterMessages(AccessProperties properties) {
         return new VoterMessages(properties.publicBaseUrl(), properties.zone());
+    }
+
+    @Bean
+    ParticipationService participationService(
+            SnapshotRepository snapshots, ParticipationRepository participation, Clock clock) {
+        return new ParticipationService(snapshots, participation, clock);
     }
 
     @Bean
