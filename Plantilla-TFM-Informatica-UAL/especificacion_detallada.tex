@@ -106,31 +106,30 @@ conservan los códigos para mantener la trazabilidad entre documentos.
 \item 4: Si las credenciales son incorrectas, el Sistema informa del error y permite reintentar.
 \item 7: Si el código del segundo factor es incorrecto o ha caducado, el Sistema informa del error y permite reintentar o solicitar un nuevo código.
 \end{itemize}
-\textbf{Comentarios:} Prioridad M. Existe una vía alternativa de acceso mediante SSO institucional (RF-05). El segundo factor de autenticación se realizará mediante un código enviado al correo electrónico del usuario.\par
+\textbf{Comentarios:} Prioridad M. La autenticación se realiza mediante el mecanismo configurado para la plataforma. Como opción de diseño, podrá integrarse un proveedor de identidad compatible con OIDC/SSO (RF-05); no se exige una cuenta institucional. El segundo factor podrá realizarse mediante un código enviado al correo electrónico del usuario.\par
 
-\subsection{RF-05: Iniciar sesión}
+\subsection{RF-05: Iniciar sesión (RF-05a gestión y RF-05b votante)}
 
 \textbf{Objetivos asociados:} OBJ-1, OBJ-3\par
 \textbf{Requisitos asociados:} RI-2, RI-3\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Superadministrador, Administrador, Auditor o Votante inicia sesión con la cuenta de su organización a través del Proveedor de identidad (ACT-6).\par
-\textbf{Precondición:} La organización tiene configurado un proveedor de identidad compatible con OIDC.\par
+\textbf{Descripción:} El sistema deberá permitir que los perfiles de gestión (RF-05a) y los votantes (RF-05b) inicien sesión mediante el mecanismo de autenticación habilitado para la plataforma o el proceso. La integración con un proveedor de identidad (ACT-6), por ejemplo mediante OIDC/SSO, es una opción de diseño.\par
+\textbf{Precondición:} La cuenta está activa o, en el caso del votante, pertenece al censo del proceso. Si se usa un proveedor externo, este está configurado y disponible.\par
 \textbf{Flujo normal:}
 \begin{enumerate}
-\item[1] El usuario elige acceder con la cuenta institucional
-\item[2] El Sistema redirige al proveedor de identidad de la organización
-\item[3] El proveedor de identidad autentica al usuario
-\item[4] El proveedor devuelve la identidad al Sistema
-\item[5] El Sistema comprueba que la identidad corresponde a un usuario con rol o a un votante del censo
-\item[6] El Sistema inicia la sesión o concede el acceso
+\item[1] El usuario solicita iniciar sesión y elige uno de los mecanismos habilitados
+\item[2] El Sistema solicita las credenciales o inicia el flujo del proveedor de identidad, si está configurado
+\item[3] El usuario se autentica con el mecanismo seleccionado
+\item[4] El Sistema valida la respuesta y comprueba la cuenta, el rol y, cuando corresponda, la pertenencia al censo
+\item[5] El Sistema inicia la sesión o concede el acceso al proceso
 \end{enumerate}
-\textbf{Postcondición:} Sesión iniciada con la identidad institucional.\par
+\textbf{Postcondición:} Sesión iniciada con el rol y el ámbito de organización o proceso correspondientes.\par
 \textbf{Excepciones y alternativas:}
 \begin{itemize}
 \item 3: Si el usuario cancela o no se autentica, el Sistema vuelve a la pantalla de inicio
-\item 4: Si el proveedor no responde o la respuesta no es válida, el Sistema informa y ofrece otro método si existe
-\item 5: Si la identidad no figura en la organización o el censo, el Sistema deniega el acceso e informa
+\item 2--4: Si el proveedor no responde, las credenciales son incorrectas o la respuesta no es válida, el Sistema informa y permite reintentar o usar otro mecanismo habilitado
+\item 4: Si la cuenta no tiene un rol autorizado o el votante no figura en el censo, el Sistema deniega el acceso e informa
 \end{itemize}
-\textbf{Comentarios:} Prioridad Should. Amplía el acceso del votante (RF-08). El protocolo admitido es OIDC.\par
+\textbf{Comentarios:} Prioridad Should. El requisito describe el inicio de sesión de forma independiente del proveedor y del protocolo. OIDC/SSO es una alternativa de diseño que deberá concretarse si se adopta; no implica SSO institucional obligatorio.\par
 
 \subsection{RF-06: Crear y configurar proceso de votación}
 
@@ -198,8 +197,6 @@ conservan los códigos para mantener la trazabilidad entre documentos.
 \item[3.1] El Sistema envía el código por email
 \item[3.2] El Votante introduce el código
 \item[3.3] El Sistema valida el código
-\item[]\textit{Si es SSO:}
-\item[3.1] El Votante se identifica con RF-05
 \item[4] El Sistema concede acceso a la papeleta
 \end{enumerate}
 \textbf{Postcondición:} El votante está identificado para ese proceso.\par
@@ -209,7 +206,7 @@ conservan los códigos para mantener la trazabilidad entre documentos.
 \item 2: Si el proceso no está abierto, el Sistema informa de su estado y calendario
 \item 3.3: Si el código es incorrecto o ha caducado, el Sistema permite reintentar o reenviarlo.
 \end{itemize}
-\textbf{Comentarios:} Prioridad M. La verificación adicional (OTP o SSO) evita que un enlace reenviado permita votar a otra persona.\par
+\textbf{Comentarios:} Prioridad M. La verificación adicional configurada (por ejemplo, OTP o autenticación federada) evita que un enlace reenviado permita votar a otra persona. La federación de identidad es una opción de diseño, no un requisito institucional.\par
 
 \subsection{RF-09: Emitir voto}
 
@@ -485,8 +482,8 @@ conservan los códigos para mantener la trazabilidad entre documentos.
 \textbf{Objetivos asociados:} OBJ-2\par
 \textbf{Requisitos asociados:} RF-03, RF-05, RF-08, RF-14, RF-18\par
 \textbf{Descripción:} El sistema deberá almacenar la información correspondiente a los votantes de cada organización.\par
-\textbf{Datos específicos:} Identificador de votante: entero positivo Organización: identificador de organización (RI-1) Nombre y apellidos: 60 caracteres Correo electrónico: 100 caracteres Teléfono: 15 dígitos (opcional) Identificador institucional: 50 caracteres (para el SSO, opcional)\par
-\textbf{Comentarios:} El control de duplicados se hace por correo electrónico o por identificador institucional.\par
+\textbf{Datos específicos:} Identificador de votante: entero positivo Organización: identificador de organización (RI-1) Nombre y apellidos: 60 caracteres Correo electrónico: 100 caracteres Teléfono: 15 dígitos (opcional) Identificador externo: 50 caracteres (opcional, solo si el mecanismo de autenticación seleccionado lo requiere)\par
+\textbf{Comentarios:} El control de duplicados se hace mediante los datos definidos por la organización, como el correo electrónico; un identificador externo solo se conserva si resulta necesario para el mecanismo configurado.\par
 
 \subsection{RI-4: Información sobre procesos de votación}
 

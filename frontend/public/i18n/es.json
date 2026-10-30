@@ -36,7 +36,13 @@
       "title": "Censos",
       "empty": "Todavía no hay censos.",
       "voters": "{{count}} personas",
-      "frozen": "Congelado"
+      "frozen": "Congelado",
+      "editable": "Editable",
+      "introManager": "Crea un censo y añade a las personas que pueden votar, a mano o importando un CSV.",
+      "introAdmin": "Censos de tu organización. Solo la persona gestora del censo puede cambiarlos.",
+      "newName": "Nombre del nuevo censo",
+      "create": "Crear censo",
+      "nameRequired": "Escribe el nombre del censo."
     },
     "forbidden": {
       "title": "Sin permiso",
@@ -137,7 +143,6 @@
       "edit": "Editar proceso",
       "schedule": "Programar",
       "archive": "Archivar proceso",
-      "archiveHelp": "«Archivar» se activa cuando el proceso está Escrutado.",
       "readOnly": "Tu rol permite consultar el proceso, no cambiarlo.",
       "automatic": "Apertura y cierre son automáticos en las fechas fijadas: no se pueden abrir ni cerrar a mano antes de tiempo.",
       "checksTitle": "Validación previa a programar",
@@ -186,6 +191,109 @@
         "CLOSED": "Escrutinio automático en curso",
         "TALLIED": "Ver resultados; archivar",
         "ARCHIVED": "Solo consulta"
+      },
+      "noActions": "En este estado no hay acciones manuales: el proceso avanza solo en las fechas fijadas.",
+      "summaryTitle": "Datos del proceso",
+      "summary": {
+        "opensAt": "Apertura",
+        "closesAt": "Cierre",
+        "census": "Censo",
+        "censusValue": "{{name}} · {{count}} personas",
+        "options": "Opciones de la papeleta",
+        "blank": "con voto en blanco",
+        "visibility": "Resultados",
+        "visibilityValue": {
+          "CENSUS_ONLY": "Solo personas del censo",
+          "PUBLIC_LINK": "Enlace público"
+        }
+      }
+    },
+    "census": {
+      "title": "Censo",
+      "backToList": "Censos",
+      "heading": "Censo · {{name}}",
+      "addManual": "Alta manual",
+      "frozenHelp": "Censo congelado: lo usa un proceso programado o abierto, así que no se puede cambiar hasta que termine.",
+      "readOnly": "Tu rol permite consultar el censo, no cambiarlo.",
+      "peopleTitle": "Personas del censo",
+      "search": "Buscar por nombre, correo o ID",
+      "language": "Idioma",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "editPerson": "Editar a {{name}}",
+      "removeShort": "Quitar",
+      "removePerson": "Quitar a {{name}} del censo",
+      "noPeople": "El censo todavía no tiene personas.",
+      "noMatches": "Ninguna persona coincide con la búsqueda.",
+      "showing": "Mostrando {{from}}–{{to}} de {{total}} personas",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "form": {
+        "newTitle": "Alta manual",
+        "editTitle": "Editar persona",
+        "fullName": "Nombre completo",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "phoneHelp": "Solo cifras, sin espacios ni prefijo +.",
+        "institutionalId": "Identificador institucional",
+        "preferredLanguage": "Idioma de las comunicaciones",
+        "add": "Añadir al censo",
+        "save": "Guardar cambios",
+        "cancel": "Cancelar",
+        "added": "{{name}} se ha añadido al censo.",
+        "updated": "Se han guardado los datos de {{name}}.",
+        "errors": {
+          "fullName": "Escribe el nombre (hasta 60 caracteres).",
+          "email": "Escribe un correo válido, por ejemplo nombre@ual.es.",
+          "phone": "El teléfono solo admite cifras (hasta 15).",
+          "institutionalId": "El identificador admite 50 caracteres como máximo."
+        }
+      },
+      "remove": {
+        "title": "¿Quitar a esta persona?",
+        "message": "{{name}} dejará de estar en el censo y no recibirá invitaciones.",
+        "cancel": "Cancelar",
+        "ok": "Quitar",
+        "done": "{{name}} ya no está en el censo."
+      },
+      "import": {
+        "selectTitle": "Seleccionar fichero",
+        "drop": "Arrastra aquí un fichero CSV",
+        "columns": "Columnas: full_name, email (obligatorias); phone, institutional_id, preferred_language",
+        "select": "Seleccionar fichero",
+        "rules": "UTF-8, separado por «,» o «;», hasta 5 MB y 50 000 filas. Nada se guarda hasta que confirmes.",
+        "summaryTitle": "Resumen de la importación",
+        "pending": "{{file}} · pendiente de confirmar",
+        "idle": "Elige un fichero: verás cuántas personas se añadirían, los duplicados y las líneas con errores antes de guardar nada.",
+        "validating": "Validando {{file}}…",
+        "validatingHelp": "Estamos comprobando el fichero y buscando duplicados. Todavía no se ha guardado nada.",
+        "applying": "Guardando {{count}} personas…",
+        "applyingHelp": "No cierres esta página hasta que termine.",
+        "done": "Importación completada: {{count}} personas añadidas.",
+        "another": "Importar otro fichero",
+        "toCreate": "altas nuevas",
+        "duplicates": "duplicados (se omitirán)",
+        "invalid": "líneas con error",
+        "invalidList": "Líneas con error",
+        "duplicateList": "Duplicados que se omitirán",
+        "line": "Línea {{line}}",
+        "more": "…y {{count}} más.",
+        "reason": {
+          "EMAIL": "el correo ya está en el censo o repetido en el fichero",
+          "INSTITUTIONAL_ID": "el identificador institucional ya está en el censo o repetido en el fichero"
+        },
+        "invalidHelp": "Corrige el fichero y vuelve a seleccionarlo, o descarta las líneas con error para importar el resto.",
+        "readyHelp": "Revisa el resumen y confirma para guardar a las personas nuevas. Los duplicados se omiten.",
+        "nothingHelp": "No hay personas nuevas que añadir.",
+        "confirm": "Confirmar importación",
+        "discard": "Descartar líneas con error e importar {{count}}",
+        "cancel": "Cancelar",
+        "notApplied": "El censo ha cambiado desde la validación; revisa el nuevo resumen.",
+        "errors": {
+          "extension": "El fichero debe tener extensión .csv.",
+          "empty": "El fichero está vacío.",
+          "size": "El fichero supera los {{max}} MB."
+        }
       }
     }
   },

@@ -51,3 +51,17 @@ ion-card {
   box-shadow: none;
 }
 .mono { font-family: var(--vv-font-mono); }
+
+/* Management console blocks shared by A2, A3 and A4 (same look as the prototypes). Scoped to app-admin-page so the voter area keeps its own styles. */
+app-admin-page {
+  .back { display: inline-block; margin-bottom: 0.5rem; color: var(--ion-color-primary); min-height: 44px; line-height: 44px; }
+  .card { background: #fff; border: 1px solid var(--vv-border-color); border-radius: var(--vv-radius-card); padding: 20px; margin-bottom: 16px; }
+  .card h3 { margin: 0 0 12px; font-size: 1.125rem; font-weight: 600; }
+  .notice { background: #e6f4ee; color: var(--ion-color-success); padding: 12px 16px; border-radius: var(--vv-radius-control); font-weight: 600; }
+  .server-error { background: #fce9e7; color: var(--ion-color-danger); border-radius: var(--vv-radius-control); padding: 12px 16px; margin-bottom: 1rem; }
+  .server-error p { margin: 0; font-weight: 600; }
+  p.server-error { font-weight: 600; }
+  .info-box { background: #e8eef6; color: var(--ion-color-primary); border-radius: var(--vv-radius-control); padding: 12px 16px; }
+  .field-error { color: var(--ion-color-danger); font-size: 0.875rem; margin: 4px 0 0; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}

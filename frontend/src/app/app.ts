@@ -3,7 +3,7 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
   addOutline, alertCircleOutline, businessOutline, calendarOutline, checkmarkCircleOutline, checkmarkOutline,
-  closeOutline, closeCircleOutline, cloudOfflineOutline, helpCircleOutline, homeOutline, informationCircleOutline,
+  closeOutline, closeCircleOutline, cloudOfflineOutline, cloudUploadOutline, createOutline, helpCircleOutline, homeOutline, informationCircleOutline,
   linkOutline, lockClosedOutline, peopleOutline, timeOutline,
 } from 'ionicons/icons';
 import { LanguageService } from './core/i18n/language.service';
@@ -18,7 +18,7 @@ export class App {
   constructor() {
     addIcons({
       addOutline, alertCircleOutline, businessOutline, calendarOutline, checkmarkCircleOutline, checkmarkOutline,
-      closeOutline, closeCircleOutline, cloudOfflineOutline, helpCircleOutline, homeOutline, informationCircleOutline,
+      closeOutline, closeCircleOutline, cloudOfflineOutline, cloudUploadOutline, createOutline, helpCircleOutline, homeOutline, informationCircleOutline,
       linkOutline, lockClosedOutline, peopleOutline, timeOutline,
     });
     inject(LanguageService).init();

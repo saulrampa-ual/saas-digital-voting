@@ -38,38 +38,61 @@
     <div class="grid">
       <section class="card">
         <h3>{{ 'admin.process.actions' | translate }}</h3>
-        @if (canManage) {
-          <div class="buttons">
-            <ion-button expand="block" fill="outline" [disabled]="p.status !== 'DRAFT' || busy()" [routerLink]="['/admin/procesos', p.id, 'editar']">
-              {{ 'admin.process.edit' | translate }}</ion-button>
-            <ion-button expand="block" color="secondary" [disabled]="p.status !== 'DRAFT' || busy()" (click)="confirming.set(true)">
-              @if (busy()) { <ion-spinner name="crescent" aria-hidden="true"></ion-spinner> }
-              {{ 'admin.process.schedule' | translate }}</ion-button>
-            <ion-button expand="block" fill="outline" [disabled]="p.status !== 'TALLIED' || busy()" (click)="archive()">
-              {{ 'admin.process.archive' | translate }}</ion-button>
-          </div>
-          <p class="help">{{ 'admin.process.archiveHelp' | translate }}</p>
-        } @else {
+        @if (!canManage) {
           <p class="help">{{ 'admin.process.readOnly' | translate }}</p>
+        } @else if (!hasActions()) {
+          <p class="help">{{ 'admin.process.noActions' | translate }}</p>
+        } @else {
+          <div class="buttons">
+            @if (p.status === 'DRAFT') {
+              <ion-button expand="block" fill="outline" [disabled]="busy()" [routerLink]="['/admin/procesos', p.id, 'editar']">
+                {{ 'admin.process.edit' | translate }}</ion-button>
+              <ion-button expand="block" color="secondary" [disabled]="busy()" (click)="confirming.set(true)">
+                @if (busy()) { <ion-spinner name="crescent" aria-hidden="true"></ion-spinner> }
+                {{ 'admin.process.schedule' | translate }}</ion-button>
+            }
+            @if (p.status === 'TALLIED') {
+              <ion-button expand="block" fill="outline" [disabled]="busy()" (click)="archive()">
+                {{ 'admin.process.archive' | translate }}</ion-button>
+            }
+          </div>
         }
         <div class="info"><ion-icon name="time-outline" aria-hidden="true"></ion-icon>
           <p>{{ 'admin.process.automatic' | translate }}</p></div>
       </section>
 
-      <section class="card">
-        <h3>{{ 'admin.process.checksTitle' | translate }}</h3>
-        <ul class="checks">
-          @for (c of checks(); track c.key) {
-            <li [class.ko]="!c.ok">
-              <ion-icon [name]="c.ok ? 'checkmark-outline' : 'alert-circle-outline'" aria-hidden="true"></ion-icon>
-              <span><strong>{{ 'admin.process.checks.' + c.key + '.title' | translate }}</strong>
-                <small>{{ 'admin.process.checks.' + c.key + (c.ok ? '.ok' : '.ko') | translate: c.params ?? {} }}</small></span>
-              <span class="sr-only">{{ (c.ok ? 'admin.process.checkOk' : 'admin.process.checkKo') | translate }}</span>
-            </li>
-          }
-        </ul>
-        <p class="help">{{ 'admin.process.checksHelp' | translate }}</p>
-      </section>
+      @if (showChecks()) {
+        <section class="card">
+          <h3>{{ 'admin.process.checksTitle' | translate }}</h3>
+          <ul class="checks">
+            @for (c of checks(); track c.key) {
+              <li [class.ko]="!c.ok">
+                <ion-icon [name]="c.ok ? 'checkmark-outline' : 'alert-circle-outline'" aria-hidden="true"></ion-icon>
+                <span><strong>{{ 'admin.process.checks.' + c.key + '.title' | translate }}</strong>
+                  <small>{{ 'admin.process.checks.' + c.key + (c.ok ? '.ok' : '.ko') | translate: c.params ?? {} }}</small></span>
+                <span class="sr-only">{{ (c.ok ? 'admin.process.checkOk' : 'admin.process.checkKo') | translate }}</span>
+              </li>
+            }
+          </ul>
+          <p class="help">{{ 'admin.process.checksHelp' | translate }}</p>
+        </section>
+      } @else {
+        <section class="card">
+          <h3>{{ 'admin.process.summaryTitle' | translate }}</h3>
+          <dl class="summary">
+            <div><dt>{{ 'admin.process.summary.opensAt' | translate }}</dt><dd>{{ p.opensAt | localDate: language() }}</dd></div>
+            <div><dt>{{ 'admin.process.summary.closesAt' | translate }}</dt><dd>{{ p.closesAt | localDate: language() }}</dd></div>
+            @if (census(); as c) {
+              <div><dt>{{ 'admin.process.summary.census' | translate }}</dt>
+                <dd>{{ 'admin.process.summary.censusValue' | translate: { name: c.name, count: c.voterCount } }}</dd></div>
+            }
+            <div><dt>{{ 'admin.process.summary.options' | translate }}</dt>
+              <dd>{{ p.ballot.options.length }}@if (p.ballot.blankVoteEnabled) { · {{ 'admin.process.summary.blank' | translate }} }</dd></div>
+            <div><dt>{{ 'admin.process.summary.visibility' | translate }}</dt>
+              <dd>{{ 'admin.process.summary.visibilityValue.' + p.resultsVisibility | translate }}</dd></div>
+          </dl>
+        </section>
+      }
     </div>
 
     <section class="card">

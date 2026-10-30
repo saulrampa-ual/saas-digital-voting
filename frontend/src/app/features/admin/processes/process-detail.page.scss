@@ -1,10 +1,7 @@
 // A4: header, status timeline, actions, pre-scheduling checks, history and what each status allows.
-.back { display: inline-block; margin-bottom: 0.5rem; color: var(--ion-color-primary); min-height: 44px; line-height: 44px; }
 .name { font-size: 1.5rem; margin: 0; }
 @media (min-width: 768px) { .name { font-size: 1.75rem; } }
 .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--ion-color-medium); }
-.card { background: #fff; border: 1px solid var(--vv-border-color); border-radius: var(--vv-radius-card); padding: 20px; margin-bottom: 16px; }
-.card h3 { margin: 0 0 12px; font-size: 1.125rem; font-weight: 600; }
 .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
 @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } .grid .card { margin: 0; } .grid { margin-bottom: 16px; } }
 .timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
@@ -29,11 +26,11 @@
 .checks li.ko > ion-icon { color: var(--ion-color-warning); }
 .checks span { display: flex; flex-direction: column; }
 .checks small { color: var(--ion-color-medium); font-size: 0.875rem; }
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .history { padding-left: 1.25rem; margin: 0; line-height: 1.8; }
 .what { margin: 0; display: grid; gap: 12px; grid-template-columns: 1fr; }
 @media (min-width: 768px) { .what { grid-template-columns: 1fr 1fr; } }
 .what dd { margin: 4px 0 0; }
-.notice { background: #e6f4ee; color: var(--ion-color-success); padding: 12px 16px; border-radius: var(--vv-radius-control); font-weight: 600; }
-.server-error { background: #fce9e7; color: var(--ion-color-danger); border-radius: var(--vv-radius-control); padding: 12px 16px; margin-bottom: 1rem; }
-.server-error p { margin: 0; font-weight: 600; }
+.summary { margin: 0; display: grid; gap: 10px; }
+.summary div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; }
+.summary dt { color: var(--ion-color-medium); font-size: 0.875rem; }
+.summary dd { margin: 0; font-weight: 600; }

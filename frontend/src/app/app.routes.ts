@@ -36,6 +36,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/censuses/censuses.page').then((m) => m.CensusesPage),
       },
       {
+        path: 'censos/:id',
+        canMatch: [roleGuard(['ADMIN', 'CENSUS_MANAGER'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/censuses/census-detail.page').then((m) => m.CensusDetailPage),
+      },
+      {
         path: 'procesos',
         canMatch: [roleGuard(['ADMIN', 'AUDITOR'], { needsOrganization: true })],
         loadComponent: () => import('./features/admin/processes/processes.page').then((m) => m.ProcessesPage),
