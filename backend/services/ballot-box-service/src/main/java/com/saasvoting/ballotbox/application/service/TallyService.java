@@ -25,8 +25,8 @@ import java.util.Objects;
 
 /**
  * Automatic tally (RF-13, D-37). For each CLOSED process without a result: with the ballot row locked (no vote can
- * arrive any more: votes need OPEN and the same lock), the counted votes must match the number committed in the
- * CLOSED event; then the counts and the result hash are stored. Afterwards election-service is told, and the call is
+ * arrive any more: votes need OPEN and the same lock), the whole chain must verify (RF-12, D-38) and the counted votes
+ * must match the number committed in the CLOSED event; then the counts and the result hash are stored. Afterwards election-service is told, and the call is
  * repeated on the next run until it answers, so the process always ends up TALLIED.
  */
 public final class TallyService implements RunTallyUseCase {
@@ -35,16 +35,18 @@ public final class TallyService implements RunTallyUseCase {
     private final BallotBoxStore urn;
     private final ResultRepository results;
     private final ElectionClient election;
+    private final AuditService audit;
     private final UnitOfWork unitOfWork;
     private final Clock clock;
     private final ZoneId zone;
 
     public TallyService(BallotRepository ballots, BallotBoxStore urn, ResultRepository results, ElectionClient election,
-            UnitOfWork unitOfWork, Clock clock, ZoneId zone) {
+            AuditService audit, UnitOfWork unitOfWork, Clock clock, ZoneId zone) {
         this.ballots = Objects.requireNonNull(ballots, "ballots must not be null");
         this.urn = Objects.requireNonNull(urn, "urn must not be null");
         this.results = Objects.requireNonNull(results, "results must not be null");
         this.election = Objects.requireNonNull(election, "election must not be null");
+        this.audit = Objects.requireNonNull(audit, "audit must not be null");
         this.unitOfWork = Objects.requireNonNull(unitOfWork, "unitOfWork must not be null");
         this.clock = Objects.requireNonNull(clock, "clock must not be null");
         this.zone = Objects.requireNonNull(zone, "zone must not be null");
@@ -56,6 +58,10 @@ public final class TallyService implements RunTallyUseCase {
         int tallied = 0;
         for (long processId : results.findClosedWithoutResult()) {
             try {
+                // Own transaction, so the verification and its CHAIN_BROKEN incident stay even if the tally stops.
+                if (!unitOfWork.inTransaction(() -> audit.verifyLocked(processId)).intact()) {
+                    throw new TallyFailedException(processId, "the audit chain does not verify");
+                }
                 if (unitOfWork.inTransaction(() -> tally(processId))) {
                     tallied++;
                 }
@@ -89,6 +95,7 @@ public final class TallyService implements RunTallyUseCase {
         if (ballot.status() != ProcessStatus.CLOSED || results.findResult(processId).isPresent()) {
             return false;
         }
+
         List<CountedVote> votes = results.countedVotes(processId);
         String committed = AuditEvent.sha256("closed|" + processId + "|" + votes.size());
         if (!results.closedPayloadHash(processId).map(committed::equals).orElse(false)) {

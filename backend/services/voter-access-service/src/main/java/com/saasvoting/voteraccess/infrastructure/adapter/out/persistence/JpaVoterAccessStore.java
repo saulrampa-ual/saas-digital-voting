@@ -1,6 +1,7 @@
 package com.saasvoting.voteraccess.infrastructure.adapter.out.persistence;
 
 import com.saasvoting.voteraccess.application.port.out.NotificationRepository;
+import com.saasvoting.voteraccess.application.port.out.ParticipationRepository;
 import com.saasvoting.voteraccess.application.port.out.RollRepository;
 import com.saasvoting.voteraccess.application.port.out.SnapshotRepository;
 import com.saasvoting.voteraccess.application.port.out.VotingTokenRepository;
@@ -38,7 +39,7 @@ import java.util.UUID;
 @Repository
 @Transactional
 public class JpaVoterAccessStore implements SnapshotRepository, RollRepository, VotingTokenRepository,
-        NotificationRepository {
+        NotificationRepository, ParticipationRepository {
 
     private static final int FLUSH_EVERY = 500;
 
@@ -237,5 +238,30 @@ public class JpaVoterAccessStore implements SnapshotRepository, RollRepository, 
             throw new IllegalStateException("Notification " + notification.id() + " no longer exists");
         }
         entity.apply(notification);
+    }
+
+    // ---- Participation (RF-14): counts only ----
+
+    @Override
+    @Transactional(readOnly = true)
+    public int eligibleVoters(long processId) {
+        return em.createQuery("select count(r) from RollEntryJpaEntity r where r.processId = :processId", Long.class)
+                .setParameter("processId", processId)
+                .getSingleResult()
+                .intValue();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.SortedMap<java.time.LocalDate, Integer> votesByDay(long processId) {
+        java.util.SortedMap<java.time.LocalDate, Integer> days = new java.util.TreeMap<>();
+        em.createQuery("""
+                        select p.votedOn, count(p) from ParticipationJpaEntity p, RollEntryJpaEntity r
+                        where p.rollEntryId = r.id and r.processId = :processId and p.hasVoted = true
+                        group by p.votedOn""", Object[].class)
+                .setParameter("processId", processId)
+                .getResultList()
+                .forEach(row -> days.put((java.time.LocalDate) row[0], ((Long) row[1]).intValue()));
+        return days;
     }
 }

@@ -1,5 +1,6 @@
 package com.saasvoting.ballotbox.infrastructure.config;
 
+import com.saasvoting.ballotbox.application.port.out.AuditRepository;
 import com.saasvoting.ballotbox.application.port.out.BallotBoxStore;
 import com.saasvoting.ballotbox.application.port.out.BallotRepository;
 import com.saasvoting.ballotbox.application.port.out.ElectionClient;
@@ -7,6 +8,7 @@ import com.saasvoting.ballotbox.application.port.out.ReceiptGenerator;
 import com.saasvoting.ballotbox.application.port.out.ResultRepository;
 import com.saasvoting.ballotbox.application.port.out.UnitOfWork;
 import com.saasvoting.ballotbox.application.port.out.VoterAccessClient;
+import com.saasvoting.ballotbox.application.service.AuditService;
 import com.saasvoting.ballotbox.application.service.BallotReceiverService;
 import com.saasvoting.ballotbox.application.service.ResultQueryService;
 import com.saasvoting.ballotbox.application.service.TallyService;
@@ -66,10 +68,18 @@ public class BallotBoxConfiguration {
     }
 
     @Bean
+    AuditService auditService(
+            BallotRepository ballots, BallotBoxStore urn, AuditRepository audit, ResultRepository results,
+            UnitOfWork unitOfWork, Clock clock, @Value("${verivoto.zone:Europe/Madrid}") ZoneId zone) {
+        return new AuditService(ballots, urn, audit, results, unitOfWork, clock, zone);
+    }
+
+    @Bean
     TallyService tallyService(
             BallotRepository ballots, BallotBoxStore urn, ResultRepository results, ElectionClient election,
-            UnitOfWork unitOfWork, Clock clock, @Value("${verivoto.zone:Europe/Madrid}") ZoneId zone) {
-        return new TallyService(ballots, urn, results, election, unitOfWork, clock, zone);
+            AuditService audit, UnitOfWork unitOfWork, Clock clock,
+            @Value("${verivoto.zone:Europe/Madrid}") ZoneId zone) {
+        return new TallyService(ballots, urn, results, election, audit, unitOfWork, clock, zone);
     }
 
     @Bean

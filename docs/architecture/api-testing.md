@@ -200,6 +200,18 @@ cd backend
 10. `GET …/fingerprints` sin token → huellas. Con `PUBLIC_LINK`, el proceso trae `resultsPublicId` y
     `GET /api/v1/ballot-box/public/results/{resultsPublicId}` devuelve el resultado sin token.
 
+### Registro de la urna y participación (RF-12, RF-14, P5.2)
+
+11. Como la persona auditora: `GET /api/v1/ballot-box/processes/{id}/audit-events?page=0&size=50` → eventos en orden;
+    los de voto con `occurredAt: null`. ADMIN → **403**.
+12. `POST …/audit-events/verification` → `{ "intact": true, "eventsChecked": n, "problems": [] }`; después
+    `GET …/audit-events/verification` devuelve esa misma verificación. Antes de verificar nunca → **404**.
+13. (Solo en local) cambiar a mano el `payload_hash` de un evento en `ballot_box_db.audit_events` y verificar →
+    `intact: false` con `HASH_MISMATCH` en esa secuencia y una incidencia `CHAIN_BROKEN`; si el proceso se cierra así,
+    el escrutinio no se publica hasta restaurar el valor.
+14. Como `ana@ual.test` (ADMIN): `GET /api/v1/voter-access/processes/{id}/participation` → censo, `votesCast`,
+    `pending`, `participation` y `byDay` (solo días). Auditor o gestor de censo → **403**.
+
 ## 9. Flujo completo del votante en la PWA (P4.5)
 
 Con infraestructura, gateway, election, voter-access, ballot-box y el frontend (`cd frontend; npm start`):

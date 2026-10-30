@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 /**
  * Voter endpoints are public: the single-use voting token is the credential (RF-09). Fingerprints and the public
  * results link are public too (ADR-0007, D-16). Results of an organization need a management token with ADMIN or
- * AUDITOR (export: ADMIN, RF-15). Internal endpoints need a Keycloak client-credentials token with role SERVICE
+ * AUDITOR (export: ADMIN, RF-15); the chain of the ballot box only to the AUDITOR (RF-12). Internal endpoints need a Keycloak client-credentials token with role SERVICE
  * (D-22). Everything else is denied.
  */
 @Configuration
@@ -32,6 +32,12 @@ public class SecurityConfiguration {
                                 "/api/v1/ballot-box/processes/*/results/counted-votes")
                         .hasAnyRole("ADMIN", "AUDITOR")
                         .requestMatchers("/api/v1/ballot-box/processes/*/results/**").denyAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/ballot-box/processes/*/audit-events",
+                                "/api/v1/ballot-box/processes/*/audit-events/verification")
+                        .hasRole("AUDITOR")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/ballot-box/processes/*/audit-events/verification")
+                        .hasRole("AUDITOR")
+                        .requestMatchers("/api/v1/ballot-box/processes/*/audit-events/**").denyAll()
                         .requestMatchers("/api/v1/ballot-box/**").permitAll()
                         .requestMatchers("/actuator/health", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**")
                         .permitAll()

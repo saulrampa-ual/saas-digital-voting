@@ -1,6 +1,7 @@
 package com.saasvoting.ballotbox.infrastructure.adapter.in.rest;
 
 import com.saasvoting.ballotbox.domain.model.BallotNotFoundException;
+import com.saasvoting.ballotbox.domain.model.ChainCheckNotFoundException;
 import com.saasvoting.ballotbox.domain.model.InvalidSelectionException;
 import com.saasvoting.ballotbox.domain.model.ResultNotAvailableException;
 import com.saasvoting.ballotbox.domain.model.SnapshotConflictException;
@@ -22,6 +23,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler(BallotNotFoundException.class)
     ProblemDetail ballotNotFound(BallotNotFoundException e) {
         return problem(HttpStatus.NOT_FOUND, "No existe esa votación.");
+    }
+
+    @ExceptionHandler(ChainCheckNotFoundException.class)
+    ProblemDetail neverChecked(ChainCheckNotFoundException e) {
+        return problem(HttpStatus.NOT_FOUND, "El registro de esta votación todavía no se ha verificado.");
     }
 
     @ExceptionHandler(InvalidSelectionException.class)

@@ -5,14 +5,17 @@ info:
   description: |
     Voter access with personal link + email one-time code (RF-08, RNF-14) and single-use voting
     tokens. Voter endpoints need no account: the personal link and the code identify the voter.
-    This service never receives the chosen option nor the receipt (RNF-11).
+    This service never receives the chosen option nor the receipt (RNF-11). It also gives the
+    participation of a process to its administrator (RF-14), counted by day only (D-18).
     Error `detail` texts are written in plain Spanish (RNF-8).
 servers:
   - url: http://localhost:8000
-    description: Local API gateway (public endpoints only)
+    description: Local API gateway (voter and management endpoints)
 tags:
   - name: voter
     description: RF-08 (public, used by the voter PWA)
+  - name: participation
+    description: RF-14 (administrator of the organization, Keycloak token)
   - name: internal
     description: Service-to-service endpoints (not exposed by the gateway)
 paths:
@@ -97,6 +100,28 @@ paths:
         '410': { $ref: '#/components/responses/Gone' }
         '422': { $ref: '#/components/responses/Unprocessable' }
         '423': { $ref: '#/components/responses/Locked' }
+  /api/v1/voter-access/processes/{processId}/participation:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [participation]
+      operationId: getParticipation
+      summary: Participation of a process
+      description: |
+        Role: ADMIN of the organization of the process. RF-14. How many people of the frozen census have voted,
+        never what they voted. Before opening, only the census; while open, refreshed by the client; once closed,
+        the final participation. Counted by day only (D-18), in the time zone of the service.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Participation
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Participation' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
   /internal/v1/processes/{processId}:
     parameters:
       - $ref: '#/components/parameters/ProcessId'
@@ -181,6 +206,11 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
 components:
   securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Keycloak token of a management user (`roles` and `organization_id` claims).
     serviceAuth:
       type: oauth2
       description: Keycloak client-credentials token of another VeriVoto service (role SERVICE). Internal endpoints are never routed by the gateway.
@@ -233,6 +263,11 @@ components:
           schema: { $ref: '#/components/schemas/Problem' }
     TooManyRequests:
       description: Wait before requesting a new code
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: The role of the user does not allow this operation
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
@@ -321,6 +356,28 @@ components:
       properties:
         votingToken: { type: string }
         processId: { type: integer, format: int64 }
+    Participation:
+      type: object
+      required: [processId, status, opensAt, closesAt, eligibleVoters, votesCast, pending, participation, byDay]
+      properties:
+        processId: { type: integer, format: int64 }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+        eligibleVoters: { type: integer, minimum: 0, description: People in the frozen census }
+        votesCast: { type: integer, minimum: 0 }
+        pending: { type: integer, minimum: 0 }
+        participation: { type: number, description: Votes cast over the census, in percent with 2 decimals }
+        byDay:
+          type: array
+          description: Votes per day and running total (D-18, no hours)
+          items:
+            type: object
+            required: [day, votes, cumulative]
+            properties:
+              day: { type: string, format: date }
+              votes: { type: integer, minimum: 0 }
+              cumulative: { type: integer, minimum: 0 }
     Problem:
       type: object
       description: RFC 9457 problem details. `detail` is plain Spanish for the end user (RNF-8).

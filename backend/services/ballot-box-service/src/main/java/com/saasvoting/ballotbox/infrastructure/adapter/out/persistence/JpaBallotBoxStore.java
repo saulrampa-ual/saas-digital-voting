@@ -1,5 +1,6 @@
 package com.saasvoting.ballotbox.infrastructure.adapter.out.persistence;
 
+import com.saasvoting.ballotbox.application.port.out.AuditRepository;
 import com.saasvoting.ballotbox.application.port.out.BallotBoxStore;
 import com.saasvoting.ballotbox.application.port.out.BallotRepository;
 import com.saasvoting.ballotbox.application.port.out.ResultRepository;
@@ -8,6 +9,7 @@ import com.saasvoting.ballotbox.domain.model.AuditEventType;
 import com.saasvoting.ballotbox.domain.model.BallotOption;
 import com.saasvoting.ballotbox.domain.model.BallotNotFoundException;
 import com.saasvoting.ballotbox.domain.model.BallotSnapshot;
+import com.saasvoting.ballotbox.domain.model.ChainCheck;
 import com.saasvoting.ballotbox.domain.model.ChainHead;
 import com.saasvoting.ballotbox.domain.model.CountedVote;
 import com.saasvoting.ballotbox.domain.model.IncidentKind;
@@ -15,6 +17,7 @@ import com.saasvoting.ballotbox.domain.model.ProcessStatus;
 import com.saasvoting.ballotbox.domain.model.TallyResult;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.AuditEventJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.BallotSnapshotJpaEntity;
+import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.ChainCheckJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.IncidentJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.ReceiptJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.ResultJpaEntity;
@@ -30,10 +33,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-/** JPA implementation of the ballot, urn and result ports. */
+/** JPA implementation of the ballot, urn, result and audit ports. */
 @Repository
 @Transactional
-public class JpaBallotBoxStore implements BallotRepository, BallotBoxStore, ResultRepository {
+public class JpaBallotBoxStore implements BallotRepository, BallotBoxStore, ResultRepository, AuditRepository {
 
     private final EntityManager em;
 
@@ -206,5 +209,61 @@ public class JpaBallotBoxStore implements BallotRepository, BallotBoxStore, Resu
                 .setParameter("processId", processId)
                 .setParameter("kind", kind)
                 .getSingleResult() > 0;
+    }
+
+    // ---- Audit chain (RF-12, D-38) ----
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AuditEvent> events(long processId) {
+        return eventsQuery(processId).getResultStream().map(AuditEventJpaEntity::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AuditEvent> events(long processId, int page, int size) {
+        return eventsQuery(processId).setFirstResult(page * size).setMaxResults(size)
+                .getResultStream().map(AuditEventJpaEntity::toDomain).toList();
+    }
+
+    private jakarta.persistence.TypedQuery<AuditEventJpaEntity> eventsQuery(long processId) {
+        return em.createQuery(
+                        "select e from AuditEventJpaEntity e where e.key.processId = :processId order by e.key.sequence",
+                        AuditEventJpaEntity.class)
+                .setParameter("processId", processId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countEvents(long processId) {
+        return em.createQuery("select count(e) from AuditEventJpaEntity e where e.key.processId = :processId", Long.class)
+                .setParameter("processId", processId)
+                .getSingleResult();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countReceipts(long processId) {
+        return em.createQuery("select count(r) from ReceiptJpaEntity r where r.key.processId = :processId", Long.class)
+                .setParameter("processId", processId)
+                .getSingleResult();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<ChainCheck> lastCheck(long processId) {
+        return Optional.ofNullable(em.find(ChainCheckJpaEntity.class, processId)).map(ChainCheckJpaEntity::toDomain);
+    }
+
+    @Override
+    public void saveCheck(ChainCheck check) {
+        ChainCheckJpaEntity entity = em.find(ChainCheckJpaEntity.class, check.processId());
+        if (entity == null) {
+            entity = new ChainCheckJpaEntity(check.processId());
+            entity.apply(check);
+            em.persist(entity);
+        } else {
+            entity.apply(check);
+        }
     }
 }

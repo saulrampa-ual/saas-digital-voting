@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-30 · Rama de trabajo: `feat/tally` (P5.1 sin commitear, sobre `feat/census-screens` `7d707a8`) · Último commit en `dev`: `ce22e93`
+Última actualización: 2026-10-30 · Rama de trabajo: `feat/audit-participation` (P5.2 sin commitear, sobre `feat/tally` `a08244a`) · Último commit en `dev`: `ce22e93`
 
 ## Hitos
 
@@ -11,7 +11,7 @@
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
 | P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Hecho (`b7aea1c`) |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho salvo integrar (P4.1–P4.4 en `dev`; P4.5, P4.6 y A2 en `feat/voter-screens`, `feat/process-screens` y `feat/census-screens`) |
-| P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | En curso (P5.1 escrutinio y resultados, probado por la IA, sin commitear) |
+| P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | En curso (P5.1 en `feat/tally`; P5.2 registro de la urna y participación, probado por la IA, sin commitear) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | Pendiente |
@@ -96,6 +96,7 @@
 
 ## En curso
 
+- P5.2: registro de la urna y participación (RF-12, RF-14, D-38). ballot-box: `ChainVerifier` (hash, enlaces, secuencia, cabeza, papeleta de `OPENED`, votos/recibos/eventos, `CLOSED`, huella final), `AuditService` y `AuditController` (eventos por páginas y verificación para AUDITOR), Flyway V3 `chain_checks`, incidencia `CHAIN_BROKEN` única y escrutinio que verifica la cadena antes de publicar. voter-access: `ParticipationService` y `ParticipationController` (ADMIN; censo, votos, pendientes, % y por día). Prueba de extremo a extremo de la IA (37/37): seis manipulaciones reales de la base de datos detectadas y deshechas, escrutinio bloqueado y reanudado, permisos y organizaciones, participación antes, durante y después; regresión P5.1 54/54 y urna 28/28.
 - P5.1: escrutinio y resultados (RF-13, RF-15, D-37). ballot-box: Flyway V2 (`results`, `result_options`, incidencia `TALLY_FAILED`), `TallyResult` (recuento, porcentajes, huella de la lista de votos y del resultado), `TallyService` + `TallyScheduler` (comprobación con el evento `CLOSED`, incidencia única, reintento, aviso a election hasta que responde), `ResultQueryService` y `ResultsController` (huellas públicas, resultado ADMIN/AUDITOR, votos contabilizados, CSV ADMIN, enlace público), `ServiceTokenProvider` compartido y `HttpElectionClient`. election: `POST /internal/v1/processes/{id}/tallied` (SERVICE, idempotente) y `resultsPublicId` en la respuesta del proceso con `PUBLIC_LINK`. Prueba de extremo a extremo de la IA (54/54) con todos los servicios reales: recuento manipulado no publicado y reintento, election caído durante el escrutinio, proceso sin votos, porcentajes y participación, recálculo independiente de la huella, permisos y organizaciones, CSV es/en, enlace público, secreto del voto en datos y logs; regresión de la urna 28/28.
 - Correcciones de A4 tras la prueba del usuario con Keycloak real (D-35): la validación previa solo aparece en borrador (antes marcaba «Calendario coherente» como incompleto con el proceso abierto); en los demás estados, «Datos del proceso»; los botones que no aplican no se muestran («Editar» seguía visible en `OPEN`); el auditor ya no consulta censos (veía «— no tiene personas» por el 403).
 - A2/G1: censos (RF-03, D-36): `CensusApiService`, lista con alta de censo, detalle con importación CSV en dos pasos (validación cancelable → resumen → aplicar), alta, edición y baja manual, búsqueda y páginas, vista móvil, solo lectura para el administrador y censo congelado. Prueba en navegador con el stack completo: A2 37/37 (incluido un CSV de 49 000 filas) y regresión de consola 14/14, votante 25/25 y A3/A4 28/28 (con apertura automática y A4 sin acciones en `OPEN`). `ng build` limpio (inicial ≈ 962 kB / 214 kB transferidos).
@@ -161,8 +162,9 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Compilar (`.\mvnw.cmd -DskipTests compile`), probar el escrutinio con Keycloak real (`api-testing.md` §8, pasos 6–10)
-   y commitear P5.1 en `feat/tally`.
-2. Integrar en `dev`, por orden, `feat/voter-screens`, `feat/process-screens`, `feat/census-screens` y `feat/tally`.
-3. Siguiente: **P5.2**, consulta y verificación de la cadena de la urna (RF-12) y participación en directo (RF-14); después
-   pantallas F1/F4/A5/H1/V8, acta PDF (RF-16) y modelo de amenazas.
+1. Compilar (`.\mvnw.cmd -DskipTests compile`), probar con Keycloak real (`api-testing.md` §8, pasos 11–14) y commitear
+   P5.2 en `feat/audit-participation`.
+2. Integrar en `dev`, por orden, `feat/voter-screens`, `feat/process-screens`, `feat/census-screens`, `feat/tally` y
+   `feat/audit-participation`.
+3. Siguiente: **P5.3**, pantallas F1 (resultados y CSV), F4 (escrutinio en curso), A5 (participación), H1 (auditoría) y
+   V8 (resultados públicos); después acta PDF (RF-16) y modelo de amenazas.
