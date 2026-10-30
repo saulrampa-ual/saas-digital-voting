@@ -1,0 +1,47 @@
+package com.saasvoting.ballotbox.infrastructure.config;
+
+import com.saasvoting.ballotbox.application.port.out.BallotBoxStore;
+import com.saasvoting.ballotbox.application.port.out.BallotRepository;
+import com.saasvoting.ballotbox.application.port.out.ReceiptGenerator;
+import com.saasvoting.ballotbox.application.port.out.UnitOfWork;
+import com.saasvoting.ballotbox.application.port.out.VoterAccessClient;
+import com.saasvoting.ballotbox.application.service.BallotReceiverService;
+import com.saasvoting.ballotbox.application.service.VotingService;
+import com.saasvoting.ballotbox.infrastructure.adapter.out.client.HttpVoterAccessClient;
+import com.saasvoting.ballotbox.infrastructure.adapter.out.client.VoterAccessProperties;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.time.Clock;
+import java.time.ZoneId;
+
+/** Wires use cases and outbound adapters. Application services carry no Spring annotations. */
+@Configuration
+@EnableConfigurationProperties(VoterAccessProperties.class)
+public class BallotBoxConfiguration {
+
+    @Bean
+    Clock systemClock() {
+        return Clock.systemUTC();
+    }
+
+    @Bean
+    VoterAccessClient voterAccessClient(VoterAccessProperties properties, Clock clock) {
+        return new HttpVoterAccessClient(properties, clock);
+    }
+
+    @Bean
+    BallotReceiverService ballotReceiverService(
+            BallotRepository ballots, BallotBoxStore urn, UnitOfWork unitOfWork, Clock clock) {
+        return new BallotReceiverService(ballots, urn, unitOfWork, clock);
+    }
+
+    @Bean
+    VotingService votingService(
+            BallotRepository ballots, BallotBoxStore urn, VoterAccessClient voterAccess, ReceiptGenerator receipts,
+            UnitOfWork unitOfWork, Clock clock, @Value("${verivoto.zone:Europe/Madrid}") ZoneId zone) {
+        return new VotingService(ballots, urn, voterAccess, receipts, unitOfWork, clock, zone);
+    }
+}

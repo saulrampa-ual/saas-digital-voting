@@ -23,6 +23,9 @@ public interface VoterRepository {
     /** Lower-case emails already in the census. */
     Set<String> emails(long censusId);
 
+    /** Every voter of the census that has not been anonymized (RF-18), to build the frozen roll (D-21). */
+    List<Voter> findAllActiveInCensus(long censusId);
+
     /** Institutional identifiers already in the census. */
     Set<String> institutionalIds(long censusId);
 }

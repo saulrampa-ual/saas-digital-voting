@@ -14,9 +14,25 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${BALLOT_BOX_OIDC_ISSUER_URI:http://localhost:8080/realms/verivoto}
 
 management:
   endpoints:
     web:
       exposure:
         include: health
+
+verivoto:
+  # Day of the incidents (D-18)
+  zone: Europe/Madrid
+  voter-access:
+    # D-20, D-22: token consumption in voter-access with the ballot-box-service client (role SERVICE)
+    url: ${BALLOT_BOX_VOTER_ACCESS_URL:http://localhost:8083}
+    keycloak-base-url: ${BALLOT_BOX_KEYCLOAK_BASE_URL:http://localhost:8080}
+    realm: verivoto
+    client-id: ballot-box-service
+    client-secret: ${BALLOT_BOX_SERVICE_CLIENT_SECRET:}

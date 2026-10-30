@@ -25,6 +25,9 @@ public interface VoterJpaRepository extends JpaRepository<VoterJpaEntity, Long> 
             """)
     Page<VoterJpaEntity> search(@Param("censusId") long censusId, @Param("search") String search, Pageable pageable);
 
+    @Query("select v from VoterJpaEntity v where v.censusId = :censusId and v.anonymizedAt is null order by v.id")
+    List<VoterJpaEntity> findAllActiveInCensus(@Param("censusId") long censusId);
+
     @Query("select count(v) from VoterJpaEntity v where v.censusId = :censusId")
     long countInCensus(@Param("censusId") long censusId);
 

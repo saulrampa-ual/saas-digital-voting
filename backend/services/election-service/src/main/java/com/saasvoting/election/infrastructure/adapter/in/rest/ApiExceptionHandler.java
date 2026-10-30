@@ -4,8 +4,13 @@ import com.saasvoting.election.domain.model.CensusFrozenException;
 import com.saasvoting.election.domain.model.CensusNotFoundException;
 import com.saasvoting.election.domain.model.DuplicateReason;
 import com.saasvoting.election.domain.model.DuplicateVoterException;
+import com.saasvoting.election.domain.model.InvalidProcessDataException;
+import com.saasvoting.election.domain.model.InvalidTransitionException;
 import com.saasvoting.election.domain.model.InvalidVoterDataException;
 import com.saasvoting.election.domain.model.OperationNotAllowedException;
+import com.saasvoting.election.domain.model.ProcessIncompleteException;
+import com.saasvoting.election.domain.model.ProcessNotEditableException;
+import com.saasvoting.election.domain.model.ProcessNotFoundException;
 import com.saasvoting.election.domain.model.VoterNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -33,6 +38,46 @@ public class ApiExceptionHandler {
     @ExceptionHandler(VoterNotFoundException.class)
     ProblemDetail voterNotFound(VoterNotFoundException e) {
         return problem(HttpStatus.NOT_FOUND, "No existe esa persona en el censo.");
+    }
+
+    @ExceptionHandler(ProcessNotFoundException.class)
+    ProblemDetail processNotFound(ProcessNotFoundException e) {
+        return problem(HttpStatus.NOT_FOUND, "No existe ese proceso en tu organización.");
+    }
+
+    @ExceptionHandler(ProcessNotEditableException.class)
+    ProblemDetail processNotEditable(ProcessNotEditableException e) {
+        return problem(HttpStatus.CONFLICT,
+                "Solo se puede cambiar la configuración de un proceso en borrador.");
+    }
+
+    @ExceptionHandler(ProcessIncompleteException.class)
+    ProblemDetail processIncomplete(ProcessIncompleteException e) {
+        ProblemDetail problem = problem(HttpStatus.UNPROCESSABLE_CONTENT,
+                "El proceso no se puede programar todavía. Completa lo que falta y vuelve a intentarlo.");
+        problem.setProperty("errors", e.issues().stream()
+                .map(issue -> Map.of("field", issue.field(), "message", issue.message()))
+                .toList());
+        return problem;
+    }
+
+    @ExceptionHandler(InvalidTransitionException.class)
+    ProblemDetail invalidTransition(InvalidTransitionException e) {
+        String detail = switch (e.to()) {
+            case SCHEDULED -> "Solo se puede programar un proceso en borrador.";
+            case ARCHIVED -> "Solo se puede archivar un proceso escrutado.";
+            default -> "El proceso ha cambiado de estado; recarga la página.";
+        };
+        ProblemDetail problem = problem(HttpStatus.CONFLICT, detail);
+        problem.setProperty("currentStatus", e.from().name());
+        return problem;
+    }
+
+    @ExceptionHandler(InvalidProcessDataException.class)
+    ProblemDetail invalidProcess(InvalidProcessDataException e) {
+        ProblemDetail problem = problem(HttpStatus.BAD_REQUEST, e.userMessage());
+        problem.setProperty("errors", List.of(Map.of("field", e.field(), "message", e.userMessage())));
+        return problem;
     }
 
     @ExceptionHandler(CensusFrozenException.class)
