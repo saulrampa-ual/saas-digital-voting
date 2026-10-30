@@ -5,9 +5,14 @@ const ANY_MANAGEMENT_ROLE = ['SUPERADMIN', 'ADMIN', 'CENSUS_MANAGER', 'AUDITOR']
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'admin' },
+  // Voter area (RF-08–RF-10): no Keycloak, the personal link and the email code identify the voter.
   {
     path: 'votar/:linkToken',
-    loadComponent: () => import('./features/voter/voter-entry.page').then((m) => m.VoterEntryPage),
+    loadComponent: () => import('./features/voter/voter-flow.page').then((m) => m.VoterFlowPage),
+  },
+  {
+    path: 'recibo/:processId',
+    loadComponent: () => import('./features/voter/receipt-check.page').then((m) => m.ReceiptCheckPage),
   },
   {
     path: 'admin',
@@ -27,7 +32,7 @@ export const routes: Routes = [
       },
       {
         path: 'censos',
-        canMatch: [roleGuard(['ADMIN', 'CENSUS_MANAGER'])],
+        canMatch: [roleGuard(['ADMIN', 'CENSUS_MANAGER'], { needsOrganization: true })],
         loadComponent: () => import('./features/admin/censuses/censuses.page').then((m) => m.CensusesPage),
       },
       {

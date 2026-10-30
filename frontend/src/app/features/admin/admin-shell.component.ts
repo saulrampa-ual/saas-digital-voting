@@ -12,12 +12,17 @@ interface MenuEntry {
   readonly labelKey: string;
   readonly icon: string;
   readonly roles: readonly ManagementRole[];
+  /** Organization-scoped sections are hidden from users without organization (super-administrator). */
+  readonly needsOrganization?: boolean;
 }
 
 const MENU: readonly MenuEntry[] = [
   { path: '/admin/inicio', labelKey: 'admin.menu.home', icon: 'home-outline', roles: ['SUPERADMIN', 'ADMIN', 'CENSUS_MANAGER', 'AUDITOR'] },
   { path: '/admin/organizaciones', labelKey: 'admin.menu.organizations', icon: 'business-outline', roles: ['SUPERADMIN'] },
-  { path: '/admin/censos', labelKey: 'admin.menu.censuses', icon: 'people-outline', roles: ['ADMIN', 'CENSUS_MANAGER'] },
+  {
+    path: '/admin/censos', labelKey: 'admin.menu.censuses', icon: 'people-outline', roles: ['ADMIN', 'CENSUS_MANAGER'],
+    needsOrganization: true,
+  },
 ];
 
 /** Management console layout: fixed menu from 992 px, hamburger menu below (prototype guide). */
@@ -67,5 +72,7 @@ const MENU: readonly MenuEntry[] = [
 })
 export class AdminShellComponent {
   protected readonly auth = inject(AuthService);
-  protected readonly entries = computed(() => MENU.filter((entry) => this.auth.hasAnyRole(entry.roles)));
+  protected readonly entries = computed(() =>
+    MENU.filter((entry) => this.auth.hasAnyRole(entry.roles) && (!entry.needsOrganization || this.auth.organizationId())),
+  );
 }

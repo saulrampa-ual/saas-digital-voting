@@ -33,6 +33,9 @@ import { AuthService } from '../../core/auth/auth.service';
     </ion-content>
   `,
   styles: `
+    /* The routed page is the .ion-page: header and content must be its direct flex children, otherwise
+       ion-content collapses to a few pixels and the page looks covered. */
+    :host { display: contents; }
     .title { font-size: 1.125rem; margin: 0; }
     .page { max-width: 72rem; margin: 0 auto; }
     .session { display: flex; flex-direction: column; align-items: flex-end; margin-inline-end: 12px; line-height: 1.25; }

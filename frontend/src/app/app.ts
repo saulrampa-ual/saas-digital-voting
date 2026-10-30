@@ -2,7 +2,9 @@ import { Component, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
-  alertCircleOutline, businessOutline, helpCircleOutline, homeOutline, lockClosedOutline, peopleOutline,
+  alertCircleOutline, businessOutline, checkmarkCircleOutline, closeCircleOutline, cloudOfflineOutline,
+  helpCircleOutline, homeOutline, informationCircleOutline, linkOutline, lockClosedOutline, peopleOutline,
+  timeOutline,
 } from 'ionicons/icons';
 import { LanguageService } from './core/i18n/language.service';
 import { FocusOnNavigationService } from './core/a11y/focus-on-navigation.service';
@@ -14,7 +16,11 @@ import { FocusOnNavigationService } from './core/a11y/focus-on-navigation.servic
 })
 export class App {
   constructor() {
-    addIcons({ alertCircleOutline, businessOutline, helpCircleOutline, homeOutline, lockClosedOutline, peopleOutline });
+    addIcons({
+      alertCircleOutline, businessOutline, checkmarkCircleOutline, closeCircleOutline, cloudOfflineOutline,
+      helpCircleOutline, homeOutline, informationCircleOutline, linkOutline, lockClosedOutline, peopleOutline,
+      timeOutline,
+    });
     inject(LanguageService).init();
     inject(FocusOnNavigationService).init();
   }

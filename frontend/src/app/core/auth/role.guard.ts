@@ -8,13 +8,19 @@ import { AuthService, ManagementRole } from './auth.service';
  * Used as `canMatch`, so the code of an area is not downloaded by a role that cannot open it (prototype guide).
  * Guards only hide screens: permissions and tenant isolation are always enforced by the services.
  */
-export function roleGuard(allowed: readonly ManagementRole[]): CanMatchFn {
+export function roleGuard(
+  allowed: readonly ManagementRole[],
+  options: { needsOrganization?: boolean } = {},
+): CanMatchFn {
   return async () => {
     const auth = inject(AuthService);
     const router = inject(Router);
     if (!(await auth.ensureLoggedIn())) {
       return false;
     }
-    return auth.hasAnyRole(allowed) ? true : router.parseUrl('/admin/sin-permiso');
+    const allowedRole = auth.hasAnyRole(allowed);
+    // Censuses and processes belong to an organization: a platform super-administrator has none (RNF-15).
+    const hasOrganization = !options.needsOrganization || auth.organizationId() !== null;
+    return allowedRole && hasOrganization ? true : router.parseUrl('/admin/sin-permiso');
   };
 }

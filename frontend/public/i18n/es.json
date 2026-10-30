@@ -44,8 +44,121 @@
   },
   "voter": {
     "welcome": {
-      "title": "Bienvenida a la votación",
-      "pending": "Esta pantalla se completará en la rebanada del voto (P4.5)."
+      "eyebrow": "Votación",
+      "closes": "Puedes votar hasta el {{closes}}.",
+      "step1": "Te enviaremos un código de 6 cifras a tu correo.",
+      "step2": "Eliges tu opción y la revisas antes de confirmar.",
+      "step3": "Recibes un código de recibo para comprobar que tu voto está en la urna.",
+      "duration": "Tardarás unos 3 minutos.",
+      "secret": "Tu voto es secreto: nadie puede saber qué has votado. Solo puedes votar una vez.",
+      "start": "Empezar"
+    },
+    "status": {
+      "open": "Votación abierta · Cierra el {{closes}}"
+    },
+    "steps": {
+      "label": "Pasos para votar",
+      "count": "Paso {{current}} de {{total}}",
+      "access": "Acceso",
+      "selection": "Selección",
+      "confirmation": "Confirmación",
+      "receipt": "Recibo"
+    },
+    "code": {
+      "title": "Código de acceso",
+      "intro": "Para comprobar que eres tú, te enviaremos un código de acceso a tu correo.",
+      "send": "Enviarme el código",
+      "sending": "Enviando…",
+      "sentTo": "Hemos enviado un código de 6 cifras a {{email}}. Caduca en {{minutes}} minutos.",
+      "label": "Código de acceso",
+      "verify": "Continuar",
+      "checking": "Verificando…",
+      "resend": "Reenviar el código",
+      "resendIn": "Podrás pedir otro código en {{time}}",
+      "wrong": "El código no es correcto. Te quedan {{remaining}} intentos.",
+      "expired": "El código ha caducado o ya se ha usado. Pide uno nuevo.",
+      "tooSoon": "Espera un poco antes de pedir otro código.",
+      "mailFailed": "No hemos podido enviar el correo. Inténtalo de nuevo en unos minutos."
+    },
+    "ballot": {
+      "help": "Elige una opción. Podrás revisarla antes de votar.",
+      "blank": "Voto en blanco",
+      "blankHelp": "Cuenta como participación, pero no apoya a ninguna opción.",
+      "missing": "Todavía no has elegido una opción.",
+      "continue": "Revisar mi voto"
+    },
+    "review": {
+      "title": "Revisa tu voto",
+      "yourChoice": "Has elegido",
+      "notYet": "Aún no has votado. Cuando confirmes, tu voto no se podrá cambiar.",
+      "change": "Cambiar mi selección",
+      "confirm": "Confirmar y votar",
+      "sending": "Registrando tu voto…",
+      "doNotClose": "No cierres esta ventana."
+    },
+    "receipt": {
+      "title": "Voto registrado",
+      "message": "Gracias. Tu voto está en la urna.",
+      "codeLabel": "Código de recibo",
+      "copy": "Copiar el código",
+      "copied": "Copiado",
+      "keep": "Guarda este código: solo se muestra ahora. Sirve para comprobar que tu voto está en la urna, no muestra qué votaste.",
+      "verify": "Comprobar mi recibo"
+    },
+    "states": {
+      "notOpen": {
+        "title": "La votación todavía no está abierta",
+        "message": "Podrás votar a partir del {{opens}}. Vuelve a abrir este enlace entonces."
+      },
+      "closed": {
+        "title": "La votación está cerrada",
+        "message": "El plazo terminó el {{closes}}. Ya no se pueden emitir votos."
+      },
+      "invalidLink": {
+        "title": "Este enlace no es válido",
+        "message": "Usa el enlace de tu último correo de invitación. Si no consta tu participación, contacta con tu organización."
+      },
+      "expiredLink": {
+        "title": "El enlace ha caducado",
+        "message": "Contacta con tu organización para recibir un enlace nuevo."
+      },
+      "locked": {
+        "title": "Acceso bloqueado temporalmente",
+        "message": "Has superado el número de intentos. Por seguridad, espera hasta las {{until}} y vuelve a intentarlo."
+      },
+      "alreadyVoted": {
+        "title": "Ya has votado",
+        "messageOn": "Tu voto se registró el {{day}}. Solo se puede votar una vez.",
+        "message": "Tu voto ya está registrado. Solo se puede votar una vez."
+      },
+      "sessionExpired": {
+        "title": "Tu sesión ha caducado",
+        "message": "Tu selección no se ha guardado y no has votado. Vuelve a entrar con el mismo enlace."
+      },
+      "notRecorded": {
+        "title": "Tu voto NO se ha registrado",
+        "message": "Ha fallado la conexión o el servidor. Puedes reintentarlo sin riesgo: nunca se registrarán dos votos."
+      },
+      "error": {
+        "title": "Algo ha fallado",
+        "message": "No hemos podido cargar la votación. Inténtalo de nuevo en unos minutos."
+      },
+      "tryAgain": "Volver a intentarlo",
+      "enterAgain": "Volver a entrar",
+      "retry": "Reintentar"
+    },
+    "verify": {
+      "title": "Comprobar mi recibo",
+      "intro": "Escribe o pega tu código de recibo para comprobar que tu voto está en la urna.",
+      "label": "Código de recibo",
+      "helper": "64 caracteres (0-9 y a-f)",
+      "format": "El código debe tener 64 caracteres entre 0-9 y a-f.",
+      "check": "Comprobar",
+      "present": "Tu voto está en la urna.",
+      "absent": "No encontramos ese código en esta votación. Revisa que esté completo.",
+      "unknownProcess": "No existe esa votación.",
+      "error": "No hemos podido comprobarlo. Inténtalo de nuevo.",
+      "limits": "El recibo demuestra que tu voto está en la urna; no muestra qué votaste ni prueba el contenido del voto."
     },
     "footer": {
       "secure": "Conexión segura · Tu voto es secreto"
