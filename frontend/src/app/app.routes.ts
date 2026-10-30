@@ -36,6 +36,26 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/censuses/censuses.page').then((m) => m.CensusesPage),
       },
       {
+        path: 'procesos',
+        canMatch: [roleGuard(['ADMIN', 'AUDITOR'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/processes/processes.page').then((m) => m.ProcessesPage),
+      },
+      {
+        path: 'procesos/nuevo',
+        canMatch: [roleGuard(['ADMIN'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/processes/process-form.page').then((m) => m.ProcessFormPage),
+      },
+      {
+        path: 'procesos/:id/editar',
+        canMatch: [roleGuard(['ADMIN'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/processes/process-form.page').then((m) => m.ProcessFormPage),
+      },
+      {
+        path: 'procesos/:id',
+        canMatch: [roleGuard(['ADMIN', 'AUDITOR'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/processes/process-detail.page').then((m) => m.ProcessDetailPage),
+      },
+      {
         path: 'sin-permiso',
         loadComponent: () => import('./features/admin/forbidden/forbidden.page').then((m) => m.ForbiddenPage),
       },

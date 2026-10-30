@@ -1,0 +1,103 @@
+<app-admin-page titleKey="admin.process.title">
+  @if (loading()) {
+    <ion-spinner role="status" [attr.aria-label]="'common.loading' | translate" />
+  } @else if (loadError() || !process()) {
+    <ion-text color="danger"><p role="alert">{{ 'common.loadError' | translate }}</p></ion-text>
+  } @else {
+    @let p = process()!;
+    <a class="back" routerLink="/admin/procesos">← {{ 'admin.process.backToList' | translate }}</a>
+    <h2 class="name">{{ p.title | localized: language() : p.defaultLanguage }}</h2>
+    <p class="meta">
+      <app-status-badge [status]="p.status" />
+      {{ 'admin.process.voteType.' + p.ballot.voteType | translate }}
+      @if (census(); as c) { · {{ c.name }} }
+    </p>
+
+    @if (notice()) { <p class="notice" role="status">{{ notice() }}</p> }
+    @if (actionError()) {
+      <div class="server-error" role="alert">
+        <p>{{ actionError() }}</p>
+        @if (issues().length) { <ul>@for (i of issues(); track i.field + i.message) { <li>{{ i.message }}</li> }</ul> }
+      </div>
+    }
+
+    <section class="card">
+      <h3>{{ 'admin.process.statusTitle' | translate }}</h3>
+      <ol class="timeline">
+        @for (s of statuses; track s; let i = $index) {
+          <li [class.done]="i < currentIndex()" [class.current]="i === currentIndex()" [attr.aria-current]="i === currentIndex() ? 'step' : null">
+            <span class="bar" aria-hidden="true"></span>
+            <strong>{{ i + 1 }}. {{ 'admin.processes.status.' + s | translate }}</strong>
+            @if (dateOf(s); as d) { <small>{{ d | localDate: language() }}</small> }
+            <span class="tag">{{ (i < currentIndex() ? 'admin.process.done' : i === currentIndex() ? 'admin.process.current' : 'admin.process.pending') | translate }}</span>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h3>{{ 'admin.process.actions' | translate }}</h3>
+        @if (canManage) {
+          <div class="buttons">
+            <ion-button expand="block" fill="outline" [disabled]="p.status !== 'DRAFT' || busy()" [routerLink]="['/admin/procesos', p.id, 'editar']">
+              {{ 'admin.process.edit' | translate }}</ion-button>
+            <ion-button expand="block" color="secondary" [disabled]="p.status !== 'DRAFT' || busy()" (click)="confirming.set(true)">
+              @if (busy()) { <ion-spinner name="crescent" aria-hidden="true"></ion-spinner> }
+              {{ 'admin.process.schedule' | translate }}</ion-button>
+            <ion-button expand="block" fill="outline" [disabled]="p.status !== 'TALLIED' || busy()" (click)="archive()">
+              {{ 'admin.process.archive' | translate }}</ion-button>
+          </div>
+          <p class="help">{{ 'admin.process.archiveHelp' | translate }}</p>
+        } @else {
+          <p class="help">{{ 'admin.process.readOnly' | translate }}</p>
+        }
+        <div class="info"><ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+          <p>{{ 'admin.process.automatic' | translate }}</p></div>
+      </section>
+
+      <section class="card">
+        <h3>{{ 'admin.process.checksTitle' | translate }}</h3>
+        <ul class="checks">
+          @for (c of checks(); track c.key) {
+            <li [class.ko]="!c.ok">
+              <ion-icon [name]="c.ok ? 'checkmark-outline' : 'alert-circle-outline'" aria-hidden="true"></ion-icon>
+              <span><strong>{{ 'admin.process.checks.' + c.key + '.title' | translate }}</strong>
+                <small>{{ 'admin.process.checks.' + c.key + (c.ok ? '.ok' : '.ko') | translate: c.params ?? {} }}</small></span>
+              <span class="sr-only">{{ (c.ok ? 'admin.process.checkOk' : 'admin.process.checkKo') | translate }}</span>
+            </li>
+          }
+        </ul>
+        <p class="help">{{ 'admin.process.checksHelp' | translate }}</p>
+      </section>
+    </div>
+
+    <section class="card">
+      <h3>{{ 'admin.process.historyTitle' | translate }}</h3>
+      @if (history().length === 0) {
+        <p class="help">{{ 'admin.process.noHistory' | translate }}</p>
+      } @else {
+        <ul class="history">
+          @for (h of history(); track h.changedAt + h.to) {
+            <li>{{ h.changedAt | localDate: language() }} ·
+              {{ 'admin.processes.status.' + h.from | translate }} → {{ 'admin.processes.status.' + h.to | translate }} ·
+              {{ (h.changedBy === 'SYSTEM' ? 'admin.process.bySystem' : 'admin.process.byUser') | translate }}</li>
+          }
+        </ul>
+      }
+    </section>
+
+    <ion-alert [isOpen]="confirming()" [header]="'admin.process.scheduleConfirm.title' | translate"
+               [message]="'admin.process.scheduleConfirm.message' | translate" [buttons]="confirmButtons()"
+               (didDismiss)="onConfirmDismiss($event.detail.role)"></ion-alert>
+
+    <section class="card">
+      <h3>{{ 'admin.process.whatTitle' | translate }}</h3>
+      <dl class="what">
+        @for (s of statuses; track s) {
+          <div><dt><app-status-badge [status]="s" /></dt><dd>{{ 'admin.process.what.' + s | translate }}</dd></div>
+        }
+      </dl>
+    </section>
+  }
+</app-admin-page>
