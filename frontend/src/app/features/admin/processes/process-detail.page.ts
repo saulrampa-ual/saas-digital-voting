@@ -38,7 +38,20 @@ export class ProcessDetailPage {
   private readonly api = inject(ProcessApiService);
   private readonly translate = inject(TranslateService);
   protected readonly language = inject(LanguageService).current;
-  protected readonly canManage = inject(AuthService).hasAnyRole(['ADMIN']);
+  private readonly auth = inject(AuthService);
+  protected readonly canManage = this.auth.hasAnyRole(['ADMIN']);
+  protected readonly isAuditor = this.auth.hasAnyRole(['AUDITOR']);
+  /** RF-14 (ADMIN), RF-15 (ADMIN, AUDITOR) and RF-12 (AUDITOR) pages of this process, by status. */
+  protected readonly links = computed(() => {
+    const status = this.process()?.status;
+    if (!status || status === 'DRAFT') return [];
+    const closed = ['CLOSED', 'TALLIED', 'ARCHIVED'].includes(status);
+    return [
+      ...(this.canManage ? [{ path: '/admin/participacion', key: 'admin.process.links.participation' }] : []),
+      ...(closed ? [{ path: '/admin/resultados', key: 'admin.process.links.results' }] : []),
+      ...(this.isAuditor ? [{ path: '/admin/auditoria', key: 'admin.process.links.audit' }] : []),
+    ];
+  });
   protected readonly statuses = PROCESS_STATUSES;
 
   protected readonly process = signal<Process | null>(null);

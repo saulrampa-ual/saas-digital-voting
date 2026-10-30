@@ -27,6 +27,18 @@ const MENU: readonly MenuEntry[] = [
     path: '/admin/procesos', labelKey: 'admin.menu.processes', icon: 'calendar-outline', roles: ['ADMIN', 'AUDITOR'],
     needsOrganization: true,
   },
+  {
+    path: '/admin/participacion', labelKey: 'admin.menu.participation', icon: 'bar-chart-outline', roles: ['ADMIN'],
+    needsOrganization: true,
+  },
+  {
+    path: '/admin/resultados', labelKey: 'admin.menu.results', icon: 'checkbox-outline', roles: ['ADMIN', 'AUDITOR'],
+    needsOrganization: true,
+  },
+  {
+    path: '/admin/auditoria', labelKey: 'admin.menu.audit', icon: 'shield-checkmark-outline', roles: ['AUDITOR'],
+    needsOrganization: true,
+  },
 ];
 
 /** Management console layout: fixed menu from 992 px, hamburger menu below (prototype guide). */
