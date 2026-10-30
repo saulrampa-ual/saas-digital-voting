@@ -186,3 +186,17 @@ cd backend
 5. Tras el cierre → **422**. En `ballot_box_db`: `audit_events` tiene `OPENED`, un `VOTE_RECEIVED` por voto (sin
    hora) y `CLOSED`; `ballot_snapshots.final_hash` es el `event_hash` de `CLOSED`. `votes` y `receipts` no tienen
    ninguna columna de tiempo ni de identidad.
+
+## 9. Flujo completo del votante en la PWA (P4.5)
+
+Con infraestructura, gateway, election, voter-access, ballot-box y el frontend (`cd frontend; npm start`):
+
+1. Programar un proceso (apartado 6) con apertura dentro de 2 minutos.
+2. Abrir en el móvil o a 360 px el enlace del correo de Mailpit (`http://localhost:4200/votar/…`): antes de la
+   apertura aparece «La votación todavía no está abierta» (C3); después, la bienvenida (V1).
+3. «Empezar» envía el código (B1). Un código erróneo muestra los intentos que quedan (V2); con el correcto aparece la
+   papeleta (B2). Cambiar a EN mantiene la opción elegida.
+4. «Revisar mi voto» (B3) → «Confirmar y votar» → recibo (B4) → «Comprobar mi recibo» (B5): «Tu voto está en la urna».
+5. Volver a abrir el enlace y repetir el código → «Ya has votado» con la fecha, sin hora (V3).
+6. Con ballot-box parado, «Confirmar y votar» → «Tu voto NO se ha registrado» (V7); al arrancarlo, «Reintentar»
+   registra un solo voto.

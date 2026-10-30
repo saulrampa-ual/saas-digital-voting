@@ -10,7 +10,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     <section class="state" role="alert">
       <ion-icon [name]="icon()" aria-hidden="true"></ion-icon>
       <h1 tabindex="-1">{{ titleKey() | translate }}</h1>
-      <ion-text color="medium"><p>{{ messageKey() | translate }}</p></ion-text>
+      <ion-text color="medium"><p>{{ messageKey() | translate: messageParams() }}</p></ion-text>
       <ng-content />
     </section>
   `,
@@ -25,4 +25,5 @@ export class ErrorStateComponent {
   readonly titleKey = input.required<string>();
   readonly messageKey = input.required<string>();
   readonly icon = input('alert-circle-outline');
+  readonly messageParams = input<Record<string, unknown>>({});
 }

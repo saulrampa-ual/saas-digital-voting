@@ -44,8 +44,121 @@
   },
   "voter": {
     "welcome": {
-      "title": "Welcome to the vote",
-      "pending": "This screen will be completed in the voting slice (P4.5)."
+      "eyebrow": "Vote",
+      "closes": "You can vote until {{closes}}.",
+      "step1": "We will email you a 6-digit code.",
+      "step2": "You choose your option and review it before confirming.",
+      "step3": "You get a receipt code to check that your vote is in the ballot box.",
+      "duration": "It takes about 3 minutes.",
+      "secret": "Your vote is secret: nobody can know what you voted. You can vote only once.",
+      "start": "Start"
+    },
+    "status": {
+      "open": "Voting open · Closes on {{closes}}"
+    },
+    "steps": {
+      "label": "Steps to vote",
+      "count": "Step {{current}} of {{total}}",
+      "access": "Access",
+      "selection": "Choice",
+      "confirmation": "Confirmation",
+      "receipt": "Receipt"
+    },
+    "code": {
+      "title": "Access code",
+      "intro": "To check that it is you, we will email you an access code.",
+      "send": "Send me the code",
+      "sending": "Sending…",
+      "sentTo": "We have sent a 6-digit code to {{email}}. It expires in {{minutes}} minutes.",
+      "label": "Access code",
+      "verify": "Continue",
+      "checking": "Checking…",
+      "resend": "Resend the code",
+      "resendIn": "You can ask for another code in {{time}}",
+      "wrong": "The code is not correct. You have {{remaining}} attempts left.",
+      "expired": "The code has expired or was already used. Ask for a new one.",
+      "tooSoon": "Please wait a little before asking for another code.",
+      "mailFailed": "We could not send the email. Please try again in a few minutes."
+    },
+    "ballot": {
+      "help": "Choose one option. You can review it before voting.",
+      "blank": "Blank vote",
+      "blankHelp": "It counts as participation but supports no option.",
+      "missing": "You have not chosen an option yet.",
+      "continue": "Review my vote"
+    },
+    "review": {
+      "title": "Review your vote",
+      "yourChoice": "You chose",
+      "notYet": "You have not voted yet. Once you confirm, your vote cannot be changed.",
+      "change": "Change my choice",
+      "confirm": "Confirm and vote",
+      "sending": "Recording your vote…",
+      "doNotClose": "Do not close this window."
+    },
+    "receipt": {
+      "title": "Vote recorded",
+      "message": "Thank you. Your vote is in the ballot box.",
+      "codeLabel": "Receipt code",
+      "copy": "Copy the code",
+      "copied": "Copied",
+      "keep": "Keep this code: it is shown only now. It lets you check that your vote is in the ballot box; it does not show what you voted.",
+      "verify": "Check my receipt"
+    },
+    "states": {
+      "notOpen": {
+        "title": "Voting is not open yet",
+        "message": "You can vote from {{opens}}. Open this link again then."
+      },
+      "closed": {
+        "title": "Voting is closed",
+        "message": "The period ended on {{closes}}. Votes can no longer be cast."
+      },
+      "invalidLink": {
+        "title": "This link is not valid",
+        "message": "Use the link in your latest invitation email. If you are not on the voter list, contact your organization."
+      },
+      "expiredLink": {
+        "title": "The link has expired",
+        "message": "Contact your organization to receive a new link."
+      },
+      "locked": {
+        "title": "Access temporarily blocked",
+        "message": "Too many attempts. For your security, wait until {{until}} and try again."
+      },
+      "alreadyVoted": {
+        "title": "You have already voted",
+        "messageOn": "Your vote was recorded on {{day}}. You can vote only once.",
+        "message": "Your vote is already recorded. You can vote only once."
+      },
+      "sessionExpired": {
+        "title": "Your session has expired",
+        "message": "Your choice was not saved and you have not voted. Open the same link again."
+      },
+      "notRecorded": {
+        "title": "Your vote was NOT recorded",
+        "message": "The connection or the server failed. You can retry safely: two votes will never be recorded."
+      },
+      "error": {
+        "title": "Something went wrong",
+        "message": "We could not load the vote. Please try again in a few minutes."
+      },
+      "tryAgain": "Try again",
+      "enterAgain": "Open again",
+      "retry": "Retry"
+    },
+    "verify": {
+      "title": "Check my receipt",
+      "intro": "Type or paste your receipt code to check that your vote is in the ballot box.",
+      "label": "Receipt code",
+      "helper": "64 characters (0-9 and a-f)",
+      "format": "The code must have 64 characters from 0-9 and a-f.",
+      "check": "Check",
+      "present": "Your vote is in the ballot box.",
+      "absent": "We cannot find that code in this vote. Check that it is complete.",
+      "unknownProcess": "That vote does not exist.",
+      "error": "We could not check it. Please try again.",
+      "limits": "The receipt proves that your vote is in the ballot box; it does not show or prove what you voted."
     },
     "footer": {
       "secure": "Secure connection · Your vote is secret"

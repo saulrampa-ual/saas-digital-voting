@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-29 · Rama de trabajo: `feat/ballot-box` (P4.4 sin commitear) · Último commit: `344f570`
+Última actualización: 2026-10-30 · Rama de trabajo: `feat/voter-screens` (P4.5 sin commitear) · Último commit: `ce22e93`
 
 ## Hitos
 
@@ -9,8 +9,8 @@
 | P0 | 29/10 – 02/11 | Línea base y memoria de la IA | Hecho (`da2e6db`) |
 | P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho (CI en verde, `efe8afc`) |
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
-| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Hecho (P3.4 en `feat/frontend-base`, `f0ae0cf`) |
-| P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | En curso (P4.1–P4.3 en `344f570`; P4.4 probado por la IA, sin commitear) |
+| P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Hecho (`b7aea1c`) |
+| P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | En curso (P4.1–P4.4 en `dev`, `ce22e93`; P4.5 probado por la IA, sin commitear; faltan A3/A4) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Pendiente |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
@@ -108,6 +108,16 @@
 - Corrección: con Spring Boot 4 la autoconfiguración de Flyway está en `spring-boot-starter-flyway`; election,
   voter-access y ballot-box solo tenían `flyway-core`, así que sus migraciones nunca se ejecutaban (identity ya lo
   tenía). Corregido en los cuatro `pom.xml`.
+- Prueba completa de la IA (2026-10-30) con gateway, identity, election, voter-access, ballot-box, PWA y un
+  Keycloak simulado: consola de gestión 14/14 (superadministrador, administrador, gestor de censo; 1280 y 360 px),
+  flujo del votante por el gateway 25/25 y urna de extremo a extremo 28/28. Corregido (D-34): contenido de las
+  páginas de gestión encogido y menú de censos visible para el superadministrador sin organización.
+- P4.5: pantallas del votante (RF-08–RF-10, D-33): `VoterFlowPage` (`/votar/:linkToken`) con V1, B1/V2 (`ion-input-otp`,
+  intentos, cuenta atrás de reenvío), B2/C1 (opciones de 64 px, voto en blanco), B3, B4 (copiar recibo), estados
+  C2–C4 y V3–V7, barra de estado e indicador de 4 pasos; `ReceiptCheckPage` (B5, `/recibo/:processId`); textos
+  es/en. Prueba en navegador a 360 px (Playwright) contra election, voter-access y ballot-box reales (25/25):
+  C3, V1, V2, C1, cambio de idioma sin perder la selección, B3, B4, B5, V3 con fecha sin hora, enlace no válido,
+  V7 con ballot-box caído y reintento, nada sensible en el almacenamiento ni en la URL, sin errores de consola.
 - P4.4: ballot-box (RF-09, RF-10, RF-12 parcial, D-32): recepción de la papeleta y de los estados, cadena de
   eventos con hash (OPENED, VOTE_RECEIVED sin hora, CLOSED) y huella final, emisión del voto según D-20 (consumo en
   voter-access, voto + hash del recibo + evento en una transacción con la papeleta bloqueada, reversión si falla e
@@ -150,6 +160,6 @@
 1. `git push origin dev` (hay 2 commits sin publicar).
 2. Compilar (`.\mvnw.cmd -DskipTests compile`) y seguir la sección 4 de `docs/architecture/api-testing.md`.
 3. Commit en `feat/election-census` e integración en `dev`.
-4. Compilar con Maven, probar (`api-testing.md` §8) y commitear P4.4 en `feat/ballot-box`.
-5. Siguiente: **P4.5**, pantallas del votante (V1, B1, V2, B2, B3, C1, B4, B5 y estados C2–C4, V3–V7) y, después,
-   A3/A4 de gestión.
+4. Probar el flujo completo (`api-testing.md` §9) y commitear P4.5 en `feat/voter-screens`.
+5. Siguiente: **P4.6**, pantallas de gestión A3 (crear proceso y papeleta bilingüe) y A4 (ciclo de vida), para
+   cerrar la rebanada sin Swagger.
