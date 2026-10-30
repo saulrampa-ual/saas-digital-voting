@@ -309,3 +309,13 @@ Con un proceso escrutado (`TALLIED`, también `ARCHIVED`) y el enlace personal d
 2. Tras un escrutinio normal, `ballot_box_db.incidents` no tiene filas del proceso. Si en `voter_access_db.participation`
    se marca como no votante a alguien que sí votó antes del escrutinio, la urna no publica el resultado
    (`TALLY_FAILED` y `PARTICIPATION_MISMATCH`, election sigue en `CLOSED`); al corregirlo, el siguiente ciclo escruta.
+
+### Trazabilidad de acciones administrativas (RF-19, P6.1, D-44)
+
+1. Hacer algunas acciones (crear un censo, importar, crear y programar un proceso; como auditora, verificar la urna).
+2. Como ADMIN o AUDITOR: «Trazabilidad» o `GET /api/v1/admin-actions` → acciones de la organización, la más reciente
+   primero, con quién, qué, sobre qué y cuándo. Filtros `from`, `to` (ISO 8601, `to` excluido), `actorId`, `action`,
+   `processId`; `GET /api/v1/admin-actions/actors` para la lista de personas. Gestor de censo → **403**.
+3. Las acciones de election y de la urna tardan unos segundos (se entregan desde su *outbox*). Con identity parado, la
+   acción se hace igual y aparece cuando identity vuelve.
+4. `UPDATE` o `DELETE` sobre `identity_db.admin_actions` → error de la base de datos (solo añadir).

@@ -31,8 +31,11 @@ public class ProcessController {
 
     private final ManageProcessesUseCase processes;
     private final ManageLifecycleUseCase lifecycle;
+    private final AdminActionRecorder actions;
 
-    public ProcessController(ManageProcessesUseCase processes, ManageLifecycleUseCase lifecycle) {
+    public ProcessController(ManageProcessesUseCase processes, ManageLifecycleUseCase lifecycle,
+            AdminActionRecorder actions) {
+        this.actions = Objects.requireNonNull(actions, "actions must not be null");
         this.processes = Objects.requireNonNull(processes, "processes must not be null");
         this.lifecycle = Objects.requireNonNull(lifecycle, "lifecycle must not be null");
     }
@@ -50,6 +53,7 @@ public class ProcessController {
             @AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ProcessRequest request) {
         ProcessResponse process = ProcessResponse.fromDomain(
                 processes.create(CallerResolver.from(jwt), request.toDomain()));
+        record(jwt, "PROCESS_CREATED", process);
         return ResponseEntity.created(URI.create("/api/v1/processes/" + process.id())).body(process);
     }
 
@@ -61,18 +65,20 @@ public class ProcessController {
     @PutMapping("/{processId}")
     public ProcessResponse update(
             @AuthenticationPrincipal Jwt jwt, @PathVariable long processId, @Valid @RequestBody ProcessRequest request) {
-        return ProcessResponse.fromDomain(
-                processes.update(CallerResolver.from(jwt), processId, request.toDomain()));
+        return record(jwt, "PROCESS_UPDATED", ProcessResponse.fromDomain(
+                processes.update(CallerResolver.from(jwt), processId, request.toDomain())));
     }
 
     @PostMapping("/{processId}/schedule")
     public ProcessResponse schedule(@AuthenticationPrincipal Jwt jwt, @PathVariable long processId) {
-        return ProcessResponse.fromDomain(lifecycle.schedule(CallerResolver.from(jwt), processId));
+        return record(jwt, "PROCESS_SCHEDULED",
+                ProcessResponse.fromDomain(lifecycle.schedule(CallerResolver.from(jwt), processId)));
     }
 
     @PostMapping("/{processId}/archive")
     public ProcessResponse archive(@AuthenticationPrincipal Jwt jwt, @PathVariable long processId) {
-        return ProcessResponse.fromDomain(lifecycle.archive(CallerResolver.from(jwt), processId));
+        return record(jwt, "PROCESS_ARCHIVED",
+                ProcessResponse.fromDomain(lifecycle.archive(CallerResolver.from(jwt), processId)));
     }
 
     @GetMapping("/{processId}/status-history")
@@ -80,5 +86,13 @@ public class ProcessController {
         return processes.statusHistory(CallerResolver.from(jwt), processId).stream()
                 .map(StatusChangeResponse::fromDomain)
                 .toList();
+    }
+
+    /** RF-19: the label is the title in the default language of the process. */
+    private ProcessResponse record(Jwt jwt, String action, ProcessResponse process) {
+        String title = process.title().getOrDefault(process.defaultLanguage(),
+                process.title().values().stream().findFirst().orElse(null));
+        actions.record(jwt, action, "PROCESS", process.id(), title, null, process.id());
+        return process;
     }
 }

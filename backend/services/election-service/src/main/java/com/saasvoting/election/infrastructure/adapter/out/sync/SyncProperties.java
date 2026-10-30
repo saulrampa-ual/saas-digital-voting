@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.util.Objects;
 
 /**
- * Delivery of the outbox (D-21, D-22): where voter-access and ballot-box listen, and the Keycloak client of
+ * Delivery of the outbox (D-21, D-22): where voter-access, ballot-box and identity-service (RF-19, D-44) listen, and the Keycloak client of
  * election-service for the client-credentials token (role SERVICE). Without a client secret nothing is sent and the
  * messages wait in the outbox.
  */
@@ -16,6 +16,7 @@ public record SyncProperties(
         boolean enabled,
         URI voterAccessUrl,
         URI ballotBoxUrl,
+        URI identityUrl,
         URI keycloakBaseUrl,
         String realm,
         String clientId,
@@ -26,6 +27,7 @@ public record SyncProperties(
     public SyncProperties {
         Objects.requireNonNull(voterAccessUrl, "verivoto.sync.voter-access-url must be set");
         Objects.requireNonNull(ballotBoxUrl, "verivoto.sync.ballot-box-url must be set");
+        identityUrl = identityUrl == null ? URI.create("http://localhost:8081") : identityUrl;
         Objects.requireNonNull(keycloakBaseUrl, "verivoto.sync.keycloak-base-url must be set");
         Objects.requireNonNull(realm, "verivoto.sync.realm must be set");
         Objects.requireNonNull(clientId, "verivoto.sync.client-id must be set");

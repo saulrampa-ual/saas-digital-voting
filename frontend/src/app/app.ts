@@ -4,7 +4,7 @@ import { addIcons } from 'ionicons';
 import {
   addOutline, alertCircleOutline, barChartOutline, businessOutline, calendarOutline, checkboxOutline, checkmarkCircleOutline, checkmarkOutline,
   closeOutline, closeCircleOutline, cloudOfflineOutline, cloudUploadOutline, copyOutline, createOutline,
-  documentTextOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline,
+  documentTextOutline, listOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline,
   linkOutline, lockClosedOutline, peopleOutline, refreshOutline, shieldCheckmarkOutline, timeOutline,
 } from 'ionicons/icons';
 import { LanguageService } from './core/i18n/language.service';
@@ -20,7 +20,7 @@ export class App {
     addIcons({
       addOutline, alertCircleOutline, barChartOutline, businessOutline, calendarOutline, checkboxOutline, checkmarkCircleOutline, checkmarkOutline,
       closeOutline, closeCircleOutline, cloudOfflineOutline, cloudUploadOutline, copyOutline, createOutline,
-  documentTextOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline,
+  documentTextOutline, listOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline,
       linkOutline, lockClosedOutline, peopleOutline, refreshOutline, shieldCheckmarkOutline, timeOutline,
     });
     inject(LanguageService).init();

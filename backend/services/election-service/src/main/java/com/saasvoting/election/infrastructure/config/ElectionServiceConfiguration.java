@@ -6,6 +6,8 @@ import com.saasvoting.election.application.port.out.ProcessRepository;
 import com.saasvoting.election.application.port.out.ProcessSyncOutbox;
 import com.saasvoting.election.application.port.out.UnitOfWork;
 import com.saasvoting.election.application.port.out.VoterRepository;
+import com.saasvoting.election.application.port.out.AdminActionOutbox;
+import com.saasvoting.election.application.service.AdminActionService;
 import com.saasvoting.election.application.service.CensusService;
 import com.saasvoting.election.application.service.LifecycleService;
 import com.saasvoting.election.application.service.ProcessService;
@@ -27,6 +29,11 @@ public class ElectionServiceConfiguration {
     CensusService censusService(
             CensusRepository censuses, VoterRepository voters, CensusFreezePolicy freezePolicy, Clock clock) {
         return new CensusService(censuses, voters, freezePolicy, clock);
+    }
+
+    @Bean
+    AdminActionService adminActionService(AdminActionOutbox outbox) {
+        return new AdminActionService(outbox);
     }
 
     @Bean

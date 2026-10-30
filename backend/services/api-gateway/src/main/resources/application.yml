@@ -12,7 +12,7 @@ spring:
             - id: identity-organizations
               uri: ${IDENTITY_SERVICE_URI:http://localhost:8081}
               predicates:
-                - Path=/api/v1/organizations,/api/v1/organizations/**
+                - Path=/api/v1/organizations,/api/v1/organizations/**,/api/v1/admin-actions,/api/v1/admin-actions/**
             - id: election
               uri: ${ELECTION_SERVICE_URI:http://localhost:8082}
               predicates:

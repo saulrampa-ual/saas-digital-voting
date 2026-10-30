@@ -2,6 +2,12 @@ server:
   port: ${ELECTION_SERVER_PORT:8082}
 
 spring:
+  # D-44: one thread per scheduled task, so delivering administrative actions to identity-service never delays
+  # the lifecycle, the synchronization or the tally (even with identity-service slow or down)
+  task:
+    scheduling:
+      pool:
+        size: 4
   application:
     name: election-service
   datasource:
@@ -46,6 +52,8 @@ verivoto:
     enabled: ${ELECTION_SYNC_ENABLED:true}
     voter-access-url: ${ELECTION_VOTER_ACCESS_URL:http://localhost:8083}
     ballot-box-url: ${ELECTION_BALLOT_BOX_URL:http://localhost:8084}
+    # RF-19 (D-44): administrative actions are delivered to identity-service
+    identity-url: ${ELECTION_IDENTITY_URL:http://localhost:8081}
     keycloak-base-url: ${ELECTION_KEYCLOAK_BASE_URL:http://localhost:8080}
     realm: verivoto
     client-id: election-service

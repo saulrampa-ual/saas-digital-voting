@@ -168,6 +168,90 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/admin-actions:
+    get:
+      tags: [traceability]
+      operationId: searchAdminActions
+      summary: Administrative actions of the caller's organization (RF-19)
+      description: |
+        ADMIN and AUDITOR of the organization in the token; newest first. Who, what, on which object and when.
+        Read only: the table rejects updates and deletes (RNF-13, D-44). No personal data of voters is recorded.
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: from, in: query, description: 'Inclusive', schema: { type: string, format: date-time } }
+        - { name: to, in: query, description: 'Exclusive', schema: { type: string, format: date-time } }
+        - { name: actorId, in: query, schema: { type: string, format: uuid } }
+        - { name: action, in: query, schema: { $ref: '#/components/schemas/AdminActionCode' } }
+        - { name: processId, in: query, schema: { type: integer, format: int64 } }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: Page of actions
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, page, size, totalItems]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/AdminAction' } }
+                  page: { type: integer }
+                  size: { type: integer }
+                  totalItems: { type: integer, format: int64 }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/admin-actions/actors:
+    get:
+      tags: [traceability]
+      operationId: listAdminActionActors
+      summary: People who appear in the traceability of the organization, for the filter (RF-19)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Actors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [actorId, actorName]
+                  properties:
+                    actorId: { type: string, format: uuid }
+                    actorName: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /internal/v1/admin-actions:
+    post:
+      tags: [internal]
+      operationId: recordAdminAction
+      summary: Receive an administrative action from election-service or ballot-box-service (D-44)
+      description: |
+        Delivered from the outbox of the origin service and retried until accepted; idempotent by `eventId`. Only the
+        clients `election-service` and `ballot-box-service` (claim `azp`, IMP-26). Never routed by the gateway.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/AdminAction'
+                - type: object
+                  required: [eventId, organizationId]
+                  properties:
+                    eventId: { type: string, format: uuid }
+                    organizationId: { $ref: '#/components/schemas/OrganizationIdentifier' }
+      responses:
+        '204':
+          description: Recorded (or already recorded)
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
 components:
   securitySchemes:
     bearerAuth:
@@ -175,6 +259,13 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: Keycloak access token with claims `roles` and `organization_id`.
+    serviceAuth:
+      type: oauth2
+      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE and the expected client in `azp`).
+      flows:
+        clientCredentials:
+          tokenUrl: http://localhost:8080/realms/verivoto/protocol/openid-connect/token
+          scopes: {}
   parameters:
     OrganizationId:
       name: organizationId
@@ -216,6 +307,25 @@ components:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
   schemas:
+    AdminActionCode:
+      type: string
+      enum: [ORGANIZATION_CREATED, ORGANIZATION_STATUS_CHANGED, USER_CREATED, USER_ROLE_CHANGED, CENSUS_CREATED,
+        VOTER_ADDED, VOTER_UPDATED, VOTER_REMOVED, VOTERS_IMPORTED, PROCESS_CREATED, PROCESS_UPDATED, PROCESS_SCHEDULED,
+        PROCESS_ARCHIVED, CHAIN_VERIFIED, RESULTS_EXPORTED, MINUTES_DOWNLOADED]
+    AdminAction:
+      type: object
+      required: [occurredAt, actorId, actorName, action, objectType, source]
+      properties:
+        occurredAt: { type: string, format: date-time }
+        actorId: { type: string, format: uuid }
+        actorName: { type: string, maxLength: 120 }
+        action: { $ref: '#/components/schemas/AdminActionCode' }
+        objectType: { type: string, enum: [ORGANIZATION, USER, CENSUS, VOTER, PROCESS] }
+        objectId: { type: [string, 'null'], maxLength: 64 }
+        objectLabel: { type: [string, 'null'], maxLength: 200, description: 'Name of the object; never a voter''s name' }
+        detail: { type: [string, 'null'], maxLength: 200, description: 'New role or status, number imported, INTACT/BROKEN, ES/EN' }
+        processId: { type: [integer, 'null'], format: int64 }
+        source: { type: string, enum: [IDENTITY, ELECTION, BALLOT_BOX] }
     OrganizationIdentifier:
       type: string
       pattern: '^[A-Za-z0-9]{1,20}$'

@@ -18,7 +18,8 @@
       "processes": "Procesos",
       "participation": "Participación",
       "results": "Resultados",
-      "audit": "Auditoría"
+      "audit": "Auditoría",
+      "traceability": "Trazabilidad"
     },
     "logout": "Cerrar sesión",
     "home": {
@@ -406,6 +407,86 @@
       },
       "noTime": "sin hora",
       "showing": "Mostrando {{from}}–{{to}} de {{total}} eventos · los votos se muestran sin identidad ni hora"
+    },
+    "trace": {
+      "title": "Trazabilidad",
+      "intro": "Acciones administrativas de tu organización: quién hizo qué, sobre qué y cuándo. El registro no se puede modificar ni borrar.",
+      "filters": "Filtros",
+      "from": "Desde",
+      "to": "Hasta",
+      "actor": "Persona",
+      "action": "Tipo de acción",
+      "process": "Proceso",
+      "all": "Todos",
+      "apply": "Aplicar filtros",
+      "clear": "Quitar filtros",
+      "dateError": "La fecha «Desde» debe ser anterior o igual a «Hasta».",
+      "listTitle": "Acciones registradas",
+      "none": "No hay acciones con estos filtros.",
+      "showing": "Mostrando {{from}}–{{to}} de {{total}}",
+      "col": {
+        "when": "Fecha y hora",
+        "who": "Quién",
+        "what": "Qué",
+        "object": "Sobre qué",
+        "process": "Proceso"
+      },
+      "actions": {
+        "ORGANIZATION_CREATED": "Alta de la organización",
+        "ORGANIZATION_STATUS_CHANGED": "Cambio de estado de la organización",
+        "USER_CREATED": "Alta de usuario",
+        "USER_ROLE_CHANGED": "Cambio de rol",
+        "CENSUS_CREATED": "Creación de censo",
+        "VOTER_ADDED": "Alta en el censo",
+        "VOTER_UPDATED": "Cambio en el censo",
+        "VOTER_REMOVED": "Baja del censo",
+        "VOTERS_IMPORTED": "Importación de censo",
+        "PROCESS_CREATED": "Creación de proceso",
+        "PROCESS_UPDATED": "Edición de proceso",
+        "PROCESS_SCHEDULED": "Programación de proceso",
+        "PROCESS_ARCHIVED": "Archivo de proceso",
+        "CHAIN_VERIFIED": "Verificación del registro de la urna",
+        "RESULTS_EXPORTED": "Exportación de resultados (CSV)",
+        "MINUTES_DOWNLOADED": "Descarga del acta (PDF)"
+      },
+      "objects": {
+        "ORGANIZATION": "Organización",
+        "USER": "Usuario",
+        "CENSUS": "Censo",
+        "VOTER": "Persona",
+        "PROCESS": "Proceso"
+      },
+      "details": {
+        "ORGANIZATION_STATUS_CHANGED": {
+          "ACTIVE": "activa",
+          "SUSPENDED": "suspendida"
+        },
+        "USER_CREATED": {
+          "ADMIN": "administración",
+          "CENSUS_MANAGER": "gestión de censo",
+          "AUDITOR": "auditoría"
+        },
+        "USER_ROLE_CHANGED": {
+          "ADMIN": "ahora administración",
+          "CENSUS_MANAGER": "ahora gestión de censo",
+          "AUDITOR": "ahora auditoría"
+        },
+        "VOTERS_IMPORTED": {
+          "value": "{{value}} personas"
+        },
+        "CHAIN_VERIFIED": {
+          "INTACT": "íntegro",
+          "BROKEN": "con problemas"
+        },
+        "RESULTS_EXPORTED": {
+          "ES": "en español",
+          "EN": "en inglés"
+        },
+        "MINUTES_DOWNLOADED": {
+          "ES": "en español",
+          "EN": "en inglés"
+        }
+      }
     }
   },
   "voter": {

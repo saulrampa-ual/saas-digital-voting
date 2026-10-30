@@ -60,6 +60,7 @@ erDiagram
 | --- | --- | --- |
 | `organizations` | RI-1 | Creada como `tenants` en V1 y renombrada en V2 (columna `identifier` → `id`). |
 | `management_users` | RI-2 | **Desviación (D-02, D-25):** contraseña, segundo factor, estado y último acceso viven en Keycloak. Aquí se guarda una copia de organización, nombre, correo y rol para listar usuarios, aplicar la regla del último administrador y atender RF-18 sin consultar Keycloak. El Superadministrador no tiene fila (pertenece a la plataforma). Correo único sin distinguir mayúsculas. |
+| `admin_actions` (V4) | RI-13 | Trazabilidad (RF-19, D-44): `event_id` único (idempotencia), organización, momento, persona (`actor_id`, `actor_name`), acción, objeto (tipo, id, nombre), detalle, proceso y origen (`IDENTITY`, `ELECTION`, `BALLOT_BOX`). **Solo añadir:** disparadores que rechazan `UPDATE`, `DELETE` y `TRUNCATE`. Nunca el nombre ni el correo de una persona del censo. |
 | `admin_actions` | RI-13 | Solo inserción: el rol `identity` no tiene `UPDATE` ni `DELETE`, y un *trigger* rechaza ambas operaciones. |
 | `api_keys` | RF-21 (P6) | Solo se guarda el hash; la clave se muestra una vez al crearla. |
 
@@ -127,6 +128,7 @@ erDiagram
 | `ballots`, `ballot_texts`, `ballot_options`, `ballot_option_texts` | RI-5, RF-20 | `vote_type`: `SINGLE_CHOICE` o `YES_NO_ABSTAIN` (opciones fijas generadas). Pregunta 300 y opción 200 caracteres; entre 2 y 50 opciones; `UNIQUE (process_id, position)` diferida. En borrador basta el idioma por defecto; `es` y `en` se exigen al programar (D-29). |
 | `process_status_changes` | RF-07, RF-19 | Quién (usuario o `SYSTEM`), cuándo y qué transición. |
 | `process_sync` | — | *Outbox* (D-30): destino (`VOTER_ACCESS`, `BALLOT_BOX`), tipo (`SNAPSHOT`, `STATUS`), `payload` JSON (se borra al entregar), estado (`PENDING`, `DELIVERED`, `FAILED`), intentos y próximo intento. Entrega en orden por proceso y destino. |
+| `admin_action_outbox` (V4) | RI-13 | Acciones administrativas pendientes de entregar a identity (D-44); la fila se borra cuando identity la acepta. |
 
 **Congelación del censo.** **Desviación:** el censo se congela desde `SCHEDULED`, no desde `OPEN`, porque RF-17
 envía las invitaciones con el enlace personal al programar el proceso. Al programar, election envía a voter-access la
@@ -258,6 +260,7 @@ erDiagram
 | `results`, `result_options`, `minutes` | RI-10 | Votos por opción y en blanco, censo, huella de la lista de votos y del resultado (D-37); porcentajes y participación (2 decimales) se calculan al leer. `election_notified`: election ya pasó el proceso a `TALLIED`. Acta PDF (`minutes`, V4): `process_id`, `language`, `generated_at`, `sha256`, `pdf`; se escribe una vez por idioma y no cambia (D-40). |
 | `incidents` (`REVERT_FAILED`, `CHAIN_BROKEN`, `TALLY_FAILED`, `PARTICIPATION_MISMATCH`) | RF-12, RF-13 | Cadena rota, recuento no publicado o total de la urna distinto del número de personas que votaron (V5, D-43); solo el día (D-18), una por proceso y tipo. Sustituye a `tally_incidents`. |
 | `chain_checks` | RF-12 | Última verificación de la cadena de cada proceso: momento, resultado, eventos comprobados, huella final y hasta 100 problemas `CÓDIGO@secuencia`. Sin usuario (la trazabilidad de acciones es RF-19). D-38. |
+| `admin_action_outbox` (V6) | RI-13 | Verificaciones de la cadena, exportaciones y descargas del acta pendientes de entregar a identity (D-44). Solo acciones de gestión, nada sobre votos. |
 
 **Cadena de auditoría (RF-12, RNF-13).**
 

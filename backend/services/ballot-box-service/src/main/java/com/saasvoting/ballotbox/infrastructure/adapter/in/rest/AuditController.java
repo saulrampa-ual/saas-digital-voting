@@ -42,9 +42,11 @@ public class AuditController {
     }
 
     private final AuditUseCase audit;
+    private final AdminActionRecorder actions;
 
-    public AuditController(AuditUseCase audit) {
+    public AuditController(AuditUseCase audit, AdminActionRecorder actions) {
         this.audit = Objects.requireNonNull(audit, "audit must not be null");
+        this.actions = Objects.requireNonNull(actions, "actions must not be null");
     }
 
     @GetMapping
@@ -61,7 +63,10 @@ public class AuditController {
 
     @PostMapping("/verification")
     public ChainCheckResponse verify(@AuthenticationPrincipal Jwt jwt, @PathVariable long processId) {
-        return response(audit.verify(viewer(jwt, processId), processId));
+        ChainCheckResponse check = response(audit.verify(viewer(jwt, processId), processId));
+        actions.record(jwt, "CHAIN_VERIFIED", "PROCESS", processId, null, check.intact() ? "INTACT" : "BROKEN",
+                processId);
+        return check;
     }
 
     @GetMapping("/verification")

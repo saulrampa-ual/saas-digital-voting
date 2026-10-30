@@ -28,11 +28,14 @@ public class OrganizationController {
     private final CreateOrganizationUseCase createOrganization;
     private final QueryOrganizationsUseCase queryOrganizations;
     private final ChangeOrganizationStatusUseCase changeOrganizationStatus;
+    private final AdminActionRecorder actions;
 
     public OrganizationController(
             CreateOrganizationUseCase createOrganization,
             QueryOrganizationsUseCase queryOrganizations,
-            ChangeOrganizationStatusUseCase changeOrganizationStatus) {
+            ChangeOrganizationStatusUseCase changeOrganizationStatus,
+            AdminActionRecorder actions) {
+        this.actions = Objects.requireNonNull(actions, "actions must not be null");
         this.createOrganization = Objects.requireNonNull(createOrganization, "createOrganization must not be null");
         this.queryOrganizations = Objects.requireNonNull(queryOrganizations, "queryOrganizations must not be null");
         this.changeOrganizationStatus =
@@ -47,6 +50,8 @@ public class OrganizationController {
                 request.id(),
                 request.name(),
                 request.initialAdministrator().toDomain());
+        actions.record(jwt, organization.id(), "ORGANIZATION_CREATED", "ORGANIZATION", organization.id(),
+                organization.name(), null);
         return ResponseEntity
                 .created(URI.create("/api/v1/organizations/" + organization.id()))
                 .body(OrganizationResponse.fromDomain(organization));
@@ -73,7 +78,10 @@ public class OrganizationController {
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable String organizationId,
             @Valid @RequestBody UpdateOrganizationStatusRequest request) {
-        return OrganizationResponse.fromDomain(
-                changeOrganizationStatus.changeStatus(CallerResolver.from(jwt), organizationId, request.status()));
+        Organization organization =
+                changeOrganizationStatus.changeStatus(CallerResolver.from(jwt), organizationId, request.status());
+        actions.record(jwt, organization.id(), "ORGANIZATION_STATUS_CHANGED", "ORGANIZATION", organization.id(),
+                organization.name(), request.status().name());
+        return OrganizationResponse.fromDomain(organization);
     }
 }

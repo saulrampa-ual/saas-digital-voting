@@ -1,6 +1,8 @@
 package com.saasvoting.election.infrastructure.config;
 
 import com.saasvoting.election.infrastructure.adapter.out.persistence.repository.ProcessSyncJpaRepository;
+import com.saasvoting.election.infrastructure.adapter.out.persistence.repository.AdminActionOutboxJpaRepository;
+import com.saasvoting.election.infrastructure.adapter.out.sync.AdminActionDispatcher;
 import com.saasvoting.election.infrastructure.adapter.out.sync.ProcessSyncDispatcher;
 import com.saasvoting.election.infrastructure.adapter.out.sync.SyncComponents;
 import com.saasvoting.election.infrastructure.adapter.out.sync.SyncProperties;
@@ -22,5 +24,11 @@ public class SyncConfiguration {
     ProcessSyncDispatcher processSyncDispatcher(
             ProcessSyncJpaRepository messages, SyncProperties properties, Clock clock) {
         return SyncComponents.dispatcher(messages, RestClient.builder(), properties, clock);
+    }
+
+    @Bean
+    AdminActionDispatcher adminActionDispatcher(
+            AdminActionOutboxJpaRepository messages, SyncProperties properties, Clock clock) {
+        return SyncComponents.adminActionDispatcher(messages, RestClient.builder(), properties, clock);
     }
 }

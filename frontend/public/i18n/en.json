@@ -18,7 +18,8 @@
       "processes": "Processes",
       "participation": "Turnout",
       "results": "Results",
-      "audit": "Audit"
+      "audit": "Audit",
+      "traceability": "Traceability"
     },
     "logout": "Sign out",
     "home": {
@@ -406,6 +407,86 @@
       },
       "noTime": "no time",
       "showing": "Showing {{from}}–{{to}} of {{total}} events · votes are shown without identity or time"
+    },
+    "trace": {
+      "title": "Traceability",
+      "intro": "Administrative actions of your organization: who did what, on what and when. The record cannot be changed or deleted.",
+      "filters": "Filters",
+      "from": "From",
+      "to": "To",
+      "actor": "Person",
+      "action": "Type of action",
+      "process": "Process",
+      "all": "All",
+      "apply": "Apply filters",
+      "clear": "Clear filters",
+      "dateError": "«From» must be on or before «To».",
+      "listTitle": "Recorded actions",
+      "none": "There are no actions with these filters.",
+      "showing": "Showing {{from}}–{{to}} of {{total}}",
+      "col": {
+        "when": "Date and time",
+        "who": "Who",
+        "what": "What",
+        "object": "On what",
+        "process": "Process"
+      },
+      "actions": {
+        "ORGANIZATION_CREATED": "Organization created",
+        "ORGANIZATION_STATUS_CHANGED": "Organization status changed",
+        "USER_CREATED": "User created",
+        "USER_ROLE_CHANGED": "Role changed",
+        "CENSUS_CREATED": "Census created",
+        "VOTER_ADDED": "Person added to a census",
+        "VOTER_UPDATED": "Person changed in a census",
+        "VOTER_REMOVED": "Person removed from a census",
+        "VOTERS_IMPORTED": "Census imported",
+        "PROCESS_CREATED": "Process created",
+        "PROCESS_UPDATED": "Process edited",
+        "PROCESS_SCHEDULED": "Process scheduled",
+        "PROCESS_ARCHIVED": "Process archived",
+        "CHAIN_VERIFIED": "Ballot box log verified",
+        "RESULTS_EXPORTED": "Results exported (CSV)",
+        "MINUTES_DOWNLOADED": "Minutes downloaded (PDF)"
+      },
+      "objects": {
+        "ORGANIZATION": "Organization",
+        "USER": "User",
+        "CENSUS": "Census",
+        "VOTER": "Person",
+        "PROCESS": "Process"
+      },
+      "details": {
+        "ORGANIZATION_STATUS_CHANGED": {
+          "ACTIVE": "active",
+          "SUSPENDED": "suspended"
+        },
+        "USER_CREATED": {
+          "ADMIN": "administration",
+          "CENSUS_MANAGER": "census management",
+          "AUDITOR": "audit"
+        },
+        "USER_ROLE_CHANGED": {
+          "ADMIN": "now administration",
+          "CENSUS_MANAGER": "now census management",
+          "AUDITOR": "now audit"
+        },
+        "VOTERS_IMPORTED": {
+          "value": "{{value}} people"
+        },
+        "CHAIN_VERIFIED": {
+          "INTACT": "intact",
+          "BROKEN": "with problems"
+        },
+        "RESULTS_EXPORTED": {
+          "ES": "in Spanish",
+          "EN": "in English"
+        },
+        "MINUTES_DOWNLOADED": {
+          "ES": "in Spanish",
+          "EN": "in English"
+        }
+      }
     }
   },
   "voter": {

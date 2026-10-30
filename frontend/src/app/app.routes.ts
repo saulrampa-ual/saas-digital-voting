@@ -81,6 +81,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/audit/audit.page').then((m) => m.AuditPage),
       },
       {
+        path: 'trazabilidad',
+        canMatch: [roleGuard(['ADMIN', 'AUDITOR'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/traceability/traceability.page').then((m) => m.TraceabilityPage),
+      },
+      {
         path: 'sin-permiso',
         loadComponent: () => import('./features/admin/forbidden/forbidden.page').then((m) => m.ForbiddenPage),
       },
