@@ -1,7 +1,8 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { APP_CONFIG } from '../config/app-config';
+import { CountedVotes, Result } from '../results/results.model';
 
 export type LocalizedText = Partial<Record<'es' | 'en', string>>;
 export type ProcessStatus = 'SCHEDULED' | 'OPEN' | 'CLOSED' | 'TALLIED' | 'ARCHIVED';
@@ -27,6 +28,9 @@ export interface AccessGranted {
   votedOn: string | null;
   votingToken: string | null;
   votingTokenExpiresAt: string | null;
+  /** Only once tallied (D-41): sent to ballot-box in a header to see the result. */
+  resultsToken?: string | null;
+  resultsTokenExpiresAt?: string | null;
 }
 
 export interface BallotOption {
@@ -62,14 +66,16 @@ export class VoterApiError extends Error {
 }
 
 /**
- * Calls of the voter PWA to voter-access (RF-08) and ballot-box (RF-09, RF-10). No Keycloak token is ever attached
- * (see app.config). The personal link, the code and the voting token are kept only in memory, never stored.
+ * Calls of the voter PWA to voter-access (RF-08) and ballot-box (RF-09, RF-10, RF-15 with D-41). No Keycloak token is
+ * ever attached (see app.config). The personal link, the code, the voting token and the results token are kept only
+ * in memory, never stored.
  */
 @Injectable({ providedIn: 'root' })
 export class VoterApiService {
   private readonly http = inject(HttpClient);
   private readonly access = `${APP_CONFIG.apiBaseUrl}/api/v1/voter-access/links`;
   private readonly ballotBox = `${APP_CONFIG.apiBaseUrl}/api/v1/ballot-box/processes`;
+  private readonly voterResults = `${APP_CONFIG.apiBaseUrl}/api/v1/ballot-box/voter/processes`;
 
   linkStatus(linkToken: string): Promise<LinkStatus> {
     return this.call(this.http.get<LinkStatus>(`${this.access}/${encodeURIComponent(linkToken)}`));
@@ -101,6 +107,19 @@ export class VoterApiService {
         `${this.ballotBox}/${processId}/receipts/${encodeURIComponent(receiptCode)}`,
       ),
     ).then((result) => result.present);
+  }
+
+  /** D-41: the result for a person of the roll. The token goes in a header, never in the URL. */
+  result(processId: number, resultsToken: string): Promise<Result> {
+    return this.call(this.http.get<Result>(`${this.voterResults}/${processId}/results`, {
+      headers: new HttpHeaders({ 'X-Results-Token': resultsToken }),
+    }));
+  }
+
+  countedVotes(processId: number, resultsToken: string): Promise<CountedVotes> {
+    return this.call(this.http.get<CountedVotes>(`${this.voterResults}/${processId}/results/counted-votes`, {
+      headers: new HttpHeaders({ 'X-Results-Token': resultsToken }),
+    }));
   }
 
   private async call<T>(request: Observable<T>): Promise<T> {

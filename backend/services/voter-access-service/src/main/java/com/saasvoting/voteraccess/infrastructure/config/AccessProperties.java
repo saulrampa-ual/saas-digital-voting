@@ -24,7 +24,8 @@ public record AccessProperties(
         Integer maxFailedAttempts,
         Duration lockDuration,
         Duration votingTokenValidity,
-        Duration linkValidityAfterClose) {
+        Duration linkValidityAfterClose,
+        Duration resultsTokenValidity) {
 
     public AccessProperties {
         Objects.requireNonNull(publicBaseUrl, "verivoto.access.public-base-url must be set");
@@ -42,6 +43,7 @@ public record AccessProperties(
                 maxFailedAttempts == null ? defaults.maxFailedAttempts() : maxFailedAttempts,
                 lockDuration == null ? defaults.lockDuration() : lockDuration,
                 votingTokenValidity == null ? defaults.votingTokenValidity() : votingTokenValidity,
-                linkValidityAfterClose == null ? defaults.linkValidityAfterClose() : linkValidityAfterClose);
+                linkValidityAfterClose == null ? defaults.linkValidityAfterClose() : linkValidityAfterClose,
+                resultsTokenValidity == null ? defaults.resultsTokenValidity() : resultsTokenValidity);
     }
 }

@@ -315,6 +315,49 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/CountedVotes' }
         '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/ballot-box/voter/processes/{processId}/results:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+      - $ref: '#/components/parameters/ResultsToken'
+    get:
+      tags: [results]
+      operationId: getVoterResult
+      summary: Result for a person of the roll (personal link + code)
+      description: |
+        RF-15 with `CENSUS_ONLY` (D-41), also valid with `PUBLIC_LINK`. The results token comes from voter-access
+        (`/links/{linkToken}/otp/verify` once the process is TALLIED) and is checked there on every request;
+        ballot-box never learns who the voter is. 404 without a valid token, 410 when it expired.
+      security: []
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Result' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+  /api/v1/ballot-box/voter/processes/{processId}/results/counted-votes:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+      - $ref: '#/components/parameters/ResultsToken'
+    get:
+      tags: [results]
+      operationId: getVoterCountedVotes
+      summary: Counted votes for a person of the roll, to verify the result in the browser
+      description: Same rules as the voter result (D-41). RF-13 steps 6–8.
+      security: []
+      responses:
+        '200':
+          description: Counted votes
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CountedVotes' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '503': { $ref: '#/components/responses/Unavailable' }
   /internal/v1/processes/{processId}:
     parameters:
       - $ref: '#/components/parameters/ProcessId'
@@ -380,6 +423,12 @@ components:
       in: path
       required: true
       schema: { type: integer, format: int64, minimum: 1 }
+    ResultsToken:
+      name: X-Results-Token
+      in: header
+      required: true
+      description: Results token from voter-access (D-41). In a header so it never appears in URLs or access logs.
+      schema: { type: string, maxLength: 200 }
     PublicId:
       name: publicId
       in: path

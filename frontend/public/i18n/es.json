@@ -478,7 +478,7 @@
       },
       "closed": {
         "title": "La votación está cerrada",
-        "message": "El plazo terminó el {{closes}}. Ya no se pueden emitir votos."
+        "message": "El plazo terminó el {{closes}}. Ya no se pueden emitir votos. Cuando termine el escrutinio podrás ver aquí el resultado con este mismo enlace."
       },
       "invalidLink": {
         "title": "Este enlace no es válido",
@@ -528,6 +528,13 @@
     },
     "footer": {
       "secure": "Conexión segura · Tu voto es secreto"
+    },
+    "results": {
+      "eyebrow": "Resultado de la votación",
+      "readyText": "La votación cerró el {{closes}} y el escrutinio ha terminado. Para ver el resultado, confirma que eres tú con un código que te enviaremos por correo.",
+      "secret": "El resultado no muestra qué ha votado cada persona.",
+      "see": "Ver el resultado",
+      "tookPart": "Tu voto quedó registrado el {{day}}."
     }
   },
   "errors": {

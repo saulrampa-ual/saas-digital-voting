@@ -35,7 +35,7 @@ public class VoterAccessController {
     }
 
     public record AccessGrantedResponse(boolean hasVoted, LocalDate votedOn, String votingToken,
-            Instant votingTokenExpiresAt) {
+            Instant votingTokenExpiresAt, String resultsToken, Instant resultsTokenExpiresAt) {
     }
 
     private final VoterAccessUseCase access;
@@ -64,6 +64,6 @@ public class VoterAccessController {
     public AccessGrantedResponse verify(@PathVariable String linkToken, @Valid @RequestBody VerifyRequest request) {
         VoterAccessUseCase.AccessGranted granted = access.verifyCode(linkToken, request.code());
         return new AccessGrantedResponse(granted.hasVoted(), granted.votedOn(), granted.votingToken(),
-                granted.votingTokenExpiresAt());
+                granted.votingTokenExpiresAt(), granted.resultsToken(), granted.resultsTokenExpiresAt());
     }
 }

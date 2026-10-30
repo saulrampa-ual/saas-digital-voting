@@ -101,6 +101,7 @@ cuando hay conflicto (ver «Incoherencias»).
 | 16 | F4 enumera pasos con su estado («Recuento por opción · completado») | F4 | La urna no informa del avance del escrutinio (dura segundos): F4 lista los pasos sin estado y se sustituye por F1 en cuanto hay resultado (D-39) |
 | 17 | V8 no está dibujado | V8 | Diseñado con el estilo del votante a partir de la descripción de la revisión: resultado por opción, participación, huellas y fecha de publicación, con verificación en el navegador (D-39) |
 | 18 | «Generar acta (PDF)» en F1 | F1 | Hecho en P5.4 (D-40): botón en la cabecera (junto al CSV) y tarjeta «Acta del proceso» con la huella SHA-256 del fichero; solo ADMIN |
+| 19 | No hay pantalla para ver el resultado con el enlace personal (`CENSUS_ONLY`) | V1, V8, C2 | Diseñado en P5.5 (D-41) con las piezas existentes: bienvenida tipo V1 «Resultado de la votación» con «Ver el resultado», el paso B1/V2 del código sin indicador de pasos y el resumen de V8 con «Tu voto quedó registrado el …»; C2 añade que el resultado aparecerá en el mismo enlace |
 
 Comprobado sin incoherencias: indicador de 4 pasos (RNF-9), confirmación explícita en pantalla propia
 (RNF-7), ES/EN (RNF-5), anchos de 390 px (cubre los 360 px de RNF-2 con diseño fluido), recuento por

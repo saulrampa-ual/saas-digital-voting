@@ -4,6 +4,7 @@ import com.saasvoting.voteraccess.application.port.out.NotificationRepository;
 import com.saasvoting.voteraccess.application.port.out.ParticipationRepository;
 import com.saasvoting.voteraccess.application.port.out.RollRepository;
 import com.saasvoting.voteraccess.application.port.out.SnapshotRepository;
+import com.saasvoting.voteraccess.application.port.out.ResultsTokenRepository;
 import com.saasvoting.voteraccess.application.port.out.VotingTokenRepository;
 import com.saasvoting.voteraccess.domain.model.AccessCredential;
 import com.saasvoting.voteraccess.domain.model.Notification;
@@ -11,6 +12,7 @@ import com.saasvoting.voteraccess.domain.model.NotificationStatus;
 import com.saasvoting.voteraccess.domain.model.Participation;
 import com.saasvoting.voteraccess.domain.model.ProcessSnapshot;
 import com.saasvoting.voteraccess.domain.model.RollEntry;
+import com.saasvoting.voteraccess.domain.model.ResultsToken;
 import com.saasvoting.voteraccess.domain.model.VotingToken;
 import com.saasvoting.voteraccess.domain.model.VotingTokenStatus;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.AccessCredentialJpaEntity;
@@ -18,6 +20,7 @@ import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.ParticipationJpaEntity;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.ProcessSnapshotJpaEntity;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.RollEntryJpaEntity;
+import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.ResultsTokenJpaEntity;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.VotingTokenJpaEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
@@ -39,7 +42,7 @@ import java.util.UUID;
 @Repository
 @Transactional
 public class JpaVoterAccessStore implements SnapshotRepository, RollRepository, VotingTokenRepository,
-        NotificationRepository, ParticipationRepository {
+        NotificationRepository, ParticipationRepository, ResultsTokenRepository {
 
     private static final int FLUSH_EVERY = 500;
 
@@ -178,6 +181,19 @@ public class JpaVoterAccessStore implements SnapshotRepository, RollRepository, 
         } else {
             entity.apply(participation);
         }
+    }
+
+    // --- Results tokens (D-41)
+
+    @Override
+    public void save(ResultsToken token) {
+        em.persist(ResultsTokenJpaEntity.create(token));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<ResultsToken> findResultsToken(String tokenHash) {
+        return Optional.ofNullable(em.find(ResultsTokenJpaEntity.class, tokenHash)).map(ResultsTokenJpaEntity::toDomain);
     }
 
     // --- Voting tokens

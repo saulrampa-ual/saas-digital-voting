@@ -11,20 +11,19 @@ import { ErrorStateComponent } from '../../shared/error-state/error-state.compon
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
 import { LocalDatePipe } from '../../shared/pipes/local-date.pipe';
 import { LocalizedPipe } from '../../shared/pipes/localized.pipe';
-import { ResultBarsComponent } from '../../shared/result-bars/result-bars.component';
-import {
-  ResultVerificationComponent, VerificationState,
-} from '../../shared/result-verification/result-verification.component';
+import { ResultSummaryComponent } from '../../shared/result-summary/result-summary.component';
+import { VerificationState } from '../../shared/result-verification/result-verification.component';
 
 /**
  * V8 (RF-13, RF-15): result through the public link of a `PUBLIC_LINK` process (D-16), once tallied. No account and
  * no token: the random link is the only key. The browser recomputes the result from the published votes (D-37).
+ * The same summary is shown to the people of the roll through their personal link (D-41).
  */
 @Component({
   selector: 'app-public-results',
   imports: [
     IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonSpinner, RouterLink, TranslatePipe, LocalDatePipe,
-    LocalizedPipe, LanguageSwitcherComponent, ErrorStateComponent, ResultBarsComponent, ResultVerificationComponent,
+    LocalizedPipe, LanguageSwitcherComponent, ErrorStateComponent, ResultSummaryComponent,
   ],
   template: `
     <ion-header>
@@ -45,15 +44,7 @@ import {
           <p class="eyebrow">{{ 'publicResults.eyebrow' | translate }}</p>
           <h1 tabindex="-1">{{ r.question | localized: language() }}</h1>
           <p class="meta">{{ 'publicResults.published' | translate: { date: (r.talliedAt | localDate: language()) } }}</p>
-          <div class="figures">
-            <div><strong>{{ n(r.totalVotes) }}</strong><span>{{ 'publicResults.votes' | translate }}</span></div>
-            <div><strong>{{ pct(r.participation) }} %</strong><span>{{ 'publicResults.turnout' | translate: { census: n(r.eligibleVoters) } }}</span></div>
-          </div>
-          <section class="block">
-            <h2>{{ 'publicResults.byOption' | translate }}</h2>
-            <app-result-bars [result]="r" [language]="language()" />
-          </section>
-          <app-result-verification [state]="verification()" [resultHash]="r.resultHash" [finalHash]="r.finalHash" />
+          <app-result-summary [result]="r" [language]="language()" [verification]="verification()" />
           <p class="receipt"><a [routerLink]="['/recibo', r.processId]">{{ 'publicResults.checkReceipt' | translate }}</a></p>
         }
       </main>
@@ -64,12 +55,6 @@ import {
     .eyebrow { margin: 0.5rem 0 0; color: var(--ion-color-medium); font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.04em; }
     h1 { margin: 4px 0; }
     .meta { color: var(--ion-color-medium); margin: 0 0 1rem; }
-    .figures { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
-    .figures div { background: #f2f4f7; border-radius: var(--vv-radius-card); padding: 12px 16px; display: flex; flex-direction: column; }
-    .figures strong { font-size: 1.75rem; color: var(--ion-color-primary); line-height: 1.1; }
-    .figures span { font-size: 0.875rem; color: #4a5868; }
-    .block { margin-bottom: 1.25rem; }
-    .block h2 { font-size: 1.125rem; margin: 0 0 12px; }
     .receipt { margin-top: 1.25rem; }
     .receipt a { display: inline-block; min-height: 44px; line-height: 44px; color: var(--ion-color-primary); font-weight: 600; }
   `,
@@ -108,13 +93,5 @@ export class PublicResultsPage {
     } catch {
       this.verification.set('error');
     }
-  }
-
-  protected n(value: number): string {
-    return new Intl.NumberFormat(this.language()).format(value);
-  }
-
-  protected pct(value: number): string {
-    return new Intl.NumberFormat(this.language(), { maximumFractionDigits: 2 }).format(+value);
   }
 }

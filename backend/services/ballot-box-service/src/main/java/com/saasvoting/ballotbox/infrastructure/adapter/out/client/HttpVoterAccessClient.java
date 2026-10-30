@@ -1,6 +1,8 @@
 package com.saasvoting.ballotbox.infrastructure.adapter.out.client;
 
 import com.saasvoting.ballotbox.application.port.out.VoterAccessClient;
+import com.saasvoting.ballotbox.domain.model.ResultsAccessDeniedException;
+import com.saasvoting.ballotbox.domain.model.ResultsAccessUnavailableException;
 import com.saasvoting.ballotbox.domain.model.VoterAccessUnavailableException;
 import com.saasvoting.ballotbox.domain.model.VotingTokenRejectedException;
 import com.saasvoting.ballotbox.domain.model.VotingTokenRejectedException.Reason;
@@ -69,6 +71,27 @@ public class HttpVoterAccessClient implements VoterAccessClient {
             throw new VoterAccessUnavailableException("voter-access answered " + e.getStatusCode(), e, true);
         } catch (RestClientException | IllegalStateException e) {
             throw new VoterAccessUnavailableException("voter-access not reachable", e, true);
+        }
+    }
+
+    @Override
+    public void checkResultsToken(String resultsToken, long processId) {
+        try {
+            voterAccess.post()
+                    .uri("/internal/v1/results-tokens/check")
+                    .headers(headers -> headers.setBearerAuth(tokens.token()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("resultsToken", resultsToken, "processId", processId))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientResponseException e) {
+            throw switch (e.getStatusCode().value()) {
+                case 400, 404 -> new ResultsAccessDeniedException(false);
+                case 410 -> new ResultsAccessDeniedException(true);
+                default -> new ResultsAccessUnavailableException("voter-access answered " + e.getStatusCode(), e);
+            };
+        } catch (RestClientException | IllegalStateException e) {
+            throw new ResultsAccessUnavailableException("voter-access not reachable", e);
         }
     }
 

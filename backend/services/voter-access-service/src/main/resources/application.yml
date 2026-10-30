@@ -55,3 +55,5 @@ verivoto:
     lock-duration: PT15M
     voting-token-validity: PT15M
     link-validity-after-close: P30D
+    # D-41: after the tally, the code gives a token to see the result for this long
+    results-token-validity: PT30M

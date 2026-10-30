@@ -31,6 +31,11 @@ public class SecureRandomSecretGenerator implements SecretGenerator {
     }
 
     @Override
+    public String newResultsToken() {
+        return randomUrlSafe(32);
+    }
+
+    @Override
     public String newAccessCode() {
         return String.format("%06d", random.nextInt(1_000_000));
     }

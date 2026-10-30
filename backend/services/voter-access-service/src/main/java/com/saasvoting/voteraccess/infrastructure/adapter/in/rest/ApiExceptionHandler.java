@@ -7,6 +7,8 @@ import com.saasvoting.voteraccess.domain.model.LinkExpiredException;
 import com.saasvoting.voteraccess.domain.model.LinkNotFoundException;
 import com.saasvoting.voteraccess.domain.model.MessageDeliveryException;
 import com.saasvoting.voteraccess.domain.model.ProcessNotOpenException;
+import com.saasvoting.voteraccess.domain.model.ResultsTokenExpiredException;
+import com.saasvoting.voteraccess.domain.model.ResultsTokenNotFoundException;
 import com.saasvoting.voteraccess.domain.model.SnapshotConflictException;
 import com.saasvoting.voteraccess.domain.model.SnapshotNotFoundException;
 import com.saasvoting.voteraccess.domain.model.VotingTokenExpiredException;
@@ -109,6 +111,16 @@ public class ApiExceptionHandler {
     @ExceptionHandler(VotingTokenExpiredException.class)
     ProblemDetail tokenExpired(VotingTokenExpiredException e) {
         return problem(HttpStatus.GONE, "Tu sesión de voto ha caducado. Vuelve a entrar con tu enlace.");
+    }
+
+    @ExceptionHandler(ResultsTokenNotFoundException.class)
+    ProblemDetail resultsTokenNotFound(ResultsTokenNotFoundException e) {
+        return problem(HttpStatus.NOT_FOUND, "Acceso a los resultados desconocido.");
+    }
+
+    @ExceptionHandler(ResultsTokenExpiredException.class)
+    ProblemDetail resultsTokenExpired(ResultsTokenExpiredException e) {
+        return problem(HttpStatus.GONE, "Tu acceso a los resultados ha caducado. Vuelve a entrar con tu enlace.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
