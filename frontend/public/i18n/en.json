@@ -15,7 +15,10 @@
       "home": "Home",
       "organizations": "Organizations",
       "censuses": "Censuses",
-      "processes": "Processes"
+      "processes": "Processes",
+      "participation": "Turnout",
+      "results": "Results",
+      "audit": "Audit"
     },
     "logout": "Sign out",
     "home": {
@@ -206,6 +209,12 @@
           "CENSUS_ONLY": "Census members only",
           "PUBLIC_LINK": "Public link"
         }
+      },
+      "links": {
+        "label": "More about this process",
+        "participation": "See turnout",
+        "results": "See results",
+        "audit": "See the ballot box log"
       }
     },
     "census": {
@@ -295,6 +304,102 @@
           "size": "The file is larger than {{max}} MB."
         }
       }
+    },
+    "picker": {
+      "label": "Process",
+      "empty": "There are no processes to show yet."
+    },
+    "participation": {
+      "title": "Turnout panel",
+      "empty": "There are no scheduled processes yet.",
+      "opens": "Opens on {{date}}",
+      "closes": "Closes on {{date}}",
+      "live": "Updates automatically · last update {{seconds}} s ago",
+      "current": "Current turnout",
+      "ringLabel": "Turnout: {{pct}} % of the census",
+      "ofCensus": "of the census",
+      "census": "People in the census",
+      "censusHelp": "frozen census",
+      "votes": "Votes cast",
+      "votesHelp": "one vote per person",
+      "pending": "Yet to vote",
+      "pendingHelp": "until closing",
+      "byDayTitle": "Cumulative turnout per day (% of the census)",
+      "notOpen": "Voting is not open yet: only the census is shown.",
+      "noVotes": "Nobody has voted yet.",
+      "dayTip": "{{day}}: {{votes}} votes that day, {{total}} in total",
+      "day": "Day",
+      "cumulative": "Cumulative",
+      "lockTitle": "Results per option are not shown until the tally.",
+      "lockText": "Here you only see how many people have voted, never what they voted. Turnout is counted per day, without hours, to protect the secrecy of the vote.",
+      "seeResults": "See the results"
+    },
+    "results": {
+      "title": "Results",
+      "empty": "There are no closed processes yet.",
+      "closedOn": "Closed on {{date}}",
+      "export": "Export results (CSV)",
+      "exportError": "The CSV could not be downloaded. Try again.",
+      "fileName": "results-process",
+      "tallyingTitle": "Tally in progress…",
+      "tallyingText": "The ballot box is counting the votes and checking its log. You do not need to wait here: the result will appear in a few seconds.",
+      "tallyingStep1": "Check of the ballot box log",
+      "tallyingStep2": "Count per option and turnout",
+      "tallyingStep3": "Result stored and its hash published",
+      "census": "Census",
+      "people": "people",
+      "votes": "Votes cast",
+      "turnout": "{{pct}} % turnout",
+      "blank": "Blank votes",
+      "ofVotes": "{{pct}} % of the votes",
+      "byOption": "Result per option",
+      "publicTitle": "Public results link",
+      "publicText": "Anyone with this link can see the result and check it.",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "censusOnlyTitle": "Result for the organisation only",
+      "censusOnlyText": "This process does not publish the result with a public link. The hashes are public.",
+      "talliedAt": "Tallied on {{date}}."
+    },
+    "audit": {
+      "title": "Ballot box audit",
+      "intro": "Read only: the ballot box log cannot be edited. Votes appear without identity and without time.",
+      "empty": "There are no scheduled processes yet.",
+      "neverTitle": "Log not verified",
+      "neverText": "Verify the log to check that nobody has altered it.",
+      "okTitle": "Log intact",
+      "okText": "{{count}} events checked · no alteration found · last check on {{date}}",
+      "badTitle": "Log altered",
+      "badText": "The check of {{date}} found alterations. An incident was recorded and the tally will not be published while it stays like this.",
+      "problem": {
+        "HASH_MISMATCH": "The event was changed: its data no longer produce its hash.",
+        "BROKEN_LINK": "The event does not link to the previous one (an event was inserted, deleted or reordered).",
+        "SEQUENCE_GAP": "A number is missing in the sequence of events.",
+        "HEAD_MISMATCH": "Events are missing at the end of the log.",
+        "BALLOT_MISMATCH": "The ballot is no longer the one fixed at opening.",
+        "VOTE_COUNT_MISMATCH": "Votes, receipts and vote events do not match.",
+        "CLOSED_COUNT_MISMATCH": "The closing does not match the number of votes recorded.",
+        "FINAL_HASH_MISMATCH": "The published final hash is not the hash of the closing."
+      },
+      "finalHash": "Published final hash:",
+      "finalPending": "The final hash will be published at closing ({{date}}).",
+      "verify": "Verify integrity now",
+      "chainTitle": "Ballot box log",
+      "noEvents": "The ballot box has no events yet: the first one is the opening.",
+      "col": {
+        "seq": "No.",
+        "event": "Event",
+        "hash": "Hash",
+        "when": "Date and time"
+      },
+      "event": {
+        "OPENED": "Ballot box opened",
+        "VOTE_RECEIVED": "Vote received (no identity)",
+        "CLOSED": "Ballot box closed",
+        "FINAL_HASH_PUBLISHED": "Final hash published"
+      },
+      "noTime": "no time",
+      "showing": "Showing {{from}}–{{to}} of {{total}} events · votes are shown without identity or time"
     }
   },
   "voter": {
@@ -430,5 +535,34 @@
     "ADMIN": "Administrator",
     "CENSUS_MANAGER": "Census manager",
     "AUDITOR": "Auditor"
+  },
+  "results": {
+    "top": "Most voted",
+    "vote": "vote",
+    "votes": "votes",
+    "blank": "Blank vote",
+    "resultHash": "Result hash",
+    "finalHash": "Final hash of the ballot box",
+    "verify": {
+      "checking": "Checking the result…",
+      "okTitle": "Result verified",
+      "okText": "Your browser recomputed the count from the published votes and it matches the result.",
+      "badTitle": "The result does not match",
+      "badText": "Recomputed from the published votes it does not match. Tell the organisation.",
+      "errorTitle": "It could not be checked",
+      "errorText": "The published votes could not be obtained. Try again later.",
+      "limits": "Published votes only carry a random identifier and the option: they cannot be linked to anyone or to any receipt."
+    }
+  },
+  "publicResults": {
+    "notFoundTitle": "Results not available",
+    "notFoundText": "This link does not exist or the result has not been published yet. Results appear after the tally.",
+    "errorTitle": "The results could not be loaded",
+    "eyebrow": "Official results",
+    "published": "Published on {{date}}",
+    "votes": "votes cast",
+    "turnout": "turnout over {{census}} people",
+    "byOption": "Result per option",
+    "checkReceipt": "Check my receipt"
   }
 }

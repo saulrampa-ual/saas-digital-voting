@@ -15,6 +15,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/voter/receipt-check.page').then((m) => m.ReceiptCheckPage),
   },
   {
+    // V8: public result of a PUBLIC_LINK process (D-16); no session.
+    path: 'resultados/:publicId',
+    loadComponent: () => import('./features/public/public-results.page').then((m) => m.PublicResultsPage),
+  },
+  {
     path: 'admin',
     canMatch: [roleGuard(ANY_MANAGEMENT_ROLE)],
     loadComponent: () => import('./features/admin/admin-shell.component').then((m) => m.AdminShellComponent),
@@ -59,6 +64,21 @@ export const routes: Routes = [
         path: 'procesos/:id',
         canMatch: [roleGuard(['ADMIN', 'AUDITOR'], { needsOrganization: true })],
         loadComponent: () => import('./features/admin/processes/process-detail.page').then((m) => m.ProcessDetailPage),
+      },
+      {
+        path: 'participacion',
+        canMatch: [roleGuard(['ADMIN'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/participation/participation.page').then((m) => m.ParticipationPage),
+      },
+      {
+        path: 'resultados',
+        canMatch: [roleGuard(['ADMIN', 'AUDITOR'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/results/results.page').then((m) => m.ResultsPage),
+      },
+      {
+        path: 'auditoria',
+        canMatch: [roleGuard(['AUDITOR'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/audit/audit.page').then((m) => m.AuditPage),
       },
       {
         path: 'sin-permiso',

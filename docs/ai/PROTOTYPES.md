@@ -98,6 +98,9 @@ cuando hay conflicto (ver «Incoherencias»).
 | 13 | «Participación acumulada por hora» | A5 | D-18/D-38: la participación solo guarda el día; el gráfico es por día. La hora permitiría cruzarla con el orden de los eventos de la urna |
 | 14 | Fecha y hora en cada «Voto recibido» y evento «Voto sustituido» | H1 | D-18: los eventos de voto no llevan hora; revoto fuera del MVP (D-03) |
 | 15 | «Enviar recordatorio a quien no ha votado» (A5) y trazabilidad de acciones (H1) | A5, H1 | RF-17 y RF-19 en P6; en P5.3 no se muestran |
+| 16 | F4 enumera pasos con su estado («Recuento por opción · completado») | F4 | La urna no informa del avance del escrutinio (dura segundos): F4 lista los pasos sin estado y se sustituye por F1 en cuanto hay resultado (D-39) |
+| 17 | V8 no está dibujado | V8 | Diseñado con el estilo del votante a partir de la descripción de la revisión: resultado por opción, participación, huellas y fecha de publicación, con verificación en el navegador (D-39) |
+| 18 | «Generar acta (PDF)» en F1 | F1 | RF-16 en P5.4; hasta entonces no se muestra |
 
 Comprobado sin incoherencias: indicador de 4 pasos (RNF-9), confirmación explícita en pantalla propia
 (RNF-7), ES/EN (RNF-5), anchos de 390 px (cubre los 360 px de RNF-2 con diseño fluido), recuento por

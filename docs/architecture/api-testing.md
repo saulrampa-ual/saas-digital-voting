@@ -257,3 +257,16 @@ Con la misma infraestructura del apartado 9 y un censo con al menos una persona 
    o identificador.
 7. Como administrador: lista y detalle en solo lectura, sin crear ni importar. Con el censo usado por un proceso programado:
    «Censo congelado» y sin acciones. El auditor no ve «Censos».
+
+## 12. Resultados, participación y auditoría desde la consola (P5.3)
+
+Con todo en marcha y un proceso `PUBLIC_LINK` con votos (sección 9):
+
+1. Como `ana@ual.test` (ADMIN) → «Participación»: con el proceso abierto, «Se actualiza automáticamente», censo, votos,
+   pendientes, porcentaje y una barra por día. Nunca aparece qué se ha votado.
+2. Al cerrarse, «Resultados»: unos segundos «Escrutinio en curso…» y después el resultado por opción, «Resultado
+   verificado» (el navegador lo recalcula), «Exportar resultados (CSV)» y el enlace público para copiar.
+3. Abrir ese enlace en una ventana privada (`/resultados/…`): resultado, participación y «Resultado verificado» sin
+   iniciar sesión.
+4. Como la persona auditora → «Auditoría»: «Registro íntegro», eventos con los votos «sin hora» y «Verificar integridad
+   ahora». No ve «Participación» ni el botón de CSV.

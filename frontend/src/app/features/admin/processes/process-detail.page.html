@@ -57,6 +57,13 @@
             }
           </div>
         }
+        @if (links().length) {
+          <nav class="links" [attr.aria-label]="'admin.process.links.label' | translate">
+            @for (l of links(); track l.path) {
+              <a [routerLink]="l.path" [queryParams]="{ proceso: p.id }">{{ l.key | translate }} →</a>
+            }
+          </nav>
+        }
         <div class="info"><ion-icon name="time-outline" aria-hidden="true"></ion-icon>
           <p>{{ 'admin.process.automatic' | translate }}</p></div>
       </section>

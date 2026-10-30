@@ -35,6 +35,8 @@ export interface Process extends Omit<ProcessData, 'ballot'> {
   id: number;
   status: ProcessStatus;
   ballot: ProcessData['ballot'] & { options: { id: number; position: number; text: LocalizedText }[] };
+  /** Random id of the public results link; only with PUBLIC_LINK (D-16). */
+  resultsPublicId?: string | null;
 }
 
 export interface ProcessSummary {

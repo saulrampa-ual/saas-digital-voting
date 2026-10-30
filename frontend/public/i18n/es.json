@@ -15,7 +15,10 @@
       "home": "Inicio",
       "organizations": "Organizaciones",
       "censuses": "Censos",
-      "processes": "Procesos"
+      "processes": "Procesos",
+      "participation": "Participación",
+      "results": "Resultados",
+      "audit": "Auditoría"
     },
     "logout": "Cerrar sesión",
     "home": {
@@ -206,6 +209,12 @@
           "CENSUS_ONLY": "Solo personas del censo",
           "PUBLIC_LINK": "Enlace público"
         }
+      },
+      "links": {
+        "label": "Más sobre este proceso",
+        "participation": "Ver participación",
+        "results": "Ver resultados",
+        "audit": "Ver el registro de la urna"
       }
     },
     "census": {
@@ -295,6 +304,102 @@
           "size": "El fichero supera los {{max}} MB."
         }
       }
+    },
+    "picker": {
+      "label": "Proceso",
+      "empty": "No hay procesos que mostrar todavía."
+    },
+    "participation": {
+      "title": "Panel de participación",
+      "empty": "Todavía no hay procesos programados.",
+      "opens": "Se abre el {{date}}",
+      "closes": "Cierra el {{date}}",
+      "live": "Se actualiza automáticamente · última actualización hace {{seconds}} s",
+      "current": "Participación actual",
+      "ringLabel": "Participación: {{pct}} % del censo",
+      "ofCensus": "del censo",
+      "census": "Personas en el censo",
+      "censusHelp": "censo congelado",
+      "votes": "Votos emitidos",
+      "votesHelp": "un voto por persona",
+      "pending": "Pendientes de votar",
+      "pendingHelp": "hasta el cierre",
+      "byDayTitle": "Participación acumulada por día (% del censo)",
+      "notOpen": "La votación todavía no está abierta: solo se muestra el censo.",
+      "noVotes": "Todavía no ha votado nadie.",
+      "dayTip": "{{day}}: {{votes}} votos ese día, {{total}} en total",
+      "day": "Día",
+      "cumulative": "Acumulado",
+      "lockTitle": "Los resultados por opción no se muestran hasta el escrutinio.",
+      "lockText": "Aquí solo ves cuántas personas han votado, nunca qué han votado. La participación se cuenta por día, sin horas, para proteger el secreto del voto.",
+      "seeResults": "Ver los resultados"
+    },
+    "results": {
+      "title": "Resultados",
+      "empty": "Todavía no hay procesos cerrados.",
+      "closedOn": "Cerró el {{date}}",
+      "export": "Exportar resultados (CSV)",
+      "exportError": "No se ha podido descargar el CSV. Inténtalo de nuevo.",
+      "fileName": "resultados-proceso",
+      "tallyingTitle": "Escrutinio en curso…",
+      "tallyingText": "La urna está contando los votos y comprobando su registro. No hace falta que esperes aquí: el resultado aparecerá en unos segundos.",
+      "tallyingStep1": "Comprobación del registro de la urna",
+      "tallyingStep2": "Recuento por opción y participación",
+      "tallyingStep3": "Guardado del resultado y publicación de su huella",
+      "census": "Censo",
+      "people": "personas",
+      "votes": "Votos emitidos",
+      "turnout": "{{pct}} % de participación",
+      "blank": "Votos en blanco",
+      "ofVotes": "{{pct}} % de los votos",
+      "byOption": "Resultado por opción",
+      "publicTitle": "Enlace público de resultados",
+      "publicText": "Cualquiera con este enlace puede ver el resultado y comprobarlo.",
+      "copy": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "censusOnlyTitle": "Resultado solo para la organización",
+      "censusOnlyText": "Este proceso no publica el resultado con un enlace público. Las huellas sí son públicas.",
+      "talliedAt": "Escrutado el {{date}}."
+    },
+    "audit": {
+      "title": "Auditoría de la urna",
+      "intro": "Solo lectura: el registro de la urna no se puede editar. Los votos aparecen sin identidad y sin hora.",
+      "empty": "Todavía no hay procesos programados.",
+      "neverTitle": "Registro sin verificar",
+      "neverText": "Verifica el registro para comprobar que nadie lo ha alterado.",
+      "okTitle": "Registro íntegro",
+      "okText": "{{count}} eventos comprobados · ninguna alteración detectada · última verificación el {{date}}",
+      "badTitle": "Registro alterado",
+      "badText": "La verificación del {{date}} ha encontrado alteraciones. Se ha registrado una incidencia y el escrutinio no se publicará mientras siga así.",
+      "problem": {
+        "HASH_MISMATCH": "El evento se ha modificado: sus datos ya no producen su huella.",
+        "BROKEN_LINK": "El evento no enlaza con el anterior (se ha insertado, borrado o reordenado alguno).",
+        "SEQUENCE_GAP": "Falta un número en la secuencia de eventos.",
+        "HEAD_MISMATCH": "Faltan eventos al final del registro.",
+        "BALLOT_MISMATCH": "La papeleta ya no es la que se fijó al abrir.",
+        "VOTE_COUNT_MISMATCH": "No coinciden los votos, los recibos y los eventos de voto.",
+        "CLOSED_COUNT_MISMATCH": "El cierre no corresponde al número de votos registrado.",
+        "FINAL_HASH_MISMATCH": "La huella final publicada no es la del cierre."
+      },
+      "finalHash": "Huella final publicada:",
+      "finalPending": "La huella final se publicará al cierre ({{date}}).",
+      "verify": "Verificar integridad ahora",
+      "chainTitle": "Registro de la urna",
+      "noEvents": "La urna todavía no tiene eventos: el primero es la apertura.",
+      "col": {
+        "seq": "Nº",
+        "event": "Evento",
+        "hash": "Huella",
+        "when": "Fecha y hora"
+      },
+      "event": {
+        "OPENED": "Apertura de la urna",
+        "VOTE_RECEIVED": "Voto recibido (sin identidad)",
+        "CLOSED": "Cierre de la urna",
+        "FINAL_HASH_PUBLISHED": "Publicación de la huella final"
+      },
+      "noTime": "sin hora",
+      "showing": "Mostrando {{from}}–{{to}} de {{total}} eventos · los votos se muestran sin identidad ni hora"
     }
   },
   "voter": {
@@ -430,5 +535,34 @@
     "ADMIN": "Administrador/a",
     "CENSUS_MANAGER": "Gestor/a de censo",
     "AUDITOR": "Auditor/a"
+  },
+  "results": {
+    "top": "Más votada",
+    "vote": "voto",
+    "votes": "votos",
+    "blank": "Voto en blanco",
+    "resultHash": "Huella del resultado",
+    "finalHash": "Huella final de la urna",
+    "verify": {
+      "checking": "Comprobando el resultado…",
+      "okTitle": "Resultado verificado",
+      "okText": "Tu navegador ha recalculado el recuento con los votos publicados y coincide con el resultado.",
+      "badTitle": "El resultado no coincide",
+      "badText": "Al recalcularlo con los votos publicados no coincide. Avisa a la organización.",
+      "errorTitle": "No se ha podido comprobar",
+      "errorText": "No se han podido obtener los votos publicados. Inténtalo más tarde.",
+      "limits": "Los votos publicados solo llevan un identificador aleatorio y la opción: no se pueden relacionar con nadie ni con ningún recibo."
+    }
+  },
+  "publicResults": {
+    "notFoundTitle": "Resultados no disponibles",
+    "notFoundText": "Este enlace no existe o el resultado todavía no se ha publicado. Los resultados aparecen después del escrutinio.",
+    "errorTitle": "No se han podido cargar los resultados",
+    "eyebrow": "Resultados oficiales",
+    "published": "Publicados el {{date}}",
+    "votes": "votos emitidos",
+    "turnout": "de participación sobre {{census}} personas",
+    "byOption": "Resultado por opción",
+    "checkReceipt": "Comprobar mi recibo"
   }
 }

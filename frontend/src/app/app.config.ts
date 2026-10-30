@@ -15,9 +15,13 @@ import {
 import { APP_CONFIG } from './core/config/app-config';
 import { routes } from './app.routes';
 
-/** The Keycloak token is only sent to management APIs, never to the voter endpoints (RNF-11). */
+/**
+ * The Keycloak token is only sent to management APIs (including results, audit chain and participation), never to the
+ * voter or public endpoints (RNF-11).
+ */
 const managementApiCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
-  urlPattern: /^(\/|https?:\/\/[^/]+\/)api\/v1\/(organizations|censuses|processes)(\/.*)?(\?.*)?$/i,
+  urlPattern:
+    /^(\/|https?:\/\/[^/]+\/)api\/v1\/(organizations|censuses|processes|ballot-box\/processes\/\d+\/(results|audit-events)|voter-access\/processes)(\/.*)?(\?.*)?$/i,
 });
 
 export const appConfig: ApplicationConfig = {
