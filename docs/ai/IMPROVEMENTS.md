@@ -29,3 +29,4 @@ Estados: propuesta / aprobada / descartada / hecha.
 | IMP-22 | 2026-10-29 | Correos en HTML con plantillas editables por la organización (`notification_templates`, RI-11) | Mejor presentación y marca (RF-17) | Medio | P6 | Propuesta |
 | IMP-23 | 2026-10-29 | Endpoint público de verificación de la cadena y de la huella final (RF-12) | Cualquiera puede comprobar la urna | Bajo | P5 | Propuesta |
 | IMP-24 | 2026-10-29 | Pantalla de incidencias de la urna (`REVERT_FAILED`) para el auditor | Visibilidad del riesgo aceptado de ADR-0005 | Bajo | P6 | Propuesta |
+| IMP-25 | 2026-10-30 | Importación de censos asíncrona con progreso (líneas procesadas) y aviso al terminar | G1 completo del prototipo y ficheros cercanos al límite de 50 000 filas sin esperar en la página | Medio | P6 | Propuesta |

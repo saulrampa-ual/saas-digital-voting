@@ -214,4 +214,21 @@ Con la misma infraestructura del apartado 9 y un censo con al menos una persona 
 6. «Programar» → confirmar: estado «Programado», historial «Borrador → Programado · Persona administradora» y
    correos de invitación en Mailpit. «Editar» ya no aparece.
 7. Esperar la apertura (scheduler cada 30 s) y recargar A4: «Abierto», historial «Programado → Abierto · Sistema».
-8. Entrar como auditor: ve la lista y A4 sin botones («Tu rol permite consultar el proceso, no cambiarlo»).
+8. Con el proceso abierto, A4 no muestra «Editar» ni la validación previa, sino «Datos del proceso» y «En este estado no hay
+   acciones manuales».
+9. Entrar como auditor: ve la lista y A4 sin botones («Tu rol permite consultar el proceso, no cambiarlo») ni censo.
+
+## 11. Censos desde la consola (A2, G1)
+
+1. Entrar en `http://localhost:4200/admin` como gestor de censo → «Censos». Crear «Socios 2026» (sin nombre aparece el error).
+2. En el censo, «Seleccionar fichero» con `scripts/samples/voters-sample.csv` → resumen: 4 altas, 1 duplicado y 3 líneas con
+   error (7, 8 y 9). Todavía no se ha guardado nada (0 personas). Solo se ofrece «Descartar líneas con error e importar 4».
+3. Tras importar: 4 personas en la tabla y en la cabecera. Volver a elegir el mismo fichero → 0 altas y 5 duplicados, sin
+   botón de aplicar.
+4. Un fichero `.txt` o de más de 5 MB se rechaza sin subirlo. Con un CSV grande se ve «Validando …» y «Cancelar».
+5. «Alta manual»: sin nombre ni correo, errores en cada campo; teléfono `+34 600` → «solo admite cifras». Un correo ya
+   existente (en mayúsculas) → error del servicio (409).
+6. «Editar» y «Quitar» (con confirmación) actualizan la tabla y el número de personas. La búsqueda filtra por nombre, correo
+   o identificador.
+7. Como administrador: lista y detalle en solo lectura, sin crear ni importar. Con el censo usado por un proceso programado:
+   «Censo congelado» y sin acciones. El auditor no ve «Censos».

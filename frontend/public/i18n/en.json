@@ -36,7 +36,13 @@
       "title": "Censuses",
       "empty": "There are no censuses yet.",
       "voters": "{{count}} people",
-      "frozen": "Frozen"
+      "frozen": "Frozen",
+      "editable": "Editable",
+      "introManager": "Create a census and add the people who can vote, by hand or by importing a CSV.",
+      "introAdmin": "Censuses of your organisation. Only the census manager can change them.",
+      "newName": "Name of the new census",
+      "create": "Create census",
+      "nameRequired": "Enter the name of the census."
     },
     "forbidden": {
       "title": "No permission",
@@ -137,7 +143,6 @@
       "edit": "Edit process",
       "schedule": "Schedule",
       "archive": "Archive process",
-      "archiveHelp": "«Archive» is enabled once the process is Tallied.",
       "readOnly": "Your role can view the process but not change it.",
       "automatic": "Opening and closing are automatic at the set times: they cannot be done early by hand.",
       "checksTitle": "Checks before scheduling",
@@ -186,6 +191,109 @@
         "CLOSED": "Automatic tally in progress",
         "TALLIED": "See results; archive",
         "ARCHIVED": "Read only"
+      },
+      "noActions": "There are no manual actions in this status: the process moves on by itself on the set dates.",
+      "summaryTitle": "Process details",
+      "summary": {
+        "opensAt": "Opens",
+        "closesAt": "Closes",
+        "census": "Census",
+        "censusValue": "{{name}} · {{count}} people",
+        "options": "Ballot options",
+        "blank": "with blank vote",
+        "visibility": "Results",
+        "visibilityValue": {
+          "CENSUS_ONLY": "Census members only",
+          "PUBLIC_LINK": "Public link"
+        }
+      }
+    },
+    "census": {
+      "title": "Census",
+      "backToList": "Censuses",
+      "heading": "Census · {{name}}",
+      "addManual": "Add manually",
+      "frozenHelp": "Frozen census: a scheduled or open process uses it, so it cannot change until that process ends.",
+      "readOnly": "Your role can view the census, not change it.",
+      "peopleTitle": "People in the census",
+      "search": "Search by name, email or ID",
+      "language": "Language",
+      "actions": "Actions",
+      "edit": "Edit",
+      "editPerson": "Edit {{name}}",
+      "removeShort": "Remove",
+      "removePerson": "Remove {{name}} from the census",
+      "noPeople": "The census has no people yet.",
+      "noMatches": "Nobody matches the search.",
+      "showing": "Showing {{from}}–{{to}} of {{total}} people",
+      "previous": "Previous",
+      "next": "Next",
+      "form": {
+        "newTitle": "Add manually",
+        "editTitle": "Edit person",
+        "fullName": "Full name",
+        "email": "Email",
+        "phone": "Phone",
+        "phoneHelp": "Digits only, no spaces or + prefix.",
+        "institutionalId": "Institutional ID",
+        "preferredLanguage": "Language for messages",
+        "add": "Add to census",
+        "save": "Save changes",
+        "cancel": "Cancel",
+        "added": "{{name}} has been added to the census.",
+        "updated": "{{name}}'s details have been saved.",
+        "errors": {
+          "fullName": "Enter the name (up to 60 characters).",
+          "email": "Enter a valid email, for example name@ual.es.",
+          "phone": "The phone number only accepts digits (up to 15).",
+          "institutionalId": "The ID accepts 50 characters at most."
+        }
+      },
+      "remove": {
+        "title": "Remove this person?",
+        "message": "{{name}} will no longer be in the census and will not receive invitations.",
+        "cancel": "Cancel",
+        "ok": "Remove",
+        "done": "{{name}} is no longer in the census."
+      },
+      "import": {
+        "selectTitle": "Select file",
+        "drop": "Drag a CSV file here",
+        "columns": "Columns: full_name, email (required); phone, institutional_id, preferred_language",
+        "select": "Select file",
+        "rules": "UTF-8, separated by «,» or «;», up to 5 MB and 50,000 rows. Nothing is saved until you confirm.",
+        "summaryTitle": "Import summary",
+        "pending": "{{file}} · awaiting confirmation",
+        "idle": "Choose a file: you will see how many people would be added, the duplicates and the lines with errors before anything is saved.",
+        "validating": "Validating {{file}}…",
+        "validatingHelp": "We are checking the file and looking for duplicates. Nothing has been saved yet.",
+        "applying": "Saving {{count}} people…",
+        "applyingHelp": "Do not close this page until it finishes.",
+        "done": "Import complete: {{count}} people added.",
+        "another": "Import another file",
+        "toCreate": "new people",
+        "duplicates": "duplicates (skipped)",
+        "invalid": "lines with errors",
+        "invalidList": "Lines with errors",
+        "duplicateList": "Duplicates that will be skipped",
+        "line": "Line {{line}}",
+        "more": "…and {{count}} more.",
+        "reason": {
+          "EMAIL": "the email is already in the census or repeated in the file",
+          "INSTITUTIONAL_ID": "the institutional ID is already in the census or repeated in the file"
+        },
+        "invalidHelp": "Fix the file and select it again, or discard the lines with errors to import the rest.",
+        "readyHelp": "Check the summary and confirm to save the new people. Duplicates are skipped.",
+        "nothingHelp": "There are no new people to add.",
+        "confirm": "Confirm import",
+        "discard": "Discard lines with errors and import {{count}}",
+        "cancel": "Cancel",
+        "notApplied": "The census changed since the validation; check the new summary.",
+        "errors": {
+          "extension": "The file must have a .csv extension.",
+          "empty": "The file is empty.",
+          "size": "The file is larger than {{max}} MB."
+        }
       }
     }
   },

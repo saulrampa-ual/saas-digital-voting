@@ -59,7 +59,7 @@ cuando hay conflicto (ver «Incoherencias»).
 | --- | --- | --- |
 | RF-01 | E1, E2 | Sí |
 | RF-02 | E3 | Sí |
-| RF-03 | A2, G1 | Sí |
+| RF-03 | A2, G1 | Sí (implementadas, D-36) |
 | RF-04 | D1 | Sí |
 | RF-05a | D1 | Parcial: no consta un botón de SSO de gestión; por confirmar |
 | RF-05b | B1 (alternativa SSO) | Parcial |
@@ -91,6 +91,10 @@ cuando hay conflicto (ver «Incoherencias»).
 | 8 | V3 «Ya has votado el 12 nov a las 10:14» muestra la hora | V3 | D-18: mostrar solo la fecha («Ya has votado el 12 nov») |
 | 6 | El campo de 2FA se llama «Código de verificación» y el recibo «código de recibo» | B1, B4 | Usar «código de acceso» y «código de recibo» (propuesta de la propia revisión) |
 | 7 | La marca aparece como «Elections» y como «VeriVoto» | Títulos de los ficheros | Usar VeriVoto (nombre del proyecto) |
+| 9 | La tabla del censo muestra filas «Duplicado» y «Error» con «Editar» | A2 | D-27/D-36: las líneas con error o duplicadas nunca se guardan; se muestran en el resumen de la importación y la tabla solo lista personas guardadas |
+| 10 | «12.400 de 20.000 líneas · 62 %» y «puedes seguir usando la aplicación» | G1 | La importación es síncrona: indicador indeterminado y cancelar solo durante la validación (D-36); progreso real en IMP-25 |
+| 11 | Teléfonos «+34 600 100 201» | A2 | RI-3 solo admite cifras (`^[0-9]{1,15}$`): el formulario lo indica y la tabla muestra el valor guardado |
+| 12 | El filtro «Todos» de la tabla del censo | A2 | Sin estados que filtrar en las personas guardadas: solo búsqueda por nombre, correo o identificador |
 
 Comprobado sin incoherencias: indicador de 4 pasos (RNF-9), confirmación explícita en pantalla propia
 (RNF-7), ES/EN (RNF-5), anchos de 390 px (cubre los 360 px de RNF-2 con diseño fluido), recuento por

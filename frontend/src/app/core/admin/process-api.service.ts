@@ -1,7 +1,10 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
 import { APP_CONFIG } from '../config/app-config';
+import { callApi } from './api-error';
+
+export { ApiError, type FieldError } from './api-error';
 
 export type Lang = 'es' | 'en';
 export type LocalizedText = Partial<Record<Lang, string>>;
@@ -56,22 +59,6 @@ export interface CensusSummary {
   frozen: boolean;
 }
 
-export interface FieldError {
-  field: string;
-  message: string;
-}
-
-/** Problem details of the API: status, Spanish `detail` and field errors (RNF-8). */
-export class ApiError extends Error {
-  constructor(
-    readonly status: number,
-    readonly detail: string | null,
-    readonly errors: FieldError[],
-  ) {
-    super(detail ?? `API error ${status}`);
-  }
-}
-
 /** Management calls for processes and lifecycle (RF-06, RF-07). The Keycloak token is added by the interceptor. */
 @Injectable({ providedIn: 'root' })
 export class ProcessApiService {
@@ -110,16 +97,7 @@ export class ProcessApiService {
     return this.call(this.http.get<CensusSummary[]>(`${this.base}/censuses`));
   }
 
-  private async call<T>(request: Observable<T>): Promise<T> {
-    try {
-      return await firstValueFrom(request);
-    } catch (error) {
-      if (error instanceof HttpErrorResponse) {
-        const body = (typeof error.error === 'object' && error.error) || {};
-        throw new ApiError(error.status, (body['detail'] as string | undefined) ?? null,
-          (body['errors'] as FieldError[] | undefined) ?? []);
-      }
-      throw error;
-    }
+  private call<T>(request: Observable<T>): Promise<T> {
+    return callApi(request);
   }
 }

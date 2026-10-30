@@ -35,8 +35,6 @@
 .info ion-icon { font-size: 1.25rem; flex: none; margin-top: 2px; }
 .info p { margin: 0; }
 .blank { --background: transparent; margin-top: 8px; }
-.server-error { background: #fce9e7; color: var(--ion-color-danger); border-radius: var(--vv-radius-control); padding: 12px 16px; margin-bottom: 1rem; }
-.server-error p { margin: 0; font-weight: 600; }
 .summary { margin: 1rem 0 0; }
 .actions { display: flex; gap: 12px; align-items: center; margin-top: 1.5rem; border-top: 1px solid var(--vv-border-color); padding-top: 1rem; }
 .actions.center { justify-content: center; border: 0; }
@@ -44,5 +42,4 @@
 .success { text-align: center; padding: 1rem 0; }
 .success ion-icon { font-size: 4rem; color: var(--ion-color-success); }
 .field { display: flex; flex-direction: column; min-width: 0; }
-.field-error { color: var(--ion-color-danger); font-size: 0.875rem; margin: 4px 2px 0; }
 ion-input.invalid, ion-textarea.invalid { --border-color: var(--ion-color-danger); --highlight-color-focused: var(--ion-color-danger); }

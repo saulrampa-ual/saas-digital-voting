@@ -51,6 +51,11 @@ export class ProcessDetailPage {
   protected readonly issues = signal<FieldError[]>([]);
   protected readonly notice = signal<string | null>(null);
 
+  /** The pre-scheduling checklist only makes sense for a DRAFT that this user can schedule. */
+  protected readonly showChecks = computed(() => this.canManage && this.process()?.status === 'DRAFT');
+  /** Edit and schedule exist only in DRAFT, archive only in TALLIED (RF-07); other statuses have no manual action. */
+  protected readonly hasActions = computed(() => ['DRAFT', 'TALLIED'].includes(this.process()?.status ?? ''));
+
   protected readonly currentIndex = computed(() => PROCESS_STATUSES.indexOf(this.process()?.status ?? 'DRAFT'));
 
   /** Client-side view of RF-07 step 2 (opening in the future, census with voters, every text in es and en). */
@@ -75,7 +80,8 @@ export class ProcessDetailPage {
     try {
       const id = Number(this.id());
       const [process, history, censuses] = await Promise.all([
-        this.api.get(id), this.api.history(id), this.api.censuses().catch(() => []),
+        // Censuses are readable by ADMIN and CENSUS_MANAGER only (an auditor never sees voter data, RNF-16).
+        this.api.get(id), this.api.history(id), this.canManage ? this.api.censuses().catch(() => []) : Promise.resolve([]),
       ]);
       this.process.set(process);
       this.history.set(history);
