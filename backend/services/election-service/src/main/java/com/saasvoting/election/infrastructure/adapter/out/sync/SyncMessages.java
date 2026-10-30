@@ -53,7 +53,8 @@ final class SyncMessages {
             boolean blankVoteEnabled,
             int eligibleVoters,
             ResultsVisibility resultsVisibility,
-            UUID resultsPublicId) {
+            UUID resultsPublicId,
+            Map<String, String> title) {
     }
 
     record StatusUpdate(ProcessStatus status) {
@@ -78,7 +79,10 @@ final class SyncMessages {
                         .toList());
     }
 
-    /** The public results identifier is only shared when the organization chose a public link (D-16). */
+    /**
+     * The public results identifier is only shared when the organization chose a public link (D-16). The title goes
+     * for the minutes of the result (RF-16, D-40).
+     */
     static BallotSnapshot ballotSnapshot(VotingProcess process, int eligibleVoters) {
         ProcessData data = process.data();
         Ballot ballot = data.ballot();
@@ -95,7 +99,9 @@ final class SyncMessages {
                 ballot.blankVoteEnabled(),
                 eligibleVoters,
                 data.resultsVisibility(),
-                data.resultsVisibility() == ResultsVisibility.PUBLIC_LINK ? process.resultsPublicId() : null);
+                data.resultsVisibility() == ResultsVisibility.PUBLIC_LINK ? process.resultsPublicId() : null,
+                // Only for the minutes (RF-16): the title says nothing about who votes or what.
+                codes(data.title()));
     }
 
     private static Map<String, String> codes(LocalizedText text) {

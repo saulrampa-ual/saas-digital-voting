@@ -3,6 +3,7 @@ package com.saasvoting.ballotbox.infrastructure.adapter.out.persistence;
 import com.saasvoting.ballotbox.application.port.out.AuditRepository;
 import com.saasvoting.ballotbox.application.port.out.BallotBoxStore;
 import com.saasvoting.ballotbox.application.port.out.BallotRepository;
+import com.saasvoting.ballotbox.application.port.out.MinutesRepository;
 import com.saasvoting.ballotbox.application.port.out.ResultRepository;
 import com.saasvoting.ballotbox.domain.model.AuditEvent;
 import com.saasvoting.ballotbox.domain.model.AuditEventType;
@@ -13,12 +14,15 @@ import com.saasvoting.ballotbox.domain.model.ChainCheck;
 import com.saasvoting.ballotbox.domain.model.ChainHead;
 import com.saasvoting.ballotbox.domain.model.CountedVote;
 import com.saasvoting.ballotbox.domain.model.IncidentKind;
+import com.saasvoting.ballotbox.domain.model.Language;
+import com.saasvoting.ballotbox.domain.model.Minutes;
 import com.saasvoting.ballotbox.domain.model.ProcessStatus;
 import com.saasvoting.ballotbox.domain.model.TallyResult;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.AuditEventJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.BallotSnapshotJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.ChainCheckJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.IncidentJpaEntity;
+import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.MinutesJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.ReceiptJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.ResultJpaEntity;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.entity.VoteJpaEntity;
@@ -33,10 +37,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-/** JPA implementation of the ballot, urn, result and audit ports. */
+/** JPA implementation of the ballot, urn, result, audit and minutes ports. */
 @Repository
 @Transactional
-public class JpaBallotBoxStore implements BallotRepository, BallotBoxStore, ResultRepository, AuditRepository {
+public class JpaBallotBoxStore implements BallotRepository, BallotBoxStore, ResultRepository, AuditRepository,
+        MinutesRepository {
 
     private final EntityManager em;
 
@@ -265,5 +270,20 @@ public class JpaBallotBoxStore implements BallotRepository, BallotBoxStore, Resu
         } else {
             entity.apply(check);
         }
+    }
+
+    // ---- Minutes (RF-16, D-40) ----
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Minutes> findMinutes(long processId, Language language) {
+        return Optional.ofNullable(em.find(MinutesJpaEntity.class, new MinutesJpaEntity.Key(processId, language.code())))
+                .map(MinutesJpaEntity::toDomain);
+    }
+
+    @Override
+    public void saveMinutes(Minutes minutes) {
+        em.persist(MinutesJpaEntity.fromDomain(minutes));
+        em.flush();
     }
 }

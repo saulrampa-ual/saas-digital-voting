@@ -22,7 +22,7 @@ const POLL_MS = 5_000;
 /**
  * F1 (RF-15) and F4 (RF-13): result of a closed process for ADMIN and AUDITOR. While the ballot box is still counting,
  * F4 waits and asks again every 5 s. The result is verified in the browser with the published counted votes (D-37);
- * the CSV is only for ADMIN.
+ * the CSV and the minutes in PDF (RF-16) are only for ADMIN.
  */
 @Component({
   selector: 'app-results',
@@ -51,9 +51,15 @@ const POLL_MS = 5_000;
             </p>
           </div>
           @if (result() && canExport) {
-            <ion-button fill="outline" (click)="exportCsv()" [disabled]="exporting()">
-              <ion-icon slot="start" name="download-outline" aria-hidden="true"></ion-icon>
-              {{ 'admin.results.export' | translate }}</ion-button>
+            <div class="head-actions">
+              <ion-button fill="outline" (click)="exportCsv()" [disabled]="exporting()">
+                <ion-icon slot="start" name="download-outline" aria-hidden="true"></ion-icon>
+                {{ 'admin.results.export' | translate }}</ion-button>
+              <ion-button color="secondary" (click)="downloadMinutes()" [disabled]="generating()">
+                @if (generating()) { <ion-spinner slot="start" name="crescent" aria-hidden="true"></ion-spinner> }
+                @else { <ion-icon slot="start" name="document-text-outline" aria-hidden="true"></ion-icon> }
+                {{ 'admin.results.minutes' | translate }}</ion-button>
+            </div>
           }
         </div>
         @if (exportError()) { <p class="server-error" role="alert">{{ exportError() }}</p> }
@@ -104,6 +110,17 @@ const POLL_MS = 5_000;
                 <p class="help">{{ 'admin.results.censusOnlyText' | translate }}</p>
               }
               <p class="help">{{ 'admin.results.talliedAt' | translate: { date: (r.talliedAt | localDate: language()) } }}</p>
+              @if (canExport) {
+                <h3 class="minutes-title">{{ 'admin.results.minutesTitle' | translate }}</h3>
+                <p class="help">{{ 'admin.results.minutesText' | translate }}</p>
+                @if (minutesError()) { <p class="server-error" role="alert">{{ minutesError() }}</p> }
+                @if (minutesHash()) {
+                  <p class="help" role="status">{{ 'admin.results.minutesHash' | translate }}
+                    <span class="mono hash">{{ minutesHash() }}</span></p>
+                }
+                <ion-button color="secondary" size="small" (click)="downloadMinutes()" [disabled]="generating()">
+                  {{ 'admin.results.minutes' | translate }}</ion-button>
+              }
             </section>
           </div>
         }
@@ -128,6 +145,10 @@ const POLL_MS = 5_000;
     .help { color: var(--ion-color-medium); font-size: 0.875rem; }
     .link { overflow-wrap: anywhere; font-size: 0.8125rem; background: #f2f4f7; padding: 8px; border-radius: 6px; }
     .side ion-button { margin: 0 0 8px; }
+    .head-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .head-actions ion-button { margin: 0; }
+    .minutes-title { margin-top: 20px; }
+    .hash { display: block; overflow-wrap: anywhere; font-size: 0.8125rem; color: #1b2733; }
     .tallying { text-align: center; max-width: 640px; margin: 24px auto; padding: 32px 24px; }
     .tallying ion-spinner { width: 48px; height: 48px; color: var(--ion-color-primary); }
     .tallying h3 { font-size: 1.25rem; margin: 12px 0 4px; }
@@ -153,6 +174,9 @@ export class ResultsPage implements OnDestroy {
   protected readonly exporting = signal(false);
   protected readonly exportError = signal<string | null>(null);
   protected readonly copied = signal(false);
+  protected readonly generating = signal(false);
+  protected readonly minutesError = signal<string | null>(null);
+  protected readonly minutesHash = signal<string | null>(null);
   protected readonly publicLink = computed(() => {
     const id = this.process()?.resultsPublicId;
     return id ? `${location.origin}/resultados/${id}` : null;
@@ -189,6 +213,8 @@ export class ResultsPage implements OnDestroy {
       if (this.selectedId() !== id) return;
       this.process.set(process);
       this.result.set(result);
+      this.minutesHash.set(null);
+      this.minutesError.set(null);
       this.error.set(false);
       if (result) {
         void this.verify(id, result);
@@ -230,6 +256,28 @@ export class ResultsPage implements OnDestroy {
       this.exportError.set(this.translate.instant('admin.results.exportError'));
     } finally {
       this.exporting.set(false);
+    }
+  }
+
+  /** RF-16: the minutes in the language of the interface; the same file on every download (D-40). */
+  protected async downloadMinutes(): Promise<void> {
+    const id = this.selectedId();
+    if (!id) return;
+    this.generating.set(true);
+    this.minutesError.set(null);
+    try {
+      const { file, sha256 } = await this.api.minutes(id, this.language());
+      this.minutesHash.set(sha256);
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${this.translate.instant('admin.results.minutesFile')}-${id}.pdf`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      this.minutesError.set(this.translate.instant('admin.results.minutesError'));
+    } finally {
+      this.generating.set(false);
     }
   }
 

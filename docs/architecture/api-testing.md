@@ -270,3 +270,17 @@ Con todo en marcha y un proceso `PUBLIC_LINK` con votos (sección 9):
    iniciar sesión.
 4. Como la persona auditora → «Auditoría»: «Registro íntegro», eventos con los votos «sin hora» y «Verificar integridad
    ahora». No ve «Participación» ni el botón de CSV.
+5. Como ADMIN, en «Resultados» de un proceso escrutado → «Generar acta (PDF)»: se descarga `acta-proceso-{id}.pdf` y la
+   tarjeta «Acta del proceso» muestra su huella. Una segunda descarga es el mismo fichero (misma huella). La persona
+   auditora no ve el botón.
+
+### Acta de resultados (RF-16, P5.4)
+
+`GET /api/v1/ballot-box/processes/{id}/results/minutes?lang=es` (o `en`) con token de ADMIN:
+
+- **200**: `application/pdf`, `Content-Disposition: attachment; filename=acta-proceso-{id}.pdf` (`minutes-process-{id}.pdf`
+  en inglés) y `X-Content-SHA256` = SHA-256 del cuerpo (`sha256sum` del fichero). Repetir la petición → mismos bytes.
+- **409** antes del escrutinio; **403** con AUDITOR o gestor de censo; **401** sin token; **404** con un proceso de otra
+  organización; **503** si no se ha podido generar.
+- El PDF contiene título, pregunta, fechas, censo, votos, participación, resultado por opción y las huellas `finalHash`
+  y `resultHash` de `…/results`; ningún nombre, correo ni recibo.

@@ -49,7 +49,8 @@ public class InternalController {
             @NotNull Boolean blankVoteEnabled,
             @NotNull @Min(1) Integer eligibleVoters,
             @NotNull ResultsVisibility resultsVisibility,
-            UUID resultsPublicId) {
+            UUID resultsPublicId,
+            Map<String, @NotBlank @Size(max = 150) String> title) {
     }
 
     public record StatusUpdateRequest(@NotNull ProcessStatus status) {
@@ -70,7 +71,7 @@ public class InternalController {
                         .map(option -> new BallotOption(option.id(), option.position(), languages(option.text())))
                         .toList(),
                 request.blankVoteEnabled(), request.eligibleVoters(), request.resultsVisibility(),
-                request.resultsPublicId(), null));
+                request.resultsPublicId(), null, request.title() == null ? Map.of() : languages(request.title())));
     }
 
     @PutMapping("/status")

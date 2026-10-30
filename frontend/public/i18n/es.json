@@ -359,7 +359,13 @@
       "copied": "Enlace copiado",
       "censusOnlyTitle": "Resultado solo para la organización",
       "censusOnlyText": "Este proceso no publica el resultado con un enlace público. Las huellas sí son públicas.",
-      "talliedAt": "Escrutado el {{date}}."
+      "talliedAt": "Escrutado el {{date}}.",
+      "minutes": "Generar acta (PDF)",
+      "minutesTitle": "Acta del proceso",
+      "minutesText": "Incluye proceso, calendario, censo, participación, resultado y huellas. Se genera la primera vez y después se descarga siempre el mismo fichero.",
+      "minutesHash": "Huella del acta (SHA-256):",
+      "minutesFile": "acta-proceso",
+      "minutesError": "No se ha podido generar el acta. Inténtalo de nuevo."
     },
     "audit": {
       "title": "Auditoría de la urna",

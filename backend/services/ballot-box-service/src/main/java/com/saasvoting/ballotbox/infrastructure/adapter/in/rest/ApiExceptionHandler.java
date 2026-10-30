@@ -3,6 +3,7 @@ package com.saasvoting.ballotbox.infrastructure.adapter.in.rest;
 import com.saasvoting.ballotbox.domain.model.BallotNotFoundException;
 import com.saasvoting.ballotbox.domain.model.ChainCheckNotFoundException;
 import com.saasvoting.ballotbox.domain.model.InvalidSelectionException;
+import com.saasvoting.ballotbox.domain.model.MinutesGenerationException;
 import com.saasvoting.ballotbox.domain.model.ResultNotAvailableException;
 import com.saasvoting.ballotbox.domain.model.SnapshotConflictException;
 import com.saasvoting.ballotbox.domain.model.VoteNotRecordedException;
@@ -65,6 +66,11 @@ public class ApiExceptionHandler {
     ProblemDetail noResult(ResultNotAvailableException e) {
         return problem(HttpStatus.CONFLICT,
                 "Todavía no hay resultados: el escrutinio se hace automáticamente cuando se cierra la votación.");
+    }
+
+    @ExceptionHandler(MinutesGenerationException.class)
+    ProblemDetail minutesFailed(MinutesGenerationException e) {
+        return problem(HttpStatus.SERVICE_UNAVAILABLE, "No se ha podido generar el acta. Inténtalo de nuevo.");
     }
 
     @ExceptionHandler(SnapshotConflictException.class)

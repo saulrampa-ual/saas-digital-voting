@@ -11,7 +11,8 @@ import java.util.UUID;
 
 /**
  * Ballot of a process received when it is scheduled (D-21): what the voter sees and what can be chosen.
- * {@code eligibleVoters} is the size of the frozen census, never who they are (RNF-11).
+ * {@code eligibleVoters} is the size of the frozen census, never who they are (RNF-11). {@code title} is only for the
+ * minutes (RF-16) and is not part of the canonical ballot fixed in the OPENED event.
  */
 public record BallotSnapshot(
         long processId,
@@ -26,7 +27,8 @@ public record BallotSnapshot(
         int eligibleVoters,
         ResultsVisibility resultsVisibility,
         UUID resultsPublicId,
-        String finalHash) {
+        String finalHash,
+        Map<Language, String> title) {
 
     public BallotSnapshot {
         Objects.requireNonNull(organizationId, "organizationId must not be null");
@@ -36,6 +38,8 @@ public record BallotSnapshot(
         Objects.requireNonNull(voteType, "voteType must not be null");
         Objects.requireNonNull(resultsVisibility, "resultsVisibility must not be null");
         question = Collections.unmodifiableMap(new EnumMap<>(Objects.requireNonNull(question, "question")));
+        // Optional (RF-16): processes scheduled before it existed have no title; the question is used instead.
+        title = title == null || title.isEmpty() ? Map.of() : Collections.unmodifiableMap(new EnumMap<>(title));
         options = Objects.requireNonNull(options, "options must not be null").stream()
                 .sorted(Comparator.comparingInt(BallotOption::position))
                 .toList();
@@ -73,12 +77,12 @@ public record BallotSnapshot(
 
     public BallotSnapshot withStatus(ProcessStatus newStatus) {
         return new BallotSnapshot(processId, organizationId, newStatus, opensAt, closesAt, voteType, question,
-                options, blankVoteEnabled, eligibleVoters, resultsVisibility, resultsPublicId, finalHash);
+                options, blankVoteEnabled, eligibleVoters, resultsVisibility, resultsPublicId, finalHash, title);
     }
 
     public BallotSnapshot withFinalHash(String hash) {
         return new BallotSnapshot(processId, organizationId, status, opensAt, closesAt, voteType, question, options,
-                blankVoteEnabled, eligibleVoters, resultsVisibility, resultsPublicId, hash);
+                blankVoteEnabled, eligibleVoters, resultsVisibility, resultsPublicId, hash, title);
     }
 
     /**

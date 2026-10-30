@@ -83,6 +83,12 @@ public class BallotSnapshotJpaEntity {
     @Column(name = "question", length = 300, nullable = false)
     private Map<String, String> questions = new HashMap<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "ballot_titles", joinColumns = @JoinColumn(name = "process_id"))
+    @MapKeyColumn(name = "language", length = 2)
+    @Column(name = "title", length = 150, nullable = false)
+    private Map<String, String> titles = new HashMap<>();
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "process_id", nullable = false, updatable = false)
     @OrderBy("position")
@@ -120,6 +126,8 @@ public class BallotSnapshotJpaEntity {
     public void replaceQuestion(BallotSnapshot snapshot) {
         questions.clear();
         snapshot.question().forEach((language, text) -> questions.put(language.code(), text));
+        titles.clear();
+        snapshot.title().forEach((language, text) -> titles.put(language.code(), text));
     }
 
     public void clearOptions() {
@@ -152,8 +160,10 @@ public class BallotSnapshotJpaEntity {
     public BallotSnapshot toDomain() {
         Map<Language, String> question = new EnumMap<>(Language.class);
         questions.forEach((code, text) -> question.put(Language.fromCode(code), text));
+        Map<Language, String> title = new EnumMap<>(Language.class);
+        titles.forEach((code, text) -> title.put(Language.fromCode(code), text));
         List<BallotOption> ballotOptions = options.stream().map(BallotOptionJpaEntity::toDomain).toList();
         return new BallotSnapshot(processId, organizationId, status, opensAt, closesAt, voteType, question,
-                ballotOptions, blankVoteEnabled, eligibleVoters, resultsVisibility, resultsPublicId, finalHash);
+                ballotOptions, blankVoteEnabled, eligibleVoters, resultsVisibility, resultsPublicId, finalHash, title);
     }
 }
