@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,9 +54,11 @@ public class VotingController {
         this.voting = Objects.requireNonNull(voting, "voting must not be null");
     }
 
+    /** IMP-31: only with the voting token in {@code X-Voting-Token} (header, so it never appears in URLs or logs). */
     @GetMapping("/ballot")
-    public BallotResponse ballot(@PathVariable long processId) {
-        BallotSnapshot ballot = voting.ballot(processId);
+    public BallotResponse ballot(@PathVariable long processId,
+            @RequestHeader(name = "X-Voting-Token", required = false) String votingToken) {
+        BallotSnapshot ballot = voting.ballotForVoter(processId, votingToken);
         return new BallotResponse(ballot.processId(), ballot.voteType().name(), codes(ballot.question()),
                 ballot.options().stream()
                         .map(option -> new OptionResponse(option.id(), option.position(), codes(option.text())))

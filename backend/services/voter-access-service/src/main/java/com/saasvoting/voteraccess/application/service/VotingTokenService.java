@@ -78,6 +78,26 @@ public final class VotingTokenService implements VotingTokenUseCase {
     }
 
     @Override
+    public void check(String votingToken, long processId) {
+        unitOfWork.inTransaction(() -> {
+            Instant now = clock.instant();
+            VotingToken token = token(votingToken, processId);
+            if (token.status() != VotingTokenStatus.ISSUED) {
+                throw new VotingTokenUsedException();
+            }
+            if (token.expired(now)) {
+                throw new VotingTokenExpiredException();
+            }
+            ProcessSnapshot process = snapshots.find(processId).orElseThrow(() -> new SnapshotNotFoundException(processId));
+            if (!process.isOpenAt(now)) {
+                throw new ProcessNotOpenException(
+                        process.status() == ProcessStatus.OPEN ? ProcessStatus.CLOSED : process.status());
+            }
+            return null;
+        });
+    }
+
+    @Override
     public void revert(String votingToken, long processId) {
         unitOfWork.inTransaction(() -> {
             VotingToken token = token(votingToken, processId);

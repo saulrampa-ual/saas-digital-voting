@@ -81,9 +81,9 @@ public class BallotBoxConfiguration {
     @Bean
     TallyService tallyService(
             BallotRepository ballots, BallotBoxStore urn, ResultRepository results, ElectionClient election,
-            AuditService audit, UnitOfWork unitOfWork, Clock clock,
+            VoterAccessClient voterAccess, AuditService audit, UnitOfWork unitOfWork, Clock clock,
             @Value("${verivoto.zone:Europe/Madrid}") ZoneId zone) {
-        return new TallyService(ballots, urn, results, election, audit, unitOfWork, clock, zone);
+        return new TallyService(ballots, urn, results, election, voterAccess, audit, unitOfWork, clock, zone);
     }
 
     @Bean

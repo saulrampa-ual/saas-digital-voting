@@ -256,7 +256,7 @@ erDiagram
 | `receipts` | RI-8 | Hash del código de 64 hex. Sin vínculo con el voto ni con la identidad. Estado `VALID`. **Desviación (D-18):** sin hora de emisión. |
 | `audit_events` | RI-9 | Tipos: `OPENED`, `VOTE_RECEIVED`, `CLOSED`, `FINAL_HASH_PUBLISHED`. **Desviación (D-18):** `occurred_at` solo en eventos de proceso; los de voto no llevan hora. `payload_hash` de un voto = SHA-256 del hash del recibo. |
 | `results`, `result_options`, `minutes` | RI-10 | Votos por opción y en blanco, censo, huella de la lista de votos y del resultado (D-37); porcentajes y participación (2 decimales) se calculan al leer. `election_notified`: election ya pasó el proceso a `TALLIED`. Acta PDF (`minutes`, V4): `process_id`, `language`, `generated_at`, `sha256`, `pdf`; se escribe una vez por idioma y no cambia (D-40). |
-| `incidents` (`CHAIN_BROKEN`, `TALLY_FAILED`) | RF-12, RF-13 | Cadena rota o recuento no publicado; solo el día (D-18), una por proceso y tipo. Sustituye a `tally_incidents`. |
+| `incidents` (`REVERT_FAILED`, `CHAIN_BROKEN`, `TALLY_FAILED`, `PARTICIPATION_MISMATCH`) | RF-12, RF-13 | Cadena rota, recuento no publicado o total de la urna distinto del número de personas que votaron (V5, D-43); solo el día (D-18), una por proceso y tipo. Sustituye a `tally_incidents`. |
 | `chain_checks` | RF-12 | Última verificación de la cadena de cada proceso: momento, resultado, eventos comprobados, huella final y hasta 100 problemas `CÓDIGO@secuencia`. Sin usuario (la trazabilidad de acciones es RF-19). D-38. |
 
 **Cadena de auditoría (RF-12, RNF-13).**

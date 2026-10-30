@@ -169,8 +169,7 @@ export class VoterFlowPage implements OnInit {
         return;
       }
       this.votingToken = granted.votingToken;
-      this.ballot.set(await this.api.ballot(this.link()!.processId));
-      this.screen.set('ballot');
+      await this.showBallot();
     } catch (error) {
       if (!(error instanceof VoterApiError)) {
         throw error;
@@ -186,6 +185,28 @@ export class VoterFlowPage implements OnInit {
       }
     } finally {
       this.busy.set(false);
+    }
+  }
+
+  /** B2 with the ballot, which ballot-box gives only for this voting token (IMP-31); its errors are not code errors. */
+  private async showBallot(): Promise<void> {
+    try {
+      this.ballot.set(await this.api.ballot(this.link()!.processId, this.votingToken!));
+      this.screen.set('ballot');
+    } catch (error) {
+      const status = error instanceof VoterApiError ? error.status : -1;
+      if (status === 409) {
+        this.votingToken = null;
+        this.screen.set('alreadyVoted');
+      } else if (status === 404 || status === 410) {
+        this.votingToken = null;
+        this.screen.set('sessionExpired');
+      } else if (status === 422) {
+        this.votingToken = null;
+        this.screen.set('closed');
+      } else {
+        this.screen.set('error');
+      }
     }
   }
 

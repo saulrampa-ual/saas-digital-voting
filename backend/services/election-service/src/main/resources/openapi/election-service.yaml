@@ -365,7 +365,7 @@ components:
   securitySchemes:
     serviceAuth:
       type: oauth2
-      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE).
+      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE). Each route accepts only the Keycloak client that uses it (claim `azp`, IMP-26), here only `ballot-box-service`.
       flows:
         clientCredentials:
           tokenUrl: http://localhost:8080/realms/verivoto/protocol/openid-connect/token

@@ -30,8 +30,17 @@ paths:
       tags: [voter]
       operationId: getBallot
       summary: Ballot of a process, in every available language
-      description: RF-09 step 1, RF-20. All translations are returned so that changing language does not lose the selection.
+      description: |
+        RF-09 step 1, RF-20. All translations are returned so that changing language does not lose the selection.
+        Only with a valid voting token of the process in `X-Voting-Token` (IMP-31): ballot-box checks it in
+        voter-access without consuming it, so nobody can read the ballots of other processes or organizations.
       security: []
+      parameters:
+        - name: X-Voting-Token
+          in: header
+          required: true
+          description: Voting token from voter-access (`/links/{linkToken}/otp/verify`). In a header, never in the URL.
+          schema: { type: string, maxLength: 200 }
       responses:
         '200':
           description: Ballot
@@ -39,6 +48,10 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Ballot' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '503': { $ref: '#/components/responses/Unavailable' }
   /api/v1/ballot-box/processes/{processId}/votes:
     parameters:
       - $ref: '#/components/parameters/ProcessId'
@@ -412,7 +425,7 @@ components:
       description: Keycloak token of a management user (`roles` and `organization_id` claims).
     serviceAuth:
       type: oauth2
-      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE). Internal endpoints are never routed by the gateway.
+      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE). Internal endpoints are never routed by the gateway. Each route accepts only the Keycloak client that uses it (claim `azp`, IMP-26), here only `election-service`.
       flows:
         clientCredentials:
           tokenUrl: http://localhost:8080/realms/verivoto/protocol/openid-connect/token
