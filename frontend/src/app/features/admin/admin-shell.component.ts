@@ -23,6 +23,10 @@ const MENU: readonly MenuEntry[] = [
     path: '/admin/censos', labelKey: 'admin.menu.censuses', icon: 'people-outline', roles: ['ADMIN', 'CENSUS_MANAGER'],
     needsOrganization: true,
   },
+  {
+    path: '/admin/procesos', labelKey: 'admin.menu.processes', icon: 'calendar-outline', roles: ['ADMIN', 'AUDITOR'],
+    needsOrganization: true,
+  },
 ];
 
 /** Management console layout: fixed menu from 992 px, hamburger menu below (prototype guide). */

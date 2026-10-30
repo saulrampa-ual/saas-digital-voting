@@ -14,7 +14,8 @@
       "open": "Abrir menú",
       "home": "Inicio",
       "organizations": "Organizaciones",
-      "censuses": "Censos"
+      "censuses": "Censos",
+      "processes": "Procesos"
     },
     "logout": "Cerrar sesión",
     "home": {
@@ -40,6 +41,152 @@
     "forbidden": {
       "title": "Sin permiso",
       "message": "Tu rol no permite acceder a esta sección."
+    },
+    "processes": {
+      "title": "Procesos",
+      "intro": "Procesos de votación de tu organización.",
+      "create": "Crear proceso",
+      "opens": "Abre el {{date}}",
+      "closes": "cierra el {{date}}",
+      "empty": "Todavía no hay procesos.",
+      "status": {
+        "DRAFT": "Borrador",
+        "SCHEDULED": "Programado",
+        "OPEN": "Abierto",
+        "CLOSED": "Cerrado",
+        "TALLIED": "Escrutado",
+        "ARCHIVED": "Archivado"
+      }
+    },
+    "processForm": {
+      "title": "Crear proceso de votación",
+      "editTitle": "Editar proceso",
+      "intro": "El proceso se guarda como Borrador hasta que lo programes.",
+      "stepsLabel": "Pasos para crear el proceso",
+      "steps": {
+        "basics": "Datos básicos",
+        "calendar": "Calendario",
+        "census": "Censo",
+        "ballot": "Papeleta"
+      },
+      "defaultLanguage": "Idioma por defecto",
+      "bilingualHelp": "Escribe cada texto en español e inglés. Ahora basta el idioma por defecto (*); para programar hacen falta los dos.",
+      "titleLabel": "Título",
+      "descriptionLabel": "Descripción",
+      "visibility": "¿Quién podrá ver el resultado?",
+      "censusOnly": "Solo las personas del censo",
+      "censusOnlyHelp": "Entran con su enlace personal y su código.",
+      "publicLink": "Cualquiera con el enlace público",
+      "publicLinkHelp": "Útil para votaciones abiertas. La huella final siempre es pública.",
+      "opensAt": "Apertura",
+      "closesAt": "Cierre",
+      "calendarHelp": "La apertura y el cierre son automáticos en estas fechas (hora de tu navegador): no se pueden abrir ni cerrar a mano.",
+      "noCensuses": "No hay censos en tu organización. Pide a la persona gestora del censo que cree uno.",
+      "emptyCensus": "vacío: no se podrá programar",
+      "voteType": "Tipo de papeleta",
+      "singleChoice": "Opción única",
+      "singleChoiceHelp": "Se elige una candidatura u opción.",
+      "yesNo": "Sí / No / Abstención",
+      "yesNoHelp": "Para consultas.",
+      "question": "Pregunta",
+      "options": "Opciones de la papeleta",
+      "option": "Opción {{n}}",
+      "removeOption": "Quitar la opción {{n}}",
+      "addOption": "Añadir opción",
+      "yesNoFixed": "Las opciones «Sí», «No» y «Abstención» se crean automáticamente en los dos idiomas.",
+      "blankVote": "Habilitar voto en blanco",
+      "fixErrors": "Revisa los campos marcados.",
+      "back": "Atrás",
+      "next": "Siguiente",
+      "create": "Crear proceso",
+      "saveChanges": "Guardar cambios",
+      "notEditable": "Este proceso ya no está en borrador: no se puede editar.",
+      "backToProcess": "Volver al proceso",
+      "created": {
+        "title": "Proceso creado correctamente",
+        "message": "«{{title}}» se ha guardado como Borrador. Revisa los datos y prográmalo cuando estés listo.",
+        "view": "Ver proceso",
+        "list": "Ir a procesos"
+      },
+      "errors": {
+        "titleRequired": "Escribe el título en el idioma por defecto.",
+        "titleForDescription": "Si escribes la descripción en este idioma, escribe también el título.",
+        "max": "Máximo {{max}} caracteres.",
+        "opensRequired": "Indica la apertura.",
+        "closesRequired": "Indica el cierre.",
+        "closesAfter": "El cierre debe ser posterior a la apertura.",
+        "censusRequired": "Elige el censo que participa.",
+        "questionRequired": "Escribe la pregunta en el idioma por defecto.",
+        "minOptions": "Añade al menos 2 opciones.",
+        "maxOptions": "Máximo 50 opciones.",
+        "optionRequired": "Escribe la opción en el idioma por defecto."
+      }
+    },
+    "process": {
+      "title": "Ciclo de vida",
+      "backToList": "Procesos",
+      "voteType": {
+        "SINGLE_CHOICE": "Opción única",
+        "YES_NO_ABSTAIN": "Sí / No / Abstención"
+      },
+      "statusTitle": "Estado del proceso",
+      "done": "Completado",
+      "current": "Estado actual",
+      "pending": "Pendiente",
+      "actions": "Acciones disponibles",
+      "edit": "Editar proceso",
+      "schedule": "Programar",
+      "archive": "Archivar proceso",
+      "archiveHelp": "«Archivar» se activa cuando el proceso está Escrutado.",
+      "readOnly": "Tu rol permite consultar el proceso, no cambiarlo.",
+      "automatic": "Apertura y cierre son automáticos en las fechas fijadas: no se pueden abrir ni cerrar a mano antes de tiempo.",
+      "checksTitle": "Validación previa a programar",
+      "checksHelp": "Al programar se congela el censo y se envían las invitaciones. Cada cambio de estado queda registrado.",
+      "checkOk": "Correcto",
+      "checkKo": "Falta completar",
+      "checks": {
+        "texts": {
+          "title": "Título y descripción",
+          "ok": "En español e inglés",
+          "ko": "Faltan traducciones (hacen falta los dos idiomas)"
+        },
+        "calendar": {
+          "title": "Calendario coherente",
+          "ok": "La apertura es futura y anterior al cierre",
+          "ko": "La apertura debe ser futura y anterior al cierre"
+        },
+        "census": {
+          "title": "Censo seleccionado",
+          "ok": "{{name}} · {{count}} personas",
+          "ko": "{{name}} no tiene personas"
+        },
+        "ballot": {
+          "title": "Papeleta definida",
+          "ok": "Pregunta y opciones en los dos idiomas",
+          "ko": "Faltan traducciones en la pregunta u opciones"
+        }
+      },
+      "scheduleConfirm": {
+        "title": "¿Programar el proceso?",
+        "message": "Se congelará el censo y se enviarán las invitaciones. Después ya no podrás editarlo.",
+        "cancel": "Cancelar",
+        "ok": "Programar"
+      },
+      "scheduled": "Proceso programado. Se abrirá automáticamente en la fecha fijada.",
+      "archived": "Proceso archivado.",
+      "historyTitle": "Historial de estados",
+      "noHistory": "Todavía no hay cambios de estado.",
+      "bySystem": "Sistema",
+      "byUser": "Persona administradora",
+      "whatTitle": "Qué se puede hacer en cada estado",
+      "what": {
+        "DRAFT": "Editar todo y programar el proceso",
+        "SCHEDULED": "Se abre solo en la fecha; censo y papeleta congelados",
+        "OPEN": "Votación en curso; consultar participación",
+        "CLOSED": "Escrutinio automático en curso",
+        "TALLIED": "Ver resultados; archivar",
+        "ARCHIVED": "Solo consulta"
+      }
     }
   },
   "voter": {

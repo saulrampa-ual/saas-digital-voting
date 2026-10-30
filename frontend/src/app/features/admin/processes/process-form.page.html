@@ -1,0 +1,200 @@
+<app-admin-page [titleKey]="editing() ? 'admin.processForm.editTitle' : 'admin.processForm.title'">
+  @if (loading()) {
+    <ion-spinner role="status" [attr.aria-label]="'common.loading' | translate" />
+  } @else if (notEditable()) {
+    <ion-text color="warning"><p role="alert">{{ 'admin.processForm.notEditable' | translate }}</p></ion-text>
+    <ion-button fill="outline" [routerLink]="['/admin/procesos', id()]">{{ 'admin.processForm.backToProcess' | translate }}</ion-button>
+  } @else {
+    <p class="intro">{{ 'admin.processForm.intro' | translate }}</p>
+    <div class="wizard">
+      <nav class="steps" [attr.aria-label]="'admin.processForm.stepsLabel' | translate">
+        <ol>
+          @for (s of steps; track s; let i = $index) {
+            <li>
+              <button type="button" [class.current]="s === step()" [class.done]="!created() ? i < stepIndex() : true"
+                      [attr.aria-current]="s === step() && !created() ? 'step' : null"
+                      [disabled]="!!created() || (i > stepIndex() && !visited().has(s))" (click)="goTo(s)">
+                <span class="num" aria-hidden="true">
+                  @if (created() || i < stepIndex()) { <ion-icon name="checkmark-outline"></ion-icon> } @else { {{ i + 1 }} }
+                </span>
+                {{ 'admin.processForm.steps.' + s | translate }}
+              </button>
+            </li>
+          }
+        </ol>
+      </nav>
+
+      <section class="step-panel">
+        @if (created(); as done) {
+          <!-- F3 -->
+          <div class="success" role="status">
+            <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+            <h2 tabindex="-1">{{ 'admin.processForm.created.title' | translate }}</h2>
+            <p>{{ 'admin.processForm.created.message' | translate: { title: done.title } }}</p>
+            <div class="actions center">
+              <ion-button color="secondary" [routerLink]="['/admin/procesos', done.id]" [replaceUrl]="true">
+                {{ 'admin.processForm.created.view' | translate }}</ion-button>
+              <ion-button fill="outline" routerLink="/admin/procesos" [replaceUrl]="true">
+                {{ 'admin.processForm.created.list' | translate }}</ion-button>
+            </div>
+          </div>
+        } @else {
+          @if (serverDetail()) {
+            <div class="server-error" role="alert">
+              <p>{{ serverDetail() }}</p>
+              @if (serverErrors().length) {
+                <ul>@for (e of serverErrors(); track e.field + e.message) { <li>{{ e.message }}</li> }</ul>
+              }
+            </div>
+          }
+          @switch (step()) {
+            @case ('basics') {
+              <h2 tabindex="-1">1. {{ 'admin.processForm.steps.basics' | translate }}</h2>
+              <p class="label" id="lang-label">{{ 'admin.processForm.defaultLanguage' | translate }}</p>
+              <ion-segment class="lang" aria-labelledby="lang-label" [value]="model().defaultLanguage"
+                           (ionChange)="update({ defaultLanguage: $any($event.detail.value) })">
+                <ion-segment-button value="es"><ion-label>{{ 'language.es' | translate }}</ion-label></ion-segment-button>
+                <ion-segment-button value="en"><ion-label>{{ 'language.en' | translate }}</ion-label></ion-segment-button>
+              </ion-segment>
+              <p class="help">{{ 'admin.processForm.bilingualHelp' | translate }}</p>
+              <div class="pair">
+                @for (l of langs; track l) {
+                  <div class="field"><ion-input fill="outline" labelPlacement="stacked" [maxlength]="150" [counter]="true"
+                             [label]="('admin.processForm.titleLabel' | translate) + ' (' + l.toUpperCase() + ')' + (l === model().defaultLanguage ? ' *' : '')"
+                             [value]="model().title[l]" (ionInput)="setText('title', l, $event.detail.value ?? '')" [class.invalid]="!!errorFor('title.' + l)"></ion-input>
+                    @if (errorFor('title.' + l); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
+                }
+              </div>
+              <div class="pair">
+                @for (l of langs; track l) {
+                  <div class="field"><ion-textarea fill="outline" labelPlacement="stacked" [autoGrow]="true" [maxlength]="1000" [counter]="true"
+                                [label]="('admin.processForm.descriptionLabel' | translate) + ' (' + l.toUpperCase() + ')'"
+                                [value]="model().description[l]" (ionInput)="setText('description', l, $event.detail.value ?? '')" [class.invalid]="!!errorFor('description.' + l)"></ion-textarea>
+                    @if (errorFor('description.' + l); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
+                }
+              </div>
+              <p class="label" id="visibility-label">{{ 'admin.processForm.visibility' | translate }}</p>
+              <ion-radio-group aria-labelledby="visibility-label" [value]="model().resultsVisibility"
+                               (ionChange)="update({ resultsVisibility: $event.detail.value })">
+                <ion-item lines="none" class="choice"><ion-radio value="CENSUS_ONLY" labelPlacement="end" justify="start">
+                  <strong>{{ 'admin.processForm.censusOnly' | translate }}</strong><br><small>{{ 'admin.processForm.censusOnlyHelp' | translate }}</small>
+                </ion-radio></ion-item>
+                <ion-item lines="none" class="choice"><ion-radio value="PUBLIC_LINK" labelPlacement="end" justify="start">
+                  <strong>{{ 'admin.processForm.publicLink' | translate }}</strong><br><small>{{ 'admin.processForm.publicLinkHelp' | translate }}</small>
+                </ion-radio></ion-item>
+              </ion-radio-group>
+            }
+            @case ('calendar') {
+              <h2 tabindex="-1">2. {{ 'admin.processForm.steps.calendar' | translate }}</h2>
+              <div class="pair">
+                <div class="field"><ion-input type="datetime-local" fill="outline" labelPlacement="stacked"
+                           [label]="('admin.processForm.opensAt' | translate) + ' *'" [value]="model().opensAt"
+                           (ionInput)="update({ opensAt: $event.detail.value ?? '' })" [class.invalid]="!!errorFor('opensAt')"></ion-input>
+                    @if (errorFor('opensAt'); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
+                <div class="field"><ion-input type="datetime-local" fill="outline" labelPlacement="stacked"
+                           [label]="('admin.processForm.closesAt' | translate) + ' *'" [value]="model().closesAt"
+                           (ionInput)="update({ closesAt: $event.detail.value ?? '' })" [class.invalid]="!!errorFor('closesAt')"></ion-input>
+                    @if (errorFor('closesAt'); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
+              </div>
+              <div class="info"><ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+                <p>{{ 'admin.processForm.calendarHelp' | translate }}</p></div>
+            }
+            @case ('census') {
+              <h2 tabindex="-1">3. {{ 'admin.processForm.steps.census' | translate }}</h2>
+              @if (censuses().length === 0) {
+                <ion-text color="warning"><p>{{ 'admin.processForm.noCensuses' | translate }}</p></ion-text>
+              }
+              <ion-radio-group [value]="model().censusId" (ionChange)="update({ censusId: $event.detail.value })"
+                               [attr.aria-label]="'admin.processForm.steps.census' | translate">
+                @for (census of censuses(); track census.id) {
+                  <ion-item lines="none" class="choice" [class.selected]="census.id === model().censusId">
+                    <ion-radio [value]="census.id" labelPlacement="end" justify="start">
+                      <strong>{{ census.name }}</strong><br>
+                      <small>{{ 'admin.censuses.voters' | translate: { count: census.voterCount } }}
+                        @if (census.voterCount === 0) { · {{ 'admin.processForm.emptyCensus' | translate }} }</small>
+                    </ion-radio>
+                  </ion-item>
+                }
+              </ion-radio-group>
+              @if (errorFor('censusId'); as message) {
+                <ion-text color="danger"><p role="alert">{{ message }}</p></ion-text>
+              }
+            }
+            @case ('ballot') {
+              <h2 tabindex="-1">4. {{ 'admin.processForm.steps.ballot' | translate }}</h2>
+              <p class="label" id="type-label">{{ 'admin.processForm.voteType' | translate }}</p>
+              <ion-radio-group class="types" aria-labelledby="type-label" [value]="model().voteType"
+                               (ionChange)="update({ voteType: $event.detail.value })">
+                <ion-item lines="none" class="choice" [class.selected]="model().voteType === 'SINGLE_CHOICE'">
+                  <ion-radio value="SINGLE_CHOICE" labelPlacement="end" justify="start">
+                    <strong>{{ 'admin.processForm.singleChoice' | translate }}</strong><br><small>{{ 'admin.processForm.singleChoiceHelp' | translate }}</small>
+                  </ion-radio></ion-item>
+                <ion-item lines="none" class="choice" [class.selected]="model().voteType === 'YES_NO_ABSTAIN'">
+                  <ion-radio value="YES_NO_ABSTAIN" labelPlacement="end" justify="start">
+                    <strong>{{ 'admin.processForm.yesNo' | translate }}</strong><br><small>{{ 'admin.processForm.yesNoHelp' | translate }}</small>
+                  </ion-radio></ion-item>
+              </ion-radio-group>
+              <div class="pair">
+                @for (l of langs; track l) {
+                  <div class="field"><ion-input fill="outline" labelPlacement="stacked" [maxlength]="300" [counter]="true"
+                             [label]="('admin.processForm.question' | translate) + ' (' + l.toUpperCase() + ')' + (l === model().defaultLanguage ? ' *' : '')"
+                             [value]="model().question[l]" (ionInput)="setText('question', l, $event.detail.value ?? '')" [class.invalid]="!!errorFor('question.' + l)"></ion-input>
+                    @if (errorFor('question.' + l); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
+                }
+              </div>
+              @if (model().voteType === 'SINGLE_CHOICE') {
+                <p class="label">{{ 'admin.processForm.options' | translate }}</p>
+                @for (option of model().options; track $index; let i = $index) {
+                  <div class="option-row">
+                    <span class="pos" aria-hidden="true">{{ i + 1 }}</span>
+                    @for (l of langs; track l) {
+                      <div class="field"><ion-input fill="outline" [maxlength]="200"
+                                 [attr.aria-label]="('admin.processForm.option' | translate: { n: i + 1 }) + ' (' + l.toUpperCase() + ')'"
+                                 [placeholder]="('admin.processForm.option' | translate: { n: i + 1 }) + ' (' + l.toUpperCase() + ')'"
+                                 [value]="option[l]" (ionInput)="setOption(i, l, $event.detail.value ?? '')" [class.invalid]="!!errorFor('options.' + i + '.' + l)"></ion-input>
+                    @if (errorFor('options.' + i + '.' + l); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
+                    }
+                    <ion-button fill="outline" color="danger" [disabled]="model().options.length <= 2"
+                                [attr.aria-label]="'admin.processForm.removeOption' | translate: { n: i + 1 }" (click)="removeOption(i)">
+                      <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                  </div>
+                }
+                @if (errorFor('options'); as message) {
+                  <ion-text color="danger"><p role="alert">{{ message }}</p></ion-text>
+                }
+                <ion-button fill="outline" [disabled]="model().options.length >= 50" (click)="addOption()">
+                  <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>{{ 'admin.processForm.addOption' | translate }}
+                </ion-button>
+              } @else {
+                <div class="info"><ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+                  <p>{{ 'admin.processForm.yesNoFixed' | translate }}</p></div>
+              }
+              <ion-item lines="none" class="blank">
+                <ion-checkbox labelPlacement="end" justify="start" [checked]="model().blankVoteEnabled"
+                              (ionChange)="update({ blankVoteEnabled: $event.detail.checked })">
+                  {{ 'admin.processForm.blankVote' | translate }}
+                </ion-checkbox>
+              </ion-item>
+            }
+          }
+          @if (stepErrors().length && step() !== 'census') {
+            <ion-text color="danger"><p class="summary" role="alert">{{ 'admin.processForm.fixErrors' | translate }}</p></ion-text>
+          }
+          <div class="actions">
+            <ion-button fill="outline" [disabled]="stepIndex() === 0 || saving()" (click)="back()">{{ 'admin.processForm.back' | translate }}</ion-button>
+            <span class="spacer"></span>
+            @if (step() !== 'ballot') {
+              <ion-button color="primary" (click)="next()">{{ 'admin.processForm.next' | translate }}</ion-button>
+            } @else {
+              <ion-button color="secondary" [disabled]="saving()" (click)="save()">
+                @if (saving()) { <ion-spinner name="crescent" aria-hidden="true"></ion-spinner> }
+                {{ (editing() ? 'admin.processForm.saveChanges' : 'admin.processForm.create') | translate }}
+              </ion-button>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  }
+</app-admin-page>

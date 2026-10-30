@@ -76,7 +76,7 @@ cuando hay conflicto (ver «Incoherencias»).
 | RF-17 | — | **No**: falta la vista de notificaciones y entregas fallidas |
 | RF-18 | F2 | Sí |
 | RF-19 | H1 | Sí |
-| RF-20 | Selector ES/EN en la cabecera | Parcial: no consta la edición bilingüe de la papeleta en A3 |
+| RF-20 | Selector ES/EN en la cabecera; A3 | Sí: la edición bilingüe se añade en A3 (P4.6, D-35) |
 | RF-21 | — | **No**: falta la gestión de claves de API |
 
 ## 4. Incoherencias con el TFM, los requisitos o las decisiones

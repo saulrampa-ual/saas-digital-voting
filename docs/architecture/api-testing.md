@@ -200,3 +200,18 @@ Con infraestructura, gateway, election, voter-access, ballot-box y el frontend (
 5. Volver a abrir el enlace y repetir el código → «Ya has votado» con la fecha, sin hora (V3).
 6. Con ballot-box parado, «Confirmar y votar» → «Tu voto NO se ha registrado» (V7); al arrancarlo, «Reintentar»
    registra un solo voto.
+
+## 10. Procesos desde la consola (P4.6, A3/A4)
+
+Con la misma infraestructura del apartado 9 y un censo con al menos una persona (apartado 4):
+
+1. Entrar en `http://localhost:4200/admin` como administrador de la organización → «Procesos» → «Crear proceso».
+2. Paso 1: título en ES y EN. Dejar el título vacío y pulsar «Siguiente» muestra el error debajo del campo.
+3. Paso 2: apertura dentro de 2–3 minutos y cierre posterior; con el cierre antes de la apertura aparece el error.
+4. Paso 3: elegir el censo. Paso 4: tipo «Opción única», pregunta y al menos 2 opciones; «Crear proceso» → F3.
+5. En A4 (borrador): la comprobación previa marca lo que falta (p. ej. traducciones EN). «Editar proceso» abre el
+   mismo formulario con los datos; al completar el EN, todo queda en verde.
+6. «Programar» → confirmar: estado «Programado», historial «Borrador → Programado · Persona administradora» y
+   correos de invitación en Mailpit. «Editar» ya no aparece.
+7. Esperar la apertura (scheduler cada 30 s) y recargar A4: «Abierto», historial «Programado → Abierto · Sistema».
+8. Entrar como auditor: ve la lista y A4 sin botones («Tu rol permite consultar el proceso, no cambiarlo»).

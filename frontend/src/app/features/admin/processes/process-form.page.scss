@@ -1,0 +1,48 @@
+// A3: steps on the left (top on mobile) and the panel of the current step on the right.
+.intro { color: var(--ion-color-medium); margin-top: 0; }
+.wizard { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 900px) { .wizard { grid-template-columns: 240px 1fr; align-items: start; } }
+.steps ol { list-style: none; margin: 0; padding: 12px; background: #fff; border: 1px solid var(--vv-border-color);
+  border-radius: var(--vv-radius-card); display: grid; gap: 4px; }
+@media (max-width: 899px) { .steps ol { grid-template-columns: repeat(4, 1fr); } .steps button { flex-direction: column; font-size: 0.875rem; } }
+.steps button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; border: 0; background: none;
+  font: inherit; color: var(--ion-text-color); padding: 6px; border-radius: var(--vv-radius-control); text-align: left; cursor: pointer; }
+.steps button:disabled { cursor: default; color: var(--ion-color-medium); }
+.steps button.current { font-weight: 700; background: rgba(var(--ion-color-primary-rgb), 0.06); }
+.num { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  border: 2px solid var(--ion-color-primary); color: var(--ion-color-primary); font-weight: 700; flex: none; }
+.done .num { background: var(--ion-color-primary); color: #fff; }
+.current .num { background: var(--ion-color-secondary); border-color: var(--ion-color-secondary); color: #fff; }
+.step-panel { background: #fff; border: 1px solid var(--vv-border-color); border-radius: var(--vv-radius-card); padding: 20px; }
+@media (min-width: 768px) { .step-panel { padding: 24px 28px; } }
+.step-panel h2 { margin-top: 0; font-size: 1.25rem; }
+.label { font-weight: 600; margin: 1.25rem 0 0.5rem; }
+.help { font-size: 0.875rem; color: var(--ion-color-medium); }
+.pair { display: grid; gap: 12px; grid-template-columns: 1fr; margin-bottom: 12px; }
+@media (min-width: 700px) { .pair { grid-template-columns: 1fr 1fr; } }
+.lang { max-width: 320px; }
+.choice { --background: #fff; border: 1px solid var(--vv-border-color); border-radius: var(--vv-radius-card); margin-bottom: 10px; --min-height: 60px; }
+.choice.selected { border: 2px solid var(--ion-color-primary); --background: rgba(var(--ion-color-primary-rgb), 0.05); }
+.choice small { color: var(--ion-color-medium); white-space: normal; }
+.types { display: grid; gap: 10px; }
+@media (min-width: 700px) { .types { grid-template-columns: 1fr 1fr; } .types .choice { margin: 0; } }
+.option-row { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: start; margin-bottom: 8px; }
+.option-row .field:nth-of-type(2) { grid-column: 2; }
+@media (min-width: 700px) { .option-row { grid-template-columns: 28px 1fr 1fr auto; } .option-row .field:nth-of-type(2) { grid-column: auto; } }
+.pos { font-weight: 700; padding-top: 14px; text-align: center; color: var(--ion-color-medium); }
+.info { display: flex; gap: 8px; align-items: flex-start; background: #e8eef6; color: var(--ion-color-primary);
+  border-radius: var(--vv-radius-control); padding: 12px; margin: 12px 0; }
+.info ion-icon { font-size: 1.25rem; flex: none; margin-top: 2px; }
+.info p { margin: 0; }
+.blank { --background: transparent; margin-top: 8px; }
+.server-error { background: #fce9e7; color: var(--ion-color-danger); border-radius: var(--vv-radius-control); padding: 12px 16px; margin-bottom: 1rem; }
+.server-error p { margin: 0; font-weight: 600; }
+.summary { margin: 1rem 0 0; }
+.actions { display: flex; gap: 12px; align-items: center; margin-top: 1.5rem; border-top: 1px solid var(--vv-border-color); padding-top: 1rem; }
+.actions.center { justify-content: center; border: 0; }
+.spacer { flex: 1; }
+.success { text-align: center; padding: 1rem 0; }
+.success ion-icon { font-size: 4rem; color: var(--ion-color-success); }
+.field { display: flex; flex-direction: column; min-width: 0; }
+.field-error { color: var(--ion-color-danger); font-size: 0.875rem; margin: 4px 2px 0; }
+ion-input.invalid, ion-textarea.invalid { --border-color: var(--ion-color-danger); --highlight-color-focused: var(--ion-color-danger); }

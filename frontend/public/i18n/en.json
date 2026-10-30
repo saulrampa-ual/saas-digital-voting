@@ -14,7 +14,8 @@
       "open": "Open menu",
       "home": "Home",
       "organizations": "Organizations",
-      "censuses": "Censuses"
+      "censuses": "Censuses",
+      "processes": "Processes"
     },
     "logout": "Sign out",
     "home": {
@@ -40,6 +41,152 @@
     "forbidden": {
       "title": "No permission",
       "message": "Your role does not give access to this section."
+    },
+    "processes": {
+      "title": "Processes",
+      "intro": "Voting processes of your organization.",
+      "create": "Create process",
+      "opens": "Opens on {{date}}",
+      "closes": "closes on {{date}}",
+      "empty": "There are no processes yet.",
+      "status": {
+        "DRAFT": "Draft",
+        "SCHEDULED": "Scheduled",
+        "OPEN": "Open",
+        "CLOSED": "Closed",
+        "TALLIED": "Tallied",
+        "ARCHIVED": "Archived"
+      }
+    },
+    "processForm": {
+      "title": "Create voting process",
+      "editTitle": "Edit process",
+      "intro": "The process is saved as a Draft until you schedule it.",
+      "stepsLabel": "Steps to create the process",
+      "steps": {
+        "basics": "Basic data",
+        "calendar": "Calendar",
+        "census": "Census",
+        "ballot": "Ballot"
+      },
+      "defaultLanguage": "Default language",
+      "bilingualHelp": "Write every text in Spanish and English. The default language (*) is enough now; both are needed to schedule.",
+      "titleLabel": "Title",
+      "descriptionLabel": "Description",
+      "visibility": "Who will see the result?",
+      "censusOnly": "Only the people in the census",
+      "censusOnlyHelp": "They sign in with their personal link and code.",
+      "publicLink": "Anyone with the public link",
+      "publicLinkHelp": "Useful for open votes. The final hash is always public.",
+      "opensAt": "Opening",
+      "closesAt": "Closing",
+      "calendarHelp": "Opening and closing happen automatically at these times (your browser time): they cannot be done by hand.",
+      "noCensuses": "There are no censuses in your organization. Ask the census manager to create one.",
+      "emptyCensus": "empty: it cannot be scheduled",
+      "voteType": "Ballot type",
+      "singleChoice": "Single choice",
+      "singleChoiceHelp": "One list or option is chosen.",
+      "yesNo": "Yes / No / Abstain",
+      "yesNoHelp": "For consultations.",
+      "question": "Question",
+      "options": "Ballot options",
+      "option": "Option {{n}}",
+      "removeOption": "Remove option {{n}}",
+      "addOption": "Add option",
+      "yesNoFixed": "The options «Yes», «No» and «Abstain» are created automatically in both languages.",
+      "blankVote": "Allow blank vote",
+      "fixErrors": "Check the marked fields.",
+      "back": "Back",
+      "next": "Next",
+      "create": "Create process",
+      "saveChanges": "Save changes",
+      "notEditable": "This process is no longer a draft: it cannot be edited.",
+      "backToProcess": "Back to the process",
+      "created": {
+        "title": "Process created",
+        "message": "«{{title}}» was saved as a Draft. Check it and schedule it when you are ready.",
+        "view": "View process",
+        "list": "Go to processes"
+      },
+      "errors": {
+        "titleRequired": "Write the title in the default language.",
+        "titleForDescription": "If you write the description in this language, write the title too.",
+        "max": "At most {{max}} characters.",
+        "opensRequired": "Set the opening.",
+        "closesRequired": "Set the closing.",
+        "closesAfter": "Closing must be after opening.",
+        "censusRequired": "Choose the participating census.",
+        "questionRequired": "Write the question in the default language.",
+        "minOptions": "Add at least 2 options.",
+        "maxOptions": "At most 50 options.",
+        "optionRequired": "Write the option in the default language."
+      }
+    },
+    "process": {
+      "title": "Lifecycle",
+      "backToList": "Processes",
+      "voteType": {
+        "SINGLE_CHOICE": "Single choice",
+        "YES_NO_ABSTAIN": "Yes / No / Abstain"
+      },
+      "statusTitle": "Process status",
+      "done": "Done",
+      "current": "Current status",
+      "pending": "Pending",
+      "actions": "Available actions",
+      "edit": "Edit process",
+      "schedule": "Schedule",
+      "archive": "Archive process",
+      "archiveHelp": "«Archive» is enabled once the process is Tallied.",
+      "readOnly": "Your role can view the process but not change it.",
+      "automatic": "Opening and closing are automatic at the set times: they cannot be done early by hand.",
+      "checksTitle": "Checks before scheduling",
+      "checksHelp": "Scheduling freezes the census and sends the invitations. Every status change is recorded.",
+      "checkOk": "OK",
+      "checkKo": "To complete",
+      "checks": {
+        "texts": {
+          "title": "Title and description",
+          "ok": "In Spanish and English",
+          "ko": "Translations missing (both languages are needed)"
+        },
+        "calendar": {
+          "title": "Consistent calendar",
+          "ok": "Opening is in the future and before closing",
+          "ko": "Opening must be in the future and before closing"
+        },
+        "census": {
+          "title": "Census selected",
+          "ok": "{{name}} · {{count}} people",
+          "ko": "{{name}} has no people"
+        },
+        "ballot": {
+          "title": "Ballot defined",
+          "ok": "Question and options in both languages",
+          "ko": "Translations missing in the question or options"
+        }
+      },
+      "scheduleConfirm": {
+        "title": "Schedule the process?",
+        "message": "The census will be frozen and the invitations sent. You will not be able to edit it afterwards.",
+        "cancel": "Cancel",
+        "ok": "Schedule"
+      },
+      "scheduled": "Process scheduled. It will open automatically at the set time.",
+      "archived": "Process archived.",
+      "historyTitle": "Status history",
+      "noHistory": "No status changes yet.",
+      "bySystem": "System",
+      "byUser": "Administrator",
+      "whatTitle": "What each status allows",
+      "what": {
+        "DRAFT": "Edit everything and schedule the process",
+        "SCHEDULED": "Opens by itself at the set time; census and ballot frozen",
+        "OPEN": "Voting in progress; see participation",
+        "CLOSED": "Automatic tally in progress",
+        "TALLIED": "See results; archive",
+        "ARCHIVED": "Read only"
+      }
     }
   },
   "voter": {
