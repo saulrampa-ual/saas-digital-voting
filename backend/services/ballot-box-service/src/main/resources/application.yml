@@ -29,10 +29,18 @@ management:
 verivoto:
   # Day of the incidents (D-18)
   zone: Europe/Madrid
-  voter-access:
-    # D-20, D-22: token consumption in voter-access with the ballot-box-service client (role SERVICE)
-    url: ${BALLOT_BOX_VOTER_ACCESS_URL:http://localhost:8083}
-    keycloak-base-url: ${BALLOT_BOX_KEYCLOAK_BASE_URL:http://localhost:8080}
+  # D-22: client-credentials token of ballot-box-service (role SERVICE) for the calls below
+  keycloak:
+    base-url: ${BALLOT_BOX_KEYCLOAK_BASE_URL:http://localhost:8080}
     realm: verivoto
     client-id: ballot-box-service
     client-secret: ${BALLOT_BOX_SERVICE_CLIENT_SECRET:}
+  voter-access:
+    # D-20: consumption of the voting token
+    url: ${BALLOT_BOX_VOTER_ACCESS_URL:http://localhost:8083}
+  election:
+    # RF-13, D-37: the tally is done (the process becomes TALLIED)
+    url: ${BALLOT_BOX_ELECTION_URL:http://localhost:8082}
+  tally:
+    # Automatic tally of CLOSED processes and retries of the notice to election-service
+    interval: PT10S

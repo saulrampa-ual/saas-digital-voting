@@ -14,6 +14,8 @@ tags:
     description: RF-03
   - name: processes
     description: RF-06, RF-07, RF-20
+  - name: internal
+    description: Service-to-service endpoints (not exposed by the gateway)
 security:
   - bearerAuth: []
 paths:
@@ -340,8 +342,34 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
+  /internal/v1/processes/{processId}/tallied:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    post:
+      tags: [internal]
+      operationId: markTallied
+      summary: The ballot box finished the tally
+      description: |
+        Called by ballot-box-service when the result of a CLOSED process is stored (RF-13, D-37). The process
+        becomes TALLIED (history entry by the system) and the change is sent to the other services.
+        Idempotent: 204 again if it is already TALLIED or ARCHIVED; 409 in any other status.
+      security:
+        - serviceAuth: []
+      responses:
+        '204':
+          description: Process tallied
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
 components:
   securitySchemes:
+    serviceAuth:
+      type: oauth2
+      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE).
+      flows:
+        clientCredentials:
+          tokenUrl: http://localhost:8080/realms/verivoto/protocol/openid-connect/token
+          scopes: {}
     bearerAuth:
       type: http
       scheme: bearer
@@ -543,6 +571,10 @@ components:
                           id: { type: integer, format: int64 }
                           position: { type: integer }
                           text: { $ref: '#/components/schemas/LocalizedText' }
+            resultsPublicId:
+              type: [string, 'null']
+              format: uuid
+              description: Random identifier of the public results link; only with `PUBLIC_LINK` (D-16), otherwise null
     StatusChange:
       type: object
       required: [from, to, changedAt, changedBy]

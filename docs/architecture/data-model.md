@@ -232,10 +232,12 @@ erDiagram
     results {
         bigint process_id PK
         timestamptz tallied_at
+        int eligible_voters
         int total_votes
         int blank_votes
-        numeric participation_pct
+        char64 votes_hash
         char64 result_hash
+        boolean election_notified
     }
 ```
 
@@ -245,8 +247,8 @@ erDiagram
 | `votes` | RI-6 | `id` UUID aleatorio, sin identidad, sin token, sin recibo. Estado `COUNTABLE` (`SUBSTITUTED` reservado para RF-11). **Desviación (D-18):** sin fecha y hora de recepción ni canal. |
 | `receipts` | RI-8 | Hash del código de 64 hex. Sin vínculo con el voto ni con la identidad. Estado `VALID`. **Desviación (D-18):** sin hora de emisión. |
 | `audit_events` | RI-9 | Tipos: `OPENED`, `VOTE_RECEIVED`, `CLOSED`, `FINAL_HASH_PUBLISHED`. **Desviación (D-18):** `occurred_at` solo en eventos de proceso; los de voto no llevan hora. `payload_hash` de un voto = SHA-256 del hash del recibo. |
-| `results`, `result_options`, `minutes` | RI-10 | Votos y porcentaje (2 decimales) por opción, en blanco, participación, huella del resultado y acta PDF (`bytea`). |
-| `tally_incidents` | RF-12, RF-13 | Cadena rota o recuento fallido. |
+| `results`, `result_options`, `minutes` | RI-10 | Votos por opción y en blanco, censo, huella de la lista de votos y del resultado (D-37); porcentajes y participación (2 decimales) se calculan al leer. `election_notified`: election ya pasó el proceso a `TALLIED`. Acta PDF (`minutes`) en P5. |
+| `incidents` (`CHAIN_BROKEN`, `TALLY_FAILED`) | RF-12, RF-13 | Cadena rota o recuento no publicado; solo el día (D-18). Sustituye a `tally_incidents`. |
 
 **Cadena de auditoría (RF-12, RNF-13).**
 

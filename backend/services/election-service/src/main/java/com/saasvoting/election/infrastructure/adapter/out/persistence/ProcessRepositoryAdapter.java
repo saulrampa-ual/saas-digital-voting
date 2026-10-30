@@ -51,6 +51,12 @@ public class ProcessRepositoryAdapter implements ProcessRepository {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<VotingProcess> findById(long processId) {
+        return processes.findById(processId).map(ProcessJpaEntity::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<VotingProcess> findByOrganization(String organizationId, Optional<ProcessStatus> status) {
         List<ProcessJpaEntity> found = status
                 .map(value -> processes.findAllInOrganizationWithStatus(organizationId, value))

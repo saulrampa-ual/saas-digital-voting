@@ -9,7 +9,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-/** Resource server: Keycloak JWT with the {@code roles} claim. Authorization rules live in the use cases. */
+/**
+ * Resource server: Keycloak JWT with the {@code roles} claim. Authorization rules live in the use cases; the internal
+ * endpoints only accept the client-credentials token of another service (role SERVICE, D-22).
+ */
 @Configuration
 public class SecurityConfiguration {
 
@@ -23,6 +26,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/health", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**")
                         .permitAll()
+                        .requestMatchers("/internal/**").hasRole("SERVICE")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(resourceServer -> resourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))

@@ -17,10 +17,10 @@ Pantallas: códigos de `docs/ai/PROTOTYPES.md`.
 | RF-09 | Emitir voto | Sí | ballot-box-service | `GET /api/v1/ballot-box/processes/{id}/ballot`, `POST …/votes`; interno `POST /internal/v1/voting-tokens/consume` y `…/revert` | B2, B3, C1, V3, V7 | Hecho (P4.4 backend, D-32; P4.5 pantallas, D-33) |
 | RF-10 | Verificar recibo | Sí | ballot-box-service | `GET /api/v1/ballot-box/processes/{id}/receipts/{receiptCode}` | B4, B5 | Hecho (P4.4 backend; P4.5 pantallas B4 y B5 `/recibo/:processId`) |
 | RF-11 | Sustituir voto | **No** (D-03) | — | — | V1, V3, B4 (elementos de revoto) | Fuera del MVP |
-| RF-12 | Consultar registro de urna | Sí | ballot-box-service | TBD | H1 | Parcial (P4.4): cadena de eventos y huella final al cerrar; publicación y verificación en P5 |
-| RF-13 | Escrutar y verificar resultado | Sí | ballot-box-service | TBD | F4, V8 | Pendiente |
+| RF-12 | Consultar registro de urna | Sí | ballot-box-service | `GET /api/v1/ballot-box/processes/{id}/fingerprints` (público); consulta y verificación de la cadena en P5.2 | H1 | Parcial: cadena de eventos y huella final al cerrar (P4.4); huella final pública (P5.1, D-37); consulta y verificación de la cadena en P5.2 |
+| RF-13 | Escrutar y verificar resultado | Sí | ballot-box-service + election-service | Escrutinio automático; `GET …/processes/{id}/results/counted-votes`, `GET …/public/results/{publicId}/counted-votes`; interno `POST /internal/v1/processes/{id}/tallied` (election) | F4, V8 | Backend hecho (P5.1, D-37): escrutinio, huella del resultado, verificación independiente; pantallas en P5 |
 | RF-14 | Consultar participación | Sí | voter-access-service | TBD | A1, A5 | Pendiente |
-| RF-15 | Consultar y exportar resultados | Sí | ballot-box-service | TBD | F1, V8 | Pendiente |
+| RF-15 | Consultar y exportar resultados | Sí | ballot-box-service | `GET /api/v1/ballot-box/processes/{id}/results`, `…/results/export` (CSV), `GET …/public/results/{publicId}` | F1, V8 | Backend hecho (P5.1, D-37); pantallas F1/V8 en P5; votante con `CENSUS_ONLY` (enlace + OTP) en P5 |
 | RF-16 | Generar acta | Sí | ballot-box-service | TBD | F1 | Pendiente |
 | RF-17 | Gestionar notificaciones | Sí | voter-access-service | Invitación por correo con el enlace personal (P4.3); recordatorios, cierre y vista de entregas en P6 | **Sin prototipo** | Parcial (invitación) |
 | RF-18 | Atender derechos sobre datos personales | Sí | identity-service | TBD | F2 | Pendiente |

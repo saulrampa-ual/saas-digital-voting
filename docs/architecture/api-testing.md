@@ -187,6 +187,19 @@ cd backend
    hora) y `CLOSED`; `ballot_snapshots.final_hash` es el `event_hash` de `CLOSED`. `votes` y `receipts` no tienen
    ninguna columna de tiempo ni de identidad.
 
+### Escrutinio y resultados (RF-13, RF-15, P5.1)
+
+6. Al cerrarse el proceso, en unos 10 s el log de ballot-box dice `Tally: 1 process(es) tallied, 1 acknowledged` y el
+   proceso aparece `TALLIED` en election (historial «Cerrado → Escrutado · Sistema»). Antes, `…/results` → **409**.
+7. Como `ana@ual.test` (ADMIN) o la persona auditora: `GET /api/v1/ballot-box/processes/{id}/results` → votos y
+   porcentajes por opción, en blanco, participación, `finalHash` y `resultHash`. Gestor de censo → **403**.
+8. `GET …/results/export` (ADMIN) → CSV con `;` y coma decimal; `?lang=en` en inglés.
+9. `GET …/results/counted-votes` → votos con identificador aleatorio y opción. Recalcular: SHA-256 de las líneas
+   `voteId:optionId` (o `voteId:blank`) unidas por `\n` = `votesHash`; SHA-256 de
+   `result|id|finalHash|censo|votos|en blanco|opción:votos|…|votesHash` = `resultHash`.
+10. `GET …/fingerprints` sin token → huellas. Con `PUBLIC_LINK`, el proceso trae `resultsPublicId` y
+    `GET /api/v1/ballot-box/public/results/{resultsPublicId}` devuelve el resultado sin token.
+
 ## 9. Flujo completo del votante en la PWA (P4.5)
 
 Con infraestructura, gateway, election, voter-access, ballot-box y el frontend (`cd frontend; npm start`):

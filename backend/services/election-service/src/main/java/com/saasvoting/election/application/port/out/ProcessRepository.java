@@ -16,6 +16,9 @@ public interface ProcessRepository {
 
     Optional<VotingProcess> findById(String organizationId, long processId);
 
+    /** Any organization: only for calls of other services, which carry no organization (D-22). */
+    Optional<VotingProcess> findById(long processId);
+
     List<VotingProcess> findByOrganization(String organizationId, Optional<ProcessStatus> status);
 
     List<StatusChange> statusChanges(long processId);
