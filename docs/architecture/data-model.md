@@ -144,6 +144,7 @@ erDiagram
     roll_entries ||--o{ voting_tokens : "emite"
     roll_entries ||--o{ notifications : "recibe"
     process_snapshots ||--o{ results_tokens : "acceso al resultado"
+    process_snapshots ||--o{ reminders : "recordatorios"
     process_snapshots {
         bigint process_id PK
         varchar20 organization_id
@@ -185,6 +186,13 @@ erDiagram
         bigint process_id FK
         timestamptz expires_at
     }
+    reminders {
+        bigint id PK
+        bigint process_id FK
+        timestamptz send_at
+        varchar20 status
+        int recipients "cuántas personas, nunca quiénes"
+    }
 ```
 
 | Tabla | RI | Notas |
@@ -195,7 +203,9 @@ erDiagram
 | `participation` | RI-7 | **Desviación (D-18):** sin hora del voto, solo `voted_on` (día). La pantalla «Ya has votado» muestra la fecha sin hora. Canal implícito: en línea. |
 | `voting_tokens` | — | Token de voto de un solo uso (hash): `ISSUED` → `CONSUMED` (o `REVERTED`, que admite reintento); `REVOKED` si se emite otro. Caducidad 15 min (D-31). |
 | `results_tokens` (V2) | RF-15 | Acceso al resultado tras el escrutinio (D-41): hash del token, proceso y caducidad (30 min). **Sin `roll_entry_id`:** no dice qué persona del censo lo pidió. Reutilizable mientras vale; ballot-box no guarda nada de él. |
-| `notifications`, `notification_templates` | RI-11 | Tipo `INVITATION`, `REMINDER`, `CLOSING`; canal `EMAIL`; estado `PENDING`, `DELIVERED`, `FAILED`; hasta 9 intentos con espera creciente (`next_attempt_at`). Nunca incluyen la opción votada. En P4.3 solo invitaciones con texto fijo; `notification_templates` llega con RF-17 (P6). |
+| `notifications` | RI-11 | Tipo `INVITATION`, `REMINDER`, `CLOSING`; canal `EMAIL`; estado `PENDING`, `DELIVERED`, `FAILED` o `CANCELLED` (V3: no necesario, la persona ya había votado o la votación terminó); hasta 9 intentos con espera creciente (`next_attempt_at`). Nunca incluyen la opción votada. **Desviación (D-45):** sin `notification_templates`; textos fijos en español e inglés (plantillas editables en IMP-22). |
+| `reminders` (V3) | RF-17 | Recordatorios del ADMIN: `SCHEDULED` → `SENT` (con `recipients`, solo el número) o `CANCELLED`; máximo 5 activos por proceso (D-45). |
+| `admin_action_outbox` (V3) | RF-19 | Acciones administrativas pendientes de entregar a identity (como en election y la urna, D-44). |
 
 ## 5. ballot-box-service · `ballot_box_db` (pg-ballot)
 

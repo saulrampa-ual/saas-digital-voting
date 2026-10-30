@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * RF-19 (D-44): election-service and ballot-box-service deliver here, from their outbox, the administrative actions
+ * RF-19 (D-44): election-service, ballot-box-service and voter-access-service deliver here, from their outbox, the administrative actions
  * done on them. Only those two clients (IMP-26, {@code SecurityConfiguration}); idempotent by {@code eventId}.
  */
 @RestController
@@ -38,7 +38,7 @@ public class InternalAdminActionController {
             @Size(max = 200) String objectLabel,
             @Size(max = 200) String detail,
             Long processId,
-            @NotBlank @Pattern(regexp = "^(ELECTION|BALLOT_BOX)$") String source) {
+            @NotBlank @Pattern(regexp = "^(ELECTION|BALLOT_BOX|VOTER_ACCESS)$") String source) {
     }
 
     private final RecordAdminActionUseCase actions;

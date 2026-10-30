@@ -327,6 +327,52 @@
       ]
     },
     {
+      "clientId": "voter-access-service",
+      "name": "voter-access-service",
+      "description": "Delivers administrative actions to identity-service (RF-19)",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${VOTER_ACCESS_SERVICE_CLIENT_SECRET}",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocol": "openid-connect",
+      "protocolMappers": [
+        {
+          "name": "realm roles as roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true"
+          }
+        },
+        {
+          "name": "organization_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true",
+            "user.attribute": "organization_id",
+            "claim.name": "organization_id",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    },
+    {
       "clientId": "verivoto-dev-swagger",
       "name": "Swagger UI (development only)",
       "description": "DEVELOPMENT ONLY. Lets Swagger UI of each service obtain a token with Authorization Code + PKCE. Remove in any non-local environment.",
@@ -435,6 +481,14 @@
       "username": "service-account-ballot-box-service",
       "enabled": true,
       "serviceAccountClientId": "ballot-box-service",
+      "realmRoles": [
+        "SERVICE"
+      ]
+    },
+    {
+      "username": "service-account-voter-access-service",
+      "enabled": true,
+      "serviceAccountClientId": "voter-access-service",
       "realmRoles": [
         "SERVICE"
       ]

@@ -319,3 +319,21 @@ Con un proceso escrutado (`TALLIED`, también `ARCHIVED`) y el enlace personal d
 3. Las acciones de election y de la urna tardan unos segundos (se entregan desde su *outbox*). Con identity parado, la
    acción se hace igual y aparece cuando identity vuelve.
 4. `UPDATE` o `DELETE` sobre `identity_db.admin_actions` → error de la base de datos (solo añadir).
+
+### Recordatorios y correos a las personas votantes (RF-17, P6.2, D-45)
+
+Requiere `VOTER_ACCESS_SERVICE_CLIENT_SECRET` en `infra/.env` y el cliente `voter-access-service` en Keycloak (reimportar
+el realm, ver `keycloak-realm.md`); sin él todo funciona, pero sus acciones esperan en la *outbox* y no salen en la trazabilidad.
+
+1. Con un proceso abierto y alguien que ya ha votado: «Participación» → «Enviar recordatorio ahora» (o
+   `POST /api/v1/voter-access/processes/{id}/reminders` sin cuerpo) → **201** `SCHEDULED`; a los pocos segundos pasa a
+   `SENT` con el número de destinatarios. En Mailpit, el recordatorio solo llega a quien no ha votado, con un enlace nuevo;
+   el de la invitación da **404**.
+2. `{"sendAt": "<ISO 8601>"}` lo programa. Antes de abrir o tras cerrar → **409** `NOT_OPEN`; en el pasado o tras el
+   cierre → **409** `OUT_OF_PERIOD`; el sexto → **409** `TOO_MANY`; `DELETE …/reminders/{rid}` lo cancela (ya enviado o
+   cancelado → **409** `ALREADY_SENT`).
+3. `GET …/notifications` → recuentos por tipo y estado, invitaciones y avisos de cierre fallidos con la persona y el
+   motivo, y los recordatorios. Los recordatorios fallidos solo se cuentan. `POST …/notifications/retry` → `{"retried": n}`.
+4. Al cerrarse la votación, todo el censo recibe «Votación cerrada» (sin enlace) y los recordatorios pendientes se cancelan.
+5. AUDITOR o gestor de censo → **403**; ADMIN de otra organización → **404**. En «Trazabilidad» aparecen
+   «Recordatorio programado», «Recordatorio cancelado» y «Reintento de correos fallidos».

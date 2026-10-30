@@ -11,6 +11,7 @@ import com.saasvoting.voteraccess.domain.model.AccessCredential;
 import com.saasvoting.voteraccess.domain.model.AccessPolicy;
 import com.saasvoting.voteraccess.domain.model.Notification;
 import com.saasvoting.voteraccess.domain.model.NotificationStatus;
+import com.saasvoting.voteraccess.domain.model.NotificationType;
 import com.saasvoting.voteraccess.domain.model.ProcessSnapshot;
 import com.saasvoting.voteraccess.domain.model.ProcessStatus;
 import com.saasvoting.voteraccess.domain.model.RollEntry;
@@ -20,8 +21,10 @@ import java.time.Instant;
 import java.util.Objects;
 
 /**
- * Sends the invitations with the personal link. The link token exists only in memory and in the email: a new one is
- * generated on every attempt and only its hash is stored (RI-12), so a retried invitation always carries a valid link.
+ * Sends the emails to voters (RF-17): invitations and reminders with the personal link, and the closing notice. The
+ * link token exists only in memory and in the email: a new one is generated on every attempt and only its hash is
+ * stored (RI-12), so a retried email always carries a valid link (and the previous link stops working). A reminder for
+ * someone who has voted in the meantime, or once voting is over, is not sent and is not a failure either (D-45).
  */
 public final class InvitationService implements SendInvitationsUseCase {
 
@@ -62,8 +65,6 @@ public final class InvitationService implements SendInvitationsUseCase {
                 Notification result = unitOfWork.inTransaction(() -> send(invitation));
                 if (result.status() == NotificationStatus.DELIVERED) {
                     delivered++;
-                } else {
-                    failed++;
                 }
             } catch (RuntimeException e) {
                 Notification next = invitation.failedAttempt(e.getMessage(), clock.instant());
@@ -81,22 +82,36 @@ public final class InvitationService implements SendInvitationsUseCase {
         return new InvitationRun(delivered, retried, failed);
     }
 
-    private Notification send(Notification invitation) {
+    private Notification send(Notification notification) {
         Instant now = clock.instant();
-        RollEntry entry = roll.findEntry(invitation.rollEntryId())
+        RollEntry entry = roll.findEntry(notification.rollEntryId())
                 .orElseThrow(() -> new IllegalStateException("Roll entry missing"));
         ProcessSnapshot process = snapshots.find(entry.processId())
                 .orElseThrow(() -> new IllegalStateException("Process snapshot missing"));
-        if (process.status() != ProcessStatus.SCHEDULED && process.status() != ProcessStatus.OPEN) {
-            Notification cancelled = invitation.cancelled("Proceso " + process.status() + ": invitación no enviada");
+        String notSent = switch (notification.type()) {
+            case INVITATION -> process.status() == ProcessStatus.SCHEDULED || process.status() == ProcessStatus.OPEN
+                    ? null : "Proceso " + process.status() + ": invitación no enviada";
+            case REMINDER -> !process.isOpenAt(now) ? "Votación cerrada: recordatorio no enviado"
+                    : roll.findParticipation(entry.id()).hasVoted() ? "Ya ha votado: recordatorio no enviado" : null;
+            case CLOSING -> null;
+        };
+        if (notSent != null) {
+            Notification cancelled = notification.notNeeded(notSent);
             notifications.save(cancelled);
             return cancelled;
         }
-        String linkToken = secrets.newLinkToken();
-        AccessCredential credential = roll.lockCredential(entry.id());
-        roll.save(credential.withLink(secrets.hash(linkToken), process.closesAt().plus(policy.linkValidityAfterClose())));
-        mailer.send(messages.invitation(entry, process, linkToken));
-        Notification delivered = invitation.delivered(now);
+        if (notification.type() == NotificationType.CLOSING) {
+            mailer.send(messages.closing(entry, process));
+        } else {
+            String linkToken = secrets.newLinkToken();
+            AccessCredential credential = roll.lockCredential(entry.id());
+            roll.save(credential.withLink(secrets.hash(linkToken),
+                    process.closesAt().plus(policy.linkValidityAfterClose())));
+            mailer.send(notification.type() == NotificationType.REMINDER
+                    ? messages.reminder(entry, process, linkToken)
+                    : messages.invitation(entry, process, linkToken));
+        }
+        Notification delivered = notification.delivered(now);
         notifications.save(delivered);
         return delivered;
     }

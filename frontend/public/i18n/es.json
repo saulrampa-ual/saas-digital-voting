@@ -335,6 +335,57 @@
       "lockText": "Aquí solo ves cuántas personas han votado, nunca qué han votado. La participación se cuenta por día, sin horas, para proteger el secreto del voto.",
       "seeResults": "Ver los resultados"
     },
+    "notifications": {
+      "remindersTitle": "Recordatorios a quien no ha votado",
+      "remindersHelp": "Se envían solo a las personas del censo que todavía no han votado, con un enlace personal nuevo. Verás a cuántas personas les llegó, nunca quiénes son.",
+      "sendNow": "Enviar recordatorio ahora",
+      "confirmNow": "¿Enviar ahora un recordatorio a las {{count}} personas que no han votado?",
+      "confirmSend": "Sí, enviar ahora",
+      "keep": "No, volver",
+      "scheduleAt": "Programar para",
+      "schedule": "Programar recordatorio",
+      "limit": "Puedes tener hasta {{max}} recordatorios por proceso (llevas {{used}}).",
+      "nobodyLeft": "Ya han votado todas las personas del censo.",
+      "onlyOpen": "Los recordatorios solo se pueden enviar mientras la votación está abierta.",
+      "outOfPeriod": "Elige una fecha y hora a partir de ahora y antes del cierre de la votación.",
+      "sentNow": "Recordatorio en marcha: se enviará en unos segundos.",
+      "scheduled": "Recordatorio programado.",
+      "cancelled": "Recordatorio cancelado.",
+      "cancel": "Cancelar",
+      "cancelLabel": "Cancelar el recordatorio del {{date}}",
+      "people": "{{count}} personas",
+      "reminderStatus": {
+        "SCHEDULED": "Programado",
+        "SENT": "Enviado",
+        "CANCELLED": "Cancelado"
+      },
+      "emailsTitle": "Correos a las personas votantes",
+      "type": {
+        "INVITATION": "Invitaciones",
+        "REMINDER": "Recordatorios",
+        "CLOSING": "Aviso de cierre"
+      },
+      "col": {
+        "when": "Fecha y hora",
+        "status": "Estado",
+        "recipients": "Destinatarios",
+        "actions": "Acciones",
+        "type": "Tipo",
+        "delivered": "Entregados",
+        "pending": "Pendientes",
+        "failed": "Fallidos",
+        "notNeeded": "No necesarios",
+        "person": "Persona",
+        "attempts": "Intentos",
+        "reason": "Motivo"
+      },
+      "notNeededHelp": "«No necesarios»: recordatorios para quien ya había votado y correos que dejaron de tener sentido al cerrarse la votación.",
+      "failedTitle": "Correos que no se han podido entregar",
+      "failedReminders": "Además, {{count}} recordatorios no se han podido entregar. Solo se cuentan: decir a quién iban revelaría quién no ha votado.",
+      "retry": "Reintentar envíos fallidos ({{count}})",
+      "retried": "Se volverán a intentar {{count}} correos.",
+      "loadError": "No se han podido cargar los correos del proceso. Inténtalo de nuevo."
+    },
     "results": {
       "title": "Resultados",
       "empty": "Todavía no hay procesos cerrados.",
@@ -447,7 +498,10 @@
         "PROCESS_ARCHIVED": "Archivo de proceso",
         "CHAIN_VERIFIED": "Verificación del registro de la urna",
         "RESULTS_EXPORTED": "Exportación de resultados (CSV)",
-        "MINUTES_DOWNLOADED": "Descarga del acta (PDF)"
+        "MINUTES_DOWNLOADED": "Descarga del acta (PDF)",
+        "REMINDER_SCHEDULED": "Recordatorio programado",
+        "REMINDER_CANCELLED": "Recordatorio cancelado",
+        "NOTIFICATIONS_RETRIED": "Reintento de correos fallidos"
       },
       "objects": {
         "ORGANIZATION": "Organización",
@@ -485,6 +539,10 @@
         "MINUTES_DOWNLOADED": {
           "ES": "en español",
           "EN": "en inglés"
+        },
+        "reminder": "para el {{value}}",
+        "NOTIFICATIONS_RETRIED": {
+          "value": "{{value}} correos"
         }
       }
     }

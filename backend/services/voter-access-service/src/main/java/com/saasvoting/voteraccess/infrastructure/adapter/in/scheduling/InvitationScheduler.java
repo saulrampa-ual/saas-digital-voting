@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-/** Sends the pending invitations every {@code verivoto.access.invitation-interval} (10 s by default). */
+/** Sends the pending emails (invitations, reminders, closing notices) every {@code verivoto.access.invitation-interval} (10 s by default). */
 @Component
 public class InvitationScheduler {
 
@@ -24,7 +24,7 @@ public class InvitationScheduler {
     public void run() {
         SendInvitationsUseCase.InvitationRun run = invitations.sendDue();
         if (run.delivered() > 0 || run.retried() > 0 || run.failed() > 0) {
-            LOG.info("Invitations: {} delivered, {} to retry, {} failed", run.delivered(), run.retried(), run.failed());
+            LOG.info("Emails to voters: {} delivered, {} to retry, {} failed", run.delivered(), run.retried(), run.failed());
         }
     }
 }

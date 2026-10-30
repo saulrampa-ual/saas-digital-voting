@@ -4,5 +4,7 @@ package com.saasvoting.voteraccess.domain.model;
 public enum NotificationStatus {
     PENDING,
     DELIVERED,
-    FAILED
+    FAILED,
+    /** Not needed any more (RF-17, D-45): a reminder for someone who already voted, or once voting closed. */
+    CANCELLED
 }

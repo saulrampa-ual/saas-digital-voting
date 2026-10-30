@@ -73,7 +73,7 @@ cuando hay conflicto (ver «Incoherencias»).
 | RF-14 | A1, A5 | Sí |
 | RF-15 | F1, V8 | Sí |
 | RF-16 | F1 | Sí |
-| RF-17 | — | **No**: falta la vista de notificaciones y entregas fallidas |
+| RF-17 | A5 | Parcial: A5 dibuja «Enviar recordatorio»; la vista de correos y fallidos se diseñó sin prototipo con el estilo de A5 (P6.2, D-45) |
 | RF-18 | F2 | Sí |
 | RF-19 | H1 | Sí |
 | RF-20 | Selector ES/EN en la cabecera; A3 | Sí: la edición bilingüe se añade en A3 (P4.6, D-35) |
@@ -97,7 +97,7 @@ cuando hay conflicto (ver «Incoherencias»).
 | 12 | El filtro «Todos» de la tabla del censo | A2 | Sin estados que filtrar en las personas guardadas: solo búsqueda por nombre, correo o identificador |
 | 13 | «Participación acumulada por hora» | A5 | D-18/D-38: la participación solo guarda el día; el gráfico es por día. La hora permitiría cruzarla con el orden de los eventos de la urna |
 | 14 | Fecha y hora en cada «Voto recibido» y evento «Voto sustituido» | H1 | D-18: los eventos de voto no llevan hora; revoto fuera del MVP (D-03) |
-| 15 | «Enviar recordatorio a quien no ha votado» (A5) y trazabilidad de acciones (H1) | A5, H1 | Trazabilidad hecha en P6.1 (D-44) como pantalla propia «Trazabilidad» para ADMIN y AUDITOR (H1 sigue siendo el registro de la urna); recordatorios con RF-17 en P6.2 |
+| 15 | «Enviar recordatorio a quien no ha votado» (A5) y trazabilidad de acciones (H1) | A5, H1 | Trazabilidad hecha en P6.1 (D-44) como pantalla propia «Trazabilidad» para ADMIN y AUDITOR (H1 sigue siendo el registro de la urna). Recordatorios en P6.2 (D-45): «Enviar recordatorio ahora» con confirmación (dice a cuántas personas), programación con fecha y hora, lista con estado y número de destinatarios, y una sección «Correos» con recuentos, fallidos y reintento; solo con la votación abierta y sin mostrar quién no ha votado |
 | 16 | F4 enumera pasos con su estado («Recuento por opción · completado») | F4 | La urna no informa del avance del escrutinio (dura segundos): F4 lista los pasos sin estado y se sustituye por F1 en cuanto hay resultado (D-39) |
 | 17 | V8 no está dibujado | V8 | Diseñado con el estilo del votante a partir de la descripción de la revisión: resultado por opción, participación, huellas y fecha de publicación, con verificación en el navegador (D-39) |
 | 18 | «Generar acta (PDF)» en F1 | F1 | Hecho en P5.4 (D-40): botón en la cabecera (junto al CSV) y tarjeta «Acta del proceso» con la huella SHA-256 del fichero; solo ADMIN |

@@ -31,6 +31,7 @@ verivoto:
   internal-clients:
     election: election-service
     ballot-box: ballot-box-service
+    voter-access: voter-access-service
   keycloak:
     base-url: ${IDENTITY_KEYCLOAK_BASE_URL:http://localhost:8080}
     realm: verivoto

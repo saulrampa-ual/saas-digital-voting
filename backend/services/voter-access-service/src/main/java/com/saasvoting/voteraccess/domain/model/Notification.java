@@ -33,8 +33,19 @@ public record Notification(
     }
 
     public static Notification pendingInvitation(long processId, UUID rollEntryId, Instant now) {
-        return new Notification(null, processId, rollEntryId, NotificationType.INVITATION, NotificationStatus.PENDING,
-                0, null, now, now, null);
+        return pending(processId, rollEntryId, NotificationType.INVITATION, now);
+    }
+
+    /** RF-17 (D-45): a reminder or a closing notice to be sent from now on. */
+    public static Notification pending(long processId, UUID rollEntryId, NotificationType type, Instant now) {
+        return new Notification(null, processId, rollEntryId, type, NotificationStatus.PENDING, 0, null, now, now,
+                null);
+    }
+
+    /** RF-17: not needed any more (the person already voted, or voting closed); it is neither sent nor a failure. */
+    public Notification notNeeded(String reason) {
+        return new Notification(id, processId, rollEntryId, type, NotificationStatus.CANCELLED, attempts, reason,
+                createdAt, nextAttemptAt, sentAt);
     }
 
     public Notification delivered(Instant now) {
@@ -55,9 +66,4 @@ public record Notification(
                 sentAt);
     }
 
-    /** The process closed before the invitation could be sent: there is nothing left to invite to. */
-    public Notification cancelled(String reason) {
-        return new Notification(id, processId, rollEntryId, type, NotificationStatus.FAILED, attempts, reason,
-                createdAt, nextAttemptAt, sentAt);
-    }
 }

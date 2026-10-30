@@ -118,6 +118,7 @@ esta revisión.
 | T-25 | E | Roles | Gestor de censo o auditor ejecuta acciones de ADMIN (A4) | Rol por ruta en cada servicio (403) | e2e52, e2e54 | Bajo | — |
 | T-26 | E | Tokens del votante | Usar el token de resultados o el recibo para votar (A2) | Tokens distintos, comprobados por tipo y proceso | e2e55 | Bajo | — |
 | T-27 | E | Cuenta de servicio de identity | Con su secreto se gestionan usuarios de todo el realm, de cualquier organización (A6) | Solo permisos de `realm-management` sobre usuarios; desde P5.7 ya no puede llamar a ninguna ruta interna (IMP-26) | Realm versionado | Medio (gestión de usuarios) | Permisos finos en P6 |
+| T-28 | I | Recordatorios (RF-17) | El administrador averigua quién no ha votado a través de los recordatorios o de sus fallos (A4) | Cada recordatorio guarda y muestra solo cuántas personas lo recibieron; los recordatorios fallidos solo se cuentan; el aviso de cierre es el mismo para todo el censo (D-45) | e2e62 (40/40), ui62 (26/26) | Bajo | — |
 
 ## 6. Sondas de esta revisión
 

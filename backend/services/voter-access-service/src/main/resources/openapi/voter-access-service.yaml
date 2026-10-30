@@ -6,7 +6,8 @@ info:
     Voter access with personal link + email one-time code (RF-08, RNF-14) and single-use voting
     tokens. Voter endpoints need no account: the personal link and the code identify the voter.
     This service never receives the chosen option nor the receipt (RNF-11). It also gives the
-    participation of a process to its administrator (RF-14), counted by day only (D-18).
+    participation of a process to its administrator (RF-14), counted by day only (D-18), and lets
+    them follow the emails to voters and send reminders to the people who have not voted (RF-17, D-45).
     Error `detail` texts are written in plain Spanish (RNF-8).
 servers:
   - url: http://localhost:8000
@@ -16,6 +17,8 @@ tags:
     description: RF-08 (public, used by the voter PWA)
   - name: participation
     description: RF-14 (administrator of the organization, Keycloak token)
+  - name: notifications
+    description: RF-17 (administrator of the organization, Keycloak token)
   - name: internal
     description: Service-to-service endpoints (not exposed by the gateway)
 paths:
@@ -126,6 +129,111 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/voter-access/processes/{processId}/notifications:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [notifications]
+      operationId: getNotifications
+      summary: Emails of a process and its reminders
+      description: |
+        Role: ADMIN of the organization of the process. RF-17, D-45. Counts of invitations, reminders and closing
+        notices by status; one line per failed invitation or closing notice (sent to everybody, so listing them reveals
+        nothing). Failed reminders are only counted: listing them would tell who had not voted.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Emails and reminders
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationSummary' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/voter-access/processes/{processId}/notifications/retry:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    post:
+      tags: [notifications]
+      operationId: retryFailedNotifications
+      summary: Send the failed emails again
+      description: |
+        Role: ADMIN. Every FAILED email of the process becomes pending again, with no attempts. Before sending, each
+        one is checked again (an invitation once voting is over, or a reminder to someone who has voted, is not sent).
+        Recorded for the traceability (`NOTIFICATIONS_RETRIED`, RF-19).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Number of emails to try again
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [retried]
+                properties:
+                  retried: { type: integer, minimum: 0 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/voter-access/processes/{processId}/reminders:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    post:
+      tags: [notifications]
+      operationId: scheduleReminder
+      summary: Send a reminder now or schedule it
+      description: |
+        Role: ADMIN. Only while voting is open, at a time from now on and before the closing, at most 5 per process
+        (scheduled or sent). At that time each person who has not voted yet receives an email with a new personal link
+        (the previous one stops working); the reminder keeps only how many people it went to. Pending reminders are
+        cancelled when voting closes. Recorded for the traceability (`REMINDER_SCHEDULED`, RF-19).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sendAt: { type: [string, 'null'], format: date-time, description: Empty or missing means now }
+      responses:
+        '201':
+          description: Reminder scheduled
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Reminder' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/ReminderNotAllowed' }
+  /api/v1/voter-access/processes/{processId}/reminders/{reminderId}:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+      - name: reminderId
+        in: path
+        required: true
+        schema: { type: integer, format: int64, minimum: 1 }
+    delete:
+      tags: [notifications]
+      operationId: cancelReminder
+      summary: Cancel a scheduled reminder
+      description: Role ADMIN. Only a SCHEDULED reminder. Recorded for the traceability (`REMINDER_CANCELLED`, RF-19).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Reminder cancelled
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Reminder' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/ReminderNotAllowed' }
   /internal/v1/processes/{processId}:
     parameters:
       - $ref: '#/components/parameters/ProcessId'
@@ -343,6 +451,13 @@ components:
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
+    ReminderNotAllowed:
+      description: |
+        The reminder cannot be scheduled or cancelled now. Property `reason`: NOT_OPEN, OUT_OF_PERIOD, TOO_MANY or
+        ALREADY_SENT.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
     Forbidden:
       description: The role of the user does not allow this operation
       content:
@@ -463,6 +578,55 @@ components:
               day: { type: string, format: date }
               votes: { type: integer, minimum: 0 }
               cumulative: { type: integer, minimum: 0 }
+    NotificationCounts:
+      type: object
+      required: [pending, delivered, failed, cancelled]
+      properties:
+        pending: { type: integer, minimum: 0 }
+        delivered: { type: integer, minimum: 0 }
+        failed: { type: integer, minimum: 0, description: After 9 attempts (RI-11) }
+        cancelled: { type: integer, minimum: 0, description: 'Not needed: the person had voted or voting was over' }
+    Reminder:
+      type: object
+      required: [id, sendAt, status, createdAt]
+      properties:
+        id: { type: integer, format: int64 }
+        sendAt: { type: string, format: date-time }
+        status: { type: string, enum: [SCHEDULED, SENT, CANCELLED] }
+        recipients: { type: [integer, 'null'], minimum: 0, description: How many people it went to; never who }
+        createdAt: { type: string, format: date-time }
+    NotificationSummary:
+      type: object
+      required: [processId, status, opensAt, closesAt, counts, failed, reminders, maxReminders]
+      properties:
+        processId: { type: integer, format: int64 }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+        counts:
+          type: object
+          required: [INVITATION, REMINDER, CLOSING]
+          properties:
+            INVITATION: { $ref: '#/components/schemas/NotificationCounts' }
+            REMINDER: { $ref: '#/components/schemas/NotificationCounts' }
+            CLOSING: { $ref: '#/components/schemas/NotificationCounts' }
+        failed:
+          type: array
+          description: Failed invitations and closing notices; never reminders (D-45)
+          items:
+            type: object
+            required: [type, displayName, email, attempts, createdAt]
+            properties:
+              type: { type: string, enum: [INVITATION, CLOSING] }
+              displayName: { type: string }
+              email: { type: string, format: email }
+              attempts: { type: integer }
+              reason: { type: [string, 'null'] }
+              createdAt: { type: string, format: date-time }
+        reminders:
+          type: array
+          items: { $ref: '#/components/schemas/Reminder' }
+        maxReminders: { type: integer, const: 5 }
     Problem:
       type: object
       description: RFC 9457 problem details. `detail` is plain Spanish for the end user (RNF-8).
