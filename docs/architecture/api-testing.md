@@ -175,9 +175,11 @@ cd backend
 .\mvnw.cmd -pl services/ballot-box-service spring-boot:run
 ```
 
-1. Programar un proceso (apartado 6). `GET /api/v1/ballot-box/processes/{id}/ballot` → la papeleta con los mismos
-   `id` de opción que en election.
-2. Tras la apertura, obtener un `votingToken` (apartado 7) y votar:
+1. Programar un proceso (apartado 6). Tras la apertura, obtener un `votingToken` (apartado 7).
+   `GET /api/v1/ballot-box/processes/{id}/ballot` con la cabecera `X-Voting-Token: {votingToken}` → la papeleta con los
+   mismos `id` de opción que en election. Sin cabecera, o con un token inventado o de otro proceso → **404**; con el
+   token ya usado → **409**; caducado → **410** (D-43).
+2. Votar:
    `POST /api/v1/ballot-box/processes/{id}/votes` con `{ "votingToken": "…", "selection": { "optionId": 5 } }`
    (o `{ "blank": true }`) → **201** con `receiptCode` (64 hex). Repetir con el mismo token → **409**.
 3. `GET …/receipts/{receiptCode}` → `{ "present": true }`; con otro código → `false`.
@@ -298,3 +300,12 @@ Con un proceso escrutado (`TALLIED`, también `ARCHIVED`) y el enlace personal d
 3. Sin cabecera, con un token inventado o de otro proceso → **404**; pasados 30 min → **410** «Tu acceso a los resultados
    ha caducado»; con voter-access parado → **503**. Entre el cierre y el escrutinio no se envía código (**422**).
 4. El token no sirve para votar y en `voter_access_db.results_tokens` solo está su hash, sin la persona.
+
+### Rutas internas por cliente y cruce con la participación (P5.7, D-43)
+
+1. Cada ruta `/internal/**` solo acepta el cliente que la usa: con un token de `identity-service` (o de cualquier otro
+   cliente), `PUT /internal/v1/processes/{id}/status` de la urna → **403**; con el de `election-service` → 204. Sin
+   token → **401**.
+2. Tras un escrutinio normal, `ballot_box_db.incidents` no tiene filas del proceso. Si en `voter_access_db.participation`
+   se marca como no votante a alguien que sí votó antes del escrutinio, la urna no publica el resultado
+   (`TALLY_FAILED` y `PARTICIPATION_MISMATCH`, election sigue en `CLOSED`); al corregirlo, el siguiente ciclo escruta.

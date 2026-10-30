@@ -29,6 +29,9 @@ management:
 verivoto:
   # Day of the incidents (D-18)
   zone: Europe/Madrid
+  # IMP-26: the only Keycloak client allowed on /internal/** (claim azp)
+  internal-clients:
+    election: election-service
   # D-22: client-credentials token of ballot-box-service (role SERVICE) for the calls below
   keycloak:
     base-url: ${BALLOT_BOX_KEYCLOAK_BASE_URL:http://localhost:8080}

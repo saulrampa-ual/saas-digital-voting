@@ -5,6 +5,7 @@ import com.saasvoting.voteraccess.application.port.out.ParticipationRepository;
 import com.saasvoting.voteraccess.application.port.out.SnapshotRepository;
 import com.saasvoting.voteraccess.domain.model.ParticipationStats;
 import com.saasvoting.voteraccess.domain.model.ParticipationStats.DayCount;
+import com.saasvoting.voteraccess.domain.model.ProcessNotOpenException;
 import com.saasvoting.voteraccess.domain.model.ProcessSnapshot;
 import com.saasvoting.voteraccess.domain.model.ProcessStatus;
 import com.saasvoting.voteraccess.domain.model.SnapshotNotFoundException;
@@ -53,5 +54,14 @@ public final class ParticipationService implements ViewParticipationUseCase {
             byDay.add(new DayCount(day.getKey(), day.getValue(), total));
         }
         return new ParticipationStats(processId, status, process.opensAt(), process.closesAt(), eligible, total, byDay);
+    }
+
+    @Override
+    public int votedCount(long processId) {
+        ProcessSnapshot process = snapshots.find(processId).orElseThrow(() -> new SnapshotNotFoundException(processId));
+        if (process.status() == ProcessStatus.SCHEDULED || process.isOpenAt(clock.instant())) {
+            throw new ProcessNotOpenException(process.status());
+        }
+        return participation.votesByDay(processId).values().stream().mapToInt(Integer::intValue).sum();
     }
 }

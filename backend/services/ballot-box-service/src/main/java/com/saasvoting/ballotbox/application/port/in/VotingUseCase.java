@@ -8,6 +8,12 @@ public interface VotingUseCase {
 
     BallotSnapshot ballot(long processId);
 
+    /**
+     * IMP-31 (T-17): the ballot only for someone holding a valid voting token of that process, checked in voter-access
+     * without consuming it. Without one, nothing about the process is revealed.
+     */
+    BallotSnapshot ballotForVoter(long processId, String votingToken);
+
     /** Returns the receipt code, which is shown only once and stored only as a hash. */
     String castVote(long processId, String votingToken, Selection selection);
 

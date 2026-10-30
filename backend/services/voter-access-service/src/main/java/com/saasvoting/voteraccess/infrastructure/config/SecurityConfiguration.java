@@ -1,5 +1,6 @@
 package com.saasvoting.voteraccess.infrastructure.config;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,11 +17,13 @@ import org.springframework.security.web.SecurityFilterChain;
  * with role SERVICE (D-22). Everything else is denied.
  */
 @Configuration
+@EnableConfigurationProperties(InternalClients.class)
 public class SecurityConfiguration {
 
     @Bean
     SecurityFilterChain securityFilterChain(
-            HttpSecurity http, JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
+            HttpSecurity http, JwtAuthenticationConverter jwtAuthenticationConverter, InternalClients clients)
+            throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -30,7 +33,13 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/voter-access/**").permitAll()
                         .requestMatchers("/actuator/health", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**")
                         .permitAll()
-                        .requestMatchers("/internal/**").hasRole("SERVICE")
+                        // IMP-26: each internal route only for the service that uses it
+                        .requestMatchers(HttpMethod.GET, "/internal/v1/processes/*/voted-count")
+                        .access(InternalClients.only(clients.ballotBox()))
+                        .requestMatchers("/internal/v1/processes/**").access(InternalClients.only(clients.election()))
+                        .requestMatchers("/internal/v1/voting-tokens/**", "/internal/v1/results-tokens/**")
+                        .access(InternalClients.only(clients.ballotBox()))
+                        .requestMatchers("/internal/**").denyAll()
                         .anyRequest().denyAll())
                 .oauth2ResourceServer(resourceServer -> resourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))

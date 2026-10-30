@@ -15,6 +15,7 @@ import com.saasvoting.ballotbox.domain.model.IncidentKind;
 import com.saasvoting.ballotbox.domain.model.Selection;
 import com.saasvoting.ballotbox.domain.model.VoteNotRecordedException;
 import com.saasvoting.ballotbox.domain.model.VoterAccessUnavailableException;
+import com.saasvoting.ballotbox.domain.model.VotingTokenRejectedException;
 import com.saasvoting.ballotbox.domain.model.VotingClosedException;
 
 import java.time.Clock;
@@ -58,6 +59,15 @@ public final class VotingService implements VotingUseCase {
     @Override
     public BallotSnapshot ballot(long processId) {
         return ballots.find(processId).orElseThrow(() -> new BallotNotFoundException(processId));
+    }
+
+    @Override
+    public BallotSnapshot ballotForVoter(long processId, String votingToken) {
+        if (votingToken == null || votingToken.isBlank() || votingToken.length() > 200) {
+            throw new VotingTokenRejectedException(VotingTokenRejectedException.Reason.UNKNOWN);
+        }
+        voterAccess.checkVotingToken(votingToken, processId);
+        return ballot(processId);
     }
 
     @Override

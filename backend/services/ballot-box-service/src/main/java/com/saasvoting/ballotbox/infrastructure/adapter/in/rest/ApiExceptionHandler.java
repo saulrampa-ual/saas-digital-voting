@@ -6,7 +6,7 @@ import com.saasvoting.ballotbox.domain.model.InvalidSelectionException;
 import com.saasvoting.ballotbox.domain.model.MinutesGenerationException;
 import com.saasvoting.ballotbox.domain.model.ResultNotAvailableException;
 import com.saasvoting.ballotbox.domain.model.ResultsAccessDeniedException;
-import com.saasvoting.ballotbox.domain.model.ResultsAccessUnavailableException;
+import com.saasvoting.ballotbox.domain.model.AccessCheckUnavailableException;
 import com.saasvoting.ballotbox.domain.model.SnapshotConflictException;
 import com.saasvoting.ballotbox.domain.model.VoteNotRecordedException;
 import com.saasvoting.ballotbox.domain.model.VotingClosedException;
@@ -71,8 +71,8 @@ public class ApiExceptionHandler {
                 : problem(HttpStatus.NOT_FOUND, "No existe esa votación.");
     }
 
-    @ExceptionHandler(ResultsAccessUnavailableException.class)
-    ProblemDetail resultsAccessUnavailable(ResultsAccessUnavailableException e) {
+    @ExceptionHandler(AccessCheckUnavailableException.class)
+    ProblemDetail resultsAccessUnavailable(AccessCheckUnavailableException e) {
         return problem(HttpStatus.SERVICE_UNAVAILABLE,
                 "No se han podido comprobar tus datos de acceso. Inténtalo de nuevo en unos minutos.");
     }

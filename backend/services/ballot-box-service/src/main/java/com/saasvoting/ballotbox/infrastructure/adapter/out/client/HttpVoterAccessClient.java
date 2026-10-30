@@ -2,7 +2,7 @@ package com.saasvoting.ballotbox.infrastructure.adapter.out.client;
 
 import com.saasvoting.ballotbox.application.port.out.VoterAccessClient;
 import com.saasvoting.ballotbox.domain.model.ResultsAccessDeniedException;
-import com.saasvoting.ballotbox.domain.model.ResultsAccessUnavailableException;
+import com.saasvoting.ballotbox.domain.model.AccessCheckUnavailableException;
 import com.saasvoting.ballotbox.domain.model.VoterAccessUnavailableException;
 import com.saasvoting.ballotbox.domain.model.VotingTokenRejectedException;
 import com.saasvoting.ballotbox.domain.model.VotingTokenRejectedException.Reason;
@@ -88,11 +88,45 @@ public class HttpVoterAccessClient implements VoterAccessClient {
             throw switch (e.getStatusCode().value()) {
                 case 400, 404 -> new ResultsAccessDeniedException(false);
                 case 410 -> new ResultsAccessDeniedException(true);
-                default -> new ResultsAccessUnavailableException("voter-access answered " + e.getStatusCode(), e);
+                default -> new AccessCheckUnavailableException("voter-access answered " + e.getStatusCode(), e);
             };
         } catch (RestClientException | IllegalStateException e) {
-            throw new ResultsAccessUnavailableException("voter-access not reachable", e);
+            throw new AccessCheckUnavailableException("voter-access not reachable", e);
         }
+    }
+
+    @Override
+    public void checkVotingToken(String votingToken, long processId) {
+        try {
+            post("/internal/v1/voting-tokens/check", votingToken, processId);
+        } catch (RestClientResponseException e) {
+            throw switch (e.getStatusCode().value()) {
+                case 400, 404 -> new VotingTokenRejectedException(Reason.UNKNOWN);
+                case 409 -> new VotingTokenRejectedException(Reason.ALREADY_USED);
+                case 410 -> new VotingTokenRejectedException(Reason.EXPIRED);
+                case 422 -> new VotingTokenRejectedException(Reason.PROCESS_NOT_OPEN);
+                default -> new AccessCheckUnavailableException("voter-access answered " + e.getStatusCode(), e);
+            };
+        } catch (RestClientException | IllegalStateException e) {
+            throw new AccessCheckUnavailableException("voter-access not reachable", e);
+        }
+    }
+
+    /** Errors propagate: the tally is simply retried on the next run. */
+    @Override
+    public int votedCount(long processId) {
+        VotedCount count = voterAccess.get()
+                .uri("/internal/v1/processes/{processId}/voted-count", processId)
+                .headers(headers -> headers.setBearerAuth(tokens.token()))
+                .retrieve()
+                .body(VotedCount.class);
+        if (count == null) {
+            throw new IllegalStateException("voter-access returned no count for process " + processId);
+        }
+        return count.voted();
+    }
+
+    private record VotedCount(long processId, int voted) {
     }
 
     private void post(String path, String votingToken, long processId) {

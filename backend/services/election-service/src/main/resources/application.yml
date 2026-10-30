@@ -35,6 +35,9 @@ management:
         include: health
 
 verivoto:
+  # IMP-26: the only Keycloak client allowed on /internal/** (claim azp)
+  internal-clients:
+    ballot-box: ballot-box-service
   lifecycle:
     # RF-07: how often the system opens and closes the processes whose time has arrived
     interval: PT30S

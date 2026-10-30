@@ -91,8 +91,11 @@ export class VoterApiService {
     );
   }
 
-  ballot(processId: number): Promise<Ballot> {
-    return this.call(this.http.get<Ballot>(`${this.ballotBox}/${processId}/ballot`));
+  /** IMP-31: the ballot is given only with a valid voting token, sent in a header (never in the URL). */
+  ballot(processId: number, votingToken: string): Promise<Ballot> {
+    return this.call(this.http.get<Ballot>(`${this.ballotBox}/${processId}/ballot`, {
+      headers: new HttpHeaders({ 'X-Voting-Token': votingToken }),
+    }));
   }
 
   castVote(processId: number, votingToken: string, selection: Selection): Promise<{ receiptCode: string }> {

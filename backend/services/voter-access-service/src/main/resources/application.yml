@@ -41,6 +41,10 @@ management:
         include: health
 
 verivoto:
+  # IMP-26: Keycloak clients allowed on each internal route (claim azp)
+  internal-clients:
+    election: election-service
+    ballot-box: ballot-box-service
   access:
     # D-31: voter PWA (personal links /votar/{token}), dates and voting day in this zone (D-18)
     public-base-url: ${VOTER_ACCESS_PUBLIC_BASE_URL:http://localhost:4200}

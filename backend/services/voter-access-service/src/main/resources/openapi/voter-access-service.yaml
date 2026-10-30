@@ -214,6 +214,55 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
         '410': { $ref: '#/components/responses/Gone' }
+  /internal/v1/voting-tokens/check:
+    post:
+      tags: [internal]
+      operationId: checkVotingToken
+      summary: Check a voting token without consuming it (IMP-31)
+      description: Called by ballot-box before handing out the ballot. Same answers as `consume`; nothing changes.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TokenOperation' }
+      responses:
+        '204':
+          description: Valid to vote in the process right now
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+  /internal/v1/processes/{processId}/voted-count:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [internal]
+      operationId: getVotedCount
+      summary: Number of people of the roll who voted (IMP-28)
+      description: |
+        Called by ballot-box at the tally to compare with the urn. Only the number, never who; only once voting is
+        over (422 while open or scheduled).
+      security:
+        - serviceAuth: []
+      responses:
+        '200':
+          description: Number of people who voted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [processId, voted]
+                properties:
+                  processId: { type: integer, format: int64 }
+                  voted: { type: integer, minimum: 0 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
   /internal/v1/voting-tokens/revert:
     post:
       tags: [internal]
@@ -241,7 +290,7 @@ components:
       description: Keycloak token of a management user (`roles` and `organization_id` claims).
     serviceAuth:
       type: oauth2
-      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE). Internal endpoints are never routed by the gateway.
+      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE). Internal endpoints are never routed by the gateway. Each route accepts only the Keycloak client that uses it (claim `azp`, IMP-26), election-service for `/internal/v1/processes/**` and ballot-box-service for the tokens and `voted-count`.
       flows:
         clientCredentials:
           tokenUrl: http://localhost:8080/realms/verivoto/protocol/openid-connect/token
