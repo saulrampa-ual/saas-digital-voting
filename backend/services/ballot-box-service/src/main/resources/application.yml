@@ -2,6 +2,12 @@ server:
   port: ${BALLOT_BOX_SERVER_PORT:8084}
 
 spring:
+  # D-44: one thread per scheduled task, so delivering administrative actions to identity-service never delays
+  # the lifecycle, the synchronization or the tally (even with identity-service slow or down)
+  task:
+    scheduling:
+      pool:
+        size: 4
   application:
     name: ballot-box-service
   datasource:
@@ -41,6 +47,9 @@ verivoto:
   voter-access:
     # D-20: consumption of the voting token
     url: ${BALLOT_BOX_VOTER_ACCESS_URL:http://localhost:8083}
+  identity:
+    # RF-19, D-44: administrative actions (verification, export, minutes) are delivered to identity-service
+    url: ${BALLOT_BOX_IDENTITY_URL:http://localhost:8081}
   election:
     # RF-13, D-37: the tally is done (the process becomes TALLIED)
     url: ${BALLOT_BOX_ELECTION_URL:http://localhost:8082}

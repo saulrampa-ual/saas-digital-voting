@@ -67,8 +67,10 @@ public class ResultsController {
 
     private final ViewResultsUseCase results;
     private final MinutesUseCase minutes;
+    private final AdminActionRecorder actions;
 
-    public ResultsController(ViewResultsUseCase results, MinutesUseCase minutes) {
+    public ResultsController(ViewResultsUseCase results, MinutesUseCase minutes, AdminActionRecorder actions) {
+        this.actions = Objects.requireNonNull(actions, "actions must not be null");
         this.results = Objects.requireNonNull(results, "results must not be null");
         this.minutes = Objects.requireNonNull(minutes, "minutes must not be null");
     }
@@ -100,6 +102,7 @@ public class ResultsController {
         byte[] file = new byte[bom.length + body.length];
         System.arraycopy(bom, 0, file, 0, bom.length);
         System.arraycopy(body, 0, file, bom.length, body.length);
+        actions.record(jwt, "RESULTS_EXPORTED", "PROCESS", processId, null, language.name(), processId);
         return ResponseEntity.ok()
                 .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))
                 .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
@@ -114,6 +117,7 @@ public class ResultsController {
             @RequestParam(defaultValue = "es") String lang) {
         Language language = "en".equalsIgnoreCase(lang) ? Language.EN : Language.ES;
         Minutes file = minutes.minutes(viewer(jwt, processId), processId, language);
+        actions.record(jwt, "MINUTES_DOWNLOADED", "PROCESS", processId, null, language.name(), processId);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()

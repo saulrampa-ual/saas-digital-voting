@@ -25,8 +25,10 @@ import java.util.UUID;
 public class ManagementUserController {
 
     private final ManageUsersUseCase manageUsers;
+    private final AdminActionRecorder actions;
 
-    public ManagementUserController(ManageUsersUseCase manageUsers) {
+    public ManagementUserController(ManageUsersUseCase manageUsers, AdminActionRecorder actions) {
+        this.actions = Objects.requireNonNull(actions, "actions must not be null");
         this.manageUsers = Objects.requireNonNull(manageUsers, "manageUsers must not be null");
     }
 
@@ -49,6 +51,8 @@ public class ManagementUserController {
             @Valid @RequestBody CreateManagementUserRequest request) {
         ManagementUser user = manageUsers.create(
                 CallerResolver.from(jwt), organizationId, request.person(), request.role());
+        actions.record(jwt, organizationId, "USER_CREATED", "USER", user.id().toString(), user.fullName(),
+                user.role().name());
         return ResponseEntity
                 .created(URI.create("/api/v1/organizations/" + organizationId + "/users/" + user.id()))
                 .body(ManagementUserResponse.fromDomain(user));
@@ -60,7 +64,9 @@ public class ManagementUserController {
             @PathVariable String organizationId,
             @PathVariable UUID userId,
             @Valid @RequestBody ChangeRoleRequest request) {
-        return ManagementUserResponse.fromDomain(
-                manageUsers.changeRole(CallerResolver.from(jwt), organizationId, userId, request.role()));
+        ManagementUser user = manageUsers.changeRole(CallerResolver.from(jwt), organizationId, userId, request.role());
+        actions.record(jwt, organizationId, "USER_ROLE_CHANGED", "USER", user.id().toString(), user.fullName(),
+                user.role().name());
+        return ManagementUserResponse.fromDomain(user);
     }
 }

@@ -1,5 +1,6 @@
 package com.saasvoting.ballotbox.infrastructure.config;
 
+import com.saasvoting.ballotbox.application.port.out.AdminActionOutbox;
 import com.saasvoting.ballotbox.application.port.out.AuditRepository;
 import com.saasvoting.ballotbox.application.port.out.BallotBoxStore;
 import com.saasvoting.ballotbox.application.port.out.BallotRepository;
@@ -10,19 +11,23 @@ import com.saasvoting.ballotbox.application.port.out.ReceiptGenerator;
 import com.saasvoting.ballotbox.application.port.out.ResultRepository;
 import com.saasvoting.ballotbox.application.port.out.UnitOfWork;
 import com.saasvoting.ballotbox.application.port.out.VoterAccessClient;
+import com.saasvoting.ballotbox.application.service.AdminActionService;
 import com.saasvoting.ballotbox.application.service.AuditService;
 import com.saasvoting.ballotbox.application.service.BallotReceiverService;
 import com.saasvoting.ballotbox.application.service.MinutesService;
 import com.saasvoting.ballotbox.application.service.ResultQueryService;
 import com.saasvoting.ballotbox.application.service.TallyService;
 import com.saasvoting.ballotbox.application.service.VotingService;
+import com.saasvoting.ballotbox.infrastructure.adapter.out.client.AdminActionDispatcher;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.client.ElectionProperties;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.client.HttpElectionClient;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.client.HttpVoterAccessClient;
+import com.saasvoting.ballotbox.infrastructure.adapter.out.client.IdentityProperties;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.client.KeycloakClientProperties;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.client.ServiceTokenProvider;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.client.VoterAccessProperties;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.pdf.PdfMinutesRenderer;
+import com.saasvoting.ballotbox.infrastructure.adapter.out.persistence.JpaAdminActionOutbox;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +40,8 @@ import java.time.ZoneId;
 /** Wires use cases and outbound adapters. Application services carry no Spring annotations. */
 @Configuration
 @EnableScheduling
-@EnableConfigurationProperties({KeycloakClientProperties.class, VoterAccessProperties.class, ElectionProperties.class})
+@EnableConfigurationProperties({KeycloakClientProperties.class, VoterAccessProperties.class, ElectionProperties.class,
+        IdentityProperties.class})
 public class BallotBoxConfiguration {
 
     @Bean
@@ -51,6 +57,17 @@ public class BallotBoxConfiguration {
     @Bean
     VoterAccessClient voterAccessClient(VoterAccessProperties properties, ServiceTokenProvider tokens) {
         return new HttpVoterAccessClient(properties, tokens);
+    }
+
+    @Bean
+    AdminActionService adminActionService(AdminActionOutbox outbox) {
+        return new AdminActionService(outbox);
+    }
+
+    @Bean
+    AdminActionDispatcher adminActionDispatcher(JpaAdminActionOutbox outbox, IdentityProperties properties,
+            ServiceTokenProvider tokens, Clock clock) {
+        return new AdminActionDispatcher(outbox, properties, tokens, clock);
     }
 
     @Bean

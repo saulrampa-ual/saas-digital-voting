@@ -24,7 +24,7 @@ Pantallas: códigos de `docs/ai/PROTOTYPES.md`.
 | RF-16 | Generar acta | Sí | ballot-box-service + election-service | `GET /api/v1/ballot-box/processes/{id}/results/minutes?lang=es\|en` (ADMIN, PDF, `X-Content-SHA256`); título en la papeleta interna | F1 | Hecho (P5.4, D-40): acta PDF guardada una vez por idioma con su SHA-256; botón y huella en F1 |
 | RF-17 | Gestionar notificaciones | Sí | voter-access-service | Invitación por correo con el enlace personal (P4.3); recordatorios, cierre y vista de entregas en P6 | **Sin prototipo** | Parcial (invitación) |
 | RF-18 | Atender derechos sobre datos personales | Sí | identity-service | TBD | F2 | Pendiente |
-| RF-19 | Consultar trazabilidad administrativa | Sí | identity-service | TBD | H1 | Pendiente |
+| RF-19 | Consultar trazabilidad administrativa | Sí | identity-service (+ election y ballot-box como origen) | `GET /api/v1/admin-actions`, `…/actors` (ADMIN, AUDITOR); interno `POST /internal/v1/admin-actions` (election, urna) | Trazabilidad (`/admin/trazabilidad`) | Hecho (P6.1, D-44): 16 tipos de acción, filtros, solo añadir, entrega con *outbox* |
 | RF-20 | Gestionar idioma de papeleta | Sí | election-service | Textos `LocalizedText` (es, en) en `ProcessData` y `Ballot` | Selector ES/EN de cabecera (`frontend/src/app/shared/language-switcher`, `public/i18n`); edición ES/EN de títulos, pregunta y opciones en A3 | Hecho (interfaz es/en, papeleta del votante con todas las traducciones y edición bilingüe en A3, D-35) |
 | RF-21 | Exponer API documentada | Sí | api-gateway + identity-service | TBD | **Sin prototipo** (claves de API) | Pendiente |
 | RF-22 | Aplicar métodos avanzados | No | — | — | — | Fuera del MVP |

@@ -27,6 +27,10 @@ management:
         include: health
 
 verivoto:
+  # RF-19 / IMP-26: Keycloak clients allowed to deliver administrative actions (claim azp)
+  internal-clients:
+    election: election-service
+    ballot-box: ballot-box-service
   keycloak:
     base-url: ${IDENTITY_KEYCLOAK_BASE_URL:http://localhost:8080}
     realm: verivoto

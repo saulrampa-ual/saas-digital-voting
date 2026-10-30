@@ -38,8 +38,11 @@ public class CensusController {
     private final ManageCensusesUseCase censuses;
     private final ManageVotersUseCase voters;
     private final ImportVotersUseCase imports;
+    private final AdminActionRecorder actions;
 
-    public CensusController(ManageCensusesUseCase censuses, ManageVotersUseCase voters, ImportVotersUseCase imports) {
+    public CensusController(ManageCensusesUseCase censuses, ManageVotersUseCase voters, ImportVotersUseCase imports,
+            AdminActionRecorder actions) {
+        this.actions = Objects.requireNonNull(actions, "actions must not be null");
         this.censuses = Objects.requireNonNull(censuses, "censuses must not be null");
         this.voters = Objects.requireNonNull(voters, "voters must not be null");
         this.imports = Objects.requireNonNull(imports, "imports must not be null");
@@ -53,7 +56,9 @@ public class CensusController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CensusResponse create(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CensusRequest request) {
-        return CensusResponse.fromView(censuses.create(CallerResolver.from(jwt), request.name()));
+        CensusResponse census = CensusResponse.fromView(censuses.create(CallerResolver.from(jwt), request.name()));
+        actions.record(jwt, "CENSUS_CREATED", "CENSUS", census.id(), census.name(), null, null);
+        return census;
     }
 
     @GetMapping("/{censusId}")
@@ -77,6 +82,7 @@ public class CensusController {
     public ResponseEntity<VoterResponse> addVoter(
             @AuthenticationPrincipal Jwt jwt, @PathVariable long censusId, @Valid @RequestBody VoterRequest request) {
         VoterResponse voter = VoterResponse.fromDomain(voters.add(CallerResolver.from(jwt), censusId, request.toDomain()));
+        recordVoter(jwt, "VOTER_ADDED", censusId, voter.id());
         return ResponseEntity.created(URI.create("/api/v1/censuses/" + censusId + "/voters/" + voter.id())).body(voter);
     }
 
@@ -86,14 +92,17 @@ public class CensusController {
             @PathVariable long censusId,
             @PathVariable long voterId,
             @Valid @RequestBody VoterRequest request) {
-        return VoterResponse.fromDomain(
+        VoterResponse voter = VoterResponse.fromDomain(
                 voters.update(CallerResolver.from(jwt), censusId, voterId, request.toDomain()));
+        recordVoter(jwt, "VOTER_UPDATED", censusId, voterId);
+        return voter;
     }
 
     @DeleteMapping("/{censusId}/voters/{voterId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeVoter(@AuthenticationPrincipal Jwt jwt, @PathVariable long censusId, @PathVariable long voterId) {
         voters.remove(CallerResolver.from(jwt), censusId, voterId);
+        recordVoter(jwt, "VOTER_REMOVED", censusId, voterId);
     }
 
     @PostMapping(path = "/{censusId}/imports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -104,8 +113,22 @@ public class CensusController {
             @RequestParam(defaultValue = "true") boolean dryRun,
             @RequestParam(defaultValue = "false") boolean discardInvalidLines) throws IOException {
         try (Reader reader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8)) {
-            return ImportSummaryResponse.fromDomain(imports.importVoters(
+            ImportSummaryResponse summary = ImportSummaryResponse.fromDomain(imports.importVoters(
                     CallerResolver.from(jwt), censusId, VoterCsvReader.read(reader), dryRun, discardInvalidLines));
+            if (summary.applied()) {
+                actions.record(jwt, "VOTERS_IMPORTED", "CENSUS", censusId, censusName(jwt, censusId),
+                        String.valueOf(summary.toCreate()), null);
+            }
+            return summary;
         }
+    }
+
+    /** A voter is identified only by its id; the label is the census, never personal data (RF-19, RNF-16). */
+    private void recordVoter(Jwt jwt, String action, long censusId, long voterId) {
+        actions.record(jwt, action, "VOTER", voterId, censusName(jwt, censusId), null, null);
+    }
+
+    private String censusName(Jwt jwt, long censusId) {
+        return censuses.get(CallerResolver.from(jwt), censusId).census().name();
     }
 }
