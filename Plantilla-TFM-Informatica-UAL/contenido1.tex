@@ -49,7 +49,7 @@ existan evidencias experimentales. Los objetivos del sistema son:
 
 \begin{description}
   \item[OBJ-1.] Diseñar la arquitectura SaaS multi-tenant y la gestión de
-  organizaciones, identidad, roles, permisos e integración SSO.
+  organizaciones, identidad, roles y permisos, con autenticación genérica.
   \item[OBJ-2.] Diseñar la gestión del censo, la configuración y el ciclo de
   vida de votaciones, junto con una API abierta documentada.
   \item[OBJ-3.] Diseñar un flujo accesible de participación que proteja el
@@ -122,9 +122,11 @@ OE4 (OBJ-4) & RQ2, RQ3 & RF-12, RF-13, RF-14, RF-15, RF-16, RF-19, RF-22 & RNF-1
 \setlength{\tabcolsep}{6pt}
 \normalsize
 
-La contribución académica se centra en una experiencia móvil accesible, SSO
-institucional, una API REST documentada y una explicación comprensible de las
-evidencias de voto. La verificación \emph{cast-as-intended} y la criptografía
+La contribución académica se centra en una experiencia móvil accesible,
+autenticación segura, una API REST documentada y una explicación comprensible
+de las evidencias de voto. La integración con un proveedor de identidad
+mediante OIDC/SSO podrá evaluarse como opción de diseño, sin exigir una cuenta
+institucional. La verificación \emph{cast-as-intended} y la criptografía
 extremo a extremo no se consideran resueltas por el diseño actual; la
 transparencia de precios y las integraciones avanzadas quedan como líneas de
 trabajo futuro.
@@ -136,7 +138,7 @@ El alcance propuesto cubre organizaciones y usuarios, censos, configuración
 de procesos, autenticación, emisión, recibos, auditoría, escrutinio,
 resultados, actas, notificaciones y atención de solicitudes sobre datos
 personales. El servicio se concibe como una aplicación en la nube con
-arquitectura multi-tenant. La sustitución de voto se conserva en la
+arquitectura multi-tenant orientada a microservicios. La sustitución de voto se conserva en la
 especificación vigente, pero no se incluye en el MVP provisional; la
 delimitación se concreta en la sección~\ref{sec:alcance-mvp}.
 
@@ -292,7 +294,7 @@ SaaS & Distribución de software como servicio accesible a través de Internet. 
 \hline
 Multi-tenant & Modelo donde varias organizaciones comparten infraestructura con aislamiento lógico de sus datos y configuración. \\
 \hline
-SSO & Inicio de sesión único que permite autenticarse mediante una cuenta institucional. \\
+SSO & Inicio de sesión único que permite autenticarse mediante un proveedor de identidad. \\
 \hline
 OIDC & Protocolo de autenticación basado en OAuth 2.0 para verificar identidades. \\
 \hline
@@ -338,7 +340,7 @@ Votante & Accede a la papeleta, emite o sustituye su voto y consulta las evidenc
 \hline
 Gestor de censo & Administra participantes, grupos y censos de la organización (ACT-5). \\
 \hline
-Proveedor de identidad & Sistema externo que proporciona autenticación institucional mediante OIDC (ACT-6). \\
+Proveedor de identidad & Sistema externo opcional que puede autenticar usuarios mediante un protocolo compatible, como OIDC (ACT-6). \\
 \hline
 Servicio de notificaciones & Sistema externo para enviar correos y notificaciones a participantes (ACT-7). \\
 \hline
@@ -510,19 +512,20 @@ voto.
 \section{Arquitectura de componentes}
 \label{sec:arquitectura-componentes}
 
-La figura~\ref{fig:arquitectura-componentes} resume la arquitectura SaaS
-propuesta: clientes web, una capa de entrada protegida, módulos de negocio,
-servicios externos, procesamiento asíncrono y almacenamiento segregado. El
-SSO mediante OIDC se representa como decisión de diseño para integrar el IdP
-con los módulos de gestión y de acceso del votante. El cifrado en cliente
-(RF-23) es opcional y queda como trabajo futuro; la criptografía de extremo a
+La figura~\ref{fig:arquitectura-componentes} resume una arquitectura SaaS
+multi-tenant orientada a microservicios: clientes web, una capa de entrada,
+servicios de negocio independientes, integraciones externas, procesamiento
+asíncrono y persistencia segregada por finalidad. El servicio de identidad es
+opcional; OIDC/SSO constituye una alternativa de diseño y no una condición de
+acceso. El cifrado en cliente (RF-23) es opcional y queda como trabajo futuro;
+la criptografía de extremo a
 extremo aún no está resuelta. La arquitectura deberá concretarse durante la
 implementación.
 
 \begin{figure}[htbp]
   \centering
   \resizebox{0.98\textwidth}{!}{\input{Figuras/diagramas/arquitectura_componentes_saas_votacion.tex}}
-  \caption{Arquitectura de componentes de la plataforma SaaS de votación.}
+  \caption{Arquitectura de microservicios de la plataforma SaaS de votación.}
   \label{fig:arquitectura-componentes}
 \end{figure}
 
@@ -531,11 +534,12 @@ implementación.
 
 La figura~\ref{fig:secuencia-emision-voto} representa el intercambio entre la
 PWA del votante, Acceso votante, Urna y recibos, PostgreSQL censo, Urna cifrada
-y Auditoría hash-chain. Durante la emisión, el sistema valida proceso abierto,
-elegibilidad y uso único, y registra por separado la participación. El token
-de voto es una autorización opaca de un solo uso: no contiene la identidad ni
-permite enlazarla con el voto (RNF-11). La verificación del recibo consulta la
-urna (RF-10); la integridad de la cadena de auditoría corresponde a RF-12 y es
+y Auditoría hash-chain. El acceso valida el enlace, el OTP, la elegibilidad y
+el proceso antes de emitir un token de un solo uso. Una vez aceptado el voto,
+se registra la participación y se anexa el voto cifrado a la urna. Censo y urna
+se mantienen segregados (RNF-11); el diseño del token y de las operaciones debe
+evitar que se pueda enlazar identidad y voto. La verificación del recibo
+consulta la urna (RF-10); la integridad de la cadena corresponde a RF-12 y es
 una comprobación independiente.
 
 \begin{figure}[p]

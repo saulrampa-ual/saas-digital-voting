@@ -1,41 +1,68 @@
-% Arquitectura en TikZ, fuente vectorial de la figura 5.1.
+% Vista conceptual en TikZ de una arquitectura SaaS orientada a microservicios.
 \begin{tikzpicture}[
   font=\sffamily\scriptsize,
-  box/.style={draw=blue!45!black, rounded corners=2pt, fill=blue!4,
-    align=center, minimum height=0.9cm, text width=2.5cm, inner sep=4pt},
-  mod/.style={draw=teal!55!black, rounded corners=2pt, fill=teal!7,
-    align=center, minimum height=1cm, text width=2.8cm, inner sep=4pt},
-  store/.style={draw=orange!65!black, rounded corners=2pt, fill=orange!9,
-    align=center, minimum height=0.85cm, text width=2.6cm, inner sep=4pt},
-  link/.style={->,>=stealth, thick, draw=blue!55!black},
-  optional/.style={->,>=stealth, dashed, thick, draw=gray!75}
+  client/.style={draw=gray!65,rounded corners=2pt,fill=gray!8,align=center,
+    minimum height=.72cm,text width=3.1cm,inner sep=3pt},
+  service/.style={draw=blue!50!black,rounded corners=2pt,fill=blue!5,align=center,
+    minimum height=.82cm,text width=2.45cm,inner sep=3pt},
+  store/.style={draw=teal!55!black,rounded corners=2pt,fill=teal!8,align=center,
+    minimum height=.78cm,text width=2.3cm,inner sep=3pt},
+  external/.style={draw=gray!65,rounded corners=2pt,fill=gray!8,align=center,
+    minimum height=.72cm,text width=2.2cm,inner sep=3pt},
+  sync/.style={-{Stealth},thick,draw=gray!70},
+  async/.style={-{Stealth},thick,dashed,draw=gray!70},
+  optional/.style={-{Stealth},thick,dashed,draw=gray!70}
 ]
-\node[box] (pwa) at (0,0) {PWA votante\\cifrado en cliente (opcional, RF-23)};
-\node[box] (gest) at (4.4,0) {Consola de gestión};
-\node[box] (idp) at (8.8,0) {IdP institucional\\OIDC / SSO institucional};
+% Clientes y borde de entrada
+\node[client] (pwa) at (-2.2,0) {PWA del votante\\acceso, papeleta y recibo};
+\node[client] (console) at (2.2,0) {Consola de gestión\\organizaciones y procesos};
+\node[external] (gateway) at (0,-1.35) {CDN, WAF y API gateway\\TLS y limitación de peticiones};
 
-\node[mod] (access) at (0,-2.0) {Acceso votante\\RF-05b, RF-08};
-\node[mod] (tenant) at (4.4,-2.0) {Tenants y roles\\RF-01, RF-02, RF-04, RF-05a};
-\node[mod] (election) at (8.8,-2.0) {Procesos\\RF-06, RF-07, RF-20};
+% Zona de servicios desplegables y escalables de forma independiente.
+\draw[dashed,rounded corners=4pt,draw=gray!55] (-5.45,-6.15) rectangle (5.45,-2.05);
+\node[anchor=west,fill=white,font=\bfseries] at (-5.3,-2.05) {Servicios de negocio (microservicios)};
+\node[service] (tenant) at (-3.5,-2.95) {Tenants, roles y acceso de gestión\\RF-01, RF-02, RF-04, RF-05a};
+\node[service] (census) at (0,-2.95) {Censo\\RF-03, RF-14};
+\node[service] (access) at (3.5,-2.95) {Acceso votante\\RF-05b, RF-08};
+\node[service] (election) at (-3.5,-4.2) {Procesos y calendario\\RF-06, RF-07};
+\node[service] (ballot) at (0,-4.2) {Urna, papeleta y recibos\\RF-09, RF-10, RF-11, RF-20};
+\node[service] (notifyService) at (3.5,-4.2) {Notificaciones\\RF-17};
+\node[service] (privacy) at (-3.5,-5.45) {Privacidad\\RGPD, RF-18};
+\node[service] (audit) at (0,-5.45) {Auditoría\\RF-12, RF-19};
+\node[service] (count) at (3.5,-5.45) {Escrutinio\\RF-13 a RF-16};
 
-\node[mod] (ballot) at (0,-4.2) {Escrutinio\\RF-13a, RF-13b, RF-14, RF-15, RF-16};
-\node[mod,text width=3.7cm] (api) at (4.4,-4.2) {API REST (OpenAPI) $\cdot$ RF-21};
-\node[mod] (audit) at (8.8,-4.2) {Auditoría\\RF-12, RF-19};
+% Servicios externos y procesamiento asíncrono.
+\node[external] (idp) at (-6.9,-3.05) {IdP opcional\\OIDC/SSO};
+\node[external] (notify) at (-6.9,-4.35) {Correo / SMS\\proveedor};
+\node[external] (kms) at (-6.9,-5.65) {KMS opcional\\claves y secretos};
+\node[external] (queue) at (6.9,-3.7) {Cola de tareas\\eventos asíncronos};
+\node[external] (worker) at (6.9,-5.05) {Workers y planificador\\apertura, cierre y escrutinio};
 
-\node[store] (db) at (2.2,-6.1) {PostgreSQL\\censo, participación y configuración};
-\node[store] (urn) at (6.6,-6.1) {Urna cifrada y recibos\\votos sin identidad};
+% Persistencia separada por dominio y finalidad.
+\draw[dashed,rounded corners=4pt,draw=gray!55] (-5.45,-7.75) rectangle (5.45,-6.45);
+\node[anchor=west,fill=white,font=\bfseries] at (-5.3,-6.45) {Persistencia segregada};
+\node[store] (db) at (-3.9,-7.1) {PostgreSQL\\censo y datos por tenant};
+\node[store] (urna) at (-1.3,-7.1) {Urna cifrada\\votos sin identidad};
+\node[store] (log) at (1.3,-7.1) {Registro de auditoría\\cadena de huellas};
+\node[store] (objects) at (3.9,-7.1) {Almacén de objetos\\actas y evidencias};
 
-\draw[link] (pwa) -- (access);
-\draw[link] (gest) -- (tenant);
-\draw[link] (idp) -- (tenant);
-\draw[link] (idp.south west) to[bend right=22] (access.north east);
-\draw[link] (access) -- (ballot);
-\draw[link] (tenant) -- (election);
-\draw[link] (election) -- (audit);
-\draw[link] (ballot) -- (urn);
-\draw[link] (access) -- (db);
-\draw[link] (tenant) -- (db);
-\draw[link] (api) -- (db);
-\draw[link] (api) -- (urn);
-\draw[link] (audit) -- (urn);
+\begin{pgfonlayer}{background}
+\draw[sync] (pwa.south)--(gateway.north west);
+\draw[sync] (console.south)--(gateway.north east);
+\draw[sync] (gateway.south)--(0,-2.2);
+\draw[optional] (idp.east)--(tenant.west);
+\draw[optional] (idp.east)--(-5.7,-3.05)--(-5.7,-1.8)--(3.5,-1.8)--(access.north);
+\draw[sync] (notify.east)--(notifyService.west);
+\draw[sync] (kms.east)--(privacy.west);
+\draw[async] (notifyService.east)--(queue.west);
+\draw[async] (queue.south)--(worker.north);
+\draw[async] (worker.west)--(count.east);
+\draw[sync] (tenant.south)--(db.north west);
+\draw[sync] (census.south)--(db.north);
+\draw[sync] (ballot.south)--(urna.north west);
+\draw[sync] (audit.south)--(log.north);
+\draw[sync] (count.south)--(objects.north east);
+\end{pgfonlayer}
+
+\node[anchor=west,font=\tiny] at (-5.3,-8.05) {Los servicios se comunican mediante API y eventos; PostgreSQL aplica aislamiento por tenant. RF-21: API REST documentada (OpenAPI) en la entrada.};
 \end{tikzpicture}

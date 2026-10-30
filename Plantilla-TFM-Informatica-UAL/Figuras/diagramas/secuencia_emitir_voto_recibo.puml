@@ -15,24 +15,26 @@ database "Urna cifrada" as Urna
 participant "Auditoría hash-chain" as Auditoria
 
 == Emisión (pasos 1--7) ==
-PWA -> Acceso : 1. Solicita acceso al proceso
-Acceso -> Censo : 2. Comprueba censo y proceso abierto
-Censo --> Acceso : 3. Confirma elegibilidad
-Acceso -> Censo : 4. Comprueba y marca voto registrado
-Acceso --> PWA : 5. Entrega token de voto de un solo uso
-PWA -> Urna : 6. Envía el voto cifrado con el token
-Urna -> Auditoria : Registra la huella del evento (RF-12)
-Urna --> PWA : 7. Devuelve recibo
+PWA -> Acceso : 1. Presenta enlace + OTP
+Acceso -> Censo : Valida censo y proceso abierto
+Censo --> Acceso : Confirma elegibilidad
+Acceso --> PWA : 2. Devuelve token opaco de un uso
+PWA -> Recibos : 3. Envía el voto cifrado + token
+Recibos -> Censo : 4. Comprueba y marca voto registrado
+Recibos -> Urna : 5. Anexa el voto cifrado
+Urna -> Auditoria : 6. Registra evento + hash (RF-12)
+Recibos --> PWA : 7. Devuelve recibo
 
 == Verificación del recibo (pasos 8--10, RF-10) ==
-PWA -> Recibos : 8. Solicita comprobar el recibo
-Recibos -> Urna : 9. Busca la referencia del recibo
-Urna --> PWA : 10. Devuelve presencia y estado
+PWA -> Recibos : 8. Solicita verificar el recibo
+Recibos -> Urna : 9. Busca la huella del recibo
+Recibos --> PWA : 10. Devuelve si consta
 
 note over PWA,Urna
-Token: autorización opaca y de un solo uso; no contiene identidad ni enlaza
-identidad y voto (RNF-11). RF-10 consulta la urna. La verificación de la
-cadena hash-chain corresponde a RF-12 y es independiente.
+El acceso valida el enlace, el OTP, la elegibilidad y el proceso antes de
+emitir el token. Tras aceptar el voto se registra la participación. El token
+es opaco y de un uso; el censo y la urna se mantienen segregados (RNF-11).
+RF-10 comprueba el recibo; verificar toda la cadena corresponde a RF-12.
 end note
 legend bottom
   --> petición o acción
