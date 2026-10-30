@@ -1,5 +1,6 @@
 package com.saasvoting.ballotbox.infrastructure.adapter.in.rest;
 
+import com.saasvoting.ballotbox.application.port.in.MinutesUseCase;
 import com.saasvoting.ballotbox.application.port.in.ViewResultsUseCase;
 import com.saasvoting.ballotbox.application.port.in.ViewResultsUseCase.CountedVotesView;
 import com.saasvoting.ballotbox.application.port.in.ViewResultsUseCase.Fingerprints;
@@ -8,6 +9,7 @@ import com.saasvoting.ballotbox.application.port.in.ViewResultsUseCase.Viewer;
 import com.saasvoting.ballotbox.domain.model.BallotNotFoundException;
 import com.saasvoting.ballotbox.domain.model.BallotOption;
 import com.saasvoting.ballotbox.domain.model.Language;
+import com.saasvoting.ballotbox.domain.model.Minutes;
 import com.saasvoting.ballotbox.domain.model.TallyResult;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -32,8 +34,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * RF-12 step 6, RF-13, RF-15. Management endpoints need ADMIN or AUDITOR (export: ADMIN), checked by the security
- * filter; the organization comes from the token. Contract: {@code openapi/ballot-box-service.yaml}.
+ * RF-12 step 6, RF-13, RF-15, RF-16. Management endpoints need ADMIN or AUDITOR (export and minutes: ADMIN), checked by
+ * the security filter; the organization comes from the token. Contract: {@code openapi/ballot-box-service.yaml}.
  */
 @RestController
 @RequestMapping("/api/v1/ballot-box")
@@ -60,9 +62,11 @@ public class ResultsController {
     }
 
     private final ViewResultsUseCase results;
+    private final MinutesUseCase minutes;
 
-    public ResultsController(ViewResultsUseCase results) {
+    public ResultsController(ViewResultsUseCase results, MinutesUseCase minutes) {
         this.results = Objects.requireNonNull(results, "results must not be null");
+        this.minutes = Objects.requireNonNull(minutes, "minutes must not be null");
     }
 
     @GetMapping("/processes/{processId}/fingerprints")
@@ -98,6 +102,21 @@ public class ResultsController {
                         .filename((language == Language.EN ? "results-process-" : "resultados-proceso-") + processId + ".csv")
                         .build().toString())
                 .body(file);
+    }
+
+    /** RF-16: minutes in PDF (ADMIN). Same file on every download; its SHA-256 in {@code X-Content-SHA256}. */
+    @GetMapping("/processes/{processId}/results/minutes")
+    public ResponseEntity<byte[]> minutes(@AuthenticationPrincipal Jwt jwt, @PathVariable long processId,
+            @RequestParam(defaultValue = "es") String lang) {
+        Language language = "en".equalsIgnoreCase(lang) ? Language.EN : Language.ES;
+        Minutes file = minutes.minutes(viewer(jwt, processId), processId, language);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                        .filename((language == Language.EN ? "minutes-process-" : "acta-proceso-") + processId + ".pdf")
+                        .build().toString())
+                .header("X-Content-SHA256", file.sha256())
+                .body(file.pdf());
     }
 
     @GetMapping("/public/results/{publicId}")

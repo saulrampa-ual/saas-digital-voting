@@ -4,7 +4,7 @@ info:
   version: v1
   description: |
     Ballot (RF-09), vote casting with receipt (RF-09, RF-10), receipt verification (RF-10), audit
-    chain and its verification (RF-12),
+    chain and its verification (RF-12), minutes in PDF (RF-16),
     automatic tally when the process closes and its publication (RF-13, RF-15, D-37).
     The ballot box stores no identity, no voting token and no time of votes (RNF-11, D-18).
     The receipt proves that a vote is present in the ballot box; it does not prove that the stored
@@ -249,6 +249,39 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/ballot-box/processes/{processId}/results/minutes:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [results]
+      operationId: getMinutes
+      summary: Minutes of the result as PDF
+      description: |
+        Role: ADMIN. RF-16. Process, calendar, census, participation, result per option and both hashes. Generated the
+        first time it is asked for in each language and stored (RI-10); later requests return the same file, whose
+        SHA-256 goes in the `X-Content-SHA256` header. 409 while there is no result; 503 if it could not be generated
+        (it can be asked again).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: lang
+          in: query
+          schema: { type: string, enum: [es, en], default: es }
+      responses:
+        '200':
+          description: PDF file
+          headers:
+            X-Content-SHA256:
+              description: SHA-256 of the file (lower-case hexadecimal)
+              schema: { type: string, pattern: '^[0-9a-f]{64}$' }
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '503': { $ref: '#/components/responses/Unavailable' }
   /api/v1/ballot-box/public/results/{publicId}:
     parameters:
       - $ref: '#/components/parameters/PublicId'
@@ -478,6 +511,9 @@ components:
         eligibleVoters: { type: integer, minimum: 1, description: Census size, used for participation (RF-13) }
         resultsVisibility: { $ref: '#/components/schemas/ResultsVisibility' }
         resultsPublicId: { type: [string, 'null'], format: uuid }
+        title:
+          description: Title of the process, for the minutes (RF-16). Optional; without it the question is used.
+          $ref: '#/components/schemas/LocalizedText'
     AuditEventType:
       type: string
       enum: [OPENED, VOTE_RECEIVED, CLOSED, FINAL_HASH_PUBLISHED]

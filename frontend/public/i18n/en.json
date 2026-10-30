@@ -359,7 +359,13 @@
       "copied": "Link copied",
       "censusOnlyTitle": "Result for the organisation only",
       "censusOnlyText": "This process does not publish the result with a public link. The hashes are public.",
-      "talliedAt": "Tallied on {{date}}."
+      "talliedAt": "Tallied on {{date}}.",
+      "minutes": "Generate minutes (PDF)",
+      "minutesTitle": "Minutes of the process",
+      "minutesText": "They include process, calendar, census, turnout, result and hashes. Generated the first time and then the same file is always downloaded.",
+      "minutesHash": "Hash of the minutes (SHA-256):",
+      "minutesFile": "minutes-process",
+      "minutesError": "The minutes could not be generated. Try again."
     },
     "audit": {
       "title": "Ballot box audit",

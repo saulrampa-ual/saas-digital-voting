@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 /**
  * Voter endpoints are public: the single-use voting token is the credential (RF-09). Fingerprints and the public
  * results link are public too (ADR-0007, D-16). Results of an organization need a management token with ADMIN or
- * AUDITOR (export: ADMIN, RF-15); the chain of the ballot box only to the AUDITOR (RF-12). Internal endpoints need a Keycloak client-credentials token with role SERVICE
+ * AUDITOR (export and minutes: ADMIN, RF-15, RF-16); the chain of the ballot box only to the AUDITOR (RF-12). Internal endpoints need a Keycloak client-credentials token with role SERVICE
  * (D-22). Everything else is denied.
  */
 @Configuration
@@ -26,7 +26,8 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/api/v1/ballot-box/processes/*/results/export")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/ballot-box/processes/*/results/export",
+                                "/api/v1/ballot-box/processes/*/results/minutes")
                         .hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/ballot-box/processes/*/results",
                                 "/api/v1/ballot-box/processes/*/results/counted-votes")

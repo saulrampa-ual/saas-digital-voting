@@ -197,6 +197,7 @@ erDiagram
     ballot_snapshots ||--o{ audit_events : "cadena"
     ballot_snapshots ||--o| results : "escrutinio"
     results ||--o{ result_options : "por opción"
+    results ||--o{ minutes : "acta por idioma"
     ballot_snapshots {
         bigint process_id PK
         varchar20 organization_id
@@ -243,11 +244,11 @@ erDiagram
 
 | Tabla | RI | Notas |
 | --- | --- | --- |
-| `ballot_snapshots` (+ textos y opciones) | RI-4, RI-5 | Copia de la papeleta recibida al programar. Sirve para mostrar y validar la selección y para escrutar. |
+| `ballot_snapshots` (+ textos, opciones y `ballot_titles`) | RI-4, RI-5 | Copia de la papeleta recibida al programar. Sirve para mostrar y validar la selección y para escrutar. `ballot_titles` (V4): título del proceso por idioma, solo para el acta; no forma parte de la papeleta canónica (D-40). |
 | `votes` | RI-6 | `id` UUID aleatorio, sin identidad, sin token, sin recibo. Estado `COUNTABLE` (`SUBSTITUTED` reservado para RF-11). **Desviación (D-18):** sin fecha y hora de recepción ni canal. |
 | `receipts` | RI-8 | Hash del código de 64 hex. Sin vínculo con el voto ni con la identidad. Estado `VALID`. **Desviación (D-18):** sin hora de emisión. |
 | `audit_events` | RI-9 | Tipos: `OPENED`, `VOTE_RECEIVED`, `CLOSED`, `FINAL_HASH_PUBLISHED`. **Desviación (D-18):** `occurred_at` solo en eventos de proceso; los de voto no llevan hora. `payload_hash` de un voto = SHA-256 del hash del recibo. |
-| `results`, `result_options`, `minutes` | RI-10 | Votos por opción y en blanco, censo, huella de la lista de votos y del resultado (D-37); porcentajes y participación (2 decimales) se calculan al leer. `election_notified`: election ya pasó el proceso a `TALLIED`. Acta PDF (`minutes`) en P5. |
+| `results`, `result_options`, `minutes` | RI-10 | Votos por opción y en blanco, censo, huella de la lista de votos y del resultado (D-37); porcentajes y participación (2 decimales) se calculan al leer. `election_notified`: election ya pasó el proceso a `TALLIED`. Acta PDF (`minutes`, V4): `process_id`, `language`, `generated_at`, `sha256`, `pdf`; se escribe una vez por idioma y no cambia (D-40). |
 | `incidents` (`CHAIN_BROKEN`, `TALLY_FAILED`) | RF-12, RF-13 | Cadena rota o recuento no publicado; solo el día (D-18), una por proceso y tipo. Sustituye a `tally_incidents`. |
 | `chain_checks` | RF-12 | Última verificación de la cadena de cada proceso: momento, resultado, eventos comprobados, huella final y hasta 100 problemas `CÓDIGO@secuencia`. Sin usuario (la trazabilidad de acciones es RF-19). D-38. |
 

@@ -4,12 +4,15 @@ import com.saasvoting.ballotbox.application.port.out.AuditRepository;
 import com.saasvoting.ballotbox.application.port.out.BallotBoxStore;
 import com.saasvoting.ballotbox.application.port.out.BallotRepository;
 import com.saasvoting.ballotbox.application.port.out.ElectionClient;
+import com.saasvoting.ballotbox.application.port.out.MinutesRenderer;
+import com.saasvoting.ballotbox.application.port.out.MinutesRepository;
 import com.saasvoting.ballotbox.application.port.out.ReceiptGenerator;
 import com.saasvoting.ballotbox.application.port.out.ResultRepository;
 import com.saasvoting.ballotbox.application.port.out.UnitOfWork;
 import com.saasvoting.ballotbox.application.port.out.VoterAccessClient;
 import com.saasvoting.ballotbox.application.service.AuditService;
 import com.saasvoting.ballotbox.application.service.BallotReceiverService;
+import com.saasvoting.ballotbox.application.service.MinutesService;
 import com.saasvoting.ballotbox.application.service.ResultQueryService;
 import com.saasvoting.ballotbox.application.service.TallyService;
 import com.saasvoting.ballotbox.application.service.VotingService;
@@ -19,6 +22,7 @@ import com.saasvoting.ballotbox.infrastructure.adapter.out.client.HttpVoterAcces
 import com.saasvoting.ballotbox.infrastructure.adapter.out.client.KeycloakClientProperties;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.client.ServiceTokenProvider;
 import com.saasvoting.ballotbox.infrastructure.adapter.out.client.VoterAccessProperties;
+import com.saasvoting.ballotbox.infrastructure.adapter.out.pdf.PdfMinutesRenderer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -85,5 +89,16 @@ public class BallotBoxConfiguration {
     @Bean
     ResultQueryService resultQueryService(BallotRepository ballots, ResultRepository results, Clock clock) {
         return new ResultQueryService(ballots, results, clock);
+    }
+
+    @Bean
+    MinutesRenderer minutesRenderer(@Value("${verivoto.zone:Europe/Madrid}") ZoneId zone) {
+        return new PdfMinutesRenderer(zone);
+    }
+
+    @Bean
+    MinutesService minutesService(BallotRepository ballots, ResultRepository results, MinutesRepository minutes,
+            MinutesRenderer renderer, UnitOfWork unitOfWork, Clock clock) {
+        return new MinutesService(ballots, results, minutes, renderer, unitOfWork, clock);
     }
 }

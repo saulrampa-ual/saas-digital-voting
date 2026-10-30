@@ -76,6 +76,14 @@ export class ResultsApiService {
     }));
   }
 
+  /** RF-16: minutes in PDF for ADMIN; the same file every time, with its SHA-256 (D-40). */
+  async minutes(processId: number, lang: string): Promise<{ file: Blob; sha256: string | null }> {
+    const response = await callApi(this.http.get(`${this.ballotBox}/${processId}/results/minutes`, {
+      params: new HttpParams().set('lang', lang), responseType: 'blob', observe: 'response',
+    }));
+    return { file: response.body ?? new Blob(), sha256: response.headers.get('X-Content-SHA256') };
+  }
+
   auditEvents(processId: number, page: number, size: number): Promise<AuditEventPage> {
     return callApi(this.http.get<AuditEventPage>(`${this.ballotBox}/${processId}/audit-events`, {
       params: new HttpParams().set('page', page).set('size', size),

@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-30 · Rama de trabajo: `feat/results-screens` (P5.3 sin commitear, sobre `feat/audit-participation` `c06d26b`) · Último commit en `dev`: `ce22e93`
+Última actualización: 2026-10-30 · Rama de trabajo: `feat/minutes` (P5.4 sin commitear, sobre `feat/results-screens` `42f62cb`) · Último commit en `dev`: `ce22e93`
 
 ## Hitos
 
@@ -11,7 +11,7 @@
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
 | P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Hecho (`b7aea1c`) |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho salvo integrar (P4.1–P4.4 en `dev`; P4.5, P4.6 y A2 en `feat/voter-screens`, `feat/process-screens` y `feat/census-screens`) |
-| P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | En curso (P5.1 en `feat/tally`, P5.2 en `feat/audit-participation`; P5.3 pantallas probadas por la IA, sin commitear; faltan acta PDF y modelo de amenazas) |
+| P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | En curso (P5.1 en `feat/tally`, P5.2 en `feat/audit-participation`; P5.3 en `feat/results-screens`; P5.4 acta PDF probada por la IA, sin commitear; faltan el resultado para el votante con `CENSUS_ONLY` y el modelo de amenazas) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | Pendiente |
@@ -96,6 +96,7 @@
 
 ## En curso
 
+- P5.4: acta de resultados en PDF (RF-16, D-40): escritor PDF propio sin dependencias detrás de `MinutesRenderer`, acta por idioma guardada una vez con su SHA-256 (`minutes`, Flyway V4) y servida con `X-Content-SHA256`, título del proceso en la papeleta interna (`ballot_titles`), solo ADMIN (409 antes del escrutinio, 503 si falla); F1 con «Generar acta (PDF)» y la huella del fichero. Prueba de extremo a extremo de la IA (21/21: PDF válido con `qpdf`, texto con tildes y ñ, inglés, acta de 3 páginas con 30 opciones, mismos bytes en la segunda descarga, permisos, gateway) y en navegador (44/44); regresión: escrutinio 54/54, auditoría 37/37, procesos 28/28.
 - P5.3: pantallas de resultados, participación y auditoría (RF-12–RF-15, D-39): A5 (participación con refresco y por día), F4/F1 (escrutinio en curso y resultados, CSV, enlace público, verificación en el navegador), H1 (registro de la urna y verificación), V8 (resultados públicos sin sesión), selector de proceso, menú y enlaces desde A4, textos es/en. Prueba en navegador de la IA (39/39, 1280 y 360 px) con todos los servicios reales y una manipulación real del registro; regresión: consola 14/14, votante 25/25, procesos 28/28, censos 37/37. `ng build` limpio (inicial ≈ 966 kB / 186 kB transferidos).
 - P5.2: registro de la urna y participación (RF-12, RF-14, D-38). ballot-box: `ChainVerifier` (hash, enlaces, secuencia, cabeza, papeleta de `OPENED`, votos/recibos/eventos, `CLOSED`, huella final), `AuditService` y `AuditController` (eventos por páginas y verificación para AUDITOR), Flyway V3 `chain_checks`, incidencia `CHAIN_BROKEN` única y escrutinio que verifica la cadena antes de publicar. voter-access: `ParticipationService` y `ParticipationController` (ADMIN; censo, votos, pendientes, % y por día). Prueba de extremo a extremo de la IA (37/37): seis manipulaciones reales de la base de datos detectadas y deshechas, escrutinio bloqueado y reanudado, permisos y organizaciones, participación antes, durante y después; regresión P5.1 54/54 y urna 28/28.
 - P5.1: escrutinio y resultados (RF-13, RF-15, D-37). ballot-box: Flyway V2 (`results`, `result_options`, incidencia `TALLY_FAILED`), `TallyResult` (recuento, porcentajes, huella de la lista de votos y del resultado), `TallyService` + `TallyScheduler` (comprobación con el evento `CLOSED`, incidencia única, reintento, aviso a election hasta que responde), `ResultQueryService` y `ResultsController` (huellas públicas, resultado ADMIN/AUDITOR, votos contabilizados, CSV ADMIN, enlace público), `ServiceTokenProvider` compartido y `HttpElectionClient`. election: `POST /internal/v1/processes/{id}/tallied` (SERVICE, idempotente) y `resultsPublicId` en la respuesta del proceso con `PUBLIC_LINK`. Prueba de extremo a extremo de la IA (54/54) con todos los servicios reales: recuento manipulado no publicado y reintento, election caído durante el escrutinio, proceso sin votos, porcentajes y participación, recálculo independiente de la huella, permisos y organizaciones, CSV es/en, enlace público, secreto del voto en datos y logs; regresión de la urna 28/28.
@@ -158,13 +159,12 @@
 ## Bloqueos / preguntas abiertas
 
 - ¿Se activan las pruebas de propiedades críticas al terminar P4? (IMP-03)
-- Librería para el acta PDF (RF-16). (P5)
 - Retraso respecto al Gantt: la iteración 1 (RF-01–RF-03) acababa el 31/10.
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Probar las pantallas con Keycloak real (`api-testing.md` §12) y commitear P5.3 en `feat/results-screens`.
+1. Probar el acta con Keycloak real (`api-testing.md` §12, paso 5) y commitear P5.4 en `feat/minutes`.
 2. Integrar en `dev`, por orden, `feat/voter-screens`, `feat/process-screens`, `feat/census-screens`, `feat/tally`,
-   `feat/audit-participation` y `feat/results-screens`.
-3. Siguiente: **P5.4**, acta PDF (RF-16) y resultado para el votante con `CENSUS_ONLY` (enlace + OTP); después el modelo de
-   amenazas para cerrar P5.
+   `feat/audit-participation`, `feat/results-screens` y `feat/minutes`.
+3. Siguiente: **P5.5**, resultado para el votante con `CENSUS_ONLY` (enlace + OTP); después el modelo de amenazas para
+   cerrar P5.
