@@ -214,6 +214,10 @@ export class TraceabilityPage {
 
   protected detail(a: AdminAction): string | null {
     if (!a.detail) return null;
+    if (a.action === 'REMINDER_SCHEDULED' || a.action === 'REMINDER_CANCELLED') {
+      const when = new LocalDatePipe().transform(a.detail, this.language());
+      return this.translate.instant('admin.trace.details.reminder', { value: when }) as string;
+    }
     for (const key of [`admin.trace.details.${a.action}.${a.detail}`, `admin.trace.details.${a.action}.value`]) {
       const text = this.translate.instant(key, { value: a.detail }) as string;
       if (text !== key) return text;

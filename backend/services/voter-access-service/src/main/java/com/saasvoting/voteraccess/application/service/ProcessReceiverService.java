@@ -1,11 +1,14 @@
 package com.saasvoting.voteraccess.application.service;
 
 import com.saasvoting.voteraccess.application.port.in.ReceiveProcessUseCase;
+import com.saasvoting.voteraccess.application.port.out.NotificationRepository;
+import com.saasvoting.voteraccess.application.port.out.ReminderRepository;
 import com.saasvoting.voteraccess.application.port.out.RollRepository;
 import com.saasvoting.voteraccess.application.port.out.SnapshotRepository;
 import com.saasvoting.voteraccess.application.port.out.UnitOfWork;
 import com.saasvoting.voteraccess.domain.model.AccessCredential;
 import com.saasvoting.voteraccess.domain.model.Notification;
+import com.saasvoting.voteraccess.domain.model.NotificationType;
 import com.saasvoting.voteraccess.domain.model.Participation;
 import com.saasvoting.voteraccess.domain.model.ProcessSnapshot;
 import com.saasvoting.voteraccess.domain.model.ProcessStatus;
@@ -25,18 +28,24 @@ import java.util.UUID;
 
 /**
  * Receives processes from election-service (D-21). A repeated snapshot (the outbox may deliver twice) only adds
- * the voters that are missing, so existing links and invitations are kept.
+ * the voters that are missing, so existing links and invitations are kept. When voting ends, everybody on the roll gets
+ * the closing notice and the reminders not sent yet are cancelled (RF-17, D-45).
  */
 public final class ProcessReceiverService implements ReceiveProcessUseCase {
 
     private final SnapshotRepository snapshots;
     private final RollRepository roll;
+    private final NotificationRepository notifications;
+    private final ReminderRepository reminders;
     private final UnitOfWork unitOfWork;
     private final Clock clock;
 
-    public ProcessReceiverService(SnapshotRepository snapshots, RollRepository roll, UnitOfWork unitOfWork, Clock clock) {
+    public ProcessReceiverService(SnapshotRepository snapshots, RollRepository roll,
+            NotificationRepository notifications, ReminderRepository reminders, UnitOfWork unitOfWork, Clock clock) {
         this.snapshots = Objects.requireNonNull(snapshots, "snapshots must not be null");
         this.roll = Objects.requireNonNull(roll, "roll must not be null");
+        this.notifications = Objects.requireNonNull(notifications, "notifications must not be null");
+        this.reminders = Objects.requireNonNull(reminders, "reminders must not be null");
         this.unitOfWork = Objects.requireNonNull(unitOfWork, "unitOfWork must not be null");
         this.clock = Objects.requireNonNull(clock, "clock must not be null");
     }
@@ -63,9 +72,22 @@ public final class ProcessReceiverService implements ReceiveProcessUseCase {
             ProcessSnapshot updated = current.withStatus(status);
             if (updated != current) {
                 snapshots.save(updated);
+                if (current.status().compareTo(ProcessStatus.OPEN) <= 0
+                        && updated.status().compareTo(ProcessStatus.CLOSED) >= 0) {
+                    votingEnded(processId);
+                }
             }
             return null;
         });
+    }
+
+    private void votingEnded(long processId) {
+        Instant now = clock.instant();
+        reminders.cancelScheduledReminders(processId);
+        notifications.cancelPendingReminders(processId, "Votación cerrada: recordatorio no enviado");
+        notifications.addAll(notifications.rollEntries(processId, false).stream()
+                .map(entry -> Notification.pending(processId, entry, NotificationType.CLOSING, now))
+                .toList());
     }
 
     private void addMissingVoters(long processId, List<RollData> rollData, Instant now) {

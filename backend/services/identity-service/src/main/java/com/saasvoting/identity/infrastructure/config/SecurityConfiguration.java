@@ -30,7 +30,7 @@ public class SecurityConfiguration {
                         .permitAll()
                         // RF-19: administrative actions delivered by election and the ballot box only (IMP-26)
                         .requestMatchers(HttpMethod.POST, "/internal/v1/admin-actions")
-                        .access(InternalClients.only(clients.election(), clients.ballotBox()))
+                        .access(InternalClients.only(clients.election(), clients.ballotBox(), clients.voterAccess()))
                         .requestMatchers("/internal/**").denyAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(resourceServer -> resourceServer

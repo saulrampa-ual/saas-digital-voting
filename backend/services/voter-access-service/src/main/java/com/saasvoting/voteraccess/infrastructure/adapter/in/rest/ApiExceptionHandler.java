@@ -7,6 +7,9 @@ import com.saasvoting.voteraccess.domain.model.LinkExpiredException;
 import com.saasvoting.voteraccess.domain.model.LinkNotFoundException;
 import com.saasvoting.voteraccess.domain.model.MessageDeliveryException;
 import com.saasvoting.voteraccess.domain.model.ProcessNotOpenException;
+import com.saasvoting.voteraccess.domain.model.Reminder;
+import com.saasvoting.voteraccess.domain.model.ReminderNotAllowedException;
+import com.saasvoting.voteraccess.domain.model.ReminderNotFoundException;
 import com.saasvoting.voteraccess.domain.model.ResultsTokenExpiredException;
 import com.saasvoting.voteraccess.domain.model.ResultsTokenNotFoundException;
 import com.saasvoting.voteraccess.domain.model.SnapshotConflictException;
@@ -121,6 +124,24 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ResultsTokenExpiredException.class)
     ProblemDetail resultsTokenExpired(ResultsTokenExpiredException e) {
         return problem(HttpStatus.GONE, "Tu acceso a los resultados ha caducado. Vuelve a entrar con tu enlace.");
+    }
+
+    @ExceptionHandler(ReminderNotFoundException.class)
+    ProblemDetail reminderNotFound(ReminderNotFoundException e) {
+        return problem(HttpStatus.NOT_FOUND, "Recordatorio desconocido.");
+    }
+
+    @ExceptionHandler(ReminderNotAllowedException.class)
+    ProblemDetail reminderNotAllowed(ReminderNotAllowedException e) {
+        String detail = switch (e.reason()) {
+            case NOT_OPEN -> "Solo se pueden enviar recordatorios mientras la votación está abierta.";
+            case OUT_OF_PERIOD -> "La hora del recordatorio debe ser a partir de ahora y antes del cierre.";
+            case TOO_MANY -> "Ya hay " + Reminder.MAX_SCHEDULED + " recordatorios en este proceso.";
+            case ALREADY_SENT -> "El recordatorio ya se ha enviado o cancelado.";
+        };
+        ProblemDetail problem = problem(HttpStatus.CONFLICT, detail);
+        problem.setProperty("reason", e.reason().name());
+        return problem;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -1,22 +1,31 @@
 package com.saasvoting.voteraccess.infrastructure.config;
 
+import com.saasvoting.voteraccess.application.port.out.AdminActionOutbox;
 import com.saasvoting.voteraccess.application.port.out.Mailer;
 import com.saasvoting.voteraccess.application.port.out.NotificationRepository;
 import com.saasvoting.voteraccess.application.port.out.ParticipationRepository;
+import com.saasvoting.voteraccess.application.port.out.ReminderRepository;
 import com.saasvoting.voteraccess.application.port.out.ResultsTokenRepository;
 import com.saasvoting.voteraccess.application.port.out.RollRepository;
 import com.saasvoting.voteraccess.application.port.out.SecretGenerator;
 import com.saasvoting.voteraccess.application.port.out.SnapshotRepository;
 import com.saasvoting.voteraccess.application.port.out.UnitOfWork;
 import com.saasvoting.voteraccess.application.port.out.VotingTokenRepository;
+import com.saasvoting.voteraccess.application.service.AdminActionService;
 import com.saasvoting.voteraccess.application.service.InvitationService;
+import com.saasvoting.voteraccess.application.service.NotificationAdminService;
 import com.saasvoting.voteraccess.application.service.ParticipationService;
 import com.saasvoting.voteraccess.application.service.ProcessReceiverService;
 import com.saasvoting.voteraccess.application.service.ResultsAccessService;
 import com.saasvoting.voteraccess.application.service.VoterAccessService;
 import com.saasvoting.voteraccess.application.service.VoterMessages;
 import com.saasvoting.voteraccess.application.service.VotingTokenService;
+import com.saasvoting.voteraccess.infrastructure.adapter.out.client.AdminActionDispatcher;
+import com.saasvoting.voteraccess.infrastructure.adapter.out.client.IdentityProperties;
+import com.saasvoting.voteraccess.infrastructure.adapter.out.client.KeycloakClientProperties;
+import com.saasvoting.voteraccess.infrastructure.adapter.out.client.ServiceTokenProvider;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.mail.SmtpMailer;
+import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.JpaAdminActionOutbox;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +37,7 @@ import java.time.Clock;
 /** Wires use cases and outbound adapters. Application services carry no Spring annotations. */
 @Configuration
 @EnableScheduling
-@EnableConfigurationProperties(AccessProperties.class)
+@EnableConfigurationProperties({AccessProperties.class, KeycloakClientProperties.class, IdentityProperties.class})
 public class VoterAccessConfiguration {
 
     @Bean
@@ -54,8 +63,32 @@ public class VoterAccessConfiguration {
 
     @Bean
     ProcessReceiverService processReceiverService(
-            SnapshotRepository snapshots, RollRepository roll, UnitOfWork unitOfWork, Clock clock) {
-        return new ProcessReceiverService(snapshots, roll, unitOfWork, clock);
+            SnapshotRepository snapshots, RollRepository roll, NotificationRepository notifications,
+            ReminderRepository reminders, UnitOfWork unitOfWork, Clock clock) {
+        return new ProcessReceiverService(snapshots, roll, notifications, reminders, unitOfWork, clock);
+    }
+
+    @Bean
+    NotificationAdminService notificationAdminService(
+            SnapshotRepository snapshots, NotificationRepository notifications, ReminderRepository reminders,
+            UnitOfWork unitOfWork, Clock clock) {
+        return new NotificationAdminService(snapshots, notifications, reminders, unitOfWork, clock);
+    }
+
+    @Bean
+    ServiceTokenProvider serviceTokenProvider(KeycloakClientProperties properties, Clock clock) {
+        return new ServiceTokenProvider(properties, clock);
+    }
+
+    @Bean
+    AdminActionService adminActionService(AdminActionOutbox outbox) {
+        return new AdminActionService(outbox);
+    }
+
+    @Bean
+    AdminActionDispatcher adminActionDispatcher(JpaAdminActionOutbox outbox, IdentityProperties properties,
+            ServiceTokenProvider tokens, Clock clock) {
+        return new AdminActionDispatcher(outbox, properties, tokens, clock);
     }
 
     @Bean

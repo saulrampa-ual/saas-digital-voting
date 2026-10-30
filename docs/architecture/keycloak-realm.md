@@ -25,6 +25,7 @@ El realm está versionado en `infra/keycloak/realm/verivoto-realm.json` y Keyclo
 | `identity-service` | Confidencial, *service account* con `manage-users`, `view-users`, `query-users` de `realm-management` y rol `SERVICE` | Crear usuarios de gestión y asignar roles por la Admin API (RF-02) |
 | `election-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access y ballot-box |
 | `ballot-box-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access |
+| `voter-access-service` | Confidencial, *service account* con rol `SERVICE` | Entregar sus acciones administrativas a `/internal/v1/admin-actions` de identity (RF-19, D-45) |
 | `verivoto-dev-swagger` | Público, Authorization Code + PKCE. **Solo desarrollo** | Swagger UI de los servicios (puertos 8081–8084). Ver `api-testing.md` |
 
 Todos los clientes llevan dos mappers propios que añaden al token:
@@ -36,8 +37,8 @@ Todos los clientes llevan dos mappers propios que añaden al token:
 
 El fichero no contiene secretos. Usa marcadores `${VAR}` que Keycloak resuelve con variables de entorno al
 importar: `VERIVOTO_SUPERADMIN_EMAIL`, `VERIVOTO_SUPERADMIN_INITIAL_PASSWORD`,
-`IDENTITY_SERVICE_CLIENT_SECRET`, `ELECTION_SERVICE_CLIENT_SECRET` y `BALLOT_BOX_SERVICE_CLIENT_SECRET`
-(definidas en `infra/.env`).
+`IDENTITY_SERVICE_CLIENT_SECRET`, `ELECTION_SERVICE_CLIENT_SECRET`, `BALLOT_BOX_SERVICE_CLIENT_SECRET` y
+`VOTER_ACCESS_SERVICE_CLIENT_SECRET` (definidas en `infra/.env`).
 
 ## Superadministrador inicial
 

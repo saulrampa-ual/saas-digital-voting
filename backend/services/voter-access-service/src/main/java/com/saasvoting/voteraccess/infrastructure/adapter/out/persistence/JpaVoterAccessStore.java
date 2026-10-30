@@ -2,25 +2,31 @@ package com.saasvoting.voteraccess.infrastructure.adapter.out.persistence;
 
 import com.saasvoting.voteraccess.application.port.out.NotificationRepository;
 import com.saasvoting.voteraccess.application.port.out.ParticipationRepository;
+import com.saasvoting.voteraccess.application.port.out.ReminderRepository;
+import com.saasvoting.voteraccess.application.port.out.ResultsTokenRepository;
 import com.saasvoting.voteraccess.application.port.out.RollRepository;
 import com.saasvoting.voteraccess.application.port.out.SnapshotRepository;
-import com.saasvoting.voteraccess.application.port.out.ResultsTokenRepository;
 import com.saasvoting.voteraccess.application.port.out.VotingTokenRepository;
 import com.saasvoting.voteraccess.domain.model.AccessCredential;
 import com.saasvoting.voteraccess.domain.model.Notification;
 import com.saasvoting.voteraccess.domain.model.NotificationStatus;
+import com.saasvoting.voteraccess.domain.model.NotificationSummary;
+import com.saasvoting.voteraccess.domain.model.NotificationType;
 import com.saasvoting.voteraccess.domain.model.Participation;
 import com.saasvoting.voteraccess.domain.model.ProcessSnapshot;
-import com.saasvoting.voteraccess.domain.model.RollEntry;
+import com.saasvoting.voteraccess.domain.model.Reminder;
+import com.saasvoting.voteraccess.domain.model.ReminderStatus;
 import com.saasvoting.voteraccess.domain.model.ResultsToken;
+import com.saasvoting.voteraccess.domain.model.RollEntry;
 import com.saasvoting.voteraccess.domain.model.VotingToken;
 import com.saasvoting.voteraccess.domain.model.VotingTokenStatus;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.AccessCredentialJpaEntity;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.NotificationJpaEntity;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.ParticipationJpaEntity;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.ProcessSnapshotJpaEntity;
-import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.RollEntryJpaEntity;
+import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.ReminderJpaEntity;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.ResultsTokenJpaEntity;
+import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.RollEntryJpaEntity;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.entity.VotingTokenJpaEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
@@ -28,8 +34,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -42,7 +50,7 @@ import java.util.UUID;
 @Repository
 @Transactional
 public class JpaVoterAccessStore implements SnapshotRepository, RollRepository, VotingTokenRepository,
-        NotificationRepository, ParticipationRepository, ResultsTokenRepository {
+        NotificationRepository, ParticipationRepository, ResultsTokenRepository, ReminderRepository {
 
     private static final int FLUSH_EVERY = 500;
 
@@ -254,6 +262,148 @@ public class JpaVoterAccessStore implements SnapshotRepository, RollRepository, 
             throw new IllegalStateException("Notification " + notification.id() + " no longer exists");
         }
         entity.apply(notification);
+    }
+
+    @Override
+    public void addAll(List<Notification> notifications) {
+        int count = 0;
+        for (Notification notification : notifications) {
+            em.persist(NotificationJpaEntity.create(notification));
+            if (++count % FLUSH_EVERY == 0) {
+                em.flush();
+                em.clear();
+            }
+        }
+    }
+
+    @Override
+    public List<UUID> rollEntries(long processId, boolean onlyNotVoted) {
+        String query = onlyNotVoted
+                ? """
+                        select r.id from RollEntryJpaEntity r, ParticipationJpaEntity p
+                        where p.rollEntryId = r.id and r.processId = :processId and p.hasVoted = false
+                        order by r.id"""
+                : "select r.id from RollEntryJpaEntity r where r.processId = :processId order by r.id";
+        return em.createQuery(query, UUID.class).setParameter("processId", processId).getResultList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<NotificationType, Map<NotificationStatus, Integer>> counts(long processId) {
+        Map<NotificationType, Map<NotificationStatus, Integer>> counts = new EnumMap<>(NotificationType.class);
+        for (NotificationType type : NotificationType.values()) {
+            Map<NotificationStatus, Integer> byStatus = new EnumMap<>(NotificationStatus.class);
+            for (NotificationStatus status : NotificationStatus.values()) {
+                byStatus.put(status, 0);
+            }
+            counts.put(type, byStatus);
+        }
+        em.createQuery("""
+                        select n.type, n.status, count(n) from NotificationJpaEntity n
+                        where n.processId = :processId group by n.type, n.status""", Object[].class)
+                .setParameter("processId", processId)
+                .getResultList()
+                .forEach(row -> counts.get((NotificationType) row[0])
+                        .put((NotificationStatus) row[1], ((Long) row[2]).intValue()));
+        return counts;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<NotificationSummary.Failed> failedListed(long processId) {
+        return em.createQuery("""
+                        select n.type, r.displayName, r.email, n.attempts, n.lastError, n.createdAt
+                        from NotificationJpaEntity n, RollEntryJpaEntity r
+                        where n.rollEntryId = r.id and n.processId = :processId and n.status = :failed
+                          and n.type <> :reminder
+                        order by r.displayName, n.type""", Object[].class)
+                .setParameter("processId", processId)
+                .setParameter("failed", NotificationStatus.FAILED)
+                .setParameter("reminder", NotificationType.REMINDER)
+                .getResultList()
+                .stream()
+                .map(row -> new NotificationSummary.Failed((NotificationType) row[0], (String) row[1], (String) row[2],
+                        ((Number) row[3]).intValue(), (String) row[4], (Instant) row[5]))
+                .toList();
+    }
+
+    @Override
+    public int retryFailed(long processId, Instant now) {
+        return em.createQuery("""
+                        update NotificationJpaEntity n set n.status = :pending, n.attempts = 0, n.nextAttemptAt = :now
+                        where n.processId = :processId and n.status = :failed""")
+                .setParameter("pending", NotificationStatus.PENDING)
+                .setParameter("failed", NotificationStatus.FAILED)
+                .setParameter("now", now)
+                .setParameter("processId", processId)
+                .executeUpdate();
+    }
+
+    @Override
+    public int cancelPendingReminders(long processId, String reason) {
+        return em.createQuery("""
+                        update NotificationJpaEntity n set n.status = :cancelled, n.lastError = :reason
+                        where n.processId = :processId and n.status = :pending and n.type = :reminder""")
+                .setParameter("cancelled", NotificationStatus.CANCELLED)
+                .setParameter("pending", NotificationStatus.PENDING)
+                .setParameter("reminder", NotificationType.REMINDER)
+                .setParameter("reason", reason)
+                .setParameter("processId", processId)
+                .executeUpdate();
+    }
+
+    // ---- Reminders (RF-17, D-45) ----
+
+    @Override
+    public Reminder save(Reminder reminder) {
+        if (reminder.id() == null) {
+            ReminderJpaEntity entity = ReminderJpaEntity.create(reminder);
+            em.persist(entity);
+            em.flush();
+            return entity.toDomain();
+        }
+        ReminderJpaEntity entity = em.find(ReminderJpaEntity.class, reminder.id());
+        entity.apply(reminder);
+        return entity.toDomain();
+    }
+
+    @Override
+    public Optional<Reminder> findReminder(long processId, long reminderId) {
+        return Optional.ofNullable(em.find(ReminderJpaEntity.class, reminderId, LockModeType.PESSIMISTIC_WRITE))
+                .map(ReminderJpaEntity::toDomain)
+                .filter(reminder -> reminder.processId() == processId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Reminder> remindersOf(long processId) {
+        return em.createQuery("select r from ReminderJpaEntity r where r.processId = :processId order by r.sendAt, r.id",
+                        ReminderJpaEntity.class)
+                .setParameter("processId", processId)
+                .getResultList().stream().map(ReminderJpaEntity::toDomain).toList();
+    }
+
+    @Override
+    public List<Reminder> lockDueReminders(Instant now) {
+        return em.createQuery("""
+                        select r from ReminderJpaEntity r where r.status = :scheduled and r.sendAt <= :now
+                        order by r.sendAt, r.id""", ReminderJpaEntity.class)
+                .setParameter("scheduled", ReminderStatus.SCHEDULED)
+                .setParameter("now", now)
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                .setMaxResults(20)
+                .getResultList().stream().map(ReminderJpaEntity::toDomain).toList();
+    }
+
+    @Override
+    public int cancelScheduledReminders(long processId) {
+        return em.createQuery("""
+                        update ReminderJpaEntity r set r.status = :cancelled
+                        where r.processId = :processId and r.status = :scheduled""")
+                .setParameter("cancelled", ReminderStatus.CANCELLED)
+                .setParameter("scheduled", ReminderStatus.SCHEDULED)
+                .setParameter("processId", processId)
+                .executeUpdate();
     }
 
     // ---- Participation (RF-14): counts only ----

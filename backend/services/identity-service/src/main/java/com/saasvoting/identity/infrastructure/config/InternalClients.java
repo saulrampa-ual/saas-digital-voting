@@ -12,15 +12,16 @@ import java.util.Set;
 
 /**
  * IMP-26 (T-04 of the threat model): the role SERVICE is not enough on {@code /internal/**}; the token must also come
- * from the Keycloak client that uses the route (claim {@code azp}). election-service and ballot-box-service deliver
- * their administrative actions (RF-19).
+ * from the Keycloak client that uses the route (claim {@code azp}). election-service, ballot-box-service and
+ * voter-access-service deliver their administrative actions (RF-19).
  */
 @ConfigurationProperties(prefix = "verivoto.internal-clients")
-public record InternalClients(String election, String ballotBox) {
+public record InternalClients(String election, String ballotBox, String voterAccess) {
 
     public InternalClients {
         election = election == null ? "election-service" : election;
         ballotBox = ballotBox == null ? "ballot-box-service" : ballotBox;
+        voterAccess = voterAccess == null ? "voter-access-service" : voterAccess;
     }
 
     /** Role SERVICE and one of the given clients; anything else is denied (401 without token, 403 otherwise). */

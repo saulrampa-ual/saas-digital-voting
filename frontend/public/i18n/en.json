@@ -335,6 +335,57 @@
       "lockText": "Here you only see how many people have voted, never what they voted. Turnout is counted per day, without hours, to protect the secrecy of the vote.",
       "seeResults": "See the results"
     },
+    "notifications": {
+      "remindersTitle": "Reminders to people who have not voted",
+      "remindersHelp": "They go only to people on the voter list who have not voted yet, with a new personal link. You will see how many people received them, never who.",
+      "sendNow": "Send reminder now",
+      "confirmNow": "Send a reminder now to the {{count}} people who have not voted?",
+      "confirmSend": "Yes, send now",
+      "keep": "No, go back",
+      "scheduleAt": "Schedule for",
+      "schedule": "Schedule reminder",
+      "limit": "You can have up to {{max}} reminders per process ({{used}} so far).",
+      "nobodyLeft": "Everybody on the voter list has already voted.",
+      "onlyOpen": "Reminders can only be sent while voting is open.",
+      "outOfPeriod": "Choose a date and time from now on and before voting closes.",
+      "sentNow": "Reminder on its way: it will be sent in a few seconds.",
+      "scheduled": "Reminder scheduled.",
+      "cancelled": "Reminder cancelled.",
+      "cancel": "Cancel",
+      "cancelLabel": "Cancel the reminder of {{date}}",
+      "people": "{{count}} people",
+      "reminderStatus": {
+        "SCHEDULED": "Scheduled",
+        "SENT": "Sent",
+        "CANCELLED": "Cancelled"
+      },
+      "emailsTitle": "Emails to voters",
+      "type": {
+        "INVITATION": "Invitations",
+        "REMINDER": "Reminders",
+        "CLOSING": "Closing notice"
+      },
+      "col": {
+        "when": "Date and time",
+        "status": "Status",
+        "recipients": "Recipients",
+        "actions": "Actions",
+        "type": "Type",
+        "delivered": "Delivered",
+        "pending": "Pending",
+        "failed": "Failed",
+        "notNeeded": "Not needed",
+        "person": "Person",
+        "attempts": "Attempts",
+        "reason": "Reason"
+      },
+      "notNeededHelp": "\"Not needed\": reminders for people who had already voted and emails that no longer made sense once voting closed.",
+      "failedTitle": "Emails that could not be delivered",
+      "failedReminders": "Also, {{count}} reminders could not be delivered. They are only counted: saying who they were for would reveal who has not voted.",
+      "retry": "Retry failed emails ({{count}})",
+      "retried": "{{count}} emails will be tried again.",
+      "loadError": "The emails of the process could not be loaded. Please try again."
+    },
     "results": {
       "title": "Results",
       "empty": "There are no closed processes yet.",
@@ -447,7 +498,10 @@
         "PROCESS_ARCHIVED": "Process archived",
         "CHAIN_VERIFIED": "Ballot box log verified",
         "RESULTS_EXPORTED": "Results exported (CSV)",
-        "MINUTES_DOWNLOADED": "Minutes downloaded (PDF)"
+        "MINUTES_DOWNLOADED": "Minutes downloaded (PDF)",
+        "REMINDER_SCHEDULED": "Reminder scheduled",
+        "REMINDER_CANCELLED": "Reminder cancelled",
+        "NOTIFICATIONS_RETRIED": "Failed emails retried"
       },
       "objects": {
         "ORGANIZATION": "Organization",
@@ -485,6 +539,10 @@
         "MINUTES_DOWNLOADED": {
           "ES": "in Spanish",
           "EN": "in English"
+        },
+        "reminder": "for {{value}}",
+        "NOTIFICATIONS_RETRIED": {
+          "value": "{{value}} emails"
         }
       }
     }

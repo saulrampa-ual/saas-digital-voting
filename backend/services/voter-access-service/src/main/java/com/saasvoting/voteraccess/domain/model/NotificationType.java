@@ -1,6 +1,6 @@
 package com.saasvoting.voteraccess.domain.model;
 
-/** Kinds of voter notification (RI-11). Reminders and closing notices arrive with RF-17 (P6). */
+/** Kinds of voter notification (RI-11, RF-17): invitation, reminder to who has not voted yet, closing notice (D-45). */
 public enum NotificationType {
     INVITATION,
     REMINDER,

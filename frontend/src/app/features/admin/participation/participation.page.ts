@@ -9,17 +9,19 @@ import { StatusBadgeComponent } from '../../../shared/status-badge/status-badge.
 import { ProcessStatus } from '../../../core/admin/process-api.service';
 import { AdminPageComponent } from '../admin-page.component';
 import { ProcessPickerComponent } from '../process-picker/process-picker.component';
+import { NotificationsPanelComponent } from './notifications-panel.component';
 
 const REFRESH_MS = 15_000;
 
 /**
  * A5 (RF-14): how many people have voted, never what. Refreshes itself every 15 s while the process is open.
- * Votes per day only (D-18): the service does not know the time of any vote.
+ * Votes per day only (D-18): the service does not know the time of any vote. Below, the reminders and emails of the
+ * process (RF-17, D-45).
  */
 @Component({
   selector: 'app-participation',
   imports: [AdminPageComponent, ProcessPickerComponent, RouterLink, IonIcon, IonSpinner, IonText, TranslatePipe,
-    LocalDatePipe, StatusBadgeComponent],
+    LocalDatePipe, StatusBadgeComponent, NotificationsPanelComponent],
   template: `
     <app-admin-page titleKey="admin.participation.title">
       <div class="top">
@@ -84,6 +86,8 @@ const REFRESH_MS = 15_000;
           }
         </section>
 
+        <app-notifications-panel [processId]="d.processId" [pending]="d.pending" [version]="loadedAt()" />
+
         <p class="info-box lock"><ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>
           <span><strong>{{ 'admin.participation.lockTitle' | translate }}</strong> {{ 'admin.participation.lockText' | translate }}</span></p>
         @if (d.status === 'TALLIED' || d.status === 'ARCHIVED') {
@@ -136,7 +140,7 @@ export class ParticipationPage implements OnDestroy {
   protected readonly data = signal<Participation | null>(null);
   protected readonly loading = signal(false);
   protected readonly error = signal(false);
-  private readonly loadedAt = signal(0);
+  protected readonly loadedAt = signal(0);
   private readonly now = signal(Date.now());
   protected readonly secondsAgo = computed(() => Math.max(0, Math.round((this.now() - this.loadedAt()) / 1000)));
   private timer: ReturnType<typeof setInterval> | undefined;

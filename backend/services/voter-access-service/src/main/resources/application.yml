@@ -2,6 +2,12 @@ server:
   port: ${VOTER_ACCESS_SERVER_PORT:8083}
 
 spring:
+  # D-44: one thread per scheduled task, so delivering administrative actions to identity-service never delays
+  # the emails to voters (even with identity-service slow or down)
+  task:
+    scheduling:
+      pool:
+        size: 4
   application:
     name: voter-access-service
   datasource:
@@ -45,6 +51,15 @@ verivoto:
   internal-clients:
     election: election-service
     ballot-box: ballot-box-service
+  # D-22: client-credentials token of voter-access-service (role SERVICE) for the calls below
+  keycloak:
+    base-url: ${VOTER_ACCESS_KEYCLOAK_BASE_URL:http://localhost:8080}
+    realm: verivoto
+    client-id: voter-access-service
+    client-secret: ${VOTER_ACCESS_SERVICE_CLIENT_SECRET:}
+  identity:
+    # RF-19, D-44: administrative actions (reminders, retried emails) are delivered to identity-service
+    url: ${VOTER_ACCESS_IDENTITY_URL:http://localhost:8081}
   access:
     # D-31: voter PWA (personal links /votar/{token}), dates and voting day in this zone (D-18)
     public-base-url: ${VOTER_ACCESS_PUBLIC_BASE_URL:http://localhost:4200}

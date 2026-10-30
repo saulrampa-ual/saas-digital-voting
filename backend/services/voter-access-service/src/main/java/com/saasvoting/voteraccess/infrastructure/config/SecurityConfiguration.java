@@ -29,6 +29,12 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/api/v1/voter-access/processes/*/participation").hasRole("ADMIN")
+                        // RF-17 (D-45): emails and reminders of a process
+                        .requestMatchers(HttpMethod.GET, "/api/v1/voter-access/processes/*/notifications").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/voter-access/processes/*/notifications/retry",
+                                "/api/v1/voter-access/processes/*/reminders").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/voter-access/processes/*/reminders/*")
+                        .hasRole("ADMIN")
                         .requestMatchers("/api/v1/voter-access/processes/**").denyAll()
                         .requestMatchers("/api/v1/voter-access/**").permitAll()
                         .requestMatchers("/actuator/health", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**")
