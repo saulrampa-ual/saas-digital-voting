@@ -11,17 +11,26 @@ import { LanguageSwitcherComponent } from '../../shared/language-switcher/langua
 import { ErrorStateComponent } from '../../shared/error-state/error-state.component';
 import { LocalizedPipe } from '../../shared/pipes/localized.pipe';
 import { LocalDatePipe } from '../../shared/pipes/local-date.pipe';
+import { verifyResult } from '../../core/results/result-verifier';
+import { Result } from '../../core/results/results.model';
+import { ResultSummaryComponent } from '../../shared/result-summary/result-summary.component';
+import { VerificationState } from '../../shared/result-verification/result-verification.component';
+import { RouterLink } from '@angular/router';
 import { StepIndicatorComponent } from './steps/step-indicator.component';
 import { AccessCodeStepComponent } from './steps/access-code-step.component';
 import { BallotChoice, BallotStepComponent } from './steps/ballot-step.component';
 import { ReviewStepComponent } from './steps/review-step.component';
 import { ReceiptStepComponent } from './steps/receipt-step.component';
 
-/** Screens of the voter flow (prototypes V1–V7, B1–B4, C2–C4). */
+/** Screens of the voter flow (prototypes V1–V7, B1–B4, C2–C4; results with the personal link, D-41). */
 type Screen =
   | 'loading' | 'welcome' | 'code' | 'ballot' | 'review' | 'receipt'
   | 'notOpen' | 'closed' | 'invalidLink' | 'expiredLink' | 'locked'
-  | 'alreadyVoted' | 'sessionExpired' | 'notRecorded' | 'error';
+  | 'alreadyVoted' | 'sessionExpired' | 'notRecorded' | 'error'
+  | 'resultsReady' | 'results';
+
+/** What the code is for: voting while open, seeing the result once tallied (D-41). */
+type Purpose = 'vote' | 'results';
 
 /**
  * Voter flow from the personal link /votar/:linkToken (RF-08, RF-09, RF-10). One page with an internal state
@@ -34,6 +43,7 @@ type Screen =
     IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonFooter, IonText, IonButton, IonSpinner,
     TranslatePipe, LanguageSwitcherComponent, ErrorStateComponent, LocalizedPipe, LocalDatePipe,
     StepIndicatorComponent, AccessCodeStepComponent, BallotStepComponent, ReviewStepComponent, ReceiptStepComponent,
+    ResultSummaryComponent, RouterLink,
   ],
   templateUrl: './voter-flow.page.html',
   styleUrl: './voter-flow.page.scss',
@@ -58,10 +68,16 @@ export class VoterFlowPage implements OnInit {
   protected readonly receiptCode = signal<string | null>(null);
   protected readonly votedOn = signal<string | null>(null);
   protected readonly lockedUntil = signal<string | null>(null);
+  protected readonly purpose = signal<Purpose>('vote');
+  protected readonly result = signal<Result | null>(null);
+  protected readonly verification = signal<VerificationState>('checking');
   private votingToken: string | null = null;
 
   protected readonly fallback = computed(() => this.link()?.defaultLanguage ?? 'es');
   protected readonly step = computed(() => {
+    if (this.purpose() === 'results') {
+      return 0;
+    }
     switch (this.screen()) {
       case 'code': return 1;
       case 'ballot': return 2;
@@ -70,8 +86,8 @@ export class VoterFlowPage implements OnInit {
       default: return 0;
     }
   });
-  protected readonly showStatusBar = computed(() =>
-    ['welcome', 'code', 'ballot', 'review', 'notRecorded'].includes(this.screen()));
+  protected readonly showStatusBar = computed(() => this.purpose() === 'vote'
+    && ['welcome', 'code', 'ballot', 'review', 'notRecorded'].includes(this.screen()));
   protected readonly choiceText = computed(() => {
     const choice = this.choice();
     if (choice === 'blank') {
@@ -108,6 +124,13 @@ export class VoterFlowPage implements OnInit {
     void this.sendCode();
   }
 
+  /** «Ver el resultado» once tallied (D-41): the same code step, then the result instead of the ballot. */
+  protected startResults(): void {
+    this.purpose.set('results');
+    this.screen.set('code');
+    void this.sendCode();
+  }
+
   protected async sendCode(): Promise<void> {
     this.busy.set(true);
     this.codeError.set(null);
@@ -135,6 +158,11 @@ export class VoterFlowPage implements OnInit {
     this.codeError.set(null);
     try {
       const granted = await this.api.verifyCode(this.linkToken(), code);
+      if (granted.resultsToken) {
+        this.votedOn.set(granted.hasVoted ? granted.votedOn : null);
+        await this.showResult(granted.resultsToken);
+        return;
+      }
       if (granted.hasVoted) {
         this.votedOn.set(granted.votedOn);
         this.screen.set('alreadyVoted');
@@ -159,6 +187,26 @@ export class VoterFlowPage implements OnInit {
     } finally {
       this.busy.set(false);
     }
+  }
+
+  /** The result and, in the background, its verification in the browser with the counted votes (D-37). */
+  private async showResult(resultsToken: string): Promise<void> {
+    const processId = this.link()!.processId;
+    let result: Result;
+    try {
+      result = await this.api.result(processId, resultsToken);
+    } catch (error) {
+      // 410: the results access ran out, enter again with the link; anything else: generic error with no details.
+      this.screen.set(error instanceof VoterApiError && error.status === 410 ? 'sessionExpired' : 'error');
+      return;
+    }
+    this.result.set(result);
+    this.verification.set('checking');
+    this.screen.set('results');
+    void this.api.countedVotes(processId, resultsToken)
+      .then((counted) => verifyResult(counted, result))
+      .then((verification) => this.verification.set(verification.matches ? 'ok' : 'mismatch'))
+      .catch(() => this.verification.set('error'));
   }
 
   protected review(): void {
@@ -208,6 +256,7 @@ export class VoterFlowPage implements OnInit {
   /** V6 and C4: back to the code step with the same personal link. */
   protected enterAgain(): void {
     this.votingToken = null;
+    this.result.set(null);
     this.choice.set(null);
     this.codeSent.set(null);
     this.codeError.set(null);
@@ -218,6 +267,10 @@ export class VoterFlowPage implements OnInit {
     if (status === 'SCHEDULED') {
       this.screen.set('notOpen');
       return 'notOpen';
+    }
+    if (status === 'TALLIED' || status === 'ARCHIVED') {
+      this.screen.set('resultsReady');
+      return 'resultsReady';
     }
     if (status !== 'OPEN' || Date.parse(closesAt) <= Date.now()) {
       this.screen.set('closed');
@@ -241,6 +294,7 @@ export class VoterFlowPage implements OnInit {
       this.lockedUntil.set((error.problem['lockedUntil'] as string | undefined) ?? null);
       this.screen.set('locked');
     } else if (error.status === 422) {
+      this.purpose.set('vote');
       this.screen.set(error.processStatus === 'SCHEDULED' ? 'notOpen' : 'closed');
     } else {
       this.handleLinkError(error);

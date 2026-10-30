@@ -284,3 +284,17 @@ Con todo en marcha y un proceso `PUBLIC_LINK` con votos (sección 9):
   organización; **503** si no se ha podido generar.
 - El PDF contiene título, pregunta, fechas, censo, votos, participación, resultado por opción y las huellas `finalHash`
   y `resultHash` de `…/results`; ningún nombre, correo ni recibo.
+
+### Resultado para las personas del censo (RF-15, P5.5)
+
+Con un proceso escrutado (`TALLIED`, también `ARCHIVED`) y el enlace personal de su invitación:
+
+1. Abrir `/votar/{enlace}` → «Resultado de la votación» con «Ver el resultado». Pedir el código: el correo dice «Tu código
+   para ver el resultado de …». Al escribirlo se ve el resultado, «Resultado verificado» y, si votó, «Tu voto quedó
+   registrado el …» (solo el día).
+2. Por API: `POST /api/v1/voter-access/links/{enlace}/otp` y `…/otp/verify` → `resultsToken` (sin `votingToken`).
+   `GET /api/v1/ballot-box/voter/processes/{id}/results` con la cabecera `X-Results-Token: {resultsToken}` → el mismo
+   resultado que ve ADMIN; `…/results/counted-votes` → los votos para recalcular la huella.
+3. Sin cabecera, con un token inventado o de otro proceso → **404**; pasados 30 min → **410** «Tu acceso a los resultados
+   ha caducado»; con voter-access parado → **503**. Entre el cierre y el escrutinio no se envía código (**422**).
+4. El token no sirve para votar y en `voter_access_db.results_tokens` solo está su hash, sin la persona.

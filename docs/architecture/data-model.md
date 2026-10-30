@@ -141,6 +141,7 @@ erDiagram
     roll_entries ||--|| participation : "ha votado"
     roll_entries ||--o{ voting_tokens : "emite"
     roll_entries ||--o{ notifications : "recibe"
+    process_snapshots ||--o{ results_tokens : "acceso al resultado"
     process_snapshots {
         bigint process_id PK
         varchar20 organization_id
@@ -177,6 +178,11 @@ erDiagram
         timestamptz expires_at
         varchar20 status
     }
+    results_tokens {
+        char64 token_hash PK
+        bigint process_id FK
+        timestamptz expires_at
+    }
 ```
 
 | Tabla | RI | Notas |
@@ -186,6 +192,7 @@ erDiagram
 | `access_credentials` | RI-12 | Enlace de 64 caracteres y OTP de 6 dígitos guardados como hash SHA-256 (`VARCHAR(64)`). El enlace se genera al enviar la invitación. Límites de envío del código y bloqueo temporal tras 5 fallos (RNF-14, D-31). |
 | `participation` | RI-7 | **Desviación (D-18):** sin hora del voto, solo `voted_on` (día). La pantalla «Ya has votado» muestra la fecha sin hora. Canal implícito: en línea. |
 | `voting_tokens` | — | Token de voto de un solo uso (hash): `ISSUED` → `CONSUMED` (o `REVERTED`, que admite reintento); `REVOKED` si se emite otro. Caducidad 15 min (D-31). |
+| `results_tokens` (V2) | RF-15 | Acceso al resultado tras el escrutinio (D-41): hash del token, proceso y caducidad (30 min). **Sin `roll_entry_id`:** no dice qué persona del censo lo pidió. Reutilizable mientras vale; ballot-box no guarda nada de él. |
 | `notifications`, `notification_templates` | RI-11 | Tipo `INVITATION`, `REMINDER`, `CLOSING`; canal `EMAIL`; estado `PENDING`, `DELIVERED`, `FAILED`; hasta 9 intentos con espera creciente (`next_attempt_at`). Nunca incluyen la opción votada. En P4.3 solo invitaciones con texto fijo; `notification_templates` llega con RF-17 (P6). |
 
 ## 5. ballot-box-service · `ballot_box_db` (pg-ballot)

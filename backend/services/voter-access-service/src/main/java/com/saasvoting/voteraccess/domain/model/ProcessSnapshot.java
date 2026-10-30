@@ -47,6 +47,11 @@ public record ProcessSnapshot(
         return status == ProcessStatus.OPEN && now.isBefore(closesAt);
     }
 
+    /** RF-15 (D-41): once tallied, the people of the roll may see the result with the link and a code. */
+    public boolean resultsAvailable() {
+        return status == ProcessStatus.TALLIED || status == ProcessStatus.ARCHIVED;
+    }
+
     /** Status changes only move forward, so a late or repeated message never undoes a newer one. */
     public ProcessSnapshot withStatus(ProcessStatus newStatus) {
         if (newStatus.ordinal() <= status.ordinal()) {

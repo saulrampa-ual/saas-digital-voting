@@ -43,6 +43,33 @@
         }
       }
 
+      @case ('resultsReady') {
+        @if (link(); as process) {
+          <section class="welcome">
+            <p class="eyebrow">{{ 'voter.results.eyebrow' | translate }}</p>
+            <h1 tabindex="-1">{{ process.title | localized: language() : fallback() }}</h1>
+            <p>{{ 'voter.results.readyText' | translate: { closes: (process.closesAt | localDate: language()) } }}</p>
+            <p class="secret">{{ 'voter.results.secret' | translate }}</p>
+            <ion-button expand="block" color="secondary" (click)="startResults()">{{ 'voter.results.see' | translate }}</ion-button>
+          </section>
+        }
+      }
+
+      @case ('results') {
+        @if (result(); as r) {
+          <section class="results">
+            <p class="eyebrow">{{ 'publicResults.eyebrow' | translate }}</p>
+            <h1 tabindex="-1">{{ link()!.title | localized: language() : fallback() }}</h1>
+            <p class="meta">{{ 'publicResults.published' | translate: { date: (r.talliedAt | localDate: language()) } }}</p>
+            @if (votedOn()) {
+              <p class="took-part">{{ 'voter.results.tookPart' | translate: { day: (votedOn() | localDate: language() : false) } }}</p>
+            }
+            <app-result-summary [result]="r" [language]="language()" [verification]="verification()" />
+            <p class="receipt"><a [routerLink]="['/recibo', r.processId]">{{ 'publicResults.checkReceipt' | translate }}</a></p>
+          </section>
+        }
+      }
+
       @case ('code') {
         <app-access-code-step [sent]="codeSent()" [busy]="busy()" [error]="codeError()"
                               (resend)="sendCode()" (verify)="verifyCode($event)" />

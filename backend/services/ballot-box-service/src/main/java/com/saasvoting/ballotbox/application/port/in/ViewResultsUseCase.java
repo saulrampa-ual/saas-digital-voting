@@ -40,4 +40,12 @@ public interface ViewResultsUseCase {
     ResultView publicResult(UUID publicId);
 
     CountedVotesView publicCountedVotes(UUID publicId);
+
+    /**
+     * RF-15 with {@code CENSUS_ONLY} (D-41): a person of the roll with a results token from voter-access (personal
+     * link + code after the tally). Works for both visibilities.
+     */
+    ResultView voterResult(String resultsToken, long processId);
+
+    CountedVotesView voterCountedVotes(String resultsToken, long processId);
 }

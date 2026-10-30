@@ -1,6 +1,7 @@
 package com.saasvoting.voteraccess.infrastructure.adapter.in.rest;
 
 import com.saasvoting.voteraccess.application.port.in.ReceiveProcessUseCase;
+import com.saasvoting.voteraccess.application.port.in.ResultsAccessUseCase;
 import com.saasvoting.voteraccess.application.port.in.VotingTokenUseCase;
 import com.saasvoting.voteraccess.domain.model.Language;
 import com.saasvoting.voteraccess.domain.model.ProcessSnapshot;
@@ -30,7 +31,7 @@ import java.util.Objects;
 
 /**
  * Service-to-service endpoints (D-22): only tokens with role SERVICE; never routed by the gateway.
- * Called by election-service (process and status) and ballot-box (voting tokens).
+ * Called by election-service (process and status) and ballot-box (voting tokens and results tokens, D-41).
  */
 @RestController
 @RequestMapping("/internal/v1")
@@ -60,12 +61,18 @@ public class InternalController {
     public record TokenOperationRequest(@NotBlank String votingToken, @NotNull Long processId) {
     }
 
+    public record ResultsTokenCheckRequest(@NotBlank String resultsToken, @NotNull Long processId) {
+    }
+
     private final ReceiveProcessUseCase processes;
     private final VotingTokenUseCase tokens;
+    private final ResultsAccessUseCase results;
 
-    public InternalController(ReceiveProcessUseCase processes, VotingTokenUseCase tokens) {
+    public InternalController(ReceiveProcessUseCase processes, VotingTokenUseCase tokens,
+            ResultsAccessUseCase results) {
         this.processes = Objects.requireNonNull(processes, "processes must not be null");
         this.tokens = Objects.requireNonNull(tokens, "tokens must not be null");
+        this.results = Objects.requireNonNull(results, "results must not be null");
     }
 
     @PutMapping("/processes/{processId}")
@@ -98,5 +105,12 @@ public class InternalController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void revert(@Valid @RequestBody TokenOperationRequest request) {
         tokens.revert(request.votingToken(), request.processId());
+    }
+
+    /** D-41: 204 if the results token is valid for the process; 404 unknown, 410 expired. */
+    @PostMapping("/results-tokens/check")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void checkResultsToken(@Valid @RequestBody ResultsTokenCheckRequest request) {
+        results.check(request.resultsToken(), request.processId());
     }
 }

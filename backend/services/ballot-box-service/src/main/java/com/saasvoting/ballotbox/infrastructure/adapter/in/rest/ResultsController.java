@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,7 +35,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * RF-12 step 6, RF-13, RF-15, RF-16. Management endpoints need ADMIN or AUDITOR (export and minutes: ADMIN), checked by
+ * RF-12 step 6, RF-13, RF-15, RF-16. Voters of the roll see the result with a results token (D-41). Management endpoints need ADMIN or AUDITOR (export and minutes: ADMIN), checked by
  * the security filter; the organization comes from the token. Contract: {@code openapi/ballot-box-service.yaml}.
  */
 @RestController
@@ -60,6 +61,9 @@ public class ResultsController {
     public record CountedVotesResponse(long processId, String finalHash, String resultHash, int eligibleVoters,
             List<Long> optionIds, List<CountedVoteResponse> votes) {
     }
+
+    /** Header, not URL, so the token never ends up in access logs or the browser history (D-41). */
+    static final String RESULTS_TOKEN = "X-Results-Token";
 
     private final ViewResultsUseCase results;
     private final MinutesUseCase minutes;
@@ -127,6 +131,19 @@ public class ResultsController {
     @GetMapping("/public/results/{publicId}/counted-votes")
     public CountedVotesResponse publicCountedVotes(@PathVariable UUID publicId) {
         return response(results.publicCountedVotes(publicId));
+    }
+
+    /** RF-15 with {@code CENSUS_ONLY} (D-41): the voter, with the results token of voter-access in a header. */
+    @GetMapping("/voter/processes/{processId}/results")
+    public ResultResponse voterResult(@PathVariable long processId,
+            @RequestHeader(name = RESULTS_TOKEN, required = false) String resultsToken) {
+        return response(results.voterResult(resultsToken, processId));
+    }
+
+    @GetMapping("/voter/processes/{processId}/results/counted-votes")
+    public CountedVotesResponse voterCountedVotes(@PathVariable long processId,
+            @RequestHeader(name = RESULTS_TOKEN, required = false) String resultsToken) {
+        return response(results.voterCountedVotes(resultsToken, processId));
     }
 
     /** A management user without organization (the super-administrator) sees no process (RNF-15). */

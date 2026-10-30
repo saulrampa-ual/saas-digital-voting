@@ -45,7 +45,9 @@ paths:
       tags: [voter]
       operationId: sendAccessCode
       summary: Send (or resend) the 6-digit access code by email
-      description: RF-08 step 3.1. Only while the process is OPEN.
+      description: |
+        RF-08 step 3.1. While the process is OPEN (to vote) and, once TALLIED or ARCHIVED, to see the
+        result (RF-15, D-41). Between the close and the tally it answers 422.
       security: []
       responses:
         '202':
@@ -70,6 +72,8 @@ paths:
         token that only proves eligibility. If the voter already voted, returns `hasVoted = true` and
         the date (screen V3), without a token. A wrong code returns 400 with the remaining attempts;
         after 5 failures access is locked temporarily (423).
+        Once the process is TALLIED or ARCHIVED (D-41) it returns a short-lived `resultsToken` (never a
+        voting token) and whether the voter took part, to see the result in ballot-box.
       security: []
       requestBody:
         required: true
@@ -186,6 +190,30 @@ paths:
         '409': { $ref: '#/components/responses/Conflict' }
         '410': { $ref: '#/components/responses/Gone' }
         '422': { $ref: '#/components/responses/Unprocessable' }
+  /internal/v1/results-tokens/check:
+    post:
+      tags: [internal]
+      operationId: checkResultsToken
+      summary: Check a results token before ballot-box shows the result (D-41)
+      description: Only the token and the process are sent; the answer says nothing about the voter.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resultsToken, processId]
+              properties:
+                resultsToken: { type: string }
+                processId: { type: integer, format: int64 }
+      responses:
+        '204':
+          description: Valid for the process, whose result is available
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '410': { $ref: '#/components/responses/Gone' }
   /internal/v1/voting-tokens/revert:
     post:
       tags: [internal]
@@ -326,6 +354,14 @@ components:
           type: [string, 'null']
           description: Single-use voting token. Only when hasVoted is false.
         votingTokenExpiresAt:
+          type: [string, 'null']
+          format: date-time
+        resultsToken:
+          type: [string, 'null']
+          description: |
+            Only once tallied (D-41). Sent to ballot-box in `X-Results-Token` to see the result. Valid 30 min and
+            reusable while valid; not linked to the voter.
+        resultsTokenExpiresAt:
           type: [string, 'null']
           format: date-time
     ProcessSnapshot:

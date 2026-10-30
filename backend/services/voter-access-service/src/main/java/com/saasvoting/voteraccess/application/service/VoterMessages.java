@@ -60,18 +60,20 @@ public final class VoterMessages {
                 "No compartas este enlace. Cada persona solo puede votar una vez y tu voto es secreto."));
     }
 
-    public MailMessage accessCode(RollEntry entry, ProcessSnapshot process, String code, long validMinutes) {
+    /** The code to vote or, after the tally, to see the result (D-41). */
+    public MailMessage accessCode(RollEntry entry, ProcessSnapshot process, String code, long validMinutes,
+            boolean forResults) {
         String title = process.titleIn(entry.language());
         if (entry.language() == Language.EN) {
             return new MailMessage(entry.email(), "Your access code for " + title, String.join("\n",
-                    "Your code to vote in \"" + title + "\" is:",
+                    (forResults ? "Your code to see the result of \"" : "Your code to vote in \"") + title + "\" is:",
                     "",
                     code,
                     "",
                     "It expires in " + validMinutes + " minutes. If you did not request it, ignore this message."));
         }
         return new MailMessage(entry.email(), "Tu código de acceso a " + title, String.join("\n",
-                "Tu código para votar en «" + title + "» es:",
+                (forResults ? "Tu código para ver el resultado de «" : "Tu código para votar en «") + title + "» es:",
                 "",
                 code,
                 "",

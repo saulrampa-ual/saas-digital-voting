@@ -12,3 +12,8 @@
 .secret { font-weight: 600; }
 ion-button { --min-height: 52px; }
 .secure { text-align: center; margin: 0; font-size: 0.875rem; }
+// Result with the personal link (D-41), same summary as the public link (V8).
+.results .meta { color: var(--ion-color-medium); margin: 0 0 1rem; }
+.took-part { background: #e6f4ee; color: #0d5c3f; border-radius: var(--vv-radius-card, 12px); padding: 10px 14px; margin: 0 0 1rem; }
+.receipt { margin-top: 1.25rem; }
+.receipt a { display: inline-block; min-height: 44px; line-height: 44px; color: var(--ion-color-primary); font-weight: 600; }

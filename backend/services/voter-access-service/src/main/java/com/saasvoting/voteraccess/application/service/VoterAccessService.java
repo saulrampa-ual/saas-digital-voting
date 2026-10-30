@@ -2,6 +2,7 @@ package com.saasvoting.voteraccess.application.service;
 
 import com.saasvoting.voteraccess.application.port.in.VoterAccessUseCase;
 import com.saasvoting.voteraccess.application.port.out.Mailer;
+import com.saasvoting.voteraccess.application.port.out.ResultsTokenRepository;
 import com.saasvoting.voteraccess.application.port.out.RollRepository;
 import com.saasvoting.voteraccess.application.port.out.SecretGenerator;
 import com.saasvoting.voteraccess.application.port.out.SnapshotRepository;
@@ -18,6 +19,7 @@ import com.saasvoting.voteraccess.domain.model.Participation;
 import com.saasvoting.voteraccess.domain.model.ProcessNotOpenException;
 import com.saasvoting.voteraccess.domain.model.ProcessSnapshot;
 import com.saasvoting.voteraccess.domain.model.ProcessStatus;
+import com.saasvoting.voteraccess.domain.model.ResultsToken;
 import com.saasvoting.voteraccess.domain.model.RollEntry;
 import com.saasvoting.voteraccess.domain.model.VotingToken;
 import com.saasvoting.voteraccess.domain.model.VotingTokenStatus;
@@ -33,6 +35,7 @@ import java.util.regex.Pattern;
 /**
  * RF-08: personal link + 6-digit email code (RNF-14). The link token, the code and the voting token are never
  * stored or logged in clear (RI-12). Whether the voter already voted is only revealed after the code (contract).
+ * After the tally the same link and code give a results token to see the result (RF-15, D-41).
  */
 public final class VoterAccessService implements VoterAccessUseCase {
 
@@ -42,6 +45,7 @@ public final class VoterAccessService implements VoterAccessUseCase {
     private final SnapshotRepository snapshots;
     private final RollRepository roll;
     private final VotingTokenRepository tokens;
+    private final ResultsTokenRepository resultsTokens;
     private final SecretGenerator secrets;
     private final Mailer mailer;
     private final VoterMessages messages;
@@ -50,11 +54,13 @@ public final class VoterAccessService implements VoterAccessUseCase {
     private final Clock clock;
 
     public VoterAccessService(
-            SnapshotRepository snapshots, RollRepository roll, VotingTokenRepository tokens, SecretGenerator secrets,
-            Mailer mailer, VoterMessages messages, AccessPolicy policy, UnitOfWork unitOfWork, Clock clock) {
+            SnapshotRepository snapshots, RollRepository roll, VotingTokenRepository tokens,
+            ResultsTokenRepository resultsTokens, SecretGenerator secrets, Mailer mailer, VoterMessages messages,
+            AccessPolicy policy, UnitOfWork unitOfWork, Clock clock) {
         this.snapshots = Objects.requireNonNull(snapshots, "snapshots must not be null");
         this.roll = Objects.requireNonNull(roll, "roll must not be null");
         this.tokens = Objects.requireNonNull(tokens, "tokens must not be null");
+        this.resultsTokens = Objects.requireNonNull(resultsTokens, "resultsTokens must not be null");
         this.secrets = Objects.requireNonNull(secrets, "secrets must not be null");
         this.mailer = Objects.requireNonNull(mailer, "mailer must not be null");
         this.messages = Objects.requireNonNull(messages, "messages must not be null");
@@ -76,7 +82,7 @@ public final class VoterAccessService implements VoterAccessUseCase {
     public CodeSent sendCode(String linkToken) {
         return unitOfWork.inTransaction(() -> {
             Instant now = clock.instant();
-            LinkContext context = openContext(linkToken, now);
+            LinkContext context = codeContext(linkToken, now);
             AccessCredential credential = roll.lockCredential(context.entry().id());
             if (credential.isLocked(now)) {
                 throw new AccessLockedException(credential.lockedUntil());
@@ -90,7 +96,7 @@ public final class VoterAccessService implements VoterAccessUseCase {
             roll.save(updated);
             // Inside the transaction: if the email cannot be sent, nothing is stored and the limits are not spent.
             mailer.send(messages.accessCode(context.entry(), context.process(), code,
-                    policy.codeValidity().toMinutes()));
+                    policy.codeValidity().toMinutes(), !context.process().isOpenAt(now)));
             return new CodeSent(context.entry().maskedEmail(), updated.otpExpiresAt(),
                     updated.nextCodeAllowedAt(policy, now));
         });
@@ -110,7 +116,7 @@ public final class VoterAccessService implements VoterAccessUseCase {
     public AccessGranted verifyCode(String linkToken, String code) {
         Verification result = unitOfWork.inTransaction(() -> {
             Instant now = clock.instant();
-            LinkContext context = openContext(linkToken, now);
+            LinkContext context = codeContext(linkToken, now);
             AccessCredential credential = roll.lockCredential(context.entry().id());
             if (credential.isLocked(now)) {
                 return new Rejected(new AccessLockedException(credential.lockedUntil()));
@@ -128,15 +134,24 @@ public final class VoterAccessService implements VoterAccessUseCase {
             }
             roll.save(credential.withCodeUsed());
             Participation participation = roll.findParticipation(context.entry().id());
+            if (!context.process().isOpenAt(now)) {
+                // Tally done (codeContext): a results token not linked to the person (D-41).
+                String resultsToken = secrets.newResultsToken();
+                Instant expiresAt = now.plus(policy.resultsTokenValidity());
+                resultsTokens.save(new ResultsToken(secrets.hash(resultsToken), context.process().processId(),
+                        expiresAt));
+                return new Granted(AccessGranted.toSeeResults(participation.hasVoted(), participation.votedOn(),
+                        resultsToken, expiresAt));
+            }
             if (participation.hasVoted()) {
-                return new Granted(new AccessGranted(true, participation.votedOn(), null, null));
+                return new Granted(AccessGranted.voted(participation.votedOn()));
             }
             tokens.revokeIssued(context.entry().id());
             String votingToken = secrets.newVotingToken();
             Instant expiresAt = now.plus(policy.votingTokenValidity());
             tokens.save(new VotingToken(secrets.hash(votingToken), context.entry().id(), context.process().processId(),
                     expiresAt, VotingTokenStatus.ISSUED));
-            return new Granted(new AccessGranted(false, null, votingToken, expiresAt));
+            return new Granted(AccessGranted.toVote(votingToken, expiresAt));
         });
         return switch (result) {
             case Granted granted -> granted.access();
@@ -158,10 +173,13 @@ public final class VoterAccessService implements VoterAccessUseCase {
         return new LinkContext(credential, entry, process);
     }
 
-    /** Codes are requested and checked only while voting is possible. */
-    private LinkContext openContext(String linkToken, Instant now) {
+    /**
+     * Codes are requested and checked while voting is possible and, to see the result, once it is tallied (D-41).
+     * Between the close and the tally there is nothing to do with a code.
+     */
+    private LinkContext codeContext(String linkToken, Instant now) {
         LinkContext context = context(linkToken, now);
-        if (!context.process().isOpenAt(now)) {
+        if (!context.process().isOpenAt(now) && !context.process().resultsAvailable()) {
             ProcessStatus shown = context.process().status() == ProcessStatus.OPEN
                     ? ProcessStatus.CLOSED
                     : context.process().status();

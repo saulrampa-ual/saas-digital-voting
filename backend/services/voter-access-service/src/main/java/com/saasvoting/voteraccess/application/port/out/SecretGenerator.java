@@ -13,5 +13,8 @@ public interface SecretGenerator {
     String newAccessCode();
 
     /** Hex SHA-256 of the value. */
+    /** Results token after the tally (D-41): 256 random bits, URL-safe. */
+    String newResultsToken();
+
     String hash(String value);
 }

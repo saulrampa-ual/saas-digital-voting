@@ -478,7 +478,7 @@
       },
       "closed": {
         "title": "Voting is closed",
-        "message": "The period ended on {{closes}}. Votes can no longer be cast."
+        "message": "The period ended on {{closes}}. Votes can no longer be cast. Once the tally is complete you can see the result here with this same link."
       },
       "invalidLink": {
         "title": "This link is not valid",
@@ -528,6 +528,13 @@
     },
     "footer": {
       "secure": "Secure connection · Your vote is secret"
+    },
+    "results": {
+      "eyebrow": "Result of the vote",
+      "readyText": "Voting closed on {{closes}} and the tally is complete. To see the result, confirm it is you with a code we will send to your email.",
+      "secret": "The result does not show what each person voted.",
+      "see": "See the result",
+      "tookPart": "Your vote was recorded on {{day}}."
     }
   },
   "errors": {

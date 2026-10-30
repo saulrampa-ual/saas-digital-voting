@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-30 · Rama de trabajo: `feat/minutes` (P5.4 sin commitear, sobre `feat/results-screens` `42f62cb`) · Último commit en `dev`: `ce22e93`
+Última actualización: 2026-10-30 · Rama de trabajo: `feat/voter-results` (P5.5 sin commitear, sobre `dev` `cbecfd2`) · Último commit en `dev`: `cbecfd2`
 
 ## Hitos
 
@@ -10,8 +10,8 @@
 | P1 | 02/11 – 08/11 | Java 25, monorepo Maven, migración de `tenant-service`, esqueletos, infraestructura, CI de compilación | Hecho (CI en verde, `efe8afc`) |
 | P2 | 05/11 – 10/11 | Modelo de datos, separación de secreto, contratos OpenAPI de la rebanada 1, ADRs | Hecho (`ce6cb37`) |
 | P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Hecho (`b7aea1c`) |
-| P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho salvo integrar (P4.1–P4.4 en `dev`; P4.5, P4.6 y A2 en `feat/voter-screens`, `feat/process-screens` y `feat/census-screens`) |
-| P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | En curso (P5.1 en `feat/tally`, P5.2 en `feat/audit-participation`; P5.3 en `feat/results-screens`; P5.4 acta PDF probada por la IA, sin commitear; faltan el resultado para el votante con `CENSUS_ONLY` y el modelo de amenazas) |
+| P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
+| P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | En curso (P5.1–P5.4 en `dev`; P5.5 resultado para las personas del censo probado por la IA, sin commitear; falta el modelo de amenazas) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Pendiente |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | Pendiente |
@@ -96,6 +96,7 @@
 
 ## En curso
 
+- P5.5: resultado para las personas del censo (RF-15 con `CENSUS_ONLY`, D-41). voter-access: con el proceso `TALLIED`/`ARCHIVED` el enlace personal admite código (correo «para ver el resultado») y su verificación da un token de resultados de 30 min (solo hash en `results_tokens`, Flyway V2, sin la persona) y si votó con el día; interno `POST /internal/v1/results-tokens/check`. ballot-box: `GET /api/v1/ballot-box/voter/processes/{id}/results` y `…/counted-votes` con `X-Results-Token`, comprobado en cada petición (404/410/503). PWA: «Resultado de la votación» → código → resumen compartido con V8 (`app-result-summary`) con verificación en el navegador; C2 avisa de que el resultado saldrá en el mismo enlace. Prueba de extremo a extremo de la IA (38/38) y en navegador a 360 px (20/20); regresión: votación 28/28, escrutinio 54/54, auditoría 37/37, resultados y V8 39/39, consola, votante, procesos y censos.
 - P5.4: acta de resultados en PDF (RF-16, D-40): escritor PDF propio sin dependencias detrás de `MinutesRenderer`, acta por idioma guardada una vez con su SHA-256 (`minutes`, Flyway V4) y servida con `X-Content-SHA256`, título del proceso en la papeleta interna (`ballot_titles`), solo ADMIN (409 antes del escrutinio, 503 si falla); F1 con «Generar acta (PDF)» y la huella del fichero. Prueba de extremo a extremo de la IA (21/21: PDF válido con `qpdf`, texto con tildes y ñ, inglés, acta de 3 páginas con 30 opciones, mismos bytes en la segunda descarga, permisos, gateway) y en navegador (44/44); regresión: escrutinio 54/54, auditoría 37/37, procesos 28/28.
 - P5.3: pantallas de resultados, participación y auditoría (RF-12–RF-15, D-39): A5 (participación con refresco y por día), F4/F1 (escrutinio en curso y resultados, CSV, enlace público, verificación en el navegador), H1 (registro de la urna y verificación), V8 (resultados públicos sin sesión), selector de proceso, menú y enlaces desde A4, textos es/en. Prueba en navegador de la IA (39/39, 1280 y 360 px) con todos los servicios reales y una manipulación real del registro; regresión: consola 14/14, votante 25/25, procesos 28/28, censos 37/37. `ng build` limpio (inicial ≈ 966 kB / 186 kB transferidos).
 - P5.2: registro de la urna y participación (RF-12, RF-14, D-38). ballot-box: `ChainVerifier` (hash, enlaces, secuencia, cabeza, papeleta de `OPENED`, votos/recibos/eventos, `CLOSED`, huella final), `AuditService` y `AuditController` (eventos por páginas y verificación para AUDITOR), Flyway V3 `chain_checks`, incidencia `CHAIN_BROKEN` única y escrutinio que verifica la cadena antes de publicar. voter-access: `ParticipationService` y `ParticipationController` (ADMIN; censo, votos, pendientes, % y por día). Prueba de extremo a extremo de la IA (37/37): seis manipulaciones reales de la base de datos detectadas y deshechas, escrutinio bloqueado y reanudado, permisos y organizaciones, participación antes, durante y después; regresión P5.1 54/54 y urna 28/28.
@@ -163,8 +164,7 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Probar el acta con Keycloak real (`api-testing.md` §12, paso 5) y commitear P5.4 en `feat/minutes`.
-2. Integrar en `dev`, por orden, `feat/voter-screens`, `feat/process-screens`, `feat/census-screens`, `feat/tally`,
-   `feat/audit-participation`, `feat/results-screens` y `feat/minutes`.
-3. Siguiente: **P5.5**, resultado para el votante con `CENSUS_ONLY` (enlace + OTP); después el modelo de amenazas para
-   cerrar P5.
+1. Probar el resultado con el enlace personal y Keycloak real (`api-testing.md`, «Resultado para las personas del censo»)
+   y commitear P5.5 en `feat/voter-results`; integrarlo en `dev`.
+2. Siguiente: **modelo de amenazas** (STRIDE sobre el flujo de voto, la urna y los resultados) para cerrar P5.
+3. Después, P6: consola y transversales (RF-05b, RF-17–19, RF-21).

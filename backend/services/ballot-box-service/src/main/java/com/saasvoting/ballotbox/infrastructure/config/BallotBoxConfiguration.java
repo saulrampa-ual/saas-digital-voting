@@ -87,8 +87,9 @@ public class BallotBoxConfiguration {
     }
 
     @Bean
-    ResultQueryService resultQueryService(BallotRepository ballots, ResultRepository results, Clock clock) {
-        return new ResultQueryService(ballots, results, clock);
+    ResultQueryService resultQueryService(BallotRepository ballots, ResultRepository results,
+            VoterAccessClient voterAccess, Clock clock) {
+        return new ResultQueryService(ballots, results, voterAccess, clock);
     }
 
     @Bean

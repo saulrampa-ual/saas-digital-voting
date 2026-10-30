@@ -3,6 +3,7 @@ package com.saasvoting.voteraccess.infrastructure.config;
 import com.saasvoting.voteraccess.application.port.out.Mailer;
 import com.saasvoting.voteraccess.application.port.out.NotificationRepository;
 import com.saasvoting.voteraccess.application.port.out.ParticipationRepository;
+import com.saasvoting.voteraccess.application.port.out.ResultsTokenRepository;
 import com.saasvoting.voteraccess.application.port.out.RollRepository;
 import com.saasvoting.voteraccess.application.port.out.SecretGenerator;
 import com.saasvoting.voteraccess.application.port.out.SnapshotRepository;
@@ -11,6 +12,7 @@ import com.saasvoting.voteraccess.application.port.out.VotingTokenRepository;
 import com.saasvoting.voteraccess.application.service.InvitationService;
 import com.saasvoting.voteraccess.application.service.ParticipationService;
 import com.saasvoting.voteraccess.application.service.ProcessReceiverService;
+import com.saasvoting.voteraccess.application.service.ResultsAccessService;
 import com.saasvoting.voteraccess.application.service.VoterAccessService;
 import com.saasvoting.voteraccess.application.service.VoterMessages;
 import com.saasvoting.voteraccess.application.service.VotingTokenService;
@@ -58,10 +60,18 @@ public class VoterAccessConfiguration {
 
     @Bean
     VoterAccessService voterAccessService(
-            SnapshotRepository snapshots, RollRepository roll, VotingTokenRepository tokens, SecretGenerator secrets,
-            Mailer mailer, VoterMessages messages, AccessProperties properties, UnitOfWork unitOfWork, Clock clock) {
-        return new VoterAccessService(snapshots, roll, tokens, secrets, mailer, messages, properties.policy(),
-                unitOfWork, clock);
+            SnapshotRepository snapshots, RollRepository roll, VotingTokenRepository tokens,
+            ResultsTokenRepository resultsTokens, SecretGenerator secrets, Mailer mailer, VoterMessages messages,
+            AccessProperties properties, UnitOfWork unitOfWork, Clock clock) {
+        return new VoterAccessService(snapshots, roll, tokens, resultsTokens, secrets, mailer, messages,
+                properties.policy(), unitOfWork, clock);
+    }
+
+    @Bean
+    ResultsAccessService resultsAccessService(
+            ResultsTokenRepository resultsTokens, SnapshotRepository snapshots, SecretGenerator secrets,
+            UnitOfWork unitOfWork, Clock clock) {
+        return new ResultsAccessService(resultsTokens, snapshots, secrets, unitOfWork, clock);
     }
 
     @Bean
