@@ -314,6 +314,7 @@ Ballot-box no guarda nada derivado del token, así que no puede enlazar el voto 
 - Quien observe en tiempo real el tráfico de ambos servicios puede correlacionar por tiempo.
 - Cliente comprometido y coacción quedan fuera del alcance (TFM, sección 3.4).
 - El recibo demuestra presencia en la urna, no que el voto registrado sea el emitido (no es *cast-as-intended*).
+- Análisis completo de amenazas, defensas y riesgos: [`threat-model.md`](threat-model.md) (D-42).
 
 ## 7. Resultados (RF-13, RF-15, D-16)
 
