@@ -22,6 +22,10 @@ spring:
               uri: ${VOTER_ACCESS_SERVICE_URI:http://localhost:8083}
               predicates:
                 - Path=/api/v1/voter-access/**
+            - id: ballot-box
+              uri: ${BALLOT_BOX_SERVICE_URI:http://localhost:8084}
+              predicates:
+                - Path=/api/v1/ballot-box/**
 
 management:
   endpoints:

@@ -1,0 +1,15 @@
+package com.saasvoting.ballotbox.application.port.in;
+
+import com.saasvoting.ballotbox.domain.model.BallotSnapshot;
+import com.saasvoting.ballotbox.domain.model.Selection;
+
+/** RF-09 and RF-10: ballot, casting with receipt and receipt verification. */
+public interface VotingUseCase {
+
+    BallotSnapshot ballot(long processId);
+
+    /** Returns the receipt code, which is shown only once and stored only as a hash. */
+    String castVote(long processId, String votingToken, Selection selection);
+
+    boolean receiptPresent(long processId, String receiptCode);
+}

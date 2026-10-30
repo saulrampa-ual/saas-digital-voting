@@ -162,3 +162,27 @@ Mailpit (`http://localhost:8025`).
    ```
    La primera vez → 204; la segunda → **409**. Tras consumirlo, pedir otro código y verificarlo →
    `hasVoted: true` con la fecha, sin token.
+
+## 8. Urna (RF-09, RF-10) en ballot-box-service
+
+Con election, voter-access y ballot-box en marcha (`BALLOT_BOX_SERVICE_CLIENT_SECRET` en `.env`; ballot-box usa
+`pg-ballot`, puerto 5433):
+
+```powershell
+. .\scripts\Import-DotEnv.ps1
+$env:BALLOT_BOX_DB_USERNAME = "ballot_box"
+cd backend
+.\mvnw.cmd -pl services/ballot-box-service spring-boot:run
+```
+
+1. Programar un proceso (apartado 6). `GET /api/v1/ballot-box/processes/{id}/ballot` → la papeleta con los mismos
+   `id` de opción que en election.
+2. Tras la apertura, obtener un `votingToken` (apartado 7) y votar:
+   `POST /api/v1/ballot-box/processes/{id}/votes` con `{ "votingToken": "…", "selection": { "optionId": 5 } }`
+   (o `{ "blank": true }`) → **201** con `receiptCode` (64 hex). Repetir con el mismo token → **409**.
+3. `GET …/receipts/{receiptCode}` → `{ "present": true }`; con otro código → `false`.
+4. Con una opción que no es de la papeleta → **400** (el token sigue sirviendo). Con voter-access parado → **503**;
+   al volver a arrancarlo, el mismo token funciona.
+5. Tras el cierre → **422**. En `ballot_box_db`: `audit_events` tiene `OPENED`, un `VOTE_RECEIVED` por voto (sin
+   hora) y `CLOSED`; `ballot_snapshots.final_hash` es el `event_hash` de `CLOSED`. `votes` y `receipts` no tienen
+   ninguna columna de tiempo ni de identidad.

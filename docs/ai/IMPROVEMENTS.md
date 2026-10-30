@@ -27,3 +27,5 @@ Estados: propuesta / aprobada / descartada / hecha.
 | IMP-20 | 2026-10-29 | Calcular el hash del código con HMAC y una clave del servidor (*pepper*) en vez de SHA-256 con sal: con acceso a la BD, un código de 6 cifras se puede probar por fuerza bruta antes de que caduque | Defensa en profundidad para RI-12 | Un secreto más que gestionar | P6 | Propuesta |
 | IMP-21 | 2026-10-29 | Límite de peticiones por IP en el gateway para `/api/v1/voter-access/**` | Frena el escaneo de enlaces y el abuso del envío de códigos (RNF-14) | Bajo | P6 | Propuesta |
 | IMP-22 | 2026-10-29 | Correos en HTML con plantillas editables por la organización (`notification_templates`, RI-11) | Mejor presentación y marca (RF-17) | Medio | P6 | Propuesta |
+| IMP-23 | 2026-10-29 | Endpoint público de verificación de la cadena y de la huella final (RF-12) | Cualquiera puede comprobar la urna | Bajo | P5 | Propuesta |
+| IMP-24 | 2026-10-29 | Pantalla de incidencias de la urna (`REVERT_FAILED`) para el auditor | Visibilidad del riesgo aceptado de ADR-0005 | Bajo | P6 | Propuesta |
