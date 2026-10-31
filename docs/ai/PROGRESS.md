@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-31 · Rama: `dev` · Último merge: `1208892` (`chore/p7-p8-tfm-work` integrada en `dev`; sin push)
+Última actualización: 2026-10-31 · Rama de evaluación: `test/p7-pending-suite` (base `cc0229b`, sin commit) · `dev` no modificada
 
 ## Hitos
 
@@ -13,7 +13,7 @@
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
-| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 49 pruebas backend y 10 frontend; 4 integraciones PostgreSQL de esquema/migraciones; E2E, carga, accesibilidad y usabilidad pendientes |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 60 pruebas backend (0 fallos), 10 Vitest; cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a y H1c pendientes |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: P8.1 y borradores P8.2–P8.3 incorporados; criterios del tutor (H1a/H1b/RNF-4) y confirmación de D-03/D-05 (correo del 30/10/2026) aplicados (P8.5); PDF de 82 páginas; falta la revisión editorial y visual completa |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
@@ -237,3 +237,15 @@
    RNF-4 solo si se prepara un protocolo para administradores.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
+
+## P7.7 · Encargo de pruebas (31/10/2026)
+
+Trabajo realizado en worktree separada `saas-digital-voting-p7`, rama `test/p7-pending-suite`, desde `cc0229b`; sin commit, push ni merge. Se preservaron los cambios locales de la worktree original `docs/p7-test-handoff`.
+
+- Verificación Maven final con Java 25.0.5: BUILD SUCCESS, 60 pruebas backend (gateway 1, identity 12, election 19, voter-access 9, ballot-box 19), 0 fallos/errores/omitidas. CSV JaCoCo comparables y resumen P7 en `docs/evaluation/resultados-p7/`.
+- Añadidas pruebas sintéticas de lectura/importación CSV, autorización HTTP parcial, inspección de columnas de todas las tablas públicas de ballot-box y dos casos de integridad de cadena. No se modificó código de producción.
+- Frontend: 10 Vitest pasan y build compila. Cuatro ejecuciones Playwright/axe de la pantalla inicial de recibo detectan incumplimientos críticos/serios; se registra la incidencia DEF-01 y H1a queda PENDIENTE. No equivale a auditar todos los estados/pantallas ni el stack real.
+- Pendiente: matriz completa de autorización, concurrencia/outbox/repositorios y unidades enumeradas en el encargo; recorrido E2E completo y logs con servicios activos; k6 no instalado, por lo que no se hicieron las tres cargas ni se evalúa H1c. Solo datos sintéticos; ningún token/OTP real.
+- DEF-02 reclasificado por el autor: el enlace de la invitación va en la ruta por diseño (D-33); código, tokens y recibo nunca en URL ni almacenamiento. IMP-43 queda como mejora P9.
+
+Evidencias y limitaciones: `docs/evaluation/resultados-p7/`. No cerrar P7 hasta completar los criterios pendientes y resolver las decisiones registradas.
