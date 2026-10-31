@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-31 · Rama de trabajo: `feat/voter-sso` (P6.5 sin commitear, sobre `feat/api-keys` `c092e3c`) · Último commit en `dev`: `e3d4859`
+Última actualización: 2026-10-31 · Rama de trabajo: `dev` · Último commit en `dev`: `ffc4f7f` (merge de `feat/voter-sso`)
 
 ## Hitos
 
@@ -12,7 +12,7 @@
 | P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Hecho (`b7aea1c`) |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
-| P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (RF-19 y RF-17 en `dev`; RF-18, RF-21 y RF-05b en `feat/privacy`, `feat/api-keys` y `feat/voter-sso`, pendientes de integrar) |
+| P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | Pendiente |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
@@ -171,6 +171,6 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Integrar `feat/voter-sso` (incluye P6.3, P6.4 y P6.5) en `dev`; reimportar el realm de Keycloak.
+1. Reimportar el realm de Keycloak (cliente `verivoto-voter`, rol `INTEGRATION`) en los entornos ya creados.
 2. P7 (pruebas y medición, H4) cuando se diga `ACTIVAR TESTS`.
 3. P8: memoria del TFM.
