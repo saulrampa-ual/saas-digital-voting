@@ -4,7 +4,7 @@
 
 La sesión consiste en navegar por un proceso de prueba, emitir un voto sintético, localizar un recibo y explicar qué
 entiende de su verificación. No se utilizan elecciones reales ni se solicitan opiniones políticas. La actividad dura
-aproximadamente 10 minutos.
+entre 10 y 15 minutos.
 
 La participación es voluntaria. Puede dejar la sesión en cualquier momento, sin dar explicaciones. El moderador
 registrará observaciones mediante un identificador aleatorio, sin anotar nombre, correo, código de acceso, token ni
