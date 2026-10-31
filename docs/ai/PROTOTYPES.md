@@ -77,7 +77,7 @@ cuando hay conflicto (ver «Incoherencias»).
 | RF-18 | F2 | Sí: hecha en P6.3 (D-46), sin la línea «Ha votado en» (fila 18) |
 | RF-19 | H1 | Sí |
 | RF-20 | Selector ES/EN en la cabecera; A3 | Sí: la edición bilingüe se añade en A3 (P4.6, D-35) |
-| RF-21 | — | **No**: falta la gestión de claves de API |
+| RF-21 | — | **No**: «Claves de API» se diseñó sin prototipo con el estilo de la consola (P6.4, D-47) |
 
 ## 4. Incoherencias con el TFM, los requisitos o las decisiones
 

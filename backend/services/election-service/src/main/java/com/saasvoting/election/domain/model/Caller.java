@@ -11,6 +11,8 @@ public record Caller(UUID userId, Optional<String> organizationId, Set<String> r
     public static final String ADMIN = "ADMIN";
     public static final String CENSUS_MANAGER = "CENSUS_MANAGER";
     public static final String AUDITOR = "AUDITOR";
+    /** RF-21 (D-47): integration of an organization with an API key; it only reads processes. */
+    public static final String INTEGRATION = "INTEGRATION";
 
     public Caller {
         Objects.requireNonNull(userId, "userId must not be null");
@@ -35,9 +37,9 @@ public record Caller(UUID userId, Optional<String> organizationId, Set<String> r
         return hasRole(CENSUS_MANAGER);
     }
 
-    /** RF-06, RF-07: administrators manage processes; auditors only read them. */
+    /** RF-06, RF-07: administrators manage processes; auditors and integrations (RF-21) only read them. */
     public boolean canReadProcesses() {
-        return hasRole(ADMIN) || hasRole(AUDITOR);
+        return hasRole(ADMIN) || hasRole(AUDITOR) || hasRole(INTEGRATION);
     }
 
     public boolean canManageProcesses() {

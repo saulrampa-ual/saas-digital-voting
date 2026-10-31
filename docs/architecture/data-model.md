@@ -46,11 +46,12 @@ erDiagram
         varchar500 detail
     }
     api_keys {
-        uuid id PK
+        bigint id PK
         varchar20 organization_id FK
-        varchar100 name
-        char12 key_prefix
-        char64 key_hash
+        varchar60 name
+        varchar60 client_id "cliente de Keycloak"
+        uuid keycloak_id
+        uuid created_by
         timestamptz created_at
         timestamptz revoked_at
     }
@@ -62,7 +63,7 @@ erDiagram
 | `management_users` | RI-2 | **Desviación (D-02, D-25):** contraseña, segundo factor, estado y último acceso viven en Keycloak. Aquí se guarda una copia de organización, nombre, correo y rol para listar usuarios, aplicar la regla del último administrador y atender RF-18 sin consultar Keycloak. El Superadministrador no tiene fila (pertenece a la plataforma). Correo único sin distinguir mayúsculas. |
 | `admin_actions` (V4) | RI-13 | Trazabilidad (RF-19, D-44): `event_id` único (idempotencia), organización, momento, persona (`actor_id`, `actor_name`), acción, objeto (tipo, id, nombre), detalle, proceso y origen (`IDENTITY`, `ELECTION`, `BALLOT_BOX`). **Solo añadir:** disparadores que rechazan `UPDATE`, `DELETE` y `TRUNCATE`. Nunca el nombre ni el correo de una persona del censo. |
 | `admin_actions` | RI-13 | Solo inserción: el rol `identity` no tiene `UPDATE` ni `DELETE`, y un *trigger* rechaza ambas operaciones. |
-| `api_keys` | RF-21 (P6) | Solo se guarda el hash; la clave se muestra una vez al crearla. |
+| `api_keys` (V5) | RF-21 | **Desviación (D-47):** cada clave es un cliente confidencial de Keycloak (`client_id` y su id); VeriVoto no guarda el secreto ni su hash, que solo se muestra al crearla. Nombre, quién la creó (`created_by`, `created_by_name`) y `revoked_at`; máximo 5 activas por organización. |
 
 **Trazabilidad administrativa (RF-19).** Cada servicio registra sus acciones administrativas en su propia
 tabla `admin_actions`, en la misma transacción que la acción, para no perder registros si otro servicio no

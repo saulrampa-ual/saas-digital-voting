@@ -29,12 +29,14 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/api/v1/ballot-box/processes/*/results/export",
-                                "/api/v1/ballot-box/processes/*/results/minutes")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/ballot-box/processes/*/results/minutes")
                         .hasRole("ADMIN")
+                        // RF-21 (D-47): integrations of the organization read results and the CSV
+                        .requestMatchers(HttpMethod.GET, "/api/v1/ballot-box/processes/*/results/export")
+                        .hasAnyRole("ADMIN", "INTEGRATION")
                         .requestMatchers(HttpMethod.GET, "/api/v1/ballot-box/processes/*/results",
                                 "/api/v1/ballot-box/processes/*/results/counted-votes")
-                        .hasAnyRole("ADMIN", "AUDITOR")
+                        .hasAnyRole("ADMIN", "AUDITOR", "INTEGRATION")
                         .requestMatchers("/api/v1/ballot-box/processes/*/results/**").denyAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/ballot-box/processes/*/audit-events",
                                 "/api/v1/ballot-box/processes/*/audit-events/verification")

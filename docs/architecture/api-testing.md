@@ -351,3 +351,20 @@ el realm, ver `keycloak-realm.md`); sin él todo funciona, pero sus acciones esp
    (*outbox*), el enlace antiguo da **404** y la participación y el resultado no cambian.
 4. Editar en A2 una entrada anonimizada → **409**. En «Trazabilidad»: «Exportación de datos personales (RGPD)» y
    «Borrado de datos personales (RGPD)», sin nombres.
+
+### API para integraciones con claves por organización (RF-21, P6.4, D-47)
+
+Requiere reimportar el realm (rol `INTEGRATION` y permisos `manage-clients`/`view-clients` de identity).
+
+1. Como ADMIN: «Claves de API» o `POST /api/v1/api-keys` `{"name": "ERP"}` → **201** con `key.clientId`,
+   `clientSecret` (solo esta vez) y `tokenUrl`. `GET /api/v1/api-keys` nunca devuelve el secreto. La sexta clave
+   activa → **409**.
+2. Token de la integración:
+   `curl -X POST <tokenUrl> -d grant_type=client_credentials -d client_id=<clientId> -d client_secret=<secreto>`.
+   El token lleva `roles: ["INTEGRATION"]` y el `organization_id`.
+3. Con ese token por el *gateway*: `GET /api/v1/processes`, `/api/v1/processes/{id}`, `/status-history`,
+   `GET /api/v1/voter-access/processes/{id}/participation`, `GET /api/v1/ballot-box/processes/{id}/results`,
+   `/results/counted-votes`, `/results/export?lang=es` → **200**. Censos, privacidad, notificaciones, acta,
+   registro de la urna, trazabilidad, claves, usuarios o cualquier escritura → **403**; un proceso de otra
+   organización → **404**.
+4. `DELETE /api/v1/api-keys/{id}` → la clave queda revocada; pedir otro token → **401** (`invalid_client`).

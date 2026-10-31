@@ -20,7 +20,8 @@
       "results": "Results",
       "audit": "Audit",
       "traceability": "Traceability",
-      "privacy": "Privacy (GDPR)"
+      "privacy": "Privacy (GDPR)",
+      "apiKeys": "API keys"
     },
     "logout": "Sign out",
     "home": {
@@ -504,14 +505,17 @@
         "REMINDER_CANCELLED": "Reminder cancelled",
         "NOTIFICATIONS_RETRIED": "Failed emails retried",
         "PERSONAL_DATA_EXPORTED": "Personal data export (GDPR)",
-        "PERSONAL_DATA_ERASED": "Personal data erasure (GDPR)"
+        "PERSONAL_DATA_ERASED": "Personal data erasure (GDPR)",
+        "API_KEY_CREATED": "API key created",
+        "API_KEY_REVOKED": "API key revoked"
       },
       "objects": {
         "ORGANIZATION": "Organization",
         "USER": "User",
         "CENSUS": "Census",
         "VOTER": "Person",
-        "PROCESS": "Process"
+        "PROCESS": "Process",
+        "API_KEY": "API key"
       },
       "details": {
         "ORGANIZATION_STATUS_CHANGED": {
@@ -585,6 +589,51 @@
       "confirm": "I confirm the erasure request of this person",
       "erase": "Erase personal data",
       "erased": "Data erased. Entries deleted: {{deleted}}; anonymized: {{anonymized}}."
+    },
+    "apiKeys": {
+      "title": "API keys",
+      "intro": "Keys let the systems of your organization (for example, the registry office or a website) read processes, participation and results through the API. They only read: they cannot see voter lists or personal data and cannot change anything.",
+      "newTitle": "New key",
+      "name": "Name (which system it is for)",
+      "create": "Create key",
+      "limit": "You can have up to {{max}} active keys ({{used}} so far).",
+      "scopeTitle": "What can a key read?",
+      "scope": {
+        "processes": "Processes of your organization: list, details and status history.",
+        "participation": "Participation of each process (numbers only).",
+        "results": "Tallied results, counted votes and CSV export."
+      },
+      "scopeNot": "It cannot see voter lists, personal data, the ballot box log or the traceability, nor download the minutes.",
+      "createdTitle": "Key \"{{name}}\" created",
+      "onlyOnce": "Copy the secret now: it will not be shown again. If you lose it, revoke the key and create another one.",
+      "clientId": "Identifier (client_id)",
+      "secret": "Secret (client_secret)",
+      "tokenUrl": "Token URL",
+      "copyId": "Copy the identifier",
+      "copySecret": "Copy the secret",
+      "copied": {
+        "id": "Identifier copied.",
+        "secret": "Secret copied."
+      },
+      "howTo": "The system requests a token with these credentials (OAuth 2.0, client credentials) and sends it with every call. Each token lasts 5 minutes.",
+      "saved": "I have saved it",
+      "listTitle": "Keys of the organization",
+      "none": "Your organization has no API keys yet.",
+      "col": {
+        "name": "Name",
+        "clientId": "Identifier",
+        "created": "Created",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "active": "Active",
+      "revokedOn": "Revoked on {{date}}",
+      "revoke": "Revoke",
+      "revokeLabel": "Revoke the key \"{{name}}\"",
+      "confirmRevoke": "Revoke? The system will lose access within minutes.",
+      "yesRevoke": "Yes, revoke",
+      "no": "No",
+      "revoked": "Key \"{{name}}\" revoked."
     }
   },
   "voter": {

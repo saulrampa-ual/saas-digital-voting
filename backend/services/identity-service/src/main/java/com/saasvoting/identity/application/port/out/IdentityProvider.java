@@ -21,4 +21,17 @@ public interface IdentityProvider {
 
     /** Compensation when the local copy cannot be stored. */
     void deleteUser(UUID userId);
+
+    /** RF-21 (D-47): credentials of a new integration client; the secret is never stored by VeriVoto. */
+    record ApiClient(UUID keycloakId, String clientId, String clientSecret) {
+    }
+
+    /**
+     * Creates a confidential client with only client credentials, whose tokens carry role {@code INTEGRATION} and the
+     * {@code organization_id} of the organization.
+     */
+    ApiClient createApiClient(String organizationId, String clientId, String description);
+
+    /** Deletes the client: no new tokens; tokens already issued expire within minutes. Idempotent. */
+    void deleteApiClient(UUID keycloakId);
 }

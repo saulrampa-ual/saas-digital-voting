@@ -47,6 +47,10 @@ const MENU: readonly MenuEntry[] = [
     path: '/admin/privacidad', labelKey: 'admin.menu.privacy', icon: 'lock-closed-outline', roles: ['ADMIN'],
     needsOrganization: true,
   },
+  {
+    path: '/admin/claves-api', labelKey: 'admin.menu.apiKeys', icon: 'key-outline', roles: ['ADMIN'],
+    needsOrganization: true,
+  },
 ];
 
 /** Management console layout: fixed menu from 992 px, hamburger menu below (prototype guide). */

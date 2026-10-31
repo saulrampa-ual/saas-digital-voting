@@ -198,7 +198,7 @@ paths:
       operationId: getResult
       summary: Result of a tallied process
       description: |
-        Roles: ADMIN, AUDITOR of the organization of the process. RF-13, RF-15. 409 while the process
+        Roles: ADMIN, AUDITOR or INTEGRATION (API key, RF-21) of the organization of the process. RF-13, RF-15. 409 while the process
         is not tallied: no view shows counts per option before the tally (RF-14).
       security:
         - bearerAuth: []
@@ -220,7 +220,7 @@ paths:
       operationId: getCountedVotes
       summary: Counted votes, to recompute the tally and its hash
       description: |
-        Roles: ADMIN, AUDITOR. RF-13 steps 6–8. Each vote has only its random identifier and the option
+        Roles: ADMIN, AUDITOR, INTEGRATION (API key, RF-21). RF-13 steps 6–8. Each vote has only its random identifier and the option
         (null = blank), sorted by identifier, so the order of casting is not visible. No receipts, so a
         voter cannot prove to someone else what they voted.
       security:
@@ -243,7 +243,7 @@ paths:
       operationId: exportResult
       summary: Export the result as CSV
       description: |
-        Role: ADMIN. RF-15 step 5. UTF-8 with BOM, separator `;`, decimal comma, one row per option plus
+        Roles: ADMIN, INTEGRATION (API key, RF-21). RF-15 step 5. UTF-8 with BOM, separator `;`, decimal comma, one row per option plus
         blank votes, followed by participation and both hashes.
       parameters:
         - name: lang

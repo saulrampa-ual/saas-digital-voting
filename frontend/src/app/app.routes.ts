@@ -86,6 +86,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/traceability/traceability.page').then((m) => m.TraceabilityPage),
       },
       {
+        path: 'claves-api',
+        canMatch: [roleGuard(['ADMIN'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/api-keys/api-keys.page').then((m) => m.ApiKeysPage),
+      },
+      {
         path: 'privacidad',
         canMatch: [roleGuard(['ADMIN'], { needsOrganization: true })],
         loadComponent: () => import('./features/admin/privacy/privacy.page').then((m) => m.PrivacyPage),

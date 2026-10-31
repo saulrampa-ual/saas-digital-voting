@@ -115,7 +115,7 @@ paths:
       operationId: getParticipation
       summary: Participation of a process
       description: |
-        Role: ADMIN of the organization of the process. RF-14. How many people of the frozen census have voted,
+        Roles: ADMIN or INTEGRATION (API key, RF-21) of the organization of the process. RF-14. How many people of the frozen census have voted,
         never what they voted. Before opening, only the census; while open, refreshed by the client; once closed,
         the final participation. Counted by day only (D-18), in the time zone of the service.
       security:

@@ -22,7 +22,7 @@ El realm está versionado en `infra/keycloak/realm/verivoto-realm.json` y Keyclo
 | Cliente | Tipo | Uso |
 | --- | --- | --- |
 | `verivoto-admin` | Público, Authorization Code + PKCE (S256) | Consola de gestión (`http://localhost:4200`) |
-| `identity-service` | Confidencial, *service account* con `manage-users`, `view-users`, `query-users` de `realm-management` y rol `SERVICE` | Crear usuarios de gestión y asignar roles por la Admin API (RF-02) |
+| `identity-service` | Confidencial, *service account* con `manage-users`, `view-users`, `query-users`, `manage-clients` y `view-clients` de `realm-management` y rol `SERVICE` | Crear usuarios de gestión y asignar roles por la Admin API (RF-02); crear y borrar los clientes de las claves de API (RF-21) |
 | `election-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access y ballot-box |
 | `ballot-box-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access |
 | `voter-access-service` | Confidencial, *service account* con rol `SERVICE` | Entregar sus acciones administrativas a `/internal/v1/admin-actions` de identity (RF-19, D-45) |
@@ -32,6 +32,10 @@ Todos los clientes llevan dos mappers propios que añaden al token:
 
 - `roles`: lista de roles de realm (el claim que ya lee `SecurityConfiguration`).
 - `organization_id`: atributo de usuario con el identificador de RI-1 (vacío para el Superadministrador).
+
+**Claves de API (RF-21, D-47).** No están en el JSON: identity crea un cliente `api-{organización}-{8 hex}` por
+cada clave (confidencial, solo *client credentials*, tokens de 5 min) con un *claim* fijo `organization_id` y el
+rol de realm `INTEGRATION` en su cuenta de servicio, y lo borra al revocarla.
 
 ## Secretos
 

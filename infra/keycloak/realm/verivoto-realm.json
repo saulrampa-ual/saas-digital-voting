@@ -58,6 +58,10 @@
       {
         "name": "SERVICE",
         "description": "VeriVoto service calling /internal endpoints of another service"
+      },
+      {
+        "name": "INTEGRATION",
+        "description": "API key of an organization (RF-21): reads processes, participation and results"
       }
     ]
   },
@@ -465,7 +469,9 @@
         "realm-management": [
           "manage-users",
           "view-users",
-          "query-users"
+          "query-users",
+          "manage-clients",
+          "view-clients"
         ]
       }
     },

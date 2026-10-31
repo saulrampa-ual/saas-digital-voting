@@ -28,7 +28,9 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/api/v1/voter-access/processes/*/participation").hasRole("ADMIN")
+                        // RF-21 (D-47): integrations of the organization read the participation too
+                        .requestMatchers(HttpMethod.GET, "/api/v1/voter-access/processes/*/participation")
+                        .hasAnyRole("ADMIN", "INTEGRATION")
                         // RF-17 (D-45): emails and reminders of a process
                         .requestMatchers(HttpMethod.GET, "/api/v1/voter-access/processes/*/notifications").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/voter-access/processes/*/notifications/retry",

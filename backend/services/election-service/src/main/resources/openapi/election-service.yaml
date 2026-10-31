@@ -209,7 +209,7 @@ paths:
       tags: [processes]
       operationId: listProcesses
       summary: List voting processes of the organization
-      description: "Roles: ADMIN, AUDITOR. RF-06, RF-07."
+      description: "Roles: ADMIN, AUDITOR, INTEGRATION (API key, RF-21). RF-06, RF-07."
       parameters:
         - name: status
           in: query
@@ -254,7 +254,7 @@ paths:
       tags: [processes]
       operationId: getProcess
       summary: Get a voting process with its ballot
-      description: "Roles: ADMIN, AUDITOR. RF-06."
+      description: "Roles: ADMIN, AUDITOR, INTEGRATION (API key, RF-21). RF-06."
       responses:
         '200':
           description: Process
@@ -333,7 +333,7 @@ paths:
       tags: [processes]
       operationId: getStatusHistory
       summary: Status changes of a process
-      description: "Roles: ADMIN, AUDITOR. RF-07."
+      description: "Roles: ADMIN, AUDITOR, INTEGRATION (API key, RF-21). RF-07."
       responses:
         '200':
           description: Status changes, oldest first

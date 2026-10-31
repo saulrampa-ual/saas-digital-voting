@@ -21,7 +21,7 @@ import { routes } from './app.routes';
  */
 const managementApiCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
   urlPattern:
-    /^(\/|https?:\/\/[^/]+\/)api\/v1\/(organizations|admin-actions|censuses|processes|privacy|ballot-box\/processes\/\d+\/(results|audit-events)|voter-access\/processes)(\/.*)?(\?.*)?$/i,
+    /^(\/|https?:\/\/[^/]+\/)api\/v1\/(organizations|admin-actions|api-keys|censuses|processes|privacy|ballot-box\/processes\/\d+\/(results|audit-events)|voter-access\/processes)(\/.*)?(\?.*)?$/i,
 });
 
 export const appConfig: ApplicationConfig = {

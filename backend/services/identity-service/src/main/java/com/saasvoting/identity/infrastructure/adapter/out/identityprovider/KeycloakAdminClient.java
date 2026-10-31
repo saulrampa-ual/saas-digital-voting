@@ -31,6 +31,9 @@ public class KeycloakAdminClient implements IdentityProvider {
 
     private static final String UPDATE_PASSWORD = "UPDATE_PASSWORD";
     private static final long TOKEN_EXPIRY_MARGIN_SECONDS = 30;
+    private static final String INTEGRATION_ROLE = "INTEGRATION";
+    /** Short-lived tokens, so a revoked key stops working within minutes. */
+    private static final int INTEGRATION_TOKEN_SECONDS = 300;
 
     private final RestClient restClient;
     private final KeycloakAdminProperties properties;
@@ -124,6 +127,96 @@ public class KeycloakAdminClient implements IdentityProvider {
         }
     }
 
+    /**
+     * RF-21 (D-47): confidential client with only the client-credentials grant. A hard-coded claim puts the
+     * organization in every token and the realm role INTEGRATION reaches the token through the roles mapper.
+     */
+    @Override
+    public ApiClient createApiClient(String organizationId, String clientId, String description) {
+        Map<String, Object> client = Map.ofEntries(
+                Map.entry("clientId", clientId),
+                Map.entry("name", clientId),
+                Map.entry("description", ("[" + organizationId + "] " + description)),
+                Map.entry("enabled", true),
+                Map.entry("publicClient", false),
+                Map.entry("clientAuthenticatorType", "client-secret"),
+                Map.entry("standardFlowEnabled", false),
+                Map.entry("implicitFlowEnabled", false),
+                Map.entry("directAccessGrantsEnabled", false),
+                Map.entry("serviceAccountsEnabled", true),
+                Map.entry("protocol", "openid-connect"),
+                Map.entry("attributes", Map.of("access.token.lifespan", Integer.toString(INTEGRATION_TOKEN_SECONDS))),
+                Map.entry("protocolMappers", List.of(
+                        Map.of("name", "organization", "protocol", "openid-connect",
+                                "protocolMapper", "oidc-hardcoded-claim-mapper",
+                                "config", Map.of("claim.name", "organization_id", "claim.value", organizationId,
+                                        "jsonType.label", "String", "access.token.claim", "true",
+                                        "id.token.claim", "false", "userinfo.token.claim", "false")),
+                        Map.of("name", "realm roles as roles", "protocol", "openid-connect",
+                                "protocolMapper", "oidc-usermodel-realm-role-mapper",
+                                "config", Map.of("claim.name", "roles", "multivalued", "true",
+                                        "jsonType.label", "String", "access.token.claim", "true",
+                                        "id.token.claim", "false", "userinfo.token.claim", "false")))));
+        UUID keycloakId;
+        try {
+            ResponseEntity<Void> response = restClient.post()
+                    .uri("/admin/realms/{realm}/clients", properties.realm())
+                    .headers(headers -> headers.setBearerAuth(token()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(client)
+                    .retrieve()
+                    .toBodilessEntity();
+            keycloakId = idFromLocation(response.getHeaders().getLocation());
+        } catch (RestClientException e) {
+            throw new IdentityProviderUnavailableException("Could not create the API client in Keycloak", e);
+        }
+        try {
+            ServiceAccount account = restClient.get()
+                    .uri("/admin/realms/{realm}/clients/{id}/service-account-user", properties.realm(), keycloakId)
+                    .headers(headers -> headers.setBearerAuth(token()))
+                    .retrieve()
+                    .body(ServiceAccount.class);
+            if (account == null || account.id() == null) {
+                throw new IdentityProviderUnavailableException("Keycloak did not return the service account", null);
+            }
+            restClient.post()
+                    .uri("/admin/realms/{realm}/users/{id}/role-mappings/realm", properties.realm(), account.id())
+                    .headers(headers -> headers.setBearerAuth(token()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(List.of(realmRole(INTEGRATION_ROLE)))
+                    .retrieve()
+                    .toBodilessEntity();
+            ClientSecret secret = restClient.get()
+                    .uri("/admin/realms/{realm}/clients/{id}/client-secret", properties.realm(), keycloakId)
+                    .headers(headers -> headers.setBearerAuth(token()))
+                    .retrieve()
+                    .body(ClientSecret.class);
+            if (secret == null || secret.value() == null) {
+                throw new IdentityProviderUnavailableException("Keycloak did not return the client secret", null);
+            }
+            return new ApiClient(keycloakId, clientId, secret.value());
+        } catch (RuntimeException e) {
+            deleteApiClient(keycloakId);
+            throw e instanceof IdentityProviderUnavailableException unavailable ? unavailable
+                    : new IdentityProviderUnavailableException("Could not finish the API client in Keycloak", e);
+        }
+    }
+
+    @Override
+    public void deleteApiClient(UUID keycloakId) {
+        try {
+            restClient.delete()
+                    .uri("/admin/realms/{realm}/clients/{id}", properties.realm(), keycloakId)
+                    .headers(headers -> headers.setBearerAuth(token()))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (HttpClientErrorException.NotFound e) {
+            // Already deleted.
+        } catch (RestClientException e) {
+            throw new IdentityProviderUnavailableException("Could not delete the API client in Keycloak", e);
+        }
+    }
+
     private void addRealmRole(UUID userId, ManagementRole role) {
         restClient.post()
                 .uri("/admin/realms/{realm}/users/{id}/role-mappings/realm", properties.realm(), userId)
@@ -135,8 +228,12 @@ public class KeycloakAdminClient implements IdentityProvider {
     }
 
     private RoleRepresentation realmRole(ManagementRole role) {
+        return realmRole(role.name());
+    }
+
+    private RoleRepresentation realmRole(String role) {
         RoleRepresentation found = restClient.get()
-                .uri("/admin/realms/{realm}/roles/{role}", properties.realm(), role.name())
+                .uri("/admin/realms/{realm}/roles/{role}", properties.realm(), role)
                 .headers(headers -> headers.setBearerAuth(token()))
                 .retrieve()
                 .body(RoleRepresentation.class);
@@ -194,6 +291,14 @@ public class KeycloakAdminClient implements IdentityProvider {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record RoleRepresentation(String id, String name) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record ServiceAccount(String id) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record ClientSecret(String value) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

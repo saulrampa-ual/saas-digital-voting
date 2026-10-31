@@ -4,7 +4,7 @@ import { addIcons } from 'ionicons';
 import {
   addOutline, alertCircleOutline, barChartOutline, businessOutline, calendarOutline, checkboxOutline, checkmarkCircleOutline, checkmarkOutline,
   closeOutline, closeCircleOutline, cloudOfflineOutline, cloudUploadOutline, copyOutline, createOutline,
-  documentTextOutline, listOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline,
+  documentTextOutline, listOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline, keyOutline,
   linkOutline, lockClosedOutline, peopleOutline, refreshOutline, searchOutline, sendOutline, shieldCheckmarkOutline,
   timeOutline, trashOutline,
 } from 'ionicons/icons';
@@ -21,7 +21,7 @@ export class App {
     addIcons({
       addOutline, alertCircleOutline, barChartOutline, businessOutline, calendarOutline, checkboxOutline, checkmarkCircleOutline, checkmarkOutline,
       closeOutline, closeCircleOutline, cloudOfflineOutline, cloudUploadOutline, copyOutline, createOutline,
-  documentTextOutline, listOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline,
+  documentTextOutline, listOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline, keyOutline,
       linkOutline, lockClosedOutline, peopleOutline, refreshOutline, searchOutline, sendOutline, shieldCheckmarkOutline,
   timeOutline, trashOutline,
     });

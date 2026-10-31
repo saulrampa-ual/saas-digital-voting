@@ -20,7 +20,8 @@
       "results": "Resultados",
       "audit": "Auditoría",
       "traceability": "Trazabilidad",
-      "privacy": "Privacidad (RGPD)"
+      "privacy": "Privacidad (RGPD)",
+      "apiKeys": "Claves de API"
     },
     "logout": "Cerrar sesión",
     "home": {
@@ -504,14 +505,17 @@
         "REMINDER_CANCELLED": "Recordatorio cancelado",
         "NOTIFICATIONS_RETRIED": "Reintento de correos fallidos",
         "PERSONAL_DATA_EXPORTED": "Exportación de datos personales (RGPD)",
-        "PERSONAL_DATA_ERASED": "Borrado de datos personales (RGPD)"
+        "PERSONAL_DATA_ERASED": "Borrado de datos personales (RGPD)",
+        "API_KEY_CREATED": "Creación de clave de API",
+        "API_KEY_REVOKED": "Revocación de clave de API"
       },
       "objects": {
         "ORGANIZATION": "Organización",
         "USER": "Usuario",
         "CENSUS": "Censo",
         "VOTER": "Persona",
-        "PROCESS": "Proceso"
+        "PROCESS": "Proceso",
+        "API_KEY": "Clave de API"
       },
       "details": {
         "ORGANIZATION_STATUS_CHANGED": {
@@ -585,6 +589,51 @@
       "confirm": "Confirmo la solicitud de borrado de esta persona",
       "erase": "Borrar datos personales",
       "erased": "Datos borrados. Registros borrados: {{deleted}}; anonimizados: {{anonymized}}."
+    },
+    "apiKeys": {
+      "title": "Claves de API",
+      "intro": "Las claves permiten que los sistemas de tu organización (por ejemplo, la secretaría o una web) consulten por la API los procesos, la participación y los resultados. Solo leen: no ven censos ni datos personales y no pueden cambiar nada.",
+      "newTitle": "Nueva clave",
+      "name": "Nombre (para qué sistema es)",
+      "create": "Crear clave",
+      "limit": "Puedes tener hasta {{max}} claves activas (llevas {{used}}).",
+      "scopeTitle": "¿Qué puede consultar una clave?",
+      "scope": {
+        "processes": "Procesos de tu organización: lista, detalle e historial de estados.",
+        "participation": "Participación de cada proceso (solo números).",
+        "results": "Resultados escrutados, votos contados y exportación CSV."
+      },
+      "scopeNot": "No puede ver censos, datos personales, el registro de la urna ni la trazabilidad, ni descargar el acta.",
+      "createdTitle": "Clave «{{name}}» creada",
+      "onlyOnce": "Copia el secreto ahora: no se volverá a mostrar. Si lo pierdes, revoca la clave y crea otra.",
+      "clientId": "Identificador (client_id)",
+      "secret": "Secreto (client_secret)",
+      "tokenUrl": "URL del token",
+      "copyId": "Copiar el identificador",
+      "copySecret": "Copiar el secreto",
+      "copied": {
+        "id": "Identificador copiado.",
+        "secret": "Secreto copiado."
+      },
+      "howTo": "El sistema pide un token con estas credenciales (OAuth 2.0, client credentials) y lo envía en cada llamada. Cada token dura 5 minutos.",
+      "saved": "Ya lo he guardado",
+      "listTitle": "Claves de la organización",
+      "none": "Tu organización todavía no tiene claves de API.",
+      "col": {
+        "name": "Nombre",
+        "clientId": "Identificador",
+        "created": "Creada",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "active": "Activa",
+      "revokedOn": "Revocada el {{date}}",
+      "revoke": "Revocar",
+      "revokeLabel": "Revocar la clave «{{name}}»",
+      "confirmRevoke": "¿Revocar? El sistema dejará de tener acceso en unos minutos.",
+      "yesRevoke": "Sí, revocar",
+      "no": "No",
+      "revoked": "Clave «{{name}}» revocada."
     }
   },
   "voter": {
