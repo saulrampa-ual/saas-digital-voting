@@ -9,17 +9,17 @@
 | --- | --- |
 | Commit evaluado | Rama `chore/p7-p8-tfm-work`, base `5fa854f`; cambios sin commit |
 | Sistema operativo y hardware | Windows; hardware exacto PENDIENTE |
-| Java / Maven / PostgreSQL / Docker | Temurin 25.0.5; Maven Wrapper del proyecto; PostgreSQL y Docker no usados en esta ejecución |
+| Java / Maven / PostgreSQL / Docker | Temurin 25.0.5; Maven Wrapper del proyecto; PostgreSQL 18.6 en contenedores Testcontainers; Docker Desktop 29.4.0 |
 | Configuración de servicios | PENDIENTE |
-| Ejecución unitaria | `backend`: `mvnw --batch-mode --no-transfer-progress verify`; BUILD SUCCESS |
+| Ejecución backend | `backend`: `mvnw --batch-mode --no-transfer-progress verify`; BUILD SUCCESS; 49 pruebas, 0 fallos/errores |
 | Datos | Sintéticos; no registrar ni publicar identidades, códigos, tokens o recibos completos |
 
 ## Hipótesis
 
 | Hipótesis | Método y criterio | Resultado real | Decisión |
 | --- | --- | --- | --- |
-| H1a: accesibilidad del flujo | Playwright + axe en pantallas del votante y gestión; cero incidencias críticas o serias; completar checklist manual. axe no certifica WCAG. | PENDIENTE: flujo E2E y barrido axe no ejecutados. | Pendiente |
-| H1b: usabilidad | Al menos 5 personas no técnicas; ≥90 % completa sin ayuda en ≤3 min y ≥80 % interpreta la verificación. Materiales en `docs/evaluation/usabilidad/`. | PENDIENTE: las sesiones las realiza el autor. | Pendiente |
+| H1a: accesibilidad del flujo | Playwright + axe en las pantallas evaluadas: cero incumplimientos críticos ni serios, más revisión manual con teclado y lector de pantalla sin bloqueos en acceso, voto y recibo. axe no certifica WCAG; un incumplimiento serio puntual se documenta como incidencia y se decide si se corrige antes del cierre (criterio validado por el tutor). | PENDIENTE: flujo E2E y barrido axe no ejecutados. | Pendiente |
+| H1b: usabilidad | 5 personas no técnicas: las 5 completan acceso, emisión y recibo en ≤3 min y al menos 4 de 5 interpretan la verificación (criterio validado por el tutor; con n = 5, evidencia descriptiva sin inferencia estadística). Materiales en `docs/evaluation/usabilidad/`. | PENDIENTE: las sesiones las realiza el autor. | Pendiente |
 | H1c: rendimiento | 500 emisores simultáneos; p95 de emisión <2 s; tres ejecuciones reproducibles y errores/recursos documentados. | PENDIENTE: carga no ejecutada. | Pendiente |
 
 ## Evidencia técnica por servicio
@@ -27,16 +27,16 @@
 | Servicio | Evidencia | Resultado |
 | --- | --- | --- |
 | api-gateway | 1 prueba ArchUnit | 1 pasada; cobertura de líneas 0,0 % (0/3) |
-| identity-service | `CallerTest`, `ManagementUserServiceTest`, `ApiKeyServiceTest`, `ArchitectureTest` | 11 pasadas; cobertura de líneas 13,6 % (107/785) |
-| election-service | `CallerTest`, `ProcessStatusTest`, `VotingProcessTest`, `ArchitectureTest` | 9 pasadas; cobertura de líneas 10,3 % (157/1528) |
-| voter-access-service | `AccessCredentialTest`, `VotingTokenServiceTest`, `ArchitectureTest` | 8 pasadas; cobertura de líneas 7,7 % (115/1499) |
-| ballot-box-service | `VotingServiceTest`, `ChainVerifierTest`, `TallyResultTest`, `ArchitectureTest` | 16 pasadas; cobertura de líneas 13,2 % (212/1611) |
+| identity-service | Tests unitarios/arquitectura + `IdentityPostgresIntegrationTest` | 12 pasadas; migraciones Flyway y trigger de acciones administrativas solo añadibles comprobados |
+| election-service | Tests unitarios/arquitectura + `ElectionPostgresIntegrationTest` | 10 pasadas; Flyway 6 migraciones y aislamiento de censos probado a través de `CensusRepositoryAdapter`/JPA para listar y buscar por organización |
+| voter-access-service | Tests unitarios/arquitectura + `VoterAccessPostgresIntegrationTest` | 9 pasadas; migraciones y participación con fecha SQL, sin columnas de hora, comprobadas |
+| ballot-box-service | Tests unitarios/arquitectura + `BallotBoxPostgresIntegrationTest` | 17 pasadas; migraciones, esquema sin identificadores/tiempos de identidad y rechazo de evento `VOTE_RECEIVED` con hora comprobados |
 | frontend | Vitest: `role.guard.spec.ts`, `voter-api.service.spec.ts`, `voter-sso.service.spec.ts` | 10 pasadas; no se ha medido cobertura |
 
-Backend: 45 pruebas, 0 fallos y 0 errores en la última ejecución completa `verify`. Frontend: 10 pruebas, 0 fallos;
-`npm run test:ci` y `npm run build` completaron correctamente. Total conjunto: 55 pruebas. Informes JaCoCo:
+Backend: 49 pruebas, 0 fallos y 0 errores en la última ejecución completa `verify`. Frontend: 10 pruebas, 0 fallos;
+`npm run test:ci` y `npm run build` completaron correctamente. Total conjunto: 59 pruebas. Informes JaCoCo:
 `backend/services/<servicio>/target/site/jacoco/index.html`.
-Las cifras reflejan solo esta batería unitaria inicial; el gateway no contiene lógica ejercitada en estas pruebas.
+Las cifras JaCoCo de la tabla reflejan el informe inicial de cobertura previo a las cuatro pruebas de integración; el gateway no contiene lógica ejercitada en estas pruebas. No se recalculan porcentajes sin una extracción homogénea posterior.
 No se asigna umbral de cobertura en esta fase.
 
 ## RNF e ISO/IEC 25010:2023
@@ -45,6 +45,7 @@ No se asigna umbral de cobertura en esta fase.
 | --- | --- | --- | --- |
 | RNF-1 | Capacidad de interacción; Inclusivity, User assistance | axe, revisión manual con teclado, foco, lector de pantalla, zoom y contraste | Pendiente |
 | RNF-3 | Capacidad de interacción; Learnability, Operability | Sesiones moderadas H1b | Pendiente |
+| RNF-4 | Capacidad de interacción; Learnability, Operability | Sesión con 5 administradores: al menos 4 de 5 crean, configuran y programan un proceso de opción única en ≤10 min (valor propuesto) y sin ayuda; sin hipótesis asociada; sesión no realizada | Pendiente |
 | RNF-6 | Capacidad de interacción; Self-descriptiveness | Pregunta de comprensión del recibo | Pendiente |
 | RNF-11 | Seguridad; Confidentiality | Revisión de esquema, logs, interfaces y separación de bases | Parcial: `VotingServiceTest` comprueba token consumido por separado, evento sin hora y hash del recibo; esquema, logs y persistencia siguen pendientes |
 | RNF-12 | Seguridad y fiabilidad; Integrity, Faultlessness | Envíos concurrentes con token único en PostgreSQL | Pendiente |
@@ -58,14 +59,13 @@ La correspondencia resume el mapeo del TFM; no constituye certificación de conf
 
 ## Limitaciones y amenazas a la validez
 
-Las pruebas unitarias cubren reglas aisladas y no demuestran por sí solas integración, aislamiento de persistencia,
-secreto del voto ni comportamiento bajo carga. La accesibilidad automatizada no sustituye la evaluación manual.
+Las pruebas unitarias cubren reglas aisladas. Las cuatro pruebas de integración ejecutan migraciones y comprobaciones concretas en PostgreSQL 18.6. La prueba de election confirma el alcance por organización de las operaciones de lectura del repositorio de censos, pero no cubre autorización HTTP ni todos los repositorios/entidades. Tampoco demuestran secreto del voto de extremo a extremo ni comportamiento bajo carga. La accesibilidad automatizada no sustituye la evaluación manual.
 La usabilidad depende de una muestra pequeña y autoseleccionada. Los resultados de carga dependen del hardware,
 contenedores, configuración y preparación de datos; se deben informar sin generalizarlos a producción.
 
 ## Pendiente de completar
 
-- Ejecuciones completas de integración con PostgreSQL 18.6 y verificación de aislamiento entre organizaciones.
+- Ampliar integración a otros repositorios y autorización HTTP; probar concurrencia y flujos HTTP/outbox.
 - E2E con Keycloak y Mailpit reales en 1280 px y 360 px, idiomas ES/EN y axe en flujos acordados.
 - Tres mediciones k6 con datos sintéticos, percentiles, errores, CPU/RAM y comprobación posterior de cadena y participación.
 - Sesiones moderadas, resultados agregados y cobertura JaCoCo por servicio.

@@ -1,8 +1,10 @@
 # Diagnóstico P8.0 de la memoria
 
-Fecha: 2026-10-31. Documento de revisión; **las propuestas siguientes no se han aplicado**. El texto actual presenta
-el TFM como especificación y diseño conceptual, mientras que el repositorio ya contiene un MVP implementado. El
-cambio de enfoque debe aprobarlo el autor antes de reescribir esos pasajes.
+Fecha: 2026-10-31. Diagnóstico inicial de revisión. El autor aprobó continuar con
+el enfoque de documentar el MVP implementado y su evidencia real, dejando como
+pendientes las mediciones no ejecutadas y conservando D-03/D-05 abiertas al
+tutor. Algunas propuestas de este diagnóstico se aplicaron; el resto queda
+pendiente de edición y revisión.
 
 ## Pasajes que requieren revisión
 
@@ -32,8 +34,21 @@ La reducción a cinco servicios (D-05) y la exclusión del revoto (D-03) constan
 - `latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex`: no ejecutable en este equipo; MiKTeX indica que
   falta el motor Perl requerido por `latexmk`.
 - Alternativa ejecutada: `pdflatex` → `bibtex` → `pdflatex` ×2, desde `Plantilla-TFM-Informatica-UAL/`.
-- Resultado: PDF de 69 páginas generado; BibTeX terminó correctamente y el log no contiene referencias o citas
+- Resultado inicial: PDF de 69 páginas generado; BibTeX terminó correctamente y el log no contiene referencias o citas
   indefinidas. La compilación informa avisos de cajas sobreanchas/subanchas, sustituciones de tamaño de fuente,
   PDFs incluidos con versiones superiores a PDF 1.5 y el mensaje de MiKTeX «Infinite glue shrinkage found in box
   being split» en tablas largas.
-- El PDF generado es un archivo ignorado por Git. No se modificaron los fuentes LaTeX en esta fase.
+- El PDF inicial generado es un archivo ignorado por Git.
+
+## Avance P8.2–P8.4 (31/10/2026)
+
+- Se añadieron borradores de arquitectura implementada, implementación, amenazas, evaluación y conclusiones;
+  se alinearon objetivos/metodología con el artefacto implementado y se reflejaron 49 pruebas backend, de las que
+  cuatro son integraciones de migraciones/esquema en PostgreSQL 18.6. La memoria aclara que aún falta verificar
+  aislamiento a nivel de repositorio y autorización real entre organizaciones.
+- Compilación final de esta iteración: `pdflatex` → `bibtex` → `pdflatex` ×2; PDF de 79 páginas. No hay errores
+  LaTeX fatales ni referencias/citas indefinidas. Persisten avisos de maquetación anteriores: tablas estrechas,
+  portada/contraportada y cajas sobre/subanchas.
+- Se inspeccionaron visualmente páginas de introducción/objetivos, flujo de voto y resultados de evaluación;
+  son legibles. La secuencia tiene etiquetas cercanas, y siguen pendientes la inspección del resto del PDF y la
+  revisión editorial completa. Este archivo sigue siendo borrador, no versión final de entrega.

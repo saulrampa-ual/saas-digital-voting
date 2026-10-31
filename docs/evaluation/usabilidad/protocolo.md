@@ -41,9 +41,10 @@ Si se ofrece ayuda, anotar el momento y el contenido para distinguir éxito aut�
 - Éxito de tarea: completa acceso, emisión y comprobación del recibo sin ayuda en un máximo de 3 minutos.
 - Comprensión: explica que el recibo permite comprobar la presencia del registro y su integridad, y que no demuestra
   por sí solo que la opción registrada coincida con la intención de la persona.
-- Umbrales H1b: al menos el 90 % alcanza el éxito de tarea y al menos el 80 % supera la pregunta de comprensión.
-  Informar numerador, denominador y tamaño de muestra; con cinco participantes, los porcentajes se informan como
-  fracciones (por ejemplo, 5/5), sin extrapolar a la población general.
+- Criterios H1b (validados por el tutor): los 5 participantes alcanzan el éxito de tarea y al menos 4 de 5 superan la
+  pregunta de comprensión. H0b: no se alcanza alguno de esos criterios. Informar los resultados como cantidades
+  (por ejemplo, 5 de 5); con n = 5 no hay inferencia estadística y los resultados son evidencia descriptiva limitada
+  al prototipo, la configuración y la población evaluados.
 - El moderador no recalcula ni corrige las respuestas durante la tarea; las aclaraciones se dan al final.
 
 ## Límites
