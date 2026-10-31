@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-31 · Rama de trabajo: `chore/p7-p8-tfm-work` · Commit base: `5fa854f` (`docs: P6 integrado en dev`)
+Última actualización: 2026-10-31 · Rama: `dev` · Último merge: `1208892` (`chore/p7-p8-tfm-work` integrada en `dev`; sin push)
 
 ## Hitos
 
@@ -42,6 +42,8 @@
 - P8.0: compilación base de 69 páginas y diagnóstico inicial en `docs/evaluation/diagnostico-memoria-p8.md`.
   El autor aprobó el enfoque el 2026-10-31; las ediciones autorizadas comenzaron después de esa confirmación.
 - Frontend: `npm run build` terminó correctamente (bundle inicial 1,07 MB; 215,26 kB de transferencia estimada).
+- Integración P7/P8 en `dev` (2026-10-31): commits `912dc7b`, `9c87bd0`, `2a6a39e` y merge `1208892`; rama
+  `chore/p7-p8-tfm-work` borrada en local tras comprobar que estaba integrada. Sin push.
 - P8.5 (2026-10-31, revisado y aprobado por el autor): aplicados en la memoria los criterios confirmados por el
   tutor (D-49): H1a/RNF-1 unificado (cero incumplimientos críticos ni serios + revisión manual sin bloqueos), H1b/RNF-3/RNF-6
   en cantidades (5 de 5 en ≤3 min; al menos 4 de 5 interpretan la verificación), RNF-4 (al menos 4 de 5 administradores en
