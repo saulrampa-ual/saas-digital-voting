@@ -73,6 +73,10 @@ public class VoterJpaEntity {
                 createdAt);
     }
 
+    public long getCensusId() {
+        return censusId;
+    }
+
     public String getEmail() {
         return email;
     }

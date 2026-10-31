@@ -1,6 +1,10 @@
 package com.saasvoting.election.infrastructure.adapter.in.rest;
 
 import com.saasvoting.election.domain.model.CensusFrozenException;
+import com.saasvoting.election.domain.model.ErasureBlockedException;
+import com.saasvoting.election.domain.model.PrivacyServiceUnavailableException;
+import com.saasvoting.election.domain.model.PrivacySubjectNotFoundException;
+import com.saasvoting.election.domain.model.VoterAnonymizedException;
 import com.saasvoting.election.domain.model.CensusNotFoundException;
 import com.saasvoting.election.domain.model.DuplicateReason;
 import com.saasvoting.election.domain.model.DuplicateVoterException;
@@ -38,6 +42,32 @@ public class ApiExceptionHandler {
     @ExceptionHandler(VoterNotFoundException.class)
     ProblemDetail voterNotFound(VoterNotFoundException e) {
         return problem(HttpStatus.NOT_FOUND, "No existe esa persona en el censo.");
+    }
+
+    @ExceptionHandler(PrivacySubjectNotFoundException.class)
+    ProblemDetail privacySubjectNotFound(PrivacySubjectNotFoundException e) {
+        return problem(HttpStatus.NOT_FOUND,
+                "No hay ninguna persona con ese correo o teléfono en los censos de tu organización.");
+    }
+
+    @ExceptionHandler(ErasureBlockedException.class)
+    ProblemDetail erasureBlocked(ErasureBlockedException e) {
+        ProblemDetail problem = problem(HttpStatus.CONFLICT, "Esta persona está en el censo de un proceso programado "
+                + "o abierto. Podrás borrar sus datos cuando termine la votación.");
+        problem.setProperty("processIds", e.processIds());
+        return problem;
+    }
+
+    @ExceptionHandler(VoterAnonymizedException.class)
+    ProblemDetail voterAnonymized(VoterAnonymizedException e) {
+        return problem(HttpStatus.CONFLICT, "Los datos de esta persona se borraron por una solicitud de privacidad "
+                + "y no se pueden editar.");
+    }
+
+    @ExceptionHandler(PrivacyServiceUnavailableException.class)
+    ProblemDetail privacyUnavailable(PrivacyServiceUnavailableException e) {
+        return problem(HttpStatus.SERVICE_UNAVAILABLE,
+                "No se ha podido reunir todos los datos de la persona. Inténtalo de nuevo en unos minutos.");
     }
 
     @ExceptionHandler(ProcessNotFoundException.class)

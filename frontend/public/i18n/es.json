@@ -19,7 +19,8 @@
       "participation": "Participación",
       "results": "Resultados",
       "audit": "Auditoría",
-      "traceability": "Trazabilidad"
+      "traceability": "Trazabilidad",
+      "privacy": "Privacidad (RGPD)"
     },
     "logout": "Cerrar sesión",
     "home": {
@@ -501,7 +502,9 @@
         "MINUTES_DOWNLOADED": "Descarga del acta (PDF)",
         "REMINDER_SCHEDULED": "Recordatorio programado",
         "REMINDER_CANCELLED": "Recordatorio cancelado",
-        "NOTIFICATIONS_RETRIED": "Reintento de correos fallidos"
+        "NOTIFICATIONS_RETRIED": "Reintento de correos fallidos",
+        "PERSONAL_DATA_EXPORTED": "Exportación de datos personales (RGPD)",
+        "PERSONAL_DATA_ERASED": "Borrado de datos personales (RGPD)"
       },
       "objects": {
         "ORGANIZATION": "Organización",
@@ -543,8 +546,45 @@
         "reminder": "para el {{value}}",
         "NOTIFICATIONS_RETRIED": {
           "value": "{{value}} correos"
+        },
+        "erased": "borrados: {{deleted}}, anonimizados: {{anonymized}}",
+        "PERSONAL_DATA_EXPORTED": {
+          "value": "registros del censo: {{value}}"
         }
       }
+    },
+    "privacy": {
+      "title": "Privacidad de datos (RGPD)",
+      "intro": "Atiende las peticiones de acceso y borrado de las personas de los censos de tu organización.",
+      "step1": "1 · Identifica a la persona",
+      "queryLabel": "Correo electrónico o teléfono",
+      "queryHelp": "Se busca en todos los censos de tu organización.",
+      "find": "Buscar",
+      "step2": "2 · Datos encontrados",
+      "name": "Nombre",
+      "censuses": "Censos en los que figura",
+      "processes": "Procesos que usaron esos censos",
+      "col": {
+        "census": "Censo",
+        "contact": "Contacto",
+        "added": "Alta",
+        "processes": "Procesos"
+      },
+      "institutionalId": "Identificador",
+      "noProcesses": "Ningún proceso",
+      "voteNote": "El voto no se puede exportar ni borrar por persona: es secreto y no está vinculado a su identidad.",
+      "exportTitle": "Exportar sus datos",
+      "exportText": "Se genera un fichero en formato legible por máquina (JSON) con los datos personales de esta persona, su participación y los correos que le enviamos.",
+      "export": "Exportar datos personales",
+      "exported": "Fichero descargado. Entrégaselo a la persona por un canal seguro.",
+      "fileName": "datos-personales",
+      "eraseTitle": "Borrar sus datos",
+      "blocked": "Esta persona está en el censo de {{processes}}, que está programado o abierto. Podrás borrar sus datos cuando termine la votación.",
+      "willAnonymize": "En los censos que ya usó un proceso ({{count}}), sus datos se anonimizarán: los votos, la participación y el registro de la urna se conservan.",
+      "willDelete": "En los censos que no ha usado ningún proceso ({{count}}), sus datos se borrarán.",
+      "confirm": "Confirmo la solicitud de borrado de esta persona",
+      "erase": "Borrar datos personales",
+      "erased": "Datos borrados. Registros borrados: {{deleted}}; anonimizados: {{anonymized}}."
     }
   },
   "voter": {

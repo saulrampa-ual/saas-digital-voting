@@ -19,7 +19,8 @@
       "participation": "Turnout",
       "results": "Results",
       "audit": "Audit",
-      "traceability": "Traceability"
+      "traceability": "Traceability",
+      "privacy": "Privacy (GDPR)"
     },
     "logout": "Sign out",
     "home": {
@@ -501,7 +502,9 @@
         "MINUTES_DOWNLOADED": "Minutes downloaded (PDF)",
         "REMINDER_SCHEDULED": "Reminder scheduled",
         "REMINDER_CANCELLED": "Reminder cancelled",
-        "NOTIFICATIONS_RETRIED": "Failed emails retried"
+        "NOTIFICATIONS_RETRIED": "Failed emails retried",
+        "PERSONAL_DATA_EXPORTED": "Personal data export (GDPR)",
+        "PERSONAL_DATA_ERASED": "Personal data erasure (GDPR)"
       },
       "objects": {
         "ORGANIZATION": "Organization",
@@ -543,8 +546,45 @@
         "reminder": "for {{value}}",
         "NOTIFICATIONS_RETRIED": {
           "value": "{{value}} emails"
+        },
+        "erased": "deleted: {{deleted}}, anonymized: {{anonymized}}",
+        "PERSONAL_DATA_EXPORTED": {
+          "value": "voter list entries: {{value}}"
         }
       }
+    },
+    "privacy": {
+      "title": "Data privacy (GDPR)",
+      "intro": "Handle access and erasure requests of the people in the voter lists of your organization.",
+      "step1": "1 · Identify the person",
+      "queryLabel": "Email or phone",
+      "queryHelp": "It searches every voter list of your organization.",
+      "find": "Search",
+      "step2": "2 · Data found",
+      "name": "Name",
+      "censuses": "Voter lists that include them",
+      "processes": "Processes that used those lists",
+      "col": {
+        "census": "Voter list",
+        "contact": "Contact",
+        "added": "Added",
+        "processes": "Processes"
+      },
+      "institutionalId": "Identifier",
+      "noProcesses": "No process",
+      "voteNote": "The vote cannot be exported or erased per person: it is secret and not linked to their identity.",
+      "exportTitle": "Export their data",
+      "exportText": "A machine-readable file (JSON) is generated with the personal data of this person, their participation and the emails we sent them.",
+      "export": "Export personal data",
+      "exported": "File downloaded. Give it to the person through a secure channel.",
+      "fileName": "personal-data",
+      "eraseTitle": "Erase their data",
+      "blocked": "This person is on the voter list of {{processes}}, which is scheduled or open. You can erase their data when voting ends.",
+      "willAnonymize": "In the voter lists a process already used ({{count}}), their data will be anonymized: votes, participation and the ballot box log are kept.",
+      "willDelete": "In the voter lists no process used ({{count}}), their data will be deleted.",
+      "confirm": "I confirm the erasure request of this person",
+      "erase": "Erase personal data",
+      "erased": "Data erased. Entries deleted: {{deleted}}; anonymized: {{anonymized}}."
     }
   },
   "voter": {

@@ -1,6 +1,8 @@
 package com.saasvoting.voteraccess.infrastructure.adapter.out.persistence;
 
 import com.saasvoting.voteraccess.application.port.out.NotificationRepository;
+import com.saasvoting.voteraccess.domain.model.PersonalDataRecord;
+import com.saasvoting.voteraccess.application.port.out.PersonalDataRepository;
 import com.saasvoting.voteraccess.application.port.out.ParticipationRepository;
 import com.saasvoting.voteraccess.application.port.out.ReminderRepository;
 import com.saasvoting.voteraccess.application.port.out.ResultsTokenRepository;
@@ -50,7 +52,7 @@ import java.util.UUID;
 @Repository
 @Transactional
 public class JpaVoterAccessStore implements SnapshotRepository, RollRepository, VotingTokenRepository,
-        NotificationRepository, ParticipationRepository, ResultsTokenRepository, ReminderRepository {
+        NotificationRepository, ParticipationRepository, ResultsTokenRepository, ReminderRepository, PersonalDataRepository {
 
     private static final int FLUSH_EVERY = 500;
 
@@ -429,5 +431,86 @@ public class JpaVoterAccessStore implements SnapshotRepository, RollRepository, 
                 .getResultList()
                 .forEach(row -> days.put((java.time.LocalDate) row[0], ((Long) row[1]).intValue()));
         return days;
+    }
+
+    // ---- Personal data (RF-18, D-46) ----
+
+    /** Placeholder kept in the roll: the entry still counts, but its name and email point to nobody. */
+    static final String ANONYMIZED_NAME = "Persona anonimizada";
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<PersonalDataRecord> personalData(long processId, long voterRef) {
+        List<RollEntryJpaEntity> entries = em.createQuery(
+                        "select r from RollEntryJpaEntity r where r.processId = :processId and r.voterRef = :voterRef",
+                        RollEntryJpaEntity.class)
+                .setParameter("processId", processId)
+                .setParameter("voterRef", voterRef)
+                .getResultList();
+        if (entries.isEmpty()) {
+            return Optional.empty();
+        }
+        UUID entryId = entries.getFirst().toDomain().id();
+        Participation participation = findParticipation(entryId);
+        List<PersonalDataRecord.Email> emails = em.createQuery("""
+                        select n from NotificationJpaEntity n where n.rollEntryId = :entry order by n.createdAt, n.id""",
+                        NotificationJpaEntity.class)
+                .setParameter("entry", entryId)
+                .getResultList().stream()
+                .map(NotificationJpaEntity::toDomain)
+                .map(n -> new PersonalDataRecord.Email(n.type(), n.status(), n.createdAt(), n.sentAt()))
+                .toList();
+        return Optional.of(new PersonalDataRecord(processId, voterRef, participation.hasVoted(),
+                participation.votedOn(), emails));
+    }
+
+    @Override
+    public int anonymize(long processId, List<Long> voterRefs) {
+        List<UUID> ids = em.createQuery("""
+                        select r.id from RollEntryJpaEntity r
+                        where r.processId = :processId and r.voterRef in :refs and r.displayName <> :name""", UUID.class)
+                .setParameter("processId", processId)
+                .setParameter("refs", voterRefs)
+                .setParameter("name", ANONYMIZED_NAME)
+                .getResultList();
+        for (UUID id : ids) {
+            em.createQuery("update RollEntryJpaEntity r set r.displayName = :name, r.email = :email where r.id = :id")
+                    .setParameter("name", ANONYMIZED_NAME)
+                    .setParameter("email", "anonimizada-" + id + "@anonimizada.invalid")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        }
+        if (ids.isEmpty()) {
+            return 0;
+        }
+        em.createNativeQuery("""
+                        update access_credentials set link_hash = null, link_expires_at = null, otp_hash = null,
+                            otp_expires_at = null
+                        where roll_entry_id in (:ids)""")
+                .setParameter("ids", ids)
+                .executeUpdate();
+        em.createQuery("""
+                        update VotingTokenJpaEntity t set t.status = :revoked
+                        where t.rollEntryId in :ids and t.status = :issued""")
+                .setParameter("revoked", VotingTokenStatus.REVOKED)
+                .setParameter("issued", VotingTokenStatus.ISSUED)
+                .setParameter("ids", ids)
+                .executeUpdate();
+        em.createQuery("""
+                        update NotificationJpaEntity n set n.status = :cancelled, n.lastError = :reason
+                        where n.rollEntryId in :ids and n.status = :pending""")
+                .setParameter("cancelled", NotificationStatus.CANCELLED)
+                .setParameter("pending", NotificationStatus.PENDING)
+                .setParameter("reason", "Datos borrados a petición de la persona (RGPD)")
+                .setParameter("ids", ids)
+                .executeUpdate();
+        // Delivery errors may quote the email address
+        em.createQuery("""
+                        update NotificationJpaEntity n set n.lastError = null
+                        where n.rollEntryId in :ids and n.status <> :cancelled""")
+                .setParameter("cancelled", NotificationStatus.CANCELLED)
+                .setParameter("ids", ids)
+                .executeUpdate();
+        return ids.size();
     }
 }

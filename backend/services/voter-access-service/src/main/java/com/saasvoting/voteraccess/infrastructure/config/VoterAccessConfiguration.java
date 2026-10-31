@@ -4,6 +4,7 @@ import com.saasvoting.voteraccess.application.port.out.AdminActionOutbox;
 import com.saasvoting.voteraccess.application.port.out.Mailer;
 import com.saasvoting.voteraccess.application.port.out.NotificationRepository;
 import com.saasvoting.voteraccess.application.port.out.ParticipationRepository;
+import com.saasvoting.voteraccess.application.port.out.PersonalDataRepository;
 import com.saasvoting.voteraccess.application.port.out.ReminderRepository;
 import com.saasvoting.voteraccess.application.port.out.ResultsTokenRepository;
 import com.saasvoting.voteraccess.application.port.out.RollRepository;
@@ -15,6 +16,7 @@ import com.saasvoting.voteraccess.application.service.AdminActionService;
 import com.saasvoting.voteraccess.application.service.InvitationService;
 import com.saasvoting.voteraccess.application.service.NotificationAdminService;
 import com.saasvoting.voteraccess.application.service.ParticipationService;
+import com.saasvoting.voteraccess.application.service.PersonalDataService;
 import com.saasvoting.voteraccess.application.service.ProcessReceiverService;
 import com.saasvoting.voteraccess.application.service.ResultsAccessService;
 import com.saasvoting.voteraccess.application.service.VoterAccessService;
@@ -73,6 +75,11 @@ public class VoterAccessConfiguration {
             SnapshotRepository snapshots, NotificationRepository notifications, ReminderRepository reminders,
             UnitOfWork unitOfWork, Clock clock) {
         return new NotificationAdminService(snapshots, notifications, reminders, unitOfWork, clock);
+    }
+
+    @Bean
+    PersonalDataService personalDataService(PersonalDataRepository personalData, UnitOfWork unitOfWork) {
+        return new PersonalDataService(personalData, unitOfWork);
     }
 
     @Bean

@@ -3,7 +3,8 @@ info:
   title: VeriVoto election-service API
   version: v1
   description: |
-    Census (RF-03), voting processes and ballots (RF-06, RF-20) and lifecycle (RF-07).
+    Census (RF-03), voting processes and ballots (RF-06, RF-20), lifecycle (RF-07) and the requests of a person
+    about their personal data (RF-18).
     Every resource belongs to the caller's organization (`organization_id` claim, RNF-15).
     Error `detail` texts are written in plain Spanish (RNF-8).
 servers:
@@ -14,6 +15,8 @@ tags:
     description: RF-03
   - name: processes
     description: RF-06, RF-07, RF-20
+  - name: privacy
+    description: RF-18 (GDPR requests of the people of the censuses)
   - name: internal
     description: Service-to-service endpoints (not exposed by the gateway)
 security:
@@ -130,7 +133,7 @@ paths:
       tags: [censuses]
       operationId: updateVoter
       summary: Modify a voter
-      description: "Role: CENSUS_MANAGER. 409 if the census is frozen or the change creates a duplicate. RF-03."
+      description: "Role: CENSUS_MANAGER. 409 if the census is frozen, the change creates a duplicate or the entry was anonymized (RF-18). RF-03."
       requestBody:
         required: true
         content:
@@ -342,6 +345,98 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/privacy/search:
+    post:
+      tags: [privacy]
+      operationId: searchPersonalData
+      summary: Find a person in the censuses of the organization
+      description: |
+        Role: ADMIN. RF-18, D-46. By email (any case) or phone, in the body so it never appears in access logs.
+        Returns each census entry, the processes (not drafts) that used that census and what an erasure would do:
+        `DELETE` when no process used the census, `ANONYMIZE` otherwise. Erasure is not allowed while a process that
+        uses one of those censuses is SCHEDULED or OPEN. Nothing about whether the person voted.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PrivacyQuery' }
+      responses:
+        '200':
+          description: The person
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PrivacySubject' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/privacy/export:
+    post:
+      tags: [privacy]
+      operationId: exportPersonalData
+      summary: Export the personal data of a person (machine-readable JSON file)
+      description: |
+        Role: ADMIN. RF-18. Census entries with name, email, phone, institutional identifier, language and date added;
+        for each process: title, status, dates, whether the person voted and the day (D-18), and the emails sent. Never
+        the vote, which is not linked to the person (RNF-11). `Content-Disposition: attachment; filename=datos-personales.json`,
+        `Cache-Control: no-store`. Recorded for the traceability (`PERSONAL_DATA_EXPORTED`). 503 if voter-access does not answer.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PrivacyQuery' }
+      responses:
+        '200':
+          description: The file
+          content:
+            application/json:
+              schema: { type: object, required: [format, generatedAt, organizationId, note, censusEntries] }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '503':
+          description: voter-access did not answer; nothing was exported
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+  /api/v1/privacy/erasure:
+    post:
+      tags: [privacy]
+      operationId: erasePersonalData
+      summary: Erase the personal data of a person
+      description: |
+        Role: ADMIN. RF-18, D-46. Deletes the entries of censuses no process used; anonymizes the others (name
+        «Persona anonimizada», unreachable email, no phone nor institutional identifier) so results, participation
+        and the audit chain stay; voter-access anonymizes its rolls through the outbox. 409 while a process that uses
+        one of the censuses is SCHEDULED or OPEN (`processIds`). Recorded for the traceability (`PERSONAL_DATA_ERASED`,
+        detail `deleted:anonymized`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query, confirmed]
+              properties:
+                query: { type: string, maxLength: 100 }
+                confirmed: { type: boolean, const: true }
+      responses:
+        '200':
+          description: Done
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [deleted, anonymized]
+                properties:
+                  deleted: { type: integer, minimum: 0 }
+                  anonymized: { type: integer, minimum: 0 }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
   /internal/v1/processes/{processId}/tallied:
     parameters:
       - $ref: '#/components/parameters/ProcessId'
@@ -583,6 +678,42 @@ components:
         to: { $ref: '#/components/schemas/ProcessStatus' }
         changedAt: { type: string, format: date-time }
         changedBy: { type: string, description: Management user id, or SYSTEM for automatic transitions }
+    PrivacyQuery:
+      type: object
+      required: [query]
+      properties:
+        query: { type: string, maxLength: 100, description: Email or phone of the person }
+    PrivacyProcess:
+      type: object
+      required: [id, title, status]
+      properties:
+        id: { type: integer, format: int64 }
+        title: { type: object, additionalProperties: { type: string } }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+    PrivacySubject:
+      type: object
+      required: [fullName, entries, erasureAllowed, blockingProcesses, toDelete, toAnonymize]
+      properties:
+        fullName: { type: string }
+        entries:
+          type: array
+          items:
+            type: object
+            required: [census, fullName, email, preferredLanguage, addedAt, erasure, processes]
+            properties:
+              census: { type: string }
+              fullName: { type: string }
+              email: { type: string }
+              phone: { type: [string, 'null'] }
+              institutionalId: { type: [string, 'null'] }
+              preferredLanguage: { $ref: '#/components/schemas/Language' }
+              addedAt: { type: string, format: date-time }
+              erasure: { type: string, enum: [DELETE, ANONYMIZE] }
+              processes: { type: array, items: { $ref: '#/components/schemas/PrivacyProcess' } }
+        erasureAllowed: { type: boolean }
+        blockingProcesses: { type: array, items: { $ref: '#/components/schemas/PrivacyProcess' } }
+        toDelete: { type: integer, minimum: 0 }
+        toAnonymize: { type: integer, minimum: 0 }
     Problem:
       type: object
       description: RFC 9457 problem details. `detail` is plain Spanish for the end user (RNF-8).

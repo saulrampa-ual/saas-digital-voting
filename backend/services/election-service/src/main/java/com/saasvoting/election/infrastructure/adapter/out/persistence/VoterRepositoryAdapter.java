@@ -77,4 +77,10 @@ public class VoterRepositoryAdapter implements VoterRepository {
     public Set<String> institutionalIds(long censusId) {
         return new HashSet<>(voters.institutionalIds(censusId));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isAnonymized(long voterId) {
+        return voters.isAnonymized(voterId);
+    }
 }

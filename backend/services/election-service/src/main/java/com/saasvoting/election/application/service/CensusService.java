@@ -21,6 +21,7 @@ import com.saasvoting.election.domain.model.Language;
 import com.saasvoting.election.domain.model.OperationNotAllowedException;
 import com.saasvoting.election.domain.model.Voter;
 import com.saasvoting.election.domain.model.VoterData;
+import com.saasvoting.election.domain.model.VoterAnonymizedException;
 import com.saasvoting.election.domain.model.VoterNotFoundException;
 
 import java.time.Clock;
@@ -84,6 +85,9 @@ public final class CensusService implements ManageCensusesUseCase, ManageVotersU
         requireEditor(caller);
         editableCensus(caller, censusId);
         Voter voter = voters.findById(censusId, voterId).orElseThrow(() -> new VoterNotFoundException(voterId));
+        if (voters.isAnonymized(voterId)) {
+            throw new VoterAnonymizedException(voterId);
+        }
         rejectDuplicate(censusId, data, voter.data());
         return voters.save(voter.withData(data));
     }

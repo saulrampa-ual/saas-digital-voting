@@ -312,7 +312,7 @@ components:
       enum: [ORGANIZATION_CREATED, ORGANIZATION_STATUS_CHANGED, USER_CREATED, USER_ROLE_CHANGED, CENSUS_CREATED,
         VOTER_ADDED, VOTER_UPDATED, VOTER_REMOVED, VOTERS_IMPORTED, PROCESS_CREATED, PROCESS_UPDATED, PROCESS_SCHEDULED,
         PROCESS_ARCHIVED, CHAIN_VERIFIED, RESULTS_EXPORTED, MINUTES_DOWNLOADED, REMINDER_SCHEDULED, REMINDER_CANCELLED,
-        NOTIFICATIONS_RETRIED]
+        NOTIFICATIONS_RETRIED, PERSONAL_DATA_EXPORTED, PERSONAL_DATA_ERASED]
     AdminAction:
       type: object
       required: [occurredAt, actorId, actorName, action, objectType, source]
@@ -324,7 +324,7 @@ components:
         objectType: { type: string, enum: [ORGANIZATION, USER, CENSUS, VOTER, PROCESS] }
         objectId: { type: [string, 'null'], maxLength: 64 }
         objectLabel: { type: [string, 'null'], maxLength: 200, description: 'Name of the object; never a voter''s name' }
-        detail: { type: [string, 'null'], maxLength: 200, description: 'New role or status, number imported or retried, INTACT/BROKEN, ES/EN, reminder time' }
+        detail: { type: [string, 'null'], maxLength: 200, description: 'New role or status, number imported or retried, INTACT/BROKEN, ES/EN, reminder time, census entries exported or deleted:anonymized' }
         processId: { type: [integer, 'null'], format: int64 }
         source: { type: string, enum: [IDENTITY, ELECTION, BALLOT_BOX, VOTER_ACCESS] }
     OrganizationIdentifier:

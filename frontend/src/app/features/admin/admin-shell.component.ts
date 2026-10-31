@@ -43,6 +43,10 @@ const MENU: readonly MenuEntry[] = [
     path: '/admin/trazabilidad', labelKey: 'admin.menu.traceability', icon: 'list-outline', roles: ['ADMIN', 'AUDITOR'],
     needsOrganization: true,
   },
+  {
+    path: '/admin/privacidad', labelKey: 'admin.menu.privacy', icon: 'lock-closed-outline', roles: ['ADMIN'],
+    needsOrganization: true,
+  },
 ];
 
 /** Management console layout: fixed menu from 992 px, hamburger menu below (prototype guide). */

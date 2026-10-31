@@ -45,6 +45,13 @@ public class OutboxProcessSync implements ProcessSyncOutbox {
         enqueue(process, Target.BALLOT_BOX, MessageType.STATUS, update);
     }
 
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void rollAnonymized(long processId, List<Long> voterRefs) {
+        messages.save(ProcessSyncJpaEntity.pending(processId, Target.VOTER_ACCESS, MessageType.ANONYMIZE,
+                jsonMapper.writeValueAsString(new SyncMessages.RollAnonymization(voterRefs)), clock.instant()));
+    }
+
     private void enqueue(VotingProcess process, Target target, MessageType type, Object body) {
         messages.save(ProcessSyncJpaEntity.pending(
                 process.id(), target, type, jsonMapper.writeValueAsString(body), clock.instant()));

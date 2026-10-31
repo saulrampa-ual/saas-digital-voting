@@ -57,6 +57,10 @@ final class SyncMessages {
             Map<String, String> title) {
     }
 
+    /** RF-18 (D-46): people of the roll to anonymize, by their reference only. */
+    record RollAnonymization(List<Long> voterRefs) {
+    }
+
     record StatusUpdate(ProcessStatus status) {
     }
 

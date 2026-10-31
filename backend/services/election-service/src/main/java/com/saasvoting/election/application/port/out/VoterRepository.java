@@ -26,6 +26,9 @@ public interface VoterRepository {
     /** Every voter of the census that has not been anonymized (RF-18), to build the frozen roll (D-21). */
     List<Voter> findAllActiveInCensus(long censusId);
 
+    /** RF-18: the entry was anonymized and must not be edited. */
+    boolean isAnonymized(long voterId);
+
     /** Institutional identifiers already in the census. */
     Set<String> institutionalIds(long censusId);
 }

@@ -337,3 +337,17 @@ el realm, ver `keycloak-realm.md`); sin él todo funciona, pero sus acciones esp
 4. Al cerrarse la votación, todo el censo recibe «Votación cerrada» (sin enlace) y los recordatorios pendientes se cancelan.
 5. AUDITOR o gestor de censo → **403**; ADMIN de otra organización → **404**. En «Trazabilidad» aparecen
    «Recordatorio programado», «Recordatorio cancelado» y «Reintento de correos fallidos».
+
+### Datos personales de una persona del censo (RF-18, P6.3, D-46)
+
+1. Como ADMIN: «Privacidad (RGPD)» o `POST /api/v1/privacy/search` con `{"query": "<correo o teléfono>"}` → entradas
+   de censo, procesos que usaron cada censo y qué haría el borrado (`DELETE` o `ANONYMIZE`). Sin nadie → **404**;
+   texto que no es correo ni teléfono → **400**; AUDITOR o gestor de censo → **403**.
+2. `POST /api/v1/privacy/export` con la misma consulta → `datos-personales.json` con los datos del censo, la
+   participación (votó y el día) y los correos enviados. Nunca el voto.
+3. Con un proceso programado o abierto que usa uno de esos censos, `POST /api/v1/privacy/erasure`
+   `{"query": "…", "confirmed": true}` → **409** con `processIds`. Cuando termina la votación → `{"deleted": n,
+   "anonymized": m}`; en `voter_access_db.roll_entries` el nombre pasa a «Persona anonimizada» a los pocos segundos
+   (*outbox*), el enlace antiguo da **404** y la participación y el resultado no cambian.
+4. Editar en A2 una entrada anonimizada → **409**. En «Trazabilidad»: «Exportación de datos personales (RGPD)» y
+   «Borrado de datos personales (RGPD)», sin nombres.

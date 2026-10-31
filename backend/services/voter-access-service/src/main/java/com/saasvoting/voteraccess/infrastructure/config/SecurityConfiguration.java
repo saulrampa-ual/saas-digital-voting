@@ -43,6 +43,9 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/internal/v1/processes/*/voted-count")
                         .access(InternalClients.only(clients.ballotBox()))
                         .requestMatchers("/internal/v1/processes/**").access(InternalClients.only(clients.election()))
+                        // RF-18 (D-46): election-service answers the requests of a person about their data
+                        .requestMatchers(HttpMethod.POST, "/internal/v1/privacy/records")
+                        .access(InternalClients.only(clients.election()))
                         .requestMatchers("/internal/v1/voting-tokens/**", "/internal/v1/results-tokens/**")
                         .access(InternalClients.only(clients.ballotBox()))
                         .requestMatchers("/internal/**").denyAll()

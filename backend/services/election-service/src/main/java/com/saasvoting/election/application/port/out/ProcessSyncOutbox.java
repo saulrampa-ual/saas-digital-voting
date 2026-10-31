@@ -19,4 +19,7 @@ public interface ProcessSyncOutbox {
 
     /** Any later status change (OPEN, CLOSED, TALLIED, ARCHIVED). */
     void statusChanged(VotingProcess process);
+
+    /** RF-18 (D-46): voter-access must anonymize these people ({@code voter_ref}) in the roll of the process. */
+    void rollAnonymized(long processId, List<Long> voterRefs);
 }
