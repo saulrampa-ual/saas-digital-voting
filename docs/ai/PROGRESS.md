@@ -231,7 +231,8 @@
 ## Cómo continuar (siguiente paso exacto)
 
 0. Autor: resolver las decisiones pendientes (modelo de sustitución en P9, RF-11 Could/Won't, «sin ayuda» en RNF-4, RF-22/RF-23 en la tabla 1.1).
-1. Completar integración a nivel de repositorio/servicio y verificar el aislamiento efectivo por organización.
+1. Entregar `docs/evaluation/encargo-pruebas-p7.md` a la IA que ejecuta las pruebas (bloques 1–7: autorización HTTP,
+   concurrencia/outbox, unitarias, secreto, Playwright + axe, k6, cobertura) en la rama `test/p7-pending-suite`.
 2. Preparar Playwright, accesibilidad y k6 sin añadir datos personales ni secretos.
 3. Realizar la sesión de usabilidad con cinco votantes (autor, prioritaria) y registrar resultados como cantidades (x de 5);
    RNF-4 solo si se prepara un protocolo para administradores.
