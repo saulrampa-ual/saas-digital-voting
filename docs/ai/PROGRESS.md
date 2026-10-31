@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-31 · Rama de trabajo: `dev` · Último commit en `dev`: `ffc4f7f` (merge de `feat/voter-sso`)
+Última actualización: 2026-10-31 · Rama de trabajo: `chore/p7-p8-tfm-work` · Commit base: `5fa854f` (`docs: P6 integrado en dev`)
 
 ## Hitos
 
@@ -13,11 +13,30 @@
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
-| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
-| P8 | 01/12 – 27/01/2027 | Memoria del TFM | Pendiente |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 55 pruebas unitarias/arquitectura iniciales (backend + frontend); integración, E2E, carga y usabilidad pendientes |
+| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: diagnóstico P8.0 compilado; reescritura de enfoque a la espera del autor |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
 ## Hecho
+
+- P7.0: pruebas activadas el 2026-10-31 según autorización `ACTIVAR TESTS` del prompt de continuación. Añadidos
+  `spring-boot-starter-test`, Testcontainers 2.0.5 (gestionado por Spring Boot), ArchUnit 1.5.1 y JaCoCo 0.8.16;
+  CI backend ejecuta `verify` con tests. Último `mvnw verify` completo: BUILD SUCCESS, 45 tests, 0 fallos.
+- P7.1/P7.3 (parcial): tests de permisos/último administrador/API keys, ciclo de vida y programación, código/OTP,
+  consumo del token, compensación si falla el guardado, evento de voto sin tiempo/hash del recibo, participación por
+  día, cadena, escrutinio, y reglas de arquitectura por servicio. Cobertura de líneas actual: gateway 0,0 %,
+  identity 13,6 %, election 10,3 %, voter-access 7,7 %, ballot-box 13,2 %; véase `docs/evaluation/informe.md`.
+  Es parcial y no acredita esquema/logs ni cobertura suficiente; P7 sigue abierto.
+- Frontend P7.1: runner Angular `@angular/build:unit-test` con Vitest 5.0.5 + jsdom 30.1.3; 10 pruebas de
+  guards de rol, flujo API papeleta→voto→recibo y PKCE/state/nonce; `npm run test:ci` y `npm run build` pasan.
+  CI ejecuta unit tests y build; `npm install` con Node 24.15.0 terminó sin vulnerabilidades reportadas.
+- P7.4/P7.5/P7.6/P7.7 (material inicial): lista manual de accesibilidad, guion k6 para 500 VU con tokens
+  sintéticos externos, protocolo, consentimiento, guion y hoja de registro de usabilidad; informe de evaluación
+  con H1a/H1b/H1c y RNF pendientes marcados, sin inventar resultados. Carga no ejecutada.
+- P8.0: `pdflatex` + `bibtex` + `pdflatex` ×2 genera el PDF de 69 páginas. `latexmk` no arranca porque falta Perl.
+  Diagnóstico y lista de pasajes por reescribir en `docs/evaluation/diagnostico-memoria-p8.md`; no se modificaron
+  fuentes de la memoria mientras se espera aprobación del cambio de enfoque.
+- Frontend: `npm run build` terminó correctamente (bundle inicial 1,07 MB; 215,26 kB de transferencia estimada).
 
 - Antes de P0 (commits hasta `09f21e1`): estructura de carpetas; `tenant-service` con el caso de uso
   «crear organización» (dominio, puertos, servicio, JPA, Flyway V1, REST, resource server JWT con
@@ -156,21 +175,32 @@
 
 ## Pendiente
 
-- Validar con el tutor la reducción a 5 servicios (D-05) y la exclusión del revoto (D-03).
-- Corregir el Gantt del TFM (`plan_gantt.tex`): la iteración 3 debe quedar en RF-09–RF-10.
-- Verificar el último parche de Spring Cloud 2025.1.x, springdoc 3.1.x y Maven (P1.1); de Ionic 9 (P3.4).
-- Prototipos: pantallas que faltan para RF-17 y RF-21 (ver `PROTOTYPES.md`).
-- Seguridad de `election`, `voter-access` y `ballot-box`: los esqueletos no incluyen Spring Security;
-  se añade en el hito de cada servicio (P3.3, P4.3, P4.4).
-- CORS y API keys en el gateway (P6); rutas de los demás servicios cuando existan sus contratos (P2).
+- P7.1: ampliar cobertura unitaria de censo/CSV, validación de claims institucionales, privacidad, recordatorios,
+  errores, pruebas del flujo visual del votante y reglas de dominio que aún no tienen pruebas.
+- P7.2: integración con PostgreSQL 18.6 mediante Testcontainers; Flyway por servicio, aislamiento de dos
+  organizaciones, triggers solo añadibles, concurrencia de tokens y reintentos/idempotencia de outbox.
+- P7.3: inspección del esquema y logs para secreto del voto; pruebas de todas las manipulaciones de cadena y límites
+  de datos temporales.
+- P7.4: Playwright con Keycloak y Mailpit reales, flujos de votación y gestión en 1280/360 px y ES/EN, axe y
+  ejecución de `docs/evaluation/accesibilidad-manual.md`; añadir job E2E a CI. El runner unitario está configurado;
+  el navegador real y E2E siguen sin ejecutarse.
+- P7.5: completar escenarios k6 de acceso y escrutinio; preparar en entorno local las credenciales sintéticas
+  fuera del repo; ejecutar tres mediciones de voto con percentiles, errores y recursos y comprobar la cadena/participación.
+- P7.6: el autor debe realizar al menos cinco sesiones y completar los materiales de `docs/evaluation/usabilidad/`.
+- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a/H1b/H1c siguen pendientes.
+- P8: el autor debe aprobar el enfoque propuesto en `docs/evaluation/diagnostico-memoria-p8.md` antes de revisar
+  la memoria. Tras la aprobación: corregir Gantt/RF-05b/arquitectura, añadir capítulos, anexos, resultados y volver
+  a compilar y revisar visualmente.
+- Siguen abiertas para el tutor la reducción a cinco servicios (D-05) y la exclusión del revoto (D-03).
 
 ## Bloqueos / preguntas abiertas
 
-- ¿Se activan las pruebas de propiedades críticas al terminar P4? (IMP-03)
-- Retraso respecto al Gantt: la iteración 1 (RF-01–RF-03) acababa el 31/10.
+- P8: falta aprobación del autor al cambio narrativo de «diseño conceptual» a «artefacto implementado y evaluado».
+- Las pruebas de integración necesitan Docker Desktop disponible; no se ha verificado el daemon ni iniciado contenedores.
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Reimportar el realm de Keycloak (cliente `verivoto-voter`, rol `INTEGRATION`) en los entornos ya creados.
-2. P7 (pruebas y medición, H4) cuando se diga `ACTIVAR TESTS`.
-3. P8: memoria del TFM.
+1. Completar P7.1 y P7.2; verificar Docker Desktop antes de ejecutar Testcontainers.
+2. Preparar Playwright, accesibilidad y k6 sin añadir datos personales ni secretos.
+3. Realizar las sesiones de usabilidad (autor) y registrar resultados agregados.
+4. Obtener la aprobación del autor al diagnóstico P8.0; después continuar P8.1–P8.4.

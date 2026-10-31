@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "test": "ng test",
+    "test:ci": "ng test --watch=false",
     "watch": "ng build --watch --configuration development"
   },
   "private": true,
@@ -31,8 +33,10 @@
     "@angular/build": "^22.2.5",
     "@angular/cli": "^22.2.5",
     "@angular/compiler-cli": "^22.2.0",
+    "jsdom": "^30.1.3",
     "prettier": "^3.8.1",
-    "typescript": "~6.0.2"
+    "typescript": "~6.0.2",
+    "vitest": "^5.0.5"
   },
   "engines": {
     "node": "^22.22.3 || ^24.15.0 || ^26.0.0"

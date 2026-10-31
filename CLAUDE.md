@@ -42,10 +42,10 @@ No se usan Lombok ni MapStruct: `record` y mappers manuales.
 
 ## 3. Reglas duras
 
-1. **Pruebas bloqueadas.** No crear ni ejecutar tests (unitarios, integración, e2e, carga) hasta que el
-   autor escriba explícitamente `ACTIVAR TESTS`. Solo se permite compilar:
-   `./mvnw -DskipTests compile` (o `verify -DskipTests`) y `ng build`. No añadir dependencias de test.
-   Si se pide un test antes de la activación, negarse citando esta regla.
+1. **Pruebas activadas para P7.** El autor autorizó `ACTIVAR TESTS` en el prompt de continuación de VeriVoto
+   confirmado el 2026-10-31. Se permiten pruebas unitarias, de integración, e2e y carga dentro del alcance
+   de P7. Mantener datos sintéticos, respetar el secreto del voto y no presentar resultados que no procedan
+   de ejecuciones reales. Las tareas fuera de P7 siguen necesitando autorización específica.
 2. **Secreto del voto (RNF-11).** Nada enlaza voto e identidad: ni tablas, ni claves, ni logs, ni
    identificadores, ni marcas de tiempo u orden que permitan correlacionar participación y urna.
    Revisar con la skill `voting-secrecy-guard` cualquier cambio en `voter-access` o `ballot-box`.
