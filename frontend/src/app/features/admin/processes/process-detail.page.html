@@ -97,6 +97,8 @@
               <dd>{{ p.ballot.options.length }}@if (p.ballot.blankVoteEnabled) { · {{ 'admin.process.summary.blank' | translate }} }</dd></div>
             <div><dt>{{ 'admin.process.summary.visibility' | translate }}</dt>
               <dd>{{ 'admin.process.summary.visibilityValue.' + p.resultsVisibility | translate }}</dd></div>
+            <div><dt>{{ 'admin.process.summary.authentication' | translate }}</dt>
+              <dd>{{ 'admin.process.summary.authenticationValue.' + (p.voterAuthentication ?? 'EMAIL_CODE') | translate }}</dd></div>
           </dl>
         </section>
       }

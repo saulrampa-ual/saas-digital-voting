@@ -119,6 +119,18 @@
               @if (errorFor('censusId'); as message) {
                 <ion-text color="danger"><p role="alert">{{ message }}</p></ion-text>
               }
+              <p class="label" id="auth-label">{{ 'admin.processForm.authentication' | translate }}</p>
+              <ion-radio-group aria-labelledby="auth-label" [value]="model().voterAuthentication"
+                               (ionChange)="update({ voterAuthentication: $event.detail.value })">
+                <ion-item lines="none" class="choice" [class.selected]="model().voterAuthentication === 'EMAIL_CODE'">
+                  <ion-radio value="EMAIL_CODE" labelPlacement="end" justify="start">
+                    <strong>{{ 'admin.processForm.emailCode' | translate }}</strong><br><small>{{ 'admin.processForm.emailCodeHelp' | translate }}</small>
+                  </ion-radio></ion-item>
+                <ion-item lines="none" class="choice" [class.selected]="model().voterAuthentication === 'INSTITUTIONAL_SSO'">
+                  <ion-radio value="INSTITUTIONAL_SSO" labelPlacement="end" justify="start">
+                    <strong>{{ 'admin.processForm.sso' | translate }}</strong><br><small>{{ 'admin.processForm.ssoHelp' | translate }}</small>
+                  </ion-radio></ion-item>
+              </ion-radio-group>
             }
             @case ('ballot') {
               <h2 tabindex="-1">4. {{ 'admin.processForm.steps.ballot' | translate }}</h2>

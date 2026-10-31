@@ -31,6 +31,20 @@ public final class SyncComponents {
                 properties, clock);
     }
 
+    /** RF-18 (D-46): synchronous reads from voter-access for the export of a person. */
+    public static HttpVoterAccessRecords voterAccessRecords(
+            RestClient.Builder builder, SyncProperties properties, Clock clock) {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(CONNECT_TIMEOUT);
+        requestFactory.setReadTimeout(Duration.ofSeconds(10));
+        RestClient http = builder.clone().requestFactory(requestFactory).build();
+        RestClient keycloak = builder.clone()
+                .requestFactory(requestFactory)
+                .baseUrl(properties.keycloakBaseUrl().toString())
+                .build();
+        return new HttpVoterAccessRecords(http, new ServiceTokenProvider(keycloak, properties, clock), properties);
+    }
+
     /** RF-19 (D-44): delivery of the administrative actions to identity-service. */
     public static AdminActionDispatcher adminActionDispatcher(
             AdminActionOutboxJpaRepository messages, RestClient.Builder builder, SyncProperties properties,

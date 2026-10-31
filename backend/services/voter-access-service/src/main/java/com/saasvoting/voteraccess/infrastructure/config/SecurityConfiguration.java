@@ -28,7 +28,9 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/api/v1/voter-access/processes/*/participation").hasRole("ADMIN")
+                        // RF-21 (D-47): integrations of the organization read the participation too
+                        .requestMatchers(HttpMethod.GET, "/api/v1/voter-access/processes/*/participation")
+                        .hasAnyRole("ADMIN", "INTEGRATION")
                         // RF-17 (D-45): emails and reminders of a process
                         .requestMatchers(HttpMethod.GET, "/api/v1/voter-access/processes/*/notifications").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/voter-access/processes/*/notifications/retry",
@@ -43,6 +45,9 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/internal/v1/processes/*/voted-count")
                         .access(InternalClients.only(clients.ballotBox()))
                         .requestMatchers("/internal/v1/processes/**").access(InternalClients.only(clients.election()))
+                        // RF-18 (D-46): election-service answers the requests of a person about their data
+                        .requestMatchers(HttpMethod.POST, "/internal/v1/privacy/records")
+                        .access(InternalClients.only(clients.election()))
                         .requestMatchers("/internal/v1/voting-tokens/**", "/internal/v1/results-tokens/**")
                         .access(InternalClients.only(clients.ballotBox()))
                         .requestMatchers("/internal/**").denyAll()

@@ -4,6 +4,7 @@ import com.saasvoting.voteraccess.domain.model.Language;
 import com.saasvoting.voteraccess.domain.model.ProcessSnapshot;
 import com.saasvoting.voteraccess.domain.model.ProcessStatus;
 import com.saasvoting.voteraccess.domain.model.ResultsVisibility;
+import com.saasvoting.voteraccess.domain.model.VoterAuthentication;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -49,6 +50,10 @@ public class ProcessSnapshotJpaEntity {
     @Column(name = "results_visibility", length = 20, nullable = false)
     private ResultsVisibility resultsVisibility;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "voter_authentication", length = 20, nullable = false)
+    private VoterAuthentication voterAuthentication;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "process_snapshot_texts", joinColumns = @JoinColumn(name = "process_id"))
     @MapKeyColumn(name = "language", length = 2)
@@ -73,6 +78,7 @@ public class ProcessSnapshotJpaEntity {
         closesAt = snapshot.closesAt();
         defaultLanguage = snapshot.defaultLanguage().code();
         resultsVisibility = snapshot.resultsVisibility();
+        voterAuthentication = snapshot.authentication();
         titles.clear();
         snapshot.title().forEach((language, title) -> titles.put(language.code(), title));
     }
@@ -81,6 +87,6 @@ public class ProcessSnapshotJpaEntity {
         Map<Language, String> title = new EnumMap<>(Language.class);
         titles.forEach((code, text) -> title.put(Language.fromCode(code), text));
         return new ProcessSnapshot(processId, organizationId, title, status, opensAt, closesAt,
-                Language.fromCode(defaultLanguage), resultsVisibility);
+                Language.fromCode(defaultLanguage), resultsVisibility, voterAuthentication);
     }
 }

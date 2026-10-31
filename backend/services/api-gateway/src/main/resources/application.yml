@@ -12,11 +12,11 @@ spring:
             - id: identity-organizations
               uri: ${IDENTITY_SERVICE_URI:http://localhost:8081}
               predicates:
-                - Path=/api/v1/organizations,/api/v1/organizations/**,/api/v1/admin-actions,/api/v1/admin-actions/**
+                - Path=/api/v1/organizations,/api/v1/organizations/**,/api/v1/admin-actions,/api/v1/admin-actions/**,/api/v1/api-keys,/api/v1/api-keys/**
             - id: election
               uri: ${ELECTION_SERVICE_URI:http://localhost:8082}
               predicates:
-                - Path=/api/v1/censuses,/api/v1/censuses/**,/api/v1/processes,/api/v1/processes/**
+                - Path=/api/v1/censuses,/api/v1/censuses/**,/api/v1/processes,/api/v1/processes/**,/api/v1/privacy/**
             # Only the public voter endpoints; /internal/** is never routed (D-22)
             - id: voter-access
               uri: ${VOTER_ACCESS_SERVICE_URI:http://localhost:8083}

@@ -11,6 +11,8 @@ export type LocalizedText = Partial<Record<Lang, string>>;
 export type ProcessStatus = 'DRAFT' | 'SCHEDULED' | 'OPEN' | 'CLOSED' | 'TALLIED' | 'ARCHIVED';
 export type VoteType = 'SINGLE_CHOICE' | 'YES_NO_ABSTAIN';
 export type ResultsVisibility = 'CENSUS_ONLY' | 'PUBLIC_LINK';
+/** RF-05b (D-48): code by email or institutional account. */
+export type VoterAuthentication = 'EMAIL_CODE' | 'INSTITUTIONAL_SSO';
 
 export const PROCESS_STATUSES: readonly ProcessStatus[] = ['DRAFT', 'SCHEDULED', 'OPEN', 'CLOSED', 'TALLIED', 'ARCHIVED'];
 
@@ -23,6 +25,7 @@ export interface ProcessData {
   closesAt: string;
   defaultLanguage: Lang;
   resultsVisibility: ResultsVisibility;
+  voterAuthentication: VoterAuthentication;
   ballot: {
     voteType: VoteType;
     question: LocalizedText;

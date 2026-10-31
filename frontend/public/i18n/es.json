@@ -19,7 +19,9 @@
       "participation": "Participación",
       "results": "Resultados",
       "audit": "Auditoría",
-      "traceability": "Trazabilidad"
+      "traceability": "Trazabilidad",
+      "privacy": "Privacidad (RGPD)",
+      "apiKeys": "Claves de API"
     },
     "logout": "Cerrar sesión",
     "home": {
@@ -130,7 +132,12 @@
         "minOptions": "Añade al menos 2 opciones.",
         "maxOptions": "Máximo 50 opciones.",
         "optionRequired": "Escribe la opción en el idioma por defecto."
-      }
+      },
+      "authentication": "Cómo entran los votantes",
+      "emailCode": "Código por correo",
+      "emailCodeHelp": "Al abrir su enlace personal reciben un código de 6 cifras en el correo del censo.",
+      "sso": "Cuenta institucional (SSO)",
+      "ssoHelp": "Entran con la cuenta de la organización; su correo verificado debe ser el del censo."
     },
     "process": {
       "title": "Ciclo de vida",
@@ -209,6 +216,11 @@
         "visibilityValue": {
           "CENSUS_ONLY": "Solo personas del censo",
           "PUBLIC_LINK": "Enlace público"
+        },
+        "authentication": "Acceso de los votantes",
+        "authenticationValue": {
+          "EMAIL_CODE": "Código por correo",
+          "INSTITUTIONAL_SSO": "Cuenta institucional (SSO)"
         }
       },
       "links": {
@@ -501,14 +513,19 @@
         "MINUTES_DOWNLOADED": "Descarga del acta (PDF)",
         "REMINDER_SCHEDULED": "Recordatorio programado",
         "REMINDER_CANCELLED": "Recordatorio cancelado",
-        "NOTIFICATIONS_RETRIED": "Reintento de correos fallidos"
+        "NOTIFICATIONS_RETRIED": "Reintento de correos fallidos",
+        "PERSONAL_DATA_EXPORTED": "Exportación de datos personales (RGPD)",
+        "PERSONAL_DATA_ERASED": "Borrado de datos personales (RGPD)",
+        "API_KEY_CREATED": "Creación de clave de API",
+        "API_KEY_REVOKED": "Revocación de clave de API"
       },
       "objects": {
         "ORGANIZATION": "Organización",
         "USER": "Usuario",
         "CENSUS": "Censo",
         "VOTER": "Persona",
-        "PROCESS": "Proceso"
+        "PROCESS": "Proceso",
+        "API_KEY": "Clave de API"
       },
       "details": {
         "ORGANIZATION_STATUS_CHANGED": {
@@ -543,8 +560,90 @@
         "reminder": "para el {{value}}",
         "NOTIFICATIONS_RETRIED": {
           "value": "{{value}} correos"
+        },
+        "erased": "borrados: {{deleted}}, anonimizados: {{anonymized}}",
+        "PERSONAL_DATA_EXPORTED": {
+          "value": "registros del censo: {{value}}"
         }
       }
+    },
+    "privacy": {
+      "title": "Privacidad de datos (RGPD)",
+      "intro": "Atiende las peticiones de acceso y borrado de las personas de los censos de tu organización.",
+      "step1": "1 · Identifica a la persona",
+      "queryLabel": "Correo electrónico o teléfono",
+      "queryHelp": "Se busca en todos los censos de tu organización.",
+      "find": "Buscar",
+      "step2": "2 · Datos encontrados",
+      "name": "Nombre",
+      "censuses": "Censos en los que figura",
+      "processes": "Procesos que usaron esos censos",
+      "col": {
+        "census": "Censo",
+        "contact": "Contacto",
+        "added": "Alta",
+        "processes": "Procesos"
+      },
+      "institutionalId": "Identificador",
+      "noProcesses": "Ningún proceso",
+      "voteNote": "El voto no se puede exportar ni borrar por persona: es secreto y no está vinculado a su identidad.",
+      "exportTitle": "Exportar sus datos",
+      "exportText": "Se genera un fichero en formato legible por máquina (JSON) con los datos personales de esta persona, su participación y los correos que le enviamos.",
+      "export": "Exportar datos personales",
+      "exported": "Fichero descargado. Entrégaselo a la persona por un canal seguro.",
+      "fileName": "datos-personales",
+      "eraseTitle": "Borrar sus datos",
+      "blocked": "Esta persona está en el censo de {{processes}}, que está programado o abierto. Podrás borrar sus datos cuando termine la votación.",
+      "willAnonymize": "En los censos que ya usó un proceso ({{count}}), sus datos se anonimizarán: los votos, la participación y el registro de la urna se conservan.",
+      "willDelete": "En los censos que no ha usado ningún proceso ({{count}}), sus datos se borrarán.",
+      "confirm": "Confirmo la solicitud de borrado de esta persona",
+      "erase": "Borrar datos personales",
+      "erased": "Datos borrados. Registros borrados: {{deleted}}; anonimizados: {{anonymized}}."
+    },
+    "apiKeys": {
+      "title": "Claves de API",
+      "intro": "Las claves permiten que los sistemas de tu organización (por ejemplo, la secretaría o una web) consulten por la API los procesos, la participación y los resultados. Solo leen: no ven censos ni datos personales y no pueden cambiar nada.",
+      "newTitle": "Nueva clave",
+      "name": "Nombre (para qué sistema es)",
+      "create": "Crear clave",
+      "limit": "Puedes tener hasta {{max}} claves activas (llevas {{used}}).",
+      "scopeTitle": "¿Qué puede consultar una clave?",
+      "scope": {
+        "processes": "Procesos de tu organización: lista, detalle e historial de estados.",
+        "participation": "Participación de cada proceso (solo números).",
+        "results": "Resultados escrutados, votos contados y exportación CSV."
+      },
+      "scopeNot": "No puede ver censos, datos personales, el registro de la urna ni la trazabilidad, ni descargar el acta.",
+      "createdTitle": "Clave «{{name}}» creada",
+      "onlyOnce": "Copia el secreto ahora: no se volverá a mostrar. Si lo pierdes, revoca la clave y crea otra.",
+      "clientId": "Identificador (client_id)",
+      "secret": "Secreto (client_secret)",
+      "tokenUrl": "URL del token",
+      "copyId": "Copiar el identificador",
+      "copySecret": "Copiar el secreto",
+      "copied": {
+        "id": "Identificador copiado.",
+        "secret": "Secreto copiado."
+      },
+      "howTo": "El sistema pide un token con estas credenciales (OAuth 2.0, client credentials) y lo envía en cada llamada. Cada token dura 5 minutos.",
+      "saved": "Ya lo he guardado",
+      "listTitle": "Claves de la organización",
+      "none": "Tu organización todavía no tiene claves de API.",
+      "col": {
+        "name": "Nombre",
+        "clientId": "Identificador",
+        "created": "Creada",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "active": "Activa",
+      "revokedOn": "Revocada el {{date}}",
+      "revoke": "Revocar",
+      "revokeLabel": "Revocar la clave «{{name}}»",
+      "confirmRevoke": "¿Revocar? El sistema dejará de tener acceso en unos minutos.",
+      "yesRevoke": "Sí, revocar",
+      "no": "No",
+      "revoked": "Clave «{{name}}» revocada."
     }
   },
   "voter": {
@@ -556,7 +655,20 @@
       "step3": "Recibes un código de recibo para comprobar que tu voto está en la urna.",
       "duration": "Tardarás unos 3 minutos.",
       "secret": "Tu voto es secreto: nadie puede saber qué has votado. Solo puedes votar una vez.",
-      "start": "Empezar"
+      "start": "Empezar",
+      "step1Sso": "Entrarás con tu cuenta institucional (la del correo al que te llegó la invitación)."
+    },
+    "sso": {
+      "title": "Entra con tu cuenta institucional",
+      "text": "En esta votación se comprueba quién eres con la cuenta de tu organización. Usa la cuenta del correo al que te llegó la invitación.",
+      "button": "Entrar con tu cuenta institucional",
+      "note": "Te llevaremos a la página de acceso de tu organización y volverás aquí. Tu voto sigue siendo secreto: la cuenta solo sirve para saber que eres tú.",
+      "checking": "Comprobando tu cuenta…",
+      "failedTitle": "No hemos podido completar la entrada",
+      "failedText": "Vuelve a abrir el enlace personal de tu correo e inténtalo de nuevo.",
+      "mismatch": "La cuenta con la que has entrado no es la de este enlace. Entra con la cuenta del correo al que te llegó la invitación. Te quedan {{remaining}} intentos.",
+      "cancelled": "Has cancelado la entrada con tu cuenta. Cuando quieras, vuelve a intentarlo.",
+      "invalid": "No hemos podido comprobar tu cuenta. Vuelve a entrar con ella."
     },
     "status": {
       "open": "Votación abierta · Cierra el {{closes}}"

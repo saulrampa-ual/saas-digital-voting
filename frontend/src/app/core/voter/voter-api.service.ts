@@ -15,6 +15,8 @@ export interface LinkStatus {
   opensAt: string;
   closesAt: string;
   defaultLanguage: 'es' | 'en';
+  /** RF-05b (D-48): how the voter proves who they are. */
+  authentication?: 'EMAIL_CODE' | 'INSTITUTIONAL_SSO';
 }
 
 export interface CodeSent {
@@ -88,6 +90,13 @@ export class VoterApiService {
   verifyCode(linkToken: string, code: string): Promise<AccessGranted> {
     return this.call(
       this.http.post<AccessGranted>(`${this.access}/${encodeURIComponent(linkToken)}/otp/verify`, { code }),
+    );
+  }
+
+  /** RF-05b (D-48): the ID token of the institutional account, in the body. */
+  verifyInstitutionalAccount(linkToken: string, idToken: string): Promise<AccessGranted> {
+    return this.call(
+      this.http.post<AccessGranted>(`${this.access}/${encodeURIComponent(linkToken)}/sso`, { idToken }),
     );
   }
 

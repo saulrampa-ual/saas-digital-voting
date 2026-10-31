@@ -8,6 +8,7 @@ import com.saasvoting.election.domain.model.ProcessData;
 import com.saasvoting.election.domain.model.ProcessStatus;
 import com.saasvoting.election.domain.model.ResultsVisibility;
 import com.saasvoting.election.domain.model.VoteType;
+import com.saasvoting.election.domain.model.VoterAuthentication;
 import com.saasvoting.election.domain.model.VotingProcess;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -72,6 +73,10 @@ public class ProcessJpaEntity {
     @Column(name = "results_visibility", length = 20, nullable = false)
     private ResultsVisibility resultsVisibility;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "voter_authentication", length = 20, nullable = false)
+    private VoterAuthentication voterAuthentication;
+
     @Column(name = "results_public_id", nullable = false, updatable = false)
     private UUID resultsPublicId;
 
@@ -129,6 +134,7 @@ public class ProcessJpaEntity {
         status = process.status();
         defaultLanguage = data.defaultLanguage().code();
         resultsVisibility = data.resultsVisibility();
+        voterAuthentication = data.voterAuthentication();
         updatedAt = process.updatedAt();
 
         texts.clear();
@@ -167,7 +173,8 @@ public class ProcessJpaEntity {
                 closesAt,
                 Language.fromCode(defaultLanguage),
                 resultsVisibility,
-                ballot);
+                ballot,
+                voterAuthentication);
         return new VotingProcess(id, organizationId, data, status, resultsPublicId, createdAt, updatedAt);
     }
 

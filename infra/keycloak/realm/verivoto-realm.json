@@ -58,6 +58,10 @@
       {
         "name": "SERVICE",
         "description": "VeriVoto service calling /internal endpoints of another service"
+      },
+      {
+        "name": "INTEGRATION",
+        "description": "API key of an organization (RF-21): reads processes, participation and results"
       }
     ]
   },
@@ -187,6 +191,33 @@
           }
         }
       ]
+    },
+    {
+      "clientId": "verivoto-voter",
+      "name": "VeriVoto voter PWA (institutional account, RF-05b)",
+      "description": "Voters sign in with the institutional account of their organization (brokered identity provider); voter-access only reads the verified email of the ID token",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "protocol": "openid-connect",
+      "rootUrl": "http://localhost:4200",
+      "redirectUris": [
+        "http://localhost:4200/votar/sso"
+      ],
+      "webOrigins": [
+        "http://localhost:4200"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "access.token.lifespan": "300"
+      },
+      "defaultClientScopes": [
+        "email"
+      ],
+      "optionalClientScopes": []
     },
     {
       "clientId": "identity-service",
@@ -465,7 +496,9 @@
         "realm-management": [
           "manage-users",
           "view-users",
-          "query-users"
+          "query-users",
+          "manage-clients",
+          "view-clients"
         ]
       }
     },

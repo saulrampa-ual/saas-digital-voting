@@ -18,7 +18,7 @@ public class ProcessSyncJpaEntity {
 
     public enum Target { VOTER_ACCESS, BALLOT_BOX }
 
-    public enum MessageType { SNAPSHOT, STATUS }
+    public enum MessageType { SNAPSHOT, STATUS, ANONYMIZE }
 
     public enum State { PENDING, DELIVERED, FAILED }
 

@@ -46,11 +46,12 @@ erDiagram
         varchar500 detail
     }
     api_keys {
-        uuid id PK
+        bigint id PK
         varchar20 organization_id FK
-        varchar100 name
-        char12 key_prefix
-        char64 key_hash
+        varchar60 name
+        varchar60 client_id "cliente de Keycloak"
+        uuid keycloak_id
+        uuid created_by
         timestamptz created_at
         timestamptz revoked_at
     }
@@ -62,7 +63,7 @@ erDiagram
 | `management_users` | RI-2 | **Desviación (D-02, D-25):** contraseña, segundo factor, estado y último acceso viven en Keycloak. Aquí se guarda una copia de organización, nombre, correo y rol para listar usuarios, aplicar la regla del último administrador y atender RF-18 sin consultar Keycloak. El Superadministrador no tiene fila (pertenece a la plataforma). Correo único sin distinguir mayúsculas. |
 | `admin_actions` (V4) | RI-13 | Trazabilidad (RF-19, D-44): `event_id` único (idempotencia), organización, momento, persona (`actor_id`, `actor_name`), acción, objeto (tipo, id, nombre), detalle, proceso y origen (`IDENTITY`, `ELECTION`, `BALLOT_BOX`). **Solo añadir:** disparadores que rechazan `UPDATE`, `DELETE` y `TRUNCATE`. Nunca el nombre ni el correo de una persona del censo. |
 | `admin_actions` | RI-13 | Solo inserción: el rol `identity` no tiene `UPDATE` ni `DELETE`, y un *trigger* rechaza ambas operaciones. |
-| `api_keys` | RF-21 (P6) | Solo se guarda el hash; la clave se muestra una vez al crearla. |
+| `api_keys` (V5) | RF-21 | **Desviación (D-47):** cada clave es un cliente confidencial de Keycloak (`client_id` y su id); VeriVoto no guarda el secreto ni su hash, que solo se muestra al crearla. Nombre, quién la creó (`created_by`, `created_by_name`) y `revoked_at`; máximo 5 activas por organización. |
 
 **Trazabilidad administrativa (RF-19).** Cada servicio registra sus acciones administrativas en su propia
 tabla `admin_actions`, en la misma transacción que la acción, para no perder registros si otro servicio no
@@ -122,12 +123,13 @@ erDiagram
 
 | Tabla | RI | Notas |
 | --- | --- | --- |
-| `censuses`, `voters` | RI-3 | Duplicados por censo: `UNIQUE (census_id, lower(email))` y `UNIQUE (census_id, institutional_id)` si no es nulo. |
+| `censuses`, `voters` | RI-3 | Duplicados por censo: `UNIQUE (census_id, lower(email))` y `UNIQUE (census_id, institutional_id)` si no es nulo. RF-18 (D-46): `anonymized_at` marca una entrada anonimizada («Persona anonimizada», correo `anonimizada-{id}@anonimizada.invalid`, sin teléfono ni identificador); no se edita ni entra en nuevos censos congelados. |
 | `processes` | RI-4 | `CHECK (closes_at > opens_at)`. Estados: `DRAFT`, `SCHEDULED`, `OPEN`, `CLOSED`, `TALLIED`, `ARCHIVED`. **Desviación (D-03):** sin «re-votación permitida». Título y descripción de cada idioma en `process_texts` (process_id, language, title, description); el idioma por defecto siempre está (D-29). |
+| `processes.voter_authentication` (V6) | RF-05b | `EMAIL_CODE` (por defecto) o `INSTITUTIONAL_SSO` (D-48); se copia a `voter_access_db.process_snapshots.voter_authentication` (V4). |
 | `processes.results_visibility` | RF-13, RF-15 | `CENSUS_ONLY` (por defecto) o `PUBLIC_LINK` (D-16). `results_public_id` es un UUID aleatorio que forma el enlace público. |
 | `ballots`, `ballot_texts`, `ballot_options`, `ballot_option_texts` | RI-5, RF-20 | `vote_type`: `SINGLE_CHOICE` o `YES_NO_ABSTAIN` (opciones fijas generadas). Pregunta 300 y opción 200 caracteres; entre 2 y 50 opciones; `UNIQUE (process_id, position)` diferida. En borrador basta el idioma por defecto; `es` y `en` se exigen al programar (D-29). |
 | `process_status_changes` | RF-07, RF-19 | Quién (usuario o `SYSTEM`), cuándo y qué transición. |
-| `process_sync` | — | *Outbox* (D-30): destino (`VOTER_ACCESS`, `BALLOT_BOX`), tipo (`SNAPSHOT`, `STATUS`), `payload` JSON (se borra al entregar), estado (`PENDING`, `DELIVERED`, `FAILED`), intentos y próximo intento. Entrega en orden por proceso y destino. |
+| `process_sync` | — | *Outbox* (D-30): destino (`VOTER_ACCESS`, `BALLOT_BOX`), tipo (`SNAPSHOT`, `STATUS`, `ANONYMIZE` desde V5, D-46), `payload` JSON (se borra al entregar), estado (`PENDING`, `DELIVERED`, `FAILED`), intentos y próximo intento. Entrega en orden por proceso y destino. |
 | `admin_action_outbox` (V4) | RI-13 | Acciones administrativas pendientes de entregar a identity (D-44); la fila se borra cuando identity la acepta. |
 
 **Congelación del censo.** **Desviación:** el censo se congela desde `SCHEDULED`, no desde `OPEN`, porque RF-17

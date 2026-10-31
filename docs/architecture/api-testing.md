@@ -337,3 +337,47 @@ el realm, ver `keycloak-realm.md`); sin él todo funciona, pero sus acciones esp
 4. Al cerrarse la votación, todo el censo recibe «Votación cerrada» (sin enlace) y los recordatorios pendientes se cancelan.
 5. AUDITOR o gestor de censo → **403**; ADMIN de otra organización → **404**. En «Trazabilidad» aparecen
    «Recordatorio programado», «Recordatorio cancelado» y «Reintento de correos fallidos».
+
+### Datos personales de una persona del censo (RF-18, P6.3, D-46)
+
+1. Como ADMIN: «Privacidad (RGPD)» o `POST /api/v1/privacy/search` con `{"query": "<correo o teléfono>"}` → entradas
+   de censo, procesos que usaron cada censo y qué haría el borrado (`DELETE` o `ANONYMIZE`). Sin nadie → **404**;
+   texto que no es correo ni teléfono → **400**; AUDITOR o gestor de censo → **403**.
+2. `POST /api/v1/privacy/export` con la misma consulta → `datos-personales.json` con los datos del censo, la
+   participación (votó y el día) y los correos enviados. Nunca el voto.
+3. Con un proceso programado o abierto que usa uno de esos censos, `POST /api/v1/privacy/erasure`
+   `{"query": "…", "confirmed": true}` → **409** con `processIds`. Cuando termina la votación → `{"deleted": n,
+   "anonymized": m}`; en `voter_access_db.roll_entries` el nombre pasa a «Persona anonimizada» a los pocos segundos
+   (*outbox*), el enlace antiguo da **404** y la participación y el resultado no cambian.
+4. Editar en A2 una entrada anonimizada → **409**. En «Trazabilidad»: «Exportación de datos personales (RGPD)» y
+   «Borrado de datos personales (RGPD)», sin nombres.
+
+### API para integraciones con claves por organización (RF-21, P6.4, D-47)
+
+Requiere reimportar el realm (rol `INTEGRATION` y permisos `manage-clients`/`view-clients` de identity).
+
+1. Como ADMIN: «Claves de API» o `POST /api/v1/api-keys` `{"name": "ERP"}` → **201** con `key.clientId`,
+   `clientSecret` (solo esta vez) y `tokenUrl`. `GET /api/v1/api-keys` nunca devuelve el secreto. La sexta clave
+   activa → **409**.
+2. Token de la integración:
+   `curl -X POST <tokenUrl> -d grant_type=client_credentials -d client_id=<clientId> -d client_secret=<secreto>`.
+   El token lleva `roles: ["INTEGRATION"]` y el `organization_id`.
+3. Con ese token por el *gateway*: `GET /api/v1/processes`, `/api/v1/processes/{id}`, `/status-history`,
+   `GET /api/v1/voter-access/processes/{id}/participation`, `GET /api/v1/ballot-box/processes/{id}/results`,
+   `/results/counted-votes`, `/results/export?lang=es` → **200**. Censos, privacidad, notificaciones, acta,
+   registro de la urna, trazabilidad, claves, usuarios o cualquier escritura → **403**; un proceso de otra
+   organización → **404**.
+4. `DELETE /api/v1/api-keys/{id}` → la clave queda revocada; pedir otro token → **401** (`invalid_client`).
+
+### Votante con cuenta institucional (RF-05b, P6.5, D-48)
+
+Requiere reimportar el realm (cliente `verivoto-voter`) y un usuario del realm, o de un proveedor federado, con el
+correo verificado igual al de una persona del censo.
+
+1. En A3, paso «Censo», elegir «Cuenta institucional (SSO)» (o `"voterAuthentication": "INSTITUTIONAL_SSO"`) y
+   programar. La invitación dice que se entra con la cuenta institucional.
+2. Abrir el enlace personal → «Empezar» → «Entrar con tu cuenta institucional» → login en Keycloak → vuelta a
+   `/votar/sso` y a la papeleta. Con otra cuenta: «La cuenta con la que has entrado no es la de este enlace» y quedan
+   4 intentos.
+3. `POST /api/v1/voter-access/links/{t}/otp` en ese proceso → **409** (`authentication: INSTITUTIONAL_SSO`); `/sso`
+   en un proceso con código → **409**; un token que no es un ID token de `verivoto-voter` → **401**.

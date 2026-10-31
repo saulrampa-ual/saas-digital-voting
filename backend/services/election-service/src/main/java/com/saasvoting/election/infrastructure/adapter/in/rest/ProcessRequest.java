@@ -8,6 +8,7 @@ import com.saasvoting.election.domain.model.LocalizedText;
 import com.saasvoting.election.domain.model.ProcessData;
 import com.saasvoting.election.domain.model.ResultsVisibility;
 import com.saasvoting.election.domain.model.VoteType;
+import com.saasvoting.election.domain.model.VoterAuthentication;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -31,7 +32,8 @@ public record ProcessRequest(
         @NotNull OffsetDateTime closesAt,
         @NotNull String defaultLanguage,
         String resultsVisibility,
-        @NotNull @Valid BallotRequest ballot) {
+        @NotNull @Valid BallotRequest ballot,
+        String voterAuthentication) {
 
     public record BallotRequest(
             @NotNull String voteType,
@@ -64,7 +66,10 @@ public record ProcessRequest(
                 resultsVisibility == null
                         ? null
                         : enumValue("resultsVisibility", ResultsVisibility.class, resultsVisibility),
-                domainBallot);
+                domainBallot,
+                voterAuthentication == null
+                        ? null
+                        : enumValue("voterAuthentication", VoterAuthentication.class, voterAuthentication));
     }
 
     /** Keys of a {@code LocalizedText} must be supported languages ("es" or "en"). */

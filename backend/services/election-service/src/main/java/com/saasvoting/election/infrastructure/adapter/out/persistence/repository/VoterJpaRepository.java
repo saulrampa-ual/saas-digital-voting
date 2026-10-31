@@ -28,6 +28,9 @@ public interface VoterJpaRepository extends JpaRepository<VoterJpaEntity, Long> 
     @Query("select v from VoterJpaEntity v where v.censusId = :censusId and v.anonymizedAt is null order by v.id")
     List<VoterJpaEntity> findAllActiveInCensus(@Param("censusId") long censusId);
 
+    @Query("select count(v) > 0 from VoterJpaEntity v where v.id = :id and v.anonymizedAt is not null")
+    boolean isAnonymized(@Param("id") long id);
+
     @Query("select count(v) from VoterJpaEntity v where v.censusId = :censusId")
     long countInCensus(@Param("censusId") long censusId);
 

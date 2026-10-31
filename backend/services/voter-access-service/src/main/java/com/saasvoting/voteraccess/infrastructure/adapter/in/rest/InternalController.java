@@ -8,6 +8,7 @@ import com.saasvoting.voteraccess.domain.model.Language;
 import com.saasvoting.voteraccess.domain.model.ProcessSnapshot;
 import com.saasvoting.voteraccess.domain.model.ProcessStatus;
 import com.saasvoting.voteraccess.domain.model.ResultsVisibility;
+import com.saasvoting.voteraccess.domain.model.VoterAuthentication;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -55,7 +56,8 @@ public class InternalController {
             @NotNull Instant closesAt,
             @NotNull @Pattern(regexp = "es|en") String defaultLanguage,
             @NotNull ResultsVisibility resultsVisibility,
-            @NotNull List<@NotNull @Valid RollEntryRequest> roll) {
+            @NotNull List<@NotNull @Valid RollEntryRequest> roll,
+            VoterAuthentication voterAuthentication) {
     }
 
     public record StatusUpdateRequest(@NotNull ProcessStatus status) {
@@ -90,7 +92,7 @@ public class InternalController {
         request.title().forEach((code, text) -> title.put(Language.fromCode(code), text));
         ProcessSnapshot snapshot = new ProcessSnapshot(processId, request.organizationId(), title, request.status(),
                 request.opensAt(), request.closesAt(), Language.fromCode(request.defaultLanguage()),
-                request.resultsVisibility());
+                request.resultsVisibility(), request.voterAuthentication());
         processes.receiveSnapshot(snapshot, request.roll().stream()
                 .map(entry -> new ReceiveProcessUseCase.RollData(entry.voterRef(), entry.displayName(),
                         entry.email(), Language.fromCode(entry.language())))

@@ -214,6 +214,10 @@ export class TraceabilityPage {
 
   protected detail(a: AdminAction): string | null {
     if (!a.detail) return null;
+    if (a.action === 'PERSONAL_DATA_ERASED' && /^\d+:\d+$/.test(a.detail)) {
+      const [deleted, anonymized] = a.detail.split(':');
+      return this.translate.instant('admin.trace.details.erased', { deleted, anonymized }) as string;
+    }
     if (a.action === 'REMINDER_SCHEDULED' || a.action === 'REMINDER_CANCELLED') {
       const when = new LocalDatePipe().transform(a.detail, this.language());
       return this.translate.instant('admin.trace.details.reminder', { value: when }) as string;

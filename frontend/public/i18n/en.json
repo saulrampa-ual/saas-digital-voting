@@ -19,7 +19,9 @@
       "participation": "Turnout",
       "results": "Results",
       "audit": "Audit",
-      "traceability": "Traceability"
+      "traceability": "Traceability",
+      "privacy": "Privacy (GDPR)",
+      "apiKeys": "API keys"
     },
     "logout": "Sign out",
     "home": {
@@ -130,7 +132,12 @@
         "minOptions": "Add at least 2 options.",
         "maxOptions": "At most 50 options.",
         "optionRequired": "Write the option in the default language."
-      }
+      },
+      "authentication": "How voters sign in",
+      "emailCode": "Code by email",
+      "emailCodeHelp": "When they open their personal link they receive a 6-digit code at the email of the voter list.",
+      "sso": "Institutional account (SSO)",
+      "ssoHelp": "They sign in with the account of the organization; its verified email must be the one of the voter list."
     },
     "process": {
       "title": "Lifecycle",
@@ -209,6 +216,11 @@
         "visibilityValue": {
           "CENSUS_ONLY": "Census members only",
           "PUBLIC_LINK": "Public link"
+        },
+        "authentication": "Voter sign-in",
+        "authenticationValue": {
+          "EMAIL_CODE": "Code by email",
+          "INSTITUTIONAL_SSO": "Institutional account (SSO)"
         }
       },
       "links": {
@@ -501,14 +513,19 @@
         "MINUTES_DOWNLOADED": "Minutes downloaded (PDF)",
         "REMINDER_SCHEDULED": "Reminder scheduled",
         "REMINDER_CANCELLED": "Reminder cancelled",
-        "NOTIFICATIONS_RETRIED": "Failed emails retried"
+        "NOTIFICATIONS_RETRIED": "Failed emails retried",
+        "PERSONAL_DATA_EXPORTED": "Personal data export (GDPR)",
+        "PERSONAL_DATA_ERASED": "Personal data erasure (GDPR)",
+        "API_KEY_CREATED": "API key created",
+        "API_KEY_REVOKED": "API key revoked"
       },
       "objects": {
         "ORGANIZATION": "Organization",
         "USER": "User",
         "CENSUS": "Census",
         "VOTER": "Person",
-        "PROCESS": "Process"
+        "PROCESS": "Process",
+        "API_KEY": "API key"
       },
       "details": {
         "ORGANIZATION_STATUS_CHANGED": {
@@ -543,8 +560,90 @@
         "reminder": "for {{value}}",
         "NOTIFICATIONS_RETRIED": {
           "value": "{{value}} emails"
+        },
+        "erased": "deleted: {{deleted}}, anonymized: {{anonymized}}",
+        "PERSONAL_DATA_EXPORTED": {
+          "value": "voter list entries: {{value}}"
         }
       }
+    },
+    "privacy": {
+      "title": "Data privacy (GDPR)",
+      "intro": "Handle access and erasure requests of the people in the voter lists of your organization.",
+      "step1": "1 · Identify the person",
+      "queryLabel": "Email or phone",
+      "queryHelp": "It searches every voter list of your organization.",
+      "find": "Search",
+      "step2": "2 · Data found",
+      "name": "Name",
+      "censuses": "Voter lists that include them",
+      "processes": "Processes that used those lists",
+      "col": {
+        "census": "Voter list",
+        "contact": "Contact",
+        "added": "Added",
+        "processes": "Processes"
+      },
+      "institutionalId": "Identifier",
+      "noProcesses": "No process",
+      "voteNote": "The vote cannot be exported or erased per person: it is secret and not linked to their identity.",
+      "exportTitle": "Export their data",
+      "exportText": "A machine-readable file (JSON) is generated with the personal data of this person, their participation and the emails we sent them.",
+      "export": "Export personal data",
+      "exported": "File downloaded. Give it to the person through a secure channel.",
+      "fileName": "personal-data",
+      "eraseTitle": "Erase their data",
+      "blocked": "This person is on the voter list of {{processes}}, which is scheduled or open. You can erase their data when voting ends.",
+      "willAnonymize": "In the voter lists a process already used ({{count}}), their data will be anonymized: votes, participation and the ballot box log are kept.",
+      "willDelete": "In the voter lists no process used ({{count}}), their data will be deleted.",
+      "confirm": "I confirm the erasure request of this person",
+      "erase": "Erase personal data",
+      "erased": "Data erased. Entries deleted: {{deleted}}; anonymized: {{anonymized}}."
+    },
+    "apiKeys": {
+      "title": "API keys",
+      "intro": "Keys let the systems of your organization (for example, the registry office or a website) read processes, participation and results through the API. They only read: they cannot see voter lists or personal data and cannot change anything.",
+      "newTitle": "New key",
+      "name": "Name (which system it is for)",
+      "create": "Create key",
+      "limit": "You can have up to {{max}} active keys ({{used}} so far).",
+      "scopeTitle": "What can a key read?",
+      "scope": {
+        "processes": "Processes of your organization: list, details and status history.",
+        "participation": "Participation of each process (numbers only).",
+        "results": "Tallied results, counted votes and CSV export."
+      },
+      "scopeNot": "It cannot see voter lists, personal data, the ballot box log or the traceability, nor download the minutes.",
+      "createdTitle": "Key \"{{name}}\" created",
+      "onlyOnce": "Copy the secret now: it will not be shown again. If you lose it, revoke the key and create another one.",
+      "clientId": "Identifier (client_id)",
+      "secret": "Secret (client_secret)",
+      "tokenUrl": "Token URL",
+      "copyId": "Copy the identifier",
+      "copySecret": "Copy the secret",
+      "copied": {
+        "id": "Identifier copied.",
+        "secret": "Secret copied."
+      },
+      "howTo": "The system requests a token with these credentials (OAuth 2.0, client credentials) and sends it with every call. Each token lasts 5 minutes.",
+      "saved": "I have saved it",
+      "listTitle": "Keys of the organization",
+      "none": "Your organization has no API keys yet.",
+      "col": {
+        "name": "Name",
+        "clientId": "Identifier",
+        "created": "Created",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "active": "Active",
+      "revokedOn": "Revoked on {{date}}",
+      "revoke": "Revoke",
+      "revokeLabel": "Revoke the key \"{{name}}\"",
+      "confirmRevoke": "Revoke? The system will lose access within minutes.",
+      "yesRevoke": "Yes, revoke",
+      "no": "No",
+      "revoked": "Key \"{{name}}\" revoked."
     }
   },
   "voter": {
@@ -556,7 +655,20 @@
       "step3": "You get a receipt code to check that your vote is in the ballot box.",
       "duration": "It takes about 3 minutes.",
       "secret": "Your vote is secret: nobody can know what you voted. You can vote only once.",
-      "start": "Start"
+      "start": "Start",
+      "step1Sso": "You will sign in with your institutional account (the one of the email that received the invitation)."
+    },
+    "sso": {
+      "title": "Sign in with your institutional account",
+      "text": "In this vote we check who you are with the account of your organization. Use the account of the email that received the invitation.",
+      "button": "Sign in with your institutional account",
+      "note": "We will take you to the sign-in page of your organization and bring you back here. Your vote stays secret: the account only tells us it is you.",
+      "checking": "Checking your account…",
+      "failedTitle": "We could not complete the sign-in",
+      "failedText": "Open the personal link of your email again and try once more.",
+      "mismatch": "The account you signed in with is not the one of this link. Use the account of the email that received the invitation. {{remaining}} attempts left.",
+      "cancelled": "You cancelled the sign-in. Try again whenever you want.",
+      "invalid": "We could not check your account. Please sign in again."
     },
     "status": {
       "open": "Voting open · Closes on {{closes}}"

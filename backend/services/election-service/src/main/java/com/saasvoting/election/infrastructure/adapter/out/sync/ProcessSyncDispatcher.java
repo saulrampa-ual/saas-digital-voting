@@ -130,8 +130,11 @@ public class ProcessSyncDispatcher {
 
     private URI uri(ProcessSyncJpaEntity message) {
         URI base = message.getTarget() == Target.VOTER_ACCESS ? properties.voterAccessUrl() : properties.ballotBoxUrl();
-        String path = "/internal/v1/processes/" + message.getProcessId()
-                + (message.getMessageType() == MessageType.STATUS ? "/status" : "");
+        String path = "/internal/v1/processes/" + message.getProcessId() + switch (message.getMessageType()) {
+            case SNAPSHOT -> "";
+            case STATUS -> "/status";
+            case ANONYMIZE -> "/roll/anonymization";
+        };
         return base.resolve(path);
     }
 }

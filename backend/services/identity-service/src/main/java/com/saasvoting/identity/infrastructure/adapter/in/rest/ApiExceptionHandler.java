@@ -3,7 +3,11 @@ package com.saasvoting.identity.infrastructure.adapter.in.rest;
 import com.saasvoting.identity.domain.model.EmailAlreadyInUseException;
 import com.saasvoting.identity.domain.model.LastAdministratorException;
 import com.saasvoting.identity.domain.model.ManagementUserNotFoundException;
+import com.saasvoting.identity.domain.model.ApiKey;
+import com.saasvoting.identity.domain.model.ApiKeyLimitException;
+import com.saasvoting.identity.domain.model.ApiKeyNotFoundException;
 import com.saasvoting.identity.domain.model.OperationNotAllowedException;
+import com.saasvoting.identity.domain.model.OrganizationSuspendedException;
 import com.saasvoting.identity.domain.model.OrganizationAlreadyExistsException;
 import com.saasvoting.identity.domain.model.OrganizationNotFoundException;
 import com.saasvoting.identity.infrastructure.adapter.out.identityprovider.IdentityProviderUnavailableException;
@@ -49,6 +53,22 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ManagementUserNotFoundException.class)
     ProblemDetail userNotFound(ManagementUserNotFoundException e) {
         return problem(HttpStatus.NOT_FOUND, "No existe ese usuario en la organización.");
+    }
+
+    @ExceptionHandler(ApiKeyNotFoundException.class)
+    ProblemDetail apiKeyNotFound(ApiKeyNotFoundException e) {
+        return problem(HttpStatus.NOT_FOUND, "No existe esa clave de API activa en tu organización.");
+    }
+
+    @ExceptionHandler(ApiKeyLimitException.class)
+    ProblemDetail apiKeyLimit(ApiKeyLimitException e) {
+        return problem(HttpStatus.CONFLICT, "Tu organización ya tiene " + ApiKey.MAX_ACTIVE
+                + " claves de API activas. Revoca una antes de crear otra.");
+    }
+
+    @ExceptionHandler(OrganizationSuspendedException.class)
+    ProblemDetail organizationSuspended(OrganizationSuspendedException e) {
+        return problem(HttpStatus.CONFLICT, "La organización está suspendida y no puede crear claves de API.");
     }
 
     @ExceptionHandler(OperationNotAllowedException.class)

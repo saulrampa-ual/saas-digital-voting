@@ -7,6 +7,11 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'admin' },
   // Voter area (RF-08–RF-10): no Keycloak, the personal link and the email code identify the voter.
   {
+    // RF-05b (D-48): return from the institutional account; before the personal link route
+    path: 'votar/sso',
+    loadComponent: () => import('./features/voter/voter-sso-callback.page').then((m) => m.VoterSsoCallbackPage),
+  },
+  {
     path: 'votar/:linkToken',
     loadComponent: () => import('./features/voter/voter-flow.page').then((m) => m.VoterFlowPage),
   },
@@ -84,6 +89,16 @@ export const routes: Routes = [
         path: 'trazabilidad',
         canMatch: [roleGuard(['ADMIN', 'AUDITOR'], { needsOrganization: true })],
         loadComponent: () => import('./features/admin/traceability/traceability.page').then((m) => m.TraceabilityPage),
+      },
+      {
+        path: 'claves-api',
+        canMatch: [roleGuard(['ADMIN'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/api-keys/api-keys.page').then((m) => m.ApiKeysPage),
+      },
+      {
+        path: 'privacidad',
+        canMatch: [roleGuard(['ADMIN'], { needsOrganization: true })],
+        loadComponent: () => import('./features/admin/privacy/privacy.page').then((m) => m.PrivacyPage),
       },
       {
         path: 'sin-permiso',

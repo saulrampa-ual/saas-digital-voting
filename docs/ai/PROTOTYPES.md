@@ -62,7 +62,7 @@ cuando hay conflicto (ver «Incoherencias»).
 | RF-03 | A2, G1 | Sí (implementadas, D-36) |
 | RF-04 | D1 | Sí |
 | RF-05a | D1 | Parcial: no consta un botón de SSO de gestión; por confirmar |
-| RF-05b | B1 (alternativa SSO) | Parcial |
+| RF-05b | B1 (alternativa SSO) | Sí (P6.5, D-48): en un proceso con cuenta institucional, B1 muestra solo «Entrar con tu cuenta institucional» en lugar del código; A3 añade la elección en el paso «Censo» |
 | RF-06 | A3, F3, Gestión de candidatos | Sí |
 | RF-07 | A4, V4 | Sí |
 | RF-08 | V1, B1, V2, C2, C3, C4, V5, V6 | Sí |
@@ -74,10 +74,10 @@ cuando hay conflicto (ver «Incoherencias»).
 | RF-15 | F1, V8 | Sí |
 | RF-16 | F1 | Sí |
 | RF-17 | A5 | Parcial: A5 dibuja «Enviar recordatorio»; la vista de correos y fallidos se diseñó sin prototipo con el estilo de A5 (P6.2, D-45) |
-| RF-18 | F2 | Sí |
+| RF-18 | F2 | Sí: hecha en P6.3 (D-46), sin la línea «Ha votado en» (fila 18) |
 | RF-19 | H1 | Sí |
 | RF-20 | Selector ES/EN en la cabecera; A3 | Sí: la edición bilingüe se añade en A3 (P4.6, D-35) |
-| RF-21 | — | **No**: falta la gestión de claves de API |
+| RF-21 | — | **No**: «Claves de API» se diseñó sin prototipo con el estilo de la consola (P6.4, D-47) |
 
 ## 4. Incoherencias con el TFM, los requisitos o las decisiones
 
@@ -100,6 +100,7 @@ cuando hay conflicto (ver «Incoherencias»).
 | 15 | «Enviar recordatorio a quien no ha votado» (A5) y trazabilidad de acciones (H1) | A5, H1 | Trazabilidad hecha en P6.1 (D-44) como pantalla propia «Trazabilidad» para ADMIN y AUDITOR (H1 sigue siendo el registro de la urna). Recordatorios en P6.2 (D-45): «Enviar recordatorio ahora» con confirmación (dice a cuántas personas), programación con fecha y hora, lista con estado y número de destinatarios, y una sección «Correos» con recuentos, fallidos y reintento; solo con la votación abierta y sin mostrar quién no ha votado |
 | 16 | F4 enumera pasos con su estado («Recuento por opción · completado») | F4 | La urna no informa del avance del escrutinio (dura segundos): F4 lista los pasos sin estado y se sustituye por F1 en cuanto hay resultado (D-39) |
 | 17 | V8 no está dibujado | V8 | Diseñado con el estilo del votante a partir de la descripción de la revisión: resultado por opción, participación, huellas y fecha de publicación, con verificación en el navegador (D-39) |
+| 18 | F2 muestra «Ha votado en 1 proceso» y avisa «Como esta persona ya ha votado, sus datos se anonimizarán» | F2 | D-46: la pantalla no dice si la persona votó (sería participación individual a la vista del administrador). Se anonimiza toda entrada de un censo que usó algún proceso y se borra el resto, igual para todos; se añade la lista de censos y procesos, y el borrado se bloquea con un proceso programado o abierto. La participación solo va en el fichero exportado, que es para la persona |
 | 18 | «Generar acta (PDF)» en F1 | F1 | Hecho en P5.4 (D-40): botón en la cabecera (junto al CSV) y tarjeta «Acta del proceso» con la huella SHA-256 del fichero; solo ADMIN |
 | 19 | No hay pantalla para ver el resultado con el enlace personal (`CENSUS_ONLY`) | V1, V8, C2 | Diseñado en P5.5 (D-41) con las piezas existentes: bienvenida tipo V1 «Resultado de la votación» con «Ver el resultado», el paso B1/V2 del código sin indicador de pasos y el resumen de V8 con «Tu voto quedó registrado el …»; C2 añade que el resultado aparecerá en el mismo enlace |
 
