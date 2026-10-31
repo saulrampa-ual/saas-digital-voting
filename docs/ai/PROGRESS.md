@@ -42,6 +42,11 @@
 - P8.0: compilación base de 69 páginas y diagnóstico inicial en `docs/evaluation/diagnostico-memoria-p8.md`.
   El autor aprobó el enfoque el 2026-10-31; las ediciones autorizadas comenzaron después de esa confirmación.
 - Frontend: `npm run build` terminó correctamente (bundle inicial 1,07 MB; 215,26 kB de transferencia estimada).
+- P7.6 (2026-10-31, rama `docs/p7-usability-session`, sin commit): preparación de la sesión con cinco votantes:
+  escenario sintético `USAB` (censo de 7 entradas `@verivoto.test` con 2 reservas, papeleta neutra, opción fijada por
+  tarjeta), arranque y montaje, lista previa por participante, marcas T0/T1/T2 (H1b = T0→T1, acceso + emisión + recibo),
+  definición de ayuda, reglas de sesiones válidas/reservas y hoja con resumen en cantidades. CSV comprobado contra las
+  reglas de importación del censo; el escenario no se ha ejecutado.
 - Integración P7/P8 en `dev` (2026-10-31): commits `912dc7b`, `9c87bd0`, `2a6a39e` y merge `1208892`; rama
   `chore/p7-p8-tfm-work` borrada en local tras comprobar que estaba integrada. Sin push.
 - P8.5 (2026-10-31, revisado y aprobado por el autor): aplicados en la memoria los criterios confirmados por el
@@ -203,7 +208,9 @@
   el navegador real y E2E siguen sin ejecutarse.
 - P7.5: completar escenarios k6 de acceso y escrutinio; preparar en entorno local las credenciales sintéticas
   fuera del repo; ejecutar tres mediciones de voto con percentiles, errores y recursos y comprobar la cadena/participación.
-- P7.6: el autor debe realizar al menos cinco sesiones y completar los materiales de `docs/evaluation/usabilidad/`.
+- P7.6: materiales listos (`preparacion-sesion.md`, `censo-sesion.csv`, guion, hoja y protocolo alineados con D-49).
+  El autor debe montar el escenario `USAB`, hacer un ensayo y realizar las cinco sesiones con votantes; resultados en
+  la hoja como cantidades (x de 5).
 - P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a/H1b/H1c siguen pendientes.
 - P8: enfoque aprobado por el autor. P8.1 corrige el alcance de RF-11 y añade la comparación de planificación;
   los capítulos de diseño técnico, implementación, amenazas, evaluación y conclusiones son borradores basados en
