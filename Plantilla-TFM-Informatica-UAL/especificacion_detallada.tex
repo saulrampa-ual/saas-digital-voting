@@ -5,6 +5,10 @@ Este capítulo desarrolla los flujos de los casos de uso y los requisitos
 de información y calidad recogidos en la especificación de origen. Se
 conservan los códigos para mantener la trazabilidad entre documentos.
 
+\textbf{Nota de alcance.} Las referencias a re-votación o sustitución (RF-11,
+estados “Sustituido” y “re-votación permitida”) proceden de la especificación
+v1.0 y no están implementadas en el MVP (D-03).
+
 \section{Casos de uso}
 \label{sec:casos-uso-detallados}
 
@@ -257,6 +261,8 @@ conservan los códigos para mantener la trazabilidad entre documentos.
 \textbf{Comentarios:} Prioridad M. Amplía RF-09. Si el votante vuelve a votar (RF-11), el recibo anterior se marca como sustituido.\par
 
 \subsection{RF-11: Re-votar}
+
+\textbf{Estado en el MVP:} No implementado. D-03 excluye RF-11 del MVP; la exclusión fue confirmada por el tutor el 30/10/2026 mediante correo electrónico, y el caso de uso permanece como trabajo futuro (P9). Se conserva aquí por trazabilidad con la especificación v1.0.\par
 
 \textbf{Objetivos asociados:} OBJ-3\par
 \textbf{Requisitos asociados:} RI-6, RI-7, RI-8, RNF-1, RNF-2, RNF-7, RNF-9\par
@@ -576,8 +582,8 @@ asocian a un caso de uso concreto.
 
 \textbf{Objetivos asociados:} OBJ-3\par
 \textbf{Requisitos asociados:} RF-08, RF-09, RF-10, RF-11\par
-\textbf{Descripción:} Las pantallas del votante deberán cumplir el nivel AA de las pautas WCAG 2.2: la auditoría automática no debe detectar ningún incumplimiento crítico y el flujo de acceso, voto y recibo debe poder completarse solo con teclado y con un lector de pantalla.\par
-\textbf{Comentarios:} Verificación: auditoría automática (por ejemplo, axe o Lighthouse) y revisión manual con teclado y lector de pantalla. Sustituye al antiguo RF-18.\par
+\textbf{Descripción:} Las pantallas del votante deberán seguir el nivel AA de las pautas WCAG 2.2. Criterio de aceptación: cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo.\par
+\textbf{Comentarios:} Verificación: auditoría automática (por ejemplo, axe o Lighthouse) y revisión manual con teclado y lector de pantalla (H1a). La auditoría automática no certifica conformidad WCAG. Un incumplimiento serio puntual se documentará como incidencia y se decidirá si se corrige antes del cierre; el criterio no se relaja a priori. Criterio validado por el tutor. Sustituye al antiguo RF-18.\par
 
 \subsection{RNF-2: Diseño adaptable y navegadores}
 
@@ -590,15 +596,15 @@ asocian a un caso de uso concreto.
 
 \textbf{Objetivos asociados:} OBJ-3\par
 \textbf{Requisitos asociados:} RF-08, RF-09, RF-10, RF-11\par
-\textbf{Descripción:} Un votante sin formación previa deberá completar el acceso, el voto y la obtención del recibo en 3 minutos o menos, y al menos el 90 \% de los participantes en la prueba deberá lograrlo sin ayuda.\par
-\textbf{Comentarios:} Verificación: test de usabilidad con al menos 5 personas no técnicas. Los valores son propuestos.\par
+\textbf{Descripción:} Las cinco personas no técnicas y sin formación previa que participen en la prueba deberán completar sin ayuda el acceso, el voto y la obtención del recibo en 3 minutos o menos.\par
+\textbf{Comentarios:} Verificación: test de usabilidad con cinco personas no técnicas (H1b). Criterio del protocolo validado por el tutor. Con $n = 5$ no hay inferencia estadística: los resultados son evidencia descriptiva limitada al prototipo, la configuración y la población evaluados.\par
 
 \subsection{RNF-4: Facilidad de uso del administrador}
 
 \textbf{Objetivos asociados:} OBJ-1, OBJ-2\par
 \textbf{Requisitos asociados:} RF-03, RF-06, RF-07\par
-\textbf{Descripción:} Un administrador de organización sin formación previa deberá crear, configurar y programar un proceso de opción única en 10 minutos o menos, y al menos el 80 \% de los participantes en la prueba deberá lograrlo sin ayuda.\par
-\textbf{Comentarios:} Verificación: test de usabilidad con al menos 5 personas con perfil de administrador. Los valores son propuestos.\par
+\textbf{Descripción:} Al menos 4 de 5 administradores de organización sin formación previa deberán crear, configurar y programar un proceso de opción única en 10 minutos o menos y sin ayuda. «Sin ayuda» significa sin intervención del moderador ni de otras personas; [PENDIENTE DEL AUTOR: indicar si excluye también consultar documentación].\par
+\textbf{Comentarios:} Verificación: test de usabilidad con cinco personas con perfil de administrador. El valor de 10 minutos es propuesto. Con $n = 5$ no hay inferencia estadística: los resultados serán evidencia descriptiva limitada al prototipo, la configuración y la población evaluados. No hay hipótesis asociada en la sección~\ref{sec:plan-evaluacion} y el protocolo de usabilidad actual describe votantes; mientras no se realice la sesión, RNF-4 permanece pendiente y no se presenta como evaluado.\par
 
 \subsection{RNF-5: Idiomas de la interfaz}
 
@@ -611,8 +617,8 @@ asocian a un caso de uso concreto.
 
 \textbf{Objetivos asociados:} OBJ-3, OBJ-4\par
 \textbf{Requisitos asociados:} RF-10, RF-13\par
-\textbf{Descripción:} La pantalla de verificación del recibo y del resultado deberá explicarse en lenguaje no técnico, sin términos criptográficos en el mensaje principal, y al menos el 80 \% de las personas no técnicas deberá interpretar correctamente si su voto consta en la urna.\par
-\textbf{Comentarios:} Verificación: test con al menos 5 personas no técnicas. Responde al objetivo de mejorar la usabilidad de la verificación para votantes no técnicos. Los valores son propuestos.\par
+\textbf{Descripción:} La pantalla de verificación del recibo y del resultado deberá explicarse en lenguaje no técnico, sin términos criptográficos en el mensaje principal, y al menos 4 de las 5 personas no técnicas que participen en la prueba deberán interpretar correctamente si su voto consta en la urna.\par
+\textbf{Comentarios:} Verificación: test con cinco personas no técnicas (H1b). Responde al objetivo de mejorar la usabilidad de la verificación para votantes no técnicos. Criterio del protocolo validado por el tutor. Con $n = 5$ no hay inferencia estadística: los resultados son evidencia descriptiva limitada al prototipo, la configuración y la población evaluados.\par
 
 \subsection{RNF-7: Prevención de errores al votar}
 

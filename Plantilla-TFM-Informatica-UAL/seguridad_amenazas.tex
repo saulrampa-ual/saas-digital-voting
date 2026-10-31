@@ -1,0 +1,31 @@
+\chapter{Seguridad y modelo de amenazas}
+\label{cap:seguridad-amenazas}
+
+\section{Activos, adversarios y fronteras}
+El modelo de amenazas del proyecto aplica STRIDE a las interfaces, servicios,
+almacenamientos y canales de correo. Los activos principales son la identidad,
+la participación, las credenciales del votante, la urna, la cadena de eventos,
+los resultados y los datos de cada organización. Se consideran adversarios
+externos, votantes maliciosos, gestores, usuarios de otros tenants, servicios
+comprometidos, operadores y observadores de red. El detalle y la matriz de
+riesgos se encuentran en \texttt{docs/architecture/threat-model.md}.
+
+\section{Controles implementados}
+Los controles documentados incluyen tokens almacenados como hashes, límites
+de intentos para códigos, tokens de un solo uso, aislamiento por
+\texttt{organization\_id}, validación del cliente de servicio esperado en
+rutas internas, segregación de las bases de urna y censo, registros
+administrativos de solo adición y verificación de la cadena antes del
+escrutinio. La seguridad externa presupone TLS y que solo el gateway esté
+expuesto.
+
+\section{Riesgos residuales y límites}
+El correo es el canal de enlace y código para procesos configurados con
+\texttt{EMAIL\_CODE}; quien controle ese buzón puede suplantar al votante. La
+cuenta institucional reduce ese riesgo bajo los controles de D-48, pero no
+elimina el requisito de proteger la identidad federada. Un operador con acceso
+a las dos bases podría intentar correlaciones temporales o alterar ambas
+fuentes. También permanecen fuera de alcance la resistencia a coacción, el
+malware en el dispositivo, la disponibilidad ante ataques a gran escala y la
+verificabilidad extremo a extremo. Por ello, no se afirma anonimato absoluto
+frente al operador de la plataforma.

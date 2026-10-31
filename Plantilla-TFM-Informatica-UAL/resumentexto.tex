@@ -1,38 +1,39 @@
 \vspace{0.7cm}
 
-Este trabajo aborda la especificación y el diseño de una plataforma SaaS de
-votación digital para universidades, asociaciones y otras organizaciones. La
-propuesta responde a las limitaciones de los procesos basados en censos
-manuales y herramientas genéricas, especialmente en autenticación,
-accesibilidad, secreto del voto y verificación de resultados. La especificación
-define los objetivos, actores, requisitos funcionales y requisitos de calidad
-de la plataforma. El estado del arte y el análisis DAFO justifican el alcance
-propuesto y delimitan el MVP. El análisis organiza los casos de uso y separa los datos de
-identidad, participación y urna. La memoria incluye la arquitectura propuesta,
-las preguntas de investigación, objetivos específicos y su trazabilidad, una
-metodología DSR y un plan de evaluación pendiente de ejecución. También incluye
-diagramas PlantUML de casos de uso y actividad, junto con diagramas vectoriales
-editables de arquitectura y secuencia, el mapeo de calidad con ISO/IEC 25010:2023
-y el plan de trabajo 2026/2027. Las decisiones de diseño
-y los umbrales cuantitativos quedan pendientes de validación; la implementación
-y sus resultados de prueba se incorporarán cuando estén disponibles.
+Este trabajo presenta el diseño e implementación de VeriVoto, un prototipo
+SaaS multi-tenant de votación digital para organizaciones. El sistema cubre la
+gestión de procesos, el acceso del votante, la emisión del voto, los recibos,
+la auditoría y el escrutinio. La arquitectura implementada integra cinco
+servicios propios, Keycloak, PostgreSQL y comunicación REST con patrón
+\emph{outbox}. La autenticación del votante se configura por proceso mediante
+código por correo o cuenta institucional. La batería registrada contiene 49
+pruebas de backend y 10 de frontend; las pruebas y la compilación del frontend
+finalizaron correctamente. Cuatro pruebas de integración ejecutaron las
+migraciones y comprobaciones en PostgreSQL 18.6, incluida la consulta aislada
+de censos mediante el repositorio JPA; la autorización HTTP y otros repositorios
+siguen pendientes. La cobertura de líneas del backend varía entre
+0,0\% y 13,6\%. Las evaluaciones de accesibilidad, usabilidad y carga siguen
+pendientes. Por ello, las hipótesis
+H1a, H1b y H1c no se aceptan ni se rechazan con la evidencia disponible. El
+trabajo describe el prototipo y sus límites, sin atribuirle resistencia a la
+coacción ni verificabilidad extremo a extremo.
 
 \vspace{0.7cm}
 
 \section*{Abstract}
-This project addresses the requirements and conceptual design of a digital
-voting Software as a Service platform for universities, associations and
-other organizations. It responds to limitations in manual census management
-and generic voting tools, particularly around authentication, accessibility,
-ballot secrecy and result verification. The specification defines four
-business objectives, actors, functional requirements and quality
-requirements. The state-of-the-art review and SWOT analysis justify the
-proposed scope and delimit the MVP. The analysis organizes the use cases and separates identity,
-participation and ballot data. The report includes research questions,
-specific objectives and their traceability, a Design Science Research
-methodology and an evaluation plan pending execution. It also includes
-PlantUML use-case and activity diagrams, editable vector diagrams for the
-architecture and voting sequence, and a mapping to ISO/IEC 25010:2023. The
-2026/2027 work plan is also included. Design decisions and
-quantitative thresholds remain subject to validation; implementation and test
-results will be added when available.
+This work presents the design and implementation of VeriVoto, a multi-tenant
+voting Software as a Service prototype for organizations. It supports election
+management, voter access, ballot submission, receipts, audit records and
+tallying. The implemented architecture integrates five application services,
+Keycloak, PostgreSQL and REST communication with an outbox pattern. Voter
+authentication is configured per election using email codes or institutional
+accounts. The recorded test suite contains 49 backend tests and 10 frontend
+tests; frontend tests and build completed successfully. Four integration tests
+ran migrations and checks on PostgreSQL 18.6, including organization-scoped
+census queries through the JPA repository; HTTP authorization and other
+repositories remain unverified. Backend line coverage ranges from 0.0\% to
+13.6\%. Accessibility, usability and load evaluations remain pending.
+Therefore, hypotheses H1a, H1b and H1c
+are neither accepted nor rejected on the available evidence. This report
+describes the prototype and its limitations and does not claim coercion
+resistance or end-to-end verifiability.

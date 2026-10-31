@@ -1,0 +1,68 @@
+\chapter{Pruebas y evaluación}
+\label{cap:evaluacion-resultados}
+
+\section{Pruebas disponibles}
+En la revisión P7 registrada se ejecutaron 49 pruebas de backend y 10 de
+frontend. Las pruebas unitarias y de arquitectura cubren reglas seleccionadas
+de permisos, ciclo de vida, acceso del votante, consumo del token, cadena de
+auditoría, escrutinio y separación arquitectónica. En frontend se cubren la
+guarda de rol, el flujo de voto y recibo, y el retorno SSO con PKCE. La
+ejecución registrada de \texttt{npm run test:ci} terminó con 10 pruebas
+correctas; \texttt{npm run build} también terminó correctamente. Cuatro pruebas
+adicionales ejecutaron las migraciones Flyway de identity, election,
+voter-access y ballot-box en PostgreSQL 18.6 con Testcontainers. Verificaron
+el trigger append-only de acciones administrativas, el aislamiento por
+organización al listar y buscar censos a través de `CensusRepositoryAdapter`
+y JPA, participación con fecha sin hora y restricciones de esquema/eventos
+de la urna. La integración del repositorio no cubre autorización HTTP ni
+todos los repositorios y entidades.
+
+La cobertura de líneas JaCoCo registrada es: gateway 0,0\% (0/3), identity
+13,6\% (107/785), election 10,3\% (157/1528), voter-access 7,7\% (115/1499)
+y ballot-box 13,2\% (212/1611). La cobertura es inicial y no demuestra por sí
+misma la corrección del sistema. El informe de evaluación detalla método y
+limitaciones en \texttt{docs/evaluation/informe.md}.
+
+\section{Hipótesis y resultados}
+\small
+\begin{longtable}{|p{0.11\textwidth}|p{0.36\textwidth}|p{0.15\textwidth}|p{0.26\textwidth}|}
+\caption{Estado de las hipótesis de evaluación.}\label{tab:estado-hipotesis}\\
+\hline
+\textbf{Hipótesis} & \textbf{Criterio del protocolo} & \textbf{Estado del criterio} & \textbf{Resultado medido} \\
+\hline
+\endfirsthead
+\hline\textbf{Hipótesis} & \textbf{Criterio del protocolo} & \textbf{Estado del criterio} & \textbf{Resultado medido} \\
+\hline\endhead
+H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo. La auditoría automática no certifica conformidad WCAG. & Validado por el tutor & PENDIENTE: axe y revisión manual no ejecutados; sin decisión. \\
+\hline
+H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan acceso, emisión y obtención del recibo en $\leq$ 3 minutos, y al menos 4 de 5 interpretan correctamente el resultado de la verificación. H0b: no se alcanza alguno de esos criterios. & Validado por el tutor & PENDIENTE: no se han realizado sesiones con participantes; sin decisión. \\
+\hline
+H1c & Con 500 usuarios simultáneos, p95 de emisión inferior a dos segundos en tres ejecuciones. & Propuesto & PENDIENTE: el escenario k6 está preparado, pero faltan tres ejecuciones medidas; sin decisión. \\
+\hline
+RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin formación previa crean, configuran y programan un proceso de opción única en $\leq$ 10 minutos y sin ayuda. & Validado por el tutor; 10 minutos como valor propuesto & PENDIENTE: no se ha realizado sesión con administradores; RNF-4 no está evaluado. \\
+\hline
+\end{longtable}
+\normalsize
+
+Con $n = 5$ no hay inferencia estadística: los resultados de H1b y de RNF-4
+serán evidencia descriptiva limitada al prototipo, la configuración y la
+población evaluados. La columna «Resultado medido» solo se completa con
+ejecuciones reales.
+
+\section{Integración y requisitos de calidad}
+La integración PostgreSQL de otros repositorios, los flujos HTTP/outbox y
+la concurrencia; las pruebas E2E completas del stack, la accesibilidad manual,
+las mediciones de carga y las sesiones de usabilidad continúan pendientes. En consecuencia, la evidencia disponible no
+permite declarar aceptados RNF-1, RNF-3, RNF-4, RNF-6, RNF-11--RNF-15 ni
+RNF-17 en su conjunto.
+La correspondencia con características de ISO/IEC 25010:2023 está definida
+en el capítulo de requisitos no funcionales; la cobertura experimental por
+característica debe completarse cuando se ejecuten esos protocolos.
+
+\section{Validez}
+La cobertura baja limita la confianza que puede atribuirse a la suite. Las
+pruebas unitarias y las comprobaciones de esquema no sustituyen el aislamiento
+de base de datos de todos los repositorios ni la autorización completa entre
+organizaciones o la concurrencia real. Sin participantes ni carga reproducible no cabe generalizar
+sobre la experiencia o el rendimiento. Los resultados aquí consignados se
+limitan a las ejecuciones disponibles y no se extrapolan a producción.
