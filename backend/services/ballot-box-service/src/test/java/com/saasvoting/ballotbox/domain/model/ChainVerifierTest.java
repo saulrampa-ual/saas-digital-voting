@@ -92,6 +92,32 @@ class ChainVerifierTest {
         assertTrue(check.problems().stream().anyMatch(p -> p.code() == ChainProblem.Code.FINAL_HASH_MISMATCH));
     }
 
+    @Test
+    void detectsBallotChangedAfterOpened() {
+        Fixture fixture = fixture();
+        BallotSnapshot original = fixture.ballot();
+        BallotSnapshot changed = new BallotSnapshot(original.processId(), original.organizationId(), original.status(),
+                original.opensAt(), original.closesAt(), original.voteType(), original.question(),
+                List.of(new BallotOption(99, 1, Map.of(Language.ES, "Otra opción", Language.EN, "Another option"))),
+                original.blankVoteEnabled(), original.eligibleVoters(), original.resultsVisibility(),
+                original.resultsPublicId(), original.finalHash(), original.title());
+
+        ChainCheck check = ChainVerifier.verify(changed, fixture.events(), fixture.head(), 1, 1, NOW);
+
+        assertFalse(check.intact());
+        assertTrue(check.problems().stream().anyMatch(p -> p.code() == ChainProblem.Code.BALLOT_MISMATCH));
+    }
+
+    @Test
+    void detectsReceiptCountThatDoesNotMatchVotes() {
+        Fixture fixture = fixture();
+
+        ChainCheck check = ChainVerifier.verify(fixture.ballot(), fixture.events(), fixture.head(), 1, 0, NOW);
+
+        assertFalse(check.intact());
+        assertTrue(check.problems().stream().anyMatch(p -> p.code() == ChainProblem.Code.VOTE_COUNT_MISMATCH));
+    }
+
     private static Fixture fixture() {
         BallotSnapshot ballot = new BallotSnapshot(7, "org-test", ProcessStatus.CLOSED,
                 NOW.minusSeconds(120), NOW.minusSeconds(60), VoteType.SINGLE_CHOICE,
