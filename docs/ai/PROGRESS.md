@@ -231,7 +231,8 @@
 ## Cómo continuar (siguiente paso exacto)
 
 0. Autor: resolver las decisiones pendientes (modelo de sustitución en P9, RF-11 Could/Won't, «sin ayuda» en RNF-4, RF-22/RF-23 en la tabla 1.1).
-1. Corregir DEF-01 (selector de idioma compartido, axe) en `fix/a11y-language-switcher` y repetir axe.
+1. DEF-01 corregido en `fix/a11y-language-switcher` (axe 0 en recibo y entrada del votante, 1280/360, ES/EN; Vitest 10/10;
+   build correcto). Repetir `npm run test:e2e` en Windows.
 2. Entregar el segundo encargo (`docs/evaluation/encargo-pruebas-p7-fase2.md`) a la IA de pruebas: k6, E2E con stack real
    y axe en todas las pantallas, logs, matriz de autorización completa, concurrencia y outbox.
 3. Realizar la sesión de usabilidad con cinco votantes (autor, prioritaria) y registrar resultados como cantidades (x de 5);
