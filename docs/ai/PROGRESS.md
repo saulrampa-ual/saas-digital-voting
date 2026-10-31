@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-31 · Rama de evaluación: `test/p7-pending-suite` (base `cc0229b`, sin commit) · `dev` no modificada
+Última actualización: 2026-10-31 · Rama: `dev` · Últimos merges: `bdad06f` (encargo de pruebas) y `5acf2d8` (`test/p7-pending-suite`); sin push
 
 ## Hitos
 
@@ -231,9 +231,9 @@
 ## Cómo continuar (siguiente paso exacto)
 
 0. Autor: resolver las decisiones pendientes (modelo de sustitución en P9, RF-11 Could/Won't, «sin ayuda» en RNF-4, RF-22/RF-23 en la tabla 1.1).
-1. Entregar `docs/evaluation/encargo-pruebas-p7.md` a la IA que ejecuta las pruebas (bloques 1–7: autorización HTTP,
-   concurrencia/outbox, unitarias, secreto, Playwright + axe, k6, cobertura) en la rama `test/p7-pending-suite`.
-2. Preparar Playwright, accesibilidad y k6 sin añadir datos personales ni secretos.
+1. Corregir DEF-01 (selector de idioma compartido, axe) en `fix/a11y-language-switcher` y repetir axe.
+2. Entregar el segundo encargo (`docs/evaluation/encargo-pruebas-p7-fase2.md`) a la IA de pruebas: k6, E2E con stack real
+   y axe en todas las pantallas, logs, matriz de autorización completa, concurrencia y outbox.
 3. Realizar la sesión de usabilidad con cinco votantes (autor, prioritaria) y registrar resultados como cantidades (x de 5);
    RNF-4 solo si se prepara un protocolo para administradores.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
@@ -241,7 +241,7 @@
 
 ## P7.7 · Encargo de pruebas (31/10/2026)
 
-Trabajo realizado en worktree separada `saas-digital-voting-p7`, rama `test/p7-pending-suite`, desde `cc0229b`; sin commit, push ni merge. Se preservaron los cambios locales de la worktree original `docs/p7-test-handoff`.
+Trabajo realizado en worktree separada `saas-digital-voting-p7`, rama `test/p7-pending-suite`, desde `cc0229b`. Revisado por el autor y confirmado en `b8c9038`, `597a15d` y `fbdd458`; integrado en `dev` (`5acf2d8`). Se preservaron los cambios locales de la worktree original `docs/p7-test-handoff`.
 
 - Verificación Maven final con Java 25.0.5: BUILD SUCCESS, 60 pruebas backend (gateway 1, identity 12, election 19, voter-access 9, ballot-box 19), 0 fallos/errores/omitidas. CSV JaCoCo comparables y resumen P7 en `docs/evaluation/resultados-p7/`.
 - Añadidas pruebas sintéticas de lectura/importación CSV, autorización HTTP parcial, inspección de columnas de todas las tablas públicas de ballot-box y dos casos de integridad de cadena. No se modificó código de producción.
