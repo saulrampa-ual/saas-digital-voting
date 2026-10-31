@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-31 · Rama de trabajo: `dev` · Último commit en `dev`: `ffc4f7f` (merge de `feat/voter-sso`)
+Última actualización: 2026-10-31 · Rama de trabajo: `chore/p7-p8-tfm-work` · Commit base: `5fa854f` (`docs: P6 integrado en dev`)
 
 ## Hitos
 
@@ -13,11 +13,45 @@
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
-| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
-| P8 | 01/12 – 27/01/2027 | Memoria del TFM | Pendiente |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 49 pruebas backend y 10 frontend; 4 integraciones PostgreSQL de esquema/migraciones; E2E, carga, accesibilidad y usabilidad pendientes |
+| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: P8.1 y borradores P8.2–P8.3 incorporados; criterios del tutor (H1a/H1b/RNF-4) y confirmación de D-03/D-05 (correo del 30/10/2026) aplicados (P8.5); PDF de 82 páginas; falta la revisión editorial y visual completa |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
 ## Hecho
+
+- P7.0: pruebas activadas el 2026-10-31 según autorización `ACTIVAR TESTS` del prompt de continuación. Añadidos
+  `spring-boot-starter-test`, Testcontainers 2.0.5 (gestionado por Spring Boot), ArchUnit 1.5.1 y JaCoCo 0.8.16;
+  CI backend ejecuta `verify` con tests. Último `mvnw verify` completo con Java 25.0.5: BUILD SUCCESS,
+  49 pruebas backend, 0 fallos/errores; Testcontainers usó cuatro contenedores PostgreSQL 18.6.
+- P7.2 (parcial): cuatro pruebas de integración ejecutan todas las migraciones de identity (5), election (6),
+  voter-access (4) y ballot-box (6). Comprueban append-only para acciones administrativas, columnas/scoping
+  de organización mediante el adaptador/JPA real de censos en election, participación por fecha sin hora y ausencia
+  de datos de identidad/tiempo en la urna; también prueban el rechazo de un evento `VOTE_RECEIVED` con hora.
+  La autorización HTTP y la cobertura de otros repositorios/entidades siguen pendientes.
+- P7.1/P7.3 (parcial): tests de permisos/último administrador/API keys, ciclo de vida y programación, código/OTP,
+  consumo del token, compensación si falla el guardado, evento de voto sin tiempo/hash del recibo, participación por
+  día, cadena, escrutinio, y reglas de arquitectura por servicio. Cobertura de líneas de la batería inicial: gateway 0,0 %,
+  identity 13,6 %, election 10,3 %, voter-access 7,7 %, ballot-box 13,2 %; véase `docs/evaluation/informe.md`.
+  Es parcial y no acredita esquema/logs ni cobertura suficiente; P7 sigue abierto.
+- Frontend P7.1: runner Angular `@angular/build:unit-test` con Vitest 5.0.5 + jsdom 30.1.3; 10 pruebas de
+  guards de rol, flujo API papeleta→voto→recibo y PKCE/state/nonce; `npm run test:ci` y `npm run build` pasan.
+  CI ejecuta unit tests y build; `npm install` con Node 24.15.0 terminó sin vulnerabilidades reportadas.
+- P7.4/P7.5/P7.6/P7.7 (material inicial): lista manual de accesibilidad, guion k6 para 500 VU con tokens
+  sintéticos externos, protocolo, consentimiento, guion y hoja de registro de usabilidad; informe de evaluación
+  con H1a/H1b/H1c y RNF pendientes marcados, sin inventar resultados. Carga no ejecutada.
+- P8.0: compilación base de 69 páginas y diagnóstico inicial en `docs/evaluation/diagnostico-memoria-p8.md`.
+  El autor aprobó el enfoque el 2026-10-31; las ediciones autorizadas comenzaron después de esa confirmación.
+- Frontend: `npm run build` terminó correctamente (bundle inicial 1,07 MB; 215,26 kB de transferencia estimada).
+- P8.5 (2026-10-31, revisado y aprobado por el autor): aplicados en la memoria los criterios confirmados por el
+  tutor (D-49): H1a/RNF-1 unificado (cero incumplimientos críticos ni serios + revisión manual sin bloqueos), H1b/RNF-3/RNF-6
+  en cantidades (5 de 5 en ≤3 min; al menos 4 de 5 interpretan la verificación), RNF-4 (al menos 4 de 5 administradores en
+  ≤10 min, valor propuesto) pendiente y sin hipótesis; nota de n = 5; tabla 13.1 con «criterio del protocolo» y «resultado
+  medido» (todo PENDIENTE); D-03/D-05 confirmadas por el tutor por correo el 30/10/2026 en 1.5, 10.1, 10.5, apéndice A,
+  6.1.11 y 14.3; nota de alcance de revoto al inicio del capítulo 6; RF-11 retirado de la figura 8.2 y del listado A.2;
+  listado A.3 alineado con la figura 5.2 (el voto no se cifra en cliente); 14.2 remite a 14.3. Actualizados también
+  `docs/evaluation/informe.md` y `docs/evaluation/usabilidad/protocolo.md`. PDF compilado con pdfLaTeX (TeX Live 2023)
+  en el entorno de la IA: 82 páginas, sin errores ni referencias indefinidas; inspeccionadas las páginas modificadas.
+  No se regeneraron los PDF de PlantUML (no hay PlantUML 1.2026.8 disponible; las figuras de la memoria son TikZ).
 
 - Antes de P0 (commits hasta `09f21e1`): estructura de carpetas; `tenant-service` con el caso de uso
   «crear organización» (dominio, puertos, servicio, JPA, Flyway V1, REST, resource server JWT con
@@ -156,21 +190,41 @@
 
 ## Pendiente
 
-- Validar con el tutor la reducción a 5 servicios (D-05) y la exclusión del revoto (D-03).
-- Corregir el Gantt del TFM (`plan_gantt.tex`): la iteración 3 debe quedar en RF-09–RF-10.
-- Verificar el último parche de Spring Cloud 2025.1.x, springdoc 3.1.x y Maven (P1.1); de Ionic 9 (P3.4).
-- Prototipos: pantallas que faltan para RF-17 y RF-21 (ver `PROTOTYPES.md`).
-- Seguridad de `election`, `voter-access` y `ballot-box`: los esqueletos no incluyen Spring Security;
-  se añade en el hito de cada servicio (P3.3, P4.3, P4.4).
-- CORS y API keys en el gateway (P6); rutas de los demás servicios cuando existan sus contratos (P2).
+- P7.1: ampliar cobertura unitaria de censo/CSV, validación de claims institucionales, privacidad, recordatorios,
+  errores, pruebas del flujo visual del votante y reglas de dominio que aún no tienen pruebas.
+- P7.2: ampliar integración PostgreSQL a otros repositorios, autorización HTTP entre organizaciones,
+  concurrencia de tokens y reintentos/idempotencia de outbox.
+- P7.3: inspección del esquema y logs para secreto del voto; pruebas de todas las manipulaciones de cadena y límites
+  de datos temporales.
+- P7.4: Playwright con Keycloak y Mailpit reales, flujos de votación y gestión en 1280/360 px y ES/EN, axe y
+  ejecución de `docs/evaluation/accesibilidad-manual.md`; añadir job E2E a CI. El runner unitario está configurado;
+  el navegador real y E2E siguen sin ejecutarse.
+- P7.5: completar escenarios k6 de acceso y escrutinio; preparar en entorno local las credenciales sintéticas
+  fuera del repo; ejecutar tres mediciones de voto con percentiles, errores y recursos y comprobar la cadena/participación.
+- P7.6: el autor debe realizar al menos cinco sesiones y completar los materiales de `docs/evaluation/usabilidad/`.
+- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a/H1b/H1c siguen pendientes.
+- P8: enfoque aprobado por el autor. P8.1 corrige el alcance de RF-11 y añade la comparación de planificación;
+  los capítulos de diseño técnico, implementación, amenazas, evaluación y conclusiones son borradores basados en
+  las evidencias actuales. Se recompiló el PDF de 79 páginas y se inspeccionaron la introducción, el flujo de voto,
+  la tabla de hipótesis y capítulos añadidos. P8.4 aún requiere revisión visual completa y editorial; algunas
+  secciones originales de análisis y los diagramas conceptuales deben alinearse con la implementación.
+- Decisiones del autor: si en P9 se depura el modelo de datos de sustitución (`votes.status` `SUBSTITUTED`, RI-6/RI-8/RI-9);
+  si RF-11 sigue como «Could» o pasa a «Won't» en la tabla 4.3; si «sin ayuda» (RNF-4) excluye consultar documentación
+  (marcador `[PENDIENTE DEL AUTOR]` en RNF-4); si se anota RF-23/RF-22 como fuera del MVP en la tabla 1.1.
+- P7.6: sesión con cinco votantes (prioritaria) y, si se hace, sesión RNF-4 con cinco administradores (requiere protocolo propio).
 
 ## Bloqueos / preguntas abiertas
 
-- ¿Se activan las pruebas de propiedades críticas al terminar P4? (IMP-03)
-- Retraso respecto al Gantt: la iteración 1 (RF-01–RF-03) acababa el 31/10.
+- P8: pendientes la revisión visual completa del PDF, alineación integral de figuras y texto heredado. La evaluación empírica P7 sigue abierta.
+- P7.3+: queda pendiente ampliar las comprobaciones de aislamiento de persistencia, autorización HTTP, concurrencia
+  de token único y contratos HTTP/outbox.
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Reimportar el realm de Keycloak (cliente `verivoto-voter`, rol `INTEGRATION`) en los entornos ya creados.
-2. P7 (pruebas y medición, H4) cuando se diga `ACTIVAR TESTS`.
-3. P8: memoria del TFM.
+0. Autor: resolver las decisiones pendientes (modelo de sustitución en P9, RF-11 Could/Won't, «sin ayuda» en RNF-4, RF-22/RF-23 en la tabla 1.1).
+1. Completar integración a nivel de repositorio/servicio y verificar el aislamiento efectivo por organización.
+2. Preparar Playwright, accesibilidad y k6 sin añadir datos personales ni secretos.
+3. Realizar la sesión de usabilidad con cinco votantes (autor, prioritaria) y registrar resultados como cantidades (x de 5);
+   RNF-4 solo si se prepara un protocolo para administradores.
+4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
+   revisión editorial y visual final de P8.4.

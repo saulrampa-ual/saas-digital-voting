@@ -12,12 +12,11 @@ enfoque puede dificultar la comprobación de la identidad y elegibilidad de
 quienes participan, la protección del secreto del voto y la auditoría del
 escrutinio.
 
-Este trabajo plantea una plataforma de votación digital ofrecida como
-Software as a Service (SaaS). El sistema permitirá a distintas organizaciones
-configurar procesos electorales en una infraestructura compartida con
-aislamiento lógico de sus datos. La especificación de requisitos del proyecto
-constituye la base para el análisis y el diseño que se desarrollarán en la
-memoria.
+Este trabajo presenta el diseño e implementación de VeriVoto, una plataforma
+de votación digital ofrecida como Software as a Service (SaaS). El prototipo
+permite a distintas organizaciones configurar procesos electorales en una
+infraestructura compartida con aislamiento lógico de sus datos. La memoria
+documenta sus requisitos, arquitectura, implementación y evaluación disponible.
 
 \section{Problema y motivación}
 \label{sec:problema}
@@ -44,33 +43,34 @@ El objetivo general es diseñar, implementar y evaluar un prototipo funcional
 de plataforma SaaS de votación digital segura y auditable para organizaciones,
 con arquitectura cloud multi-tenant y API abierta, que responda a los huecos
 identificados en autenticación, experiencia móvil y verificación comprensible.
-La implementación y su evaluación se presentan como trabajo previsto hasta que
-existan evidencias experimentales. Los objetivos del sistema son:
+El prototipo y la evidencia de evaluación disponible se presentan en esta
+memoria; las pruebas de integración, accesibilidad, carga y usabilidad siguen
+pendientes. Los objetivos del sistema son:
 
 \begin{description}
-  \item[OBJ-1.] Diseñar la arquitectura SaaS multi-tenant y la gestión de
+  \item[OBJ-1.] Implementar y documentar la arquitectura SaaS multi-tenant y la gestión de
   organizaciones, identidad, roles y permisos, con autenticación genérica.
-  \item[OBJ-2.] Diseñar la gestión del censo, la configuración y el ciclo de
+  \item[OBJ-2.] Implementar y documentar la gestión del censo, la configuración y el ciclo de
   vida de votaciones, junto con una API abierta documentada.
-  \item[OBJ-3.] Diseñar un flujo accesible de participación que proteja el
-  secreto y la unicidad y proporcione una evidencia comprensible al votante.
-  \item[OBJ-4.] Diseñar el escrutinio, la trazabilidad, las actas y la
-  evaluación de calidad del prototipo conforme al modelo ISO/IEC 25010:2023.
+  \item[OBJ-3.] Implementar un flujo de participación orientado a la accesibilidad que
+  proteja el secreto y la unicidad y proporcione una evidencia comprensible.
+  \item[OBJ-4.] Implementar el escrutinio, la trazabilidad y las actas, y evaluar
+  la calidad conforme al modelo ISO/IEC 25010:2023 según la evidencia disponible.
 \end{description}
 
 \subsection{Objetivos específicos}
 \label{sec:objetivos-especificos}
 
 Los objetivos del sistema se concretan en los siguientes objetivos específicos
-de análisis y diseño:
+de implementación, documentación y evaluación:
 \begin{description}
-  \item[OE1.] Definir la gestión multi-organización y el control de acceso
+  \item[OE1.] Implementar y documentar la gestión multi-organización y el control de acceso
   mediante roles, permisos y aislamiento de datos.
-  \item[OE2.] Especificar la gestión del censo y el ciclo de vida de los
+  \item[OE2.] Implementar y documentar la gestión del censo y el ciclo de vida de los
   procesos, desde su configuración hasta el cierre.
-  \item[OE3.] Diseñar el flujo accesible de autenticación, emisión del voto y
+  \item[OE3.] Implementar y evaluar el flujo de autenticación, emisión del voto y
   obtención y verificación de un recibo comprensible.
-  \item[OE4.] Definir el escrutinio, la publicación de resultados y las
+  \item[OE4.] Implementar y documentar el escrutinio, la publicación de resultados y las
   evidencias de auditoría que permitan revisar su integridad.
 \end{description}
 
@@ -114,7 +114,7 @@ OE1 (OBJ-1) & RQ2, RQ3 & RF-01, RF-02, RF-04, RF-05a, RF-19 & RNF-14, RNF-15 & P
 \hline
 OE2 (OBJ-2) & RQ2, RQ3 & RF-03, RF-06, RF-07, RF-17, RF-21 & RNF-8, RNF-10, RNF-17 & Configuración válida y transiciones de estado correctas; revisión de mensajes, contrato OpenAPI y medición de respuesta bajo carga. \\
 \hline
-OE3 (OBJ-3) & RQ1, RQ2, RQ3 & RF-05b, RF-08, RF-09, RF-10, RF-11, RF-20, RF-23 & RNF-1, RNF-3, RNF-6, RNF-7, RNF-11, RNF-12 & Auditoría WCAG 2.2 AA y revisión manual; éxito de tareas y comprensión del recibo; unicidad, idiomas y separación de identidad y urna. \\
+OE3 (OBJ-3) & RQ1, RQ2, RQ3 & RF-05b, RF-08, RF-09, RF-10, RF-20, RF-23; RF-11 fuera del MVP \mbox{(D-03)}, sin evidencia de evaluación & RNF-1, RNF-3, RNF-6, RNF-7, RNF-11, RNF-12 & Auditoría WCAG 2.2 AA y revisión manual; éxito de tareas y comprensión del recibo; unicidad, idiomas y separación de identidad y urna. \\
 \hline
 OE4 (OBJ-4) & RQ2, RQ3 & RF-12, RF-13, RF-14, RF-15, RF-16, RF-19, RF-22 & RNF-11, RNF-13, RNF-17 & Recalcular el resultado desde votos contabilizables; verificar huellas y registro; medir respuesta del escrutinio. \\
 \hline
@@ -122,32 +122,36 @@ OE4 (OBJ-4) & RQ2, RQ3 & RF-12, RF-13, RF-14, RF-15, RF-16, RF-19, RF-22 & RNF-1
 \setlength{\tabcolsep}{6pt}
 \normalsize
 
-La contribución académica se centra en una experiencia móvil accesible,
-autenticación segura, una API REST documentada y una explicación comprensible
-de las evidencias de voto. La integración con un proveedor de identidad
-mediante OIDC/SSO podrá evaluarse como opción de diseño, sin exigir una cuenta
-institucional. La verificación \emph{cast-as-intended} y la criptografía
-extremo a extremo no se consideran resueltas por el diseño actual; la
-transparencia de precios y las integraciones avanzadas quedan como líneas de
-trabajo futuro.
+El prototipo implementa una experiencia web adaptable, autenticación de
+gestión y del votante, una API REST documentada y evidencias de presencia e
+integridad del voto. Cada proceso configura el acceso mediante código por
+correo o cuenta institucional. La verificación \emph{cast-as-intended}, la
+resistencia a la coacción y la verificabilidad extremo a extremo no se
+consideran resueltas; la validación empírica de accesibilidad, usabilidad y
+carga permanece pendiente.
 
 \section{Alcance y supuestos}
 \label{sec:alcance}
 
-El alcance propuesto cubre organizaciones y usuarios, censos, configuración
+El alcance implementado cubre organizaciones y usuarios, censos, configuración
 de procesos, autenticación, emisión, recibos, auditoría, escrutinio,
 resultados, actas, notificaciones y atención de solicitudes sobre datos
-personales. El servicio se concibe como una aplicación en la nube con
-arquitectura multi-tenant orientada a microservicios. La sustitución de voto se conserva en la
-especificación vigente, pero no se incluye en el MVP provisional; la
-delimitación se concreta en la sección~\ref{sec:alcance-mvp}.
+personales. El prototipo es una aplicación multi-tenant orientada a
+microservicios. La sustitución de voto (RF-11) no forma parte del MVP según
+D-03 y queda como trabajo futuro (P9). Esta exclusión y la consolidación de la
+arquitectura en cinco servicios (D-05) fueron confirmadas por el tutor el
+30/10/2026 mediante correo electrónico.
 
 La especificación identifica como propuestos varios umbrales cuantitativos,
 entre ellos la carga de 500 votantes simultáneos y los tiempos de respuesta.
-Estos valores deben validarse con el cliente y el tutor antes de considerarse
-criterios definitivos de aceptación. La especificación no acredita que la
-plataforma esté implementada ni que los objetivos de calidad se hayan
-verificado; la memoria deberá incorporar esos resultados cuando existan.
+El tutor ha validado como criterios del protocolo los de accesibilidad
+(RNF-1), usabilidad del votante (RNF-3 y RNF-6) y facilidad de uso del
+administrador (RNF-4, con 10 minutos como valor propuesto); los demás deben
+validarse con el cliente y el tutor antes de considerarse criterios
+definitivos de aceptación. La implementación está disponible, pero
+la evidencia actual no acredita todos los objetivos de calidad: las pruebas
+de integración de repositorios y flujos, accesibilidad, carga y usabilidad
+siguen pendientes.
 
 \section{Delimitación: qué no es este TFM}
 \label{sec:delimitacion}
@@ -155,65 +159,82 @@ verificado; la memoria deberá incorporar esos resultados cuando existan.
 Este trabajo no plantea un sistema de votación presencial ni sustituye las
 garantías legales y organizativas exigibles a una elección oficial. No propone
 usar blockchain: la trazabilidad se aborda mediante registros de auditoría y
-huellas encadenadas cuya arquitectura deberá detallarse. Tampoco demuestra
+huellas encadenadas cuya arquitectura se detalla en los capítulos siguientes. Tampoco demuestra
 resistencia a la coacción, verificabilidad extremo a extremo ni anonimato
-frente a un adversario con control de la infraestructura. El alcance actual
-es la especificación y el diseño conceptual de una plataforma SaaS; la
-implementación y las mediciones de calidad solo podrán afirmarse cuando se
-disponga de un prototipo y de evidencias experimentales.
+frente a un adversario con control de la infraestructura. El prototipo SaaS
+está implementado y dispone de pruebas técnicas parciales; sus mediciones de
+calidad solo se consideran acreditadas cuando existen evidencias experimentales
+reproducibles.
 
 \section{Metodología}
 \label{sec:metodologia}
 
-Se adopta \emph{Design Science Research} (DSR), porque el objetivo es diseñar
-y evaluar un artefacto, en este caso la especificación y el diseño de una
-plataforma SaaS de votación, para responder a un problema concreto. DSR estructura el trabajo
-en la identificación del problema, la definición de objetivos, el diseño del
+Se adopta \emph{Design Science Research} (DSR), porque el objetivo es construir
+y evaluar un artefacto, en este caso un prototipo implementado de plataforma
+SaaS de votación, para responder a un problema concreto. DSR estructura el trabajo
+en la identificación del problema, la definición de objetivos, la construcción del
 artefacto, su demostración mediante escenarios, su evaluación y la
 comunicación de resultados \citep{hevner2004,peffers2007}. La elección es
-coherente con un TFM cuyo resultado inmediato es una propuesta técnica
-trazable; no presupone que el producto esté ya implementado.
+coherente con un TFM cuyo artefacto es una implementación funcional, evaluada
+con pruebas técnicas y, cuando se completen, medidas empíricas.
 
 La aplicación al proyecto se organiza en cinco actividades: (1) caracterizar
 los riesgos de la gestión manual, el secreto y la verificación; (2) derivar
-objetivos, preguntas, requisitos y criterios de calidad; (3) diseñar los
-casos de uso, la arquitectura y los flujos de voto y escrutinio; (4) demostrar
-el diseño con escenarios y prototipos cuando estén disponibles; y (5) evaluar
+objetivos, preguntas, requisitos y criterios de calidad; (3) diseñar e
+implementar los casos de uso, la arquitectura y los flujos de voto y escrutinio;
+(4) demostrar el artefacto con escenarios y pruebas; y (5) evaluar
 la evidencia con las métricas de la sección~\ref{sec:plan-evaluacion}. Las
-iteraciones de diseño podrán incorporar revisiones del tutor, sin presentarlas
-como una metodología ágil completa ni como sustituto del ciclo DSR.
+iteraciones de implementación podrán incorporar revisiones del tutor, sin
+presentarlas como una metodología ágil completa ni como sustituto del ciclo DSR.
 
 \section{Plan de evaluación}
 \label{sec:plan-evaluacion}
 
-La evaluación se ejecutará cuando exista un prototipo funcional. Las
-siguientes hipótesis y umbrales son criterios iniciales derivados de los RNF;
-deben acordarse con el tutor y no representan resultados obtenidos.
+La evaluación combina resultados obtenidos con actividades aún pendientes.
+Las hipótesis y umbrales siguientes se mantienen como criterios del protocolo;
+los resultados no disponibles se marcan expresamente como pendientes.
 
 \begin{description}
-  \item[H1a.] El flujo de voto satisface los criterios de accesibilidad
-  WCAG~2.2 AA definidos para las pantallas incluidas en la evaluación.
-  \item[H0a.] El flujo incumple al menos uno de esos criterios.
-  \item[H1b.] Al menos el 90\% de los participantes no técnicos completa el
-  acceso, la emisión y la obtención del recibo en un máximo de tres minutos,
-  y al menos el 80\% interpreta correctamente el resultado de la verificación.
-  \item[H0b.] No se alcanzan uno o ambos umbrales de usabilidad.
+  \item[H1a.] Las pantallas evaluadas del flujo de voto no presentan
+  incumplimientos críticos ni serios, y la revisión manual con teclado y
+  lector de pantalla no encuentra bloqueos en el flujo de acceso, voto y
+  recibo (RNF-1, con WCAG~2.2 AA como referencia).
+  \item[H0a.] Se detecta algún incumplimiento crítico o serio, o algún bloqueo
+  en la revisión manual.
+  \item[H1b.] Los cinco participantes no técnicos completan el acceso, la
+  emisión y la obtención del recibo en un máximo de tres minutos, y al menos
+  cuatro de los cinco interpretan correctamente el resultado de la
+  verificación (RNF-3 y RNF-6).
+  \item[H0b.] No se alcanza alguno de esos criterios.
   \item[H1c.] Con 500 usuarios concurrentes, al menos el 95\% de las
   peticiones de emisión responde en menos de dos segundos.
   \item[H0c.] La prueba de carga no alcanza el umbral de respuesta o concurrencia.
 \end{description}
 
-El procedimiento previsto es el siguiente:
+La auditoría automática no certifica conformidad WCAG. Un incumplimiento
+serio puntual se documentará como incidencia y se decidirá si se corrige antes
+del cierre; el criterio de H1a no se relaja a priori. Con $n = 5$ no hay
+inferencia estadística: los resultados de H1b y de RNF-4 serán evidencia
+descriptiva limitada al prototipo, la configuración y la población evaluados.
+
+El procedimiento y su estado son los siguientes:
 \begin{enumerate}
-  \item Ejecutar una auditoría automática de accesibilidad (por ejemplo,
-  axe) en las pantallas del flujo; no registrar incumplimientos críticos y
-  completar una revisión manual con teclado y lector de pantalla. La auditoría
-  automática por sí sola no prueba conformidad WCAG.
-  \item Realizar pruebas moderadas con al menos cinco personas no técnicas.
+  \item [PENDIENTE] Ejecutar una auditoría automática de accesibilidad (por ejemplo,
+  axe) en las pantallas evaluadas, con cero incumplimientos críticos ni
+  serios, y una revisión manual con teclado y lector de pantalla sin bloqueos
+  en el flujo de acceso, voto y recibo. La auditoría automática por sí sola no
+  certifica conformidad WCAG.
+  \item [PENDIENTE] Realizar pruebas moderadas con cinco personas no técnicas.
   Pedirles que accedan a una votación de prueba, emitan un voto y comprueben
   el recibo. Registrar éxito sin ayuda, duración, errores y comprensión del
   mensaje; recoger consentimiento y no usar votos reales.
-  \item Ejecutar una prueba de carga en un entorno aislado con datos
+  \item [PENDIENTE] RNF-4 (sin hipótesis asociada): sesión con cinco
+  administradores de organización sin formación previa; al menos cuatro de
+  cinco deben crear, configurar y programar un proceso de opción única en
+  10 minutos o menos (valor propuesto) y sin ayuda. El protocolo de usabilidad
+  actual describe solo a votantes; si la sesión no se realiza, RNF-4 se declara
+  pendiente.
+  \item [PENDIENTE] Ejecutar una prueba de carga en un entorno aislado con datos
   sintéticos y hasta 500 sesiones concurrentes. Medir latencia por percentiles,
   errores y consumo de recursos durante varias ejecuciones reproducibles.
   \item Contrastar la unicidad, la separación entre identidad y urna, la
@@ -296,6 +317,16 @@ Multi-tenant & Modelo donde varias organizaciones comparten infraestructura con 
 \hline
 SSO & Inicio de sesión único que permite autenticarse mediante un proveedor de identidad. \\
 \hline
+PKCE & Mecanismo OAuth que vincula el código de autorización con un verificador temporal del cliente. \\
+\hline
+ID token & Token OIDC con afirmaciones de identidad para el cliente autorizado. \\
+\hline
+Token de voto & Credencial aleatoria de un solo uso que autoriza la emisión y no contiene la identidad ni la selección. \\
+\hline
+Outbox & Patrón que persiste mensajes pendientes para entregarlos con reintentos después de una operación local. \\
+\hline
+Huella final & Hash publicado al cerrar la cadena de eventos de auditoría de un proceso. \\
+\hline
 OIDC & Protocolo de autenticación basado en OAuth 2.0 para verificar identidades. \\
 \hline
 OTP & Código temporal de un solo uso para reforzar la autenticación. \\
@@ -336,7 +367,7 @@ Administrador de organización & Administra usuarios, procesos y configuración 
 \hline
 Auditor & Consulta registros y comprueba información y resultados electorales (ACT-3). \\
 \hline
-Votante & Accede a la papeleta, emite o sustituye su voto y consulta las evidencias permitidas (ACT-4). \\
+Votante & Accede a la papeleta, emite su voto y consulta las evidencias permitidas; la sustitución del voto (RF-11) queda fuera del MVP (ACT-4). \\
 \hline
 Gestor de censo & Administra participantes, grupos y censos de la organización (ACT-5). \\
 \hline
@@ -381,7 +412,7 @@ RF-04 & Autenticar usuario de gestión & Autenticar perfiles de gestión mediant
 \hline
 RF-05a & Iniciar sesión de gestión & Permitir que los perfiles de gestión inicien sesión; SSO/OIDC es una opción de diseño. & Should & Informe RF-05: hueco SSO en SaaS generalistas; Belenios ofrece CAS. \\
 \hline
-RF-05b & Iniciar sesión de votante & Permitir que el votante inicie sesión con el mecanismo previsto para su proceso; SSO/OIDC es una opción de diseño. & Should & Informe RF-05: hueco SSO en SaaS generalistas; Belenios ofrece CAS. \\
+RF-05b & Iniciar sesión de votante & Configurar por proceso código por correo (por defecto) o cuenta institucional verificada (D-48). & Should & Informe RF-05: hueco SSO en SaaS generalistas; Belenios ofrece CAS. \\
 \hline
 RF-06 & Crear y configurar proceso & Definir opciones, papeleta y calendario; los métodos avanzados quedan fuera del MVP. & Must & Informe RF-07/09: configuración y modalidades básicas. \\
 \hline
@@ -489,9 +520,9 @@ recorridos:
 \end{enumerate}
 
 La especificación contempla que un voto posterior sustituya al anterior antes
-del cierre. Solo los votos en estado contabilizable participan en el
-escrutinio; los registros de participación no enlazan con el contenido del
-voto.
+del cierre. La implementación del MVP no incorpora sustitución de voto (D-03). La urna
+registra un único voto aceptado por token de emisión; los registros de
+participación no enlazan con el contenido del voto.
 
 \begin{table}[htbp]
   \centering
@@ -512,40 +543,34 @@ voto.
 \section{Arquitectura de componentes}
 \label{sec:arquitectura-componentes}
 
-La figura~\ref{fig:arquitectura-componentes} resume una arquitectura SaaS
-multi-tenant orientada a microservicios: clientes web, una capa de entrada,
-servicios de negocio independientes, integraciones externas, procesamiento
-asíncrono y persistencia segregada por finalidad. El servicio de identidad es
-opcional; OIDC/SSO constituye una alternativa de diseño y no una condición de
-acceso. El cifrado en cliente (RF-23) es opcional y queda como trabajo futuro;
-la criptografía de extremo a
-extremo aún no está resuelta. La arquitectura deberá concretarse durante la
-implementación.
+La figura~\ref{fig:arquitectura-componentes} conserva la arquitectura objetivo
+de la especificación. Elementos como CDN/WAF, KMS, cola y workers son parte de
+esa propuesta y no deben interpretarse como componentes desplegados del MVP.
+La arquitectura implementada y sus límites se describen en el
+capítulo~\ref{cap:diseno-tecnico}.
 
 \begin{figure}[htbp]
   \centering
   \resizebox{0.98\textwidth}{!}{\input{Figuras/diagramas/arquitectura_componentes_saas_votacion.tex}}
-  \caption{Arquitectura de microservicios de la plataforma SaaS de votación.}
+  \caption{Arquitectura objetivo de la plataforma SaaS de votación (no representa el despliegue implementado).}
   \label{fig:arquitectura-componentes}
 \end{figure}
 
 \section{Secuencia de emisión y verificación del voto}
 \label{sec:secuencia-voto}
 
-La figura~\ref{fig:secuencia-emision-voto} representa el intercambio entre la
-PWA del votante, Acceso votante, Urna y recibos, PostgreSQL censo, Urna cifrada
-y Auditoría hash-chain. El acceso valida el enlace, el OTP, la elegibilidad y
-el proceso antes de emitir un token de un solo uso. Una vez aceptado el voto,
-se registra la participación y se anexa el voto cifrado a la urna. Censo y urna
-se mantienen segregados (RNF-11); el diseño del token y de las operaciones debe
-evitar que se pueda enlazar identidad y voto. La verificación del recibo
-consulta la urna (RF-10); la integridad de la cadena corresponde a RF-12 y es
-una comprobación independiente.
+La figura~\ref{fig:secuencia-emision-voto} representa el flujo lógico de
+emisión, pero conserva nombres conceptuales de la especificación. En la
+implementación, voter-access consume el token y ballot-box guarda el voto, el
+hash del recibo y el evento en una transacción. El registro de participación
+solo conserva el día; la urna no almacena identidad ni marca temporal por voto.
+El recibo acredita presencia (RF-10), mientras que la cadena se verifica por
+separado (RF-12).
 
 \begin{figure}[p]
   \centering
   \resizebox{0.94\textwidth}{!}{\input{Figuras/diagramas/secuencia_emitir_voto_recibo.tex}}
-  \caption{Emisión del voto (pasos 1--7) y verificación del recibo (pasos 8--10).}
+\caption{Flujo lógico de emisión del voto y verificación de presencia del recibo.}
   \label{fig:secuencia-emision-voto}
 \end{figure}
 
@@ -590,4 +615,9 @@ aprobación por las partes interesadas.
 \input{rnf_iso25010}
 \input{cambios_diagrama}
 \input{plan_gantt}
+\input{diseno_tecnico}
+\input{implementacion}
+\input{seguridad_amenazas}
+\input{evaluacion_resultados}
+\input{conclusiones}
 

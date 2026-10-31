@@ -25,7 +25,6 @@ rectangle "Plataforma SaaS (Votación)" {
   usecase "RF-08\nAcceder como votante" as RF08
   usecase "RF-09\nEmitir voto" as RF09
   usecase "RF-10\nObtener y verificar recibo" as RF10
-  usecase "RF-11\nRe-votar" as RF11
   usecase "RF-12\nPublicar y verificar auditoría" as RF12
   usecase "RF-13b\nVerificar resultado publicado" as RF13b
   usecase "RF-15\nConsultar y exportar resultados" as RF15
@@ -44,6 +43,5 @@ RF10 ..> RF09 : <<extend>>
 note right of RF09
   Punto de extensión: tras confirmar la emisión
 end note
-RF11 ..> RF09 : <<extend>>
 @enduml
 

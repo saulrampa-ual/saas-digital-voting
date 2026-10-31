@@ -6,7 +6,10 @@ académico de referencia para 2026/2027. El cronograma se divide en dos figuras
 para mejorar la lectura: la figura~\ref{fig:gantt-fases-1-3} presenta el
 cierre de requisitos, el diseño y las iteraciones de desarrollo; la
 figura~\ref{fig:gantt-fases-4-5} presenta las pruebas, la memoria y el cierre.
-Las fechas internas son una planificación propuesta para revisar con el tutor.
+Las fechas de las figuras son la planificación prevista. La ejecución conocida
+a 31 de octubre de 2026 se resume en la tabla~\ref{tab:plan-previsto-real};
+el registro del proyecto documenta estados y fechas de hitos, pero no conserva
+un comienzo y cierre diario verificable para cada paquete de trabajo.
 
 \begin{figure}[p]
 \centering
@@ -49,7 +52,7 @@ Las fechas internas son una planificación propuesta para revisar con el tutor.
 \ganttbar[name=i1]{Iteración 1. Organizaciones, roles y censo (RF-01--RF-03)}{2026-10-16}{2026-10-31} \\
 \ganttbar[name=i2]{Iteración 2. Procesos y acceso (RF-06--RF-08)}{2026-11-01}{2026-11-15} \\
 \ganttmilestone[name=mbase]{H3. Gestión y acceso funcionales}{2026-11-15} \\
-\ganttbar[name=i3]{Iteración 3. Emisión, recibo y re-voto (RF-09--RF-11)}{2026-11-16}{2026-11-30} \\
+\ganttbar[name=i3]{Iteración 3. Emisión y recibo (RF-09--RF-10)}{2026-11-16}{2026-11-30} \\
 \ganttbar[name=i4]{Iteración 4. Auditoría, escrutinio y resultados}{2026-12-01}{2026-12-15} \\
 \ganttbar[name=i5]{Iteración 5. Notificaciones y privacidad (RF-17--RF-18)}{2026-12-16}{2026-12-31} \\
 \ganttlink{rnf}{mreq}
@@ -176,3 +179,55 @@ Las pruebas unitarias avanzan durante las iteraciones. El diseño puede
 comenzar mientras se cierra la validación de requisitos; los hitos H1--H8
 marcan las revisiones y entregas. Las fechas internas son estimaciones y los
 hitos oficiales deben confirmarse para la convocatoria correspondiente.
+
+\section{Plan previsto y ejecución registrada}
+\label{sec:plan-previsto-real}
+
+La tabla compara las ventanas previstas para P0--P8 con el estado que figura
+en el registro de progreso a 31 de octubre de 2026. «Hecho a la fecha de
+corte» indica que el hito consta como completado, pero no implica que se
+conozca su duración real. No se reconstruyen fechas de inicio a partir de
+commits porque el historial no constituye un registro de esfuerzo.
+
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|p{0.06\textwidth}|p{0.22\textwidth}|p{0.24\textwidth}|p{0.34\textwidth}|}
+\caption{Comparación entre planificación y estado de ejecución de P0--P8.}\label{tab:plan-previsto-real}\\
+\hline
+\textbf{Hito} & \textbf{Ventana prevista} & \textbf{Estado registrado a 31/10/2026} & \textbf{Desviación y observación} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Hito} & \textbf{Ventana prevista} & \textbf{Estado registrado a 31/10/2026} & \textbf{Desviación y observación} \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+P0 & 29/10--02/11/2026 & Hecho a la fecha de corte & La línea base está registrada; el cierre diario no está consignado. \\
+\hline
+P1 & 02/11--08/11/2026 & Hecho a la fecha de corte & La compilación inicial y la infraestructura constan como completadas antes de su ventana prevista. \\
+\hline
+P2 & 05/11--10/11/2026 & Hecho a la fecha de corte & Modelo, contratos y decisiones constan como completados antes de su ventana prevista. \\
+\hline
+P3 & 09/11--17/11/2026 & Hecho a la fecha de corte & Organizaciones, censo y base de interfaz constan como completados antes de su ventana prevista. \\
+\hline
+P4 & 16/11--30/11/2026 & Hecho a la fecha de corte & El flujo vertical RF-06--RF-10 consta como integrado antes de la iteración planificada. \\
+\hline
+P5 & 30/11--14/12/2026 & Hecho a la fecha de corte & Auditoría, escrutinio y resultados constan como completados antes de sus ventanas planificadas. \\
+\hline
+P6 & 14/12--31/12/2026 & Hecho a la fecha de corte & Consola y requisitos transversales constan como completados antes de su ventana planificada. \\
+\hline
+P7 & 01/01--06/01/2027 & En curso; 59 pruebas totales y cuatro integraciones PostgreSQL de esquema & Se inició antes de la ventana; E2E, integración de repositorios, carga y evaluación con participantes siguen pendientes. \\
+\hline
+P8 & 01/12/2026--27/01/2027 & En curso; diagnóstico P8.0 y borrador de capítulos & La revisión comenzó antes de la ventana prevista. Se recompiló un borrador y se hizo una inspección visual inicial; la revisión editorial final y la evaluación empírica de P7 siguen abiertas. \\
+\hline
+\end{longtable}
+\setlength{\tabcolsep}{6pt}
+\normalsize
+
+La ejecución adelantó trabajo respecto a la secuencia prevista, pero no permite
+concluir que todas las tareas se acortaran en la misma proporción. P7 y P8 se
+solapan: la memoria incorpora la implementación existente y marca como
+pendiente la evidencia de evaluación aún no recogida.

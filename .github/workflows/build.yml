@@ -1,4 +1,4 @@
-# Compilation-only CI (no tests until "ACTIVAR TESTS", see CLAUDE.md).
+# Backend verification includes the P7 test suite; frontend production build remains enabled.
 name: build
 
 on:
@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   backend:
-    name: Backend (Java 25)
+    name: Backend tests and coverage (Java 25)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,8 +31,8 @@ jobs:
           cache: maven
           cache-dependency-path: backend/**/pom.xml
 
-      - name: Compile and package all services (tests skipped)
-        run: ./mvnw --batch-mode --no-transfer-progress -DskipTests verify
+      - name: Verify and package all services with tests
+        run: ./mvnw --batch-mode --no-transfer-progress verify
 
   infra:
     name: Infrastructure (Compose config)
@@ -46,7 +46,7 @@ jobs:
           docker compose -f infra/compose.yaml --env-file "$RUNNER_TEMP/ci.env" config --quiet
 
   frontend:
-    name: Frontend (Angular build)
+    name: Frontend tests and build (Angular)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,5 +62,8 @@ jobs:
 
       - run: npm ci
 
-      - name: Production build (no tests)
+      - name: Unit tests
+        run: npm run test:ci
+
+      - name: Production build
         run: npm run build
