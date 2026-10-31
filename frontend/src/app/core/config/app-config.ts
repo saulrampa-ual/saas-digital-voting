@@ -8,6 +8,8 @@ export const APP_CONFIG = {
     url: 'http://localhost:8080',
     realm: 'verivoto',
     clientId: 'verivoto-admin',
+    /** RF-05b (D-48): public client of the voter PWA for the institutional account (PKCE). */
+    voterClientId: 'verivoto-voter',
   },
   languages: ['es', 'en'] as const,
   defaultLanguage: 'es' as const,

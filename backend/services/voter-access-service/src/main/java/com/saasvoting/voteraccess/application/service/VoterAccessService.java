@@ -1,6 +1,10 @@
 package com.saasvoting.voteraccess.application.service;
 
 import com.saasvoting.voteraccess.application.port.in.VoterAccessUseCase;
+import com.saasvoting.voteraccess.domain.model.WrongAccessMethodException;
+import com.saasvoting.voteraccess.domain.model.VoterAuthentication;
+import com.saasvoting.voteraccess.domain.model.AccountMismatchException;
+import com.saasvoting.voteraccess.application.port.out.VoterIdentityVerifier;
 import com.saasvoting.voteraccess.application.port.out.Mailer;
 import com.saasvoting.voteraccess.application.port.out.ResultsTokenRepository;
 import com.saasvoting.voteraccess.application.port.out.RollRepository;
@@ -52,11 +56,12 @@ public final class VoterAccessService implements VoterAccessUseCase {
     private final AccessPolicy policy;
     private final UnitOfWork unitOfWork;
     private final Clock clock;
+    private final VoterIdentityVerifier identities;
 
     public VoterAccessService(
             SnapshotRepository snapshots, RollRepository roll, VotingTokenRepository tokens,
             ResultsTokenRepository resultsTokens, SecretGenerator secrets, Mailer mailer, VoterMessages messages,
-            AccessPolicy policy, UnitOfWork unitOfWork, Clock clock) {
+            AccessPolicy policy, UnitOfWork unitOfWork, Clock clock, VoterIdentityVerifier identities) {
         this.snapshots = Objects.requireNonNull(snapshots, "snapshots must not be null");
         this.roll = Objects.requireNonNull(roll, "roll must not be null");
         this.tokens = Objects.requireNonNull(tokens, "tokens must not be null");
@@ -67,6 +72,7 @@ public final class VoterAccessService implements VoterAccessUseCase {
         this.policy = Objects.requireNonNull(policy, "policy must not be null");
         this.unitOfWork = Objects.requireNonNull(unitOfWork, "unitOfWork must not be null");
         this.clock = Objects.requireNonNull(clock, "clock must not be null");
+        this.identities = Objects.requireNonNull(identities, "identities must not be null");
     }
 
     /** What the link allows to see in each state, before any code (screens V1, C3, V4). */
@@ -83,6 +89,7 @@ public final class VoterAccessService implements VoterAccessUseCase {
         return unitOfWork.inTransaction(() -> {
             Instant now = clock.instant();
             LinkContext context = codeContext(linkToken, now);
+            requireMethod(context, VoterAuthentication.EMAIL_CODE);
             AccessCredential credential = roll.lockCredential(context.entry().id());
             if (credential.isLocked(now)) {
                 throw new AccessLockedException(credential.lockedUntil());
@@ -117,6 +124,9 @@ public final class VoterAccessService implements VoterAccessUseCase {
         Verification result = unitOfWork.inTransaction(() -> {
             Instant now = clock.instant();
             LinkContext context = codeContext(linkToken, now);
+            if (context.process().authentication() != VoterAuthentication.EMAIL_CODE) {
+                return new Rejected(new WrongAccessMethodException(context.process().authentication()));
+            }
             AccessCredential credential = roll.lockCredential(context.entry().id());
             if (credential.isLocked(now)) {
                 return new Rejected(new AccessLockedException(credential.lockedUntil()));
@@ -133,30 +143,74 @@ public final class VoterAccessService implements VoterAccessUseCase {
                         : new WrongCodeException(failed.remainingAttempts(policy)));
             }
             roll.save(credential.withCodeUsed());
-            Participation participation = roll.findParticipation(context.entry().id());
-            if (!context.process().isOpenAt(now)) {
-                // Tally done (codeContext): a results token not linked to the person (D-41).
-                String resultsToken = secrets.newResultsToken();
-                Instant expiresAt = now.plus(policy.resultsTokenValidity());
-                resultsTokens.save(new ResultsToken(secrets.hash(resultsToken), context.process().processId(),
-                        expiresAt));
-                return new Granted(AccessGranted.toSeeResults(participation.hasVoted(), participation.votedOn(),
-                        resultsToken, expiresAt));
-            }
-            if (participation.hasVoted()) {
-                return new Granted(AccessGranted.voted(participation.votedOn()));
-            }
-            tokens.revokeIssued(context.entry().id());
-            String votingToken = secrets.newVotingToken();
-            Instant expiresAt = now.plus(policy.votingTokenValidity());
-            tokens.save(new VotingToken(secrets.hash(votingToken), context.entry().id(), context.process().processId(),
-                    expiresAt, VotingTokenStatus.ISSUED));
-            return new Granted(AccessGranted.toVote(votingToken, expiresAt));
+            return new Granted(grant(context, now));
         });
         return switch (result) {
             case Granted granted -> granted.access();
             case Rejected rejected -> throw rejected.error();
         };
+    }
+
+    /**
+     * RF-05b (D-48): the institutional account proves the person when its verified email is the email of the roll
+     * entry of the link. Another account counts as a failed attempt, like a wrong code (RNF-14).
+     */
+    @Override
+    public AccessGranted verifyInstitutionalAccount(String linkToken, String idToken) {
+        VoterIdentityVerifier.VerifiedIdentity identity = identities.verify(idToken);
+        Verification result = unitOfWork.inTransaction(() -> {
+            Instant now = clock.instant();
+            LinkContext context = codeContext(linkToken, now);
+            if (context.process().authentication() != VoterAuthentication.INSTITUTIONAL_SSO) {
+                return new Rejected(new WrongAccessMethodException(context.process().authentication()));
+            }
+            AccessCredential credential = roll.lockCredential(context.entry().id());
+            if (credential.isLocked(now)) {
+                return new Rejected(new AccessLockedException(credential.lockedUntil()));
+            }
+            if (!identity.emailVerified() || identity.email() == null
+                    || !identity.email().strip().equalsIgnoreCase(context.entry().email())) {
+                AccessCredential failed = credential.withFailedAttempt(policy, now);
+                roll.save(failed);
+                return new Rejected(failed.isLocked(now)
+                        ? new AccessLockedException(failed.lockedUntil())
+                        : new AccountMismatchException(failed.remainingAttempts(policy)));
+            }
+            return new Granted(grant(context, now));
+        });
+        return switch (result) {
+            case Granted granted -> granted.access();
+            case Rejected rejected -> throw rejected.error();
+        };
+    }
+
+    /** After a valid code or account: a voting token, «already voted», or after the tally a results token. */
+    private AccessGranted grant(LinkContext context, Instant now) {
+        Participation participation = roll.findParticipation(context.entry().id());
+        if (!context.process().isOpenAt(now)) {
+            // Tally done (codeContext): a results token not linked to the person (D-41).
+            String resultsToken = secrets.newResultsToken();
+            Instant expiresAt = now.plus(policy.resultsTokenValidity());
+            resultsTokens.save(new ResultsToken(secrets.hash(resultsToken), context.process().processId(),
+                    expiresAt));
+            return AccessGranted.toSeeResults(participation.hasVoted(), participation.votedOn(),
+                    resultsToken, expiresAt);
+        }
+        if (participation.hasVoted()) {
+            return AccessGranted.voted(participation.votedOn());
+        }
+        tokens.revokeIssued(context.entry().id());
+        String votingToken = secrets.newVotingToken();
+        Instant expiresAt = now.plus(policy.votingTokenValidity());
+        tokens.save(new VotingToken(secrets.hash(votingToken), context.entry().id(), context.process().processId(),
+                expiresAt, VotingTokenStatus.ISSUED));
+        return AccessGranted.toVote(votingToken, expiresAt);
+    }
+
+    private static void requireMethod(LinkContext context, VoterAuthentication method) {
+        if (context.process().authentication() != method) {
+            throw new WrongAccessMethodException(context.process().authentication());
+        }
     }
 
     private LinkContext context(String linkToken, Instant now) {

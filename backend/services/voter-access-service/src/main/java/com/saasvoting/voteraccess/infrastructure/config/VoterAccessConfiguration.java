@@ -11,6 +11,7 @@ import com.saasvoting.voteraccess.application.port.out.RollRepository;
 import com.saasvoting.voteraccess.application.port.out.SecretGenerator;
 import com.saasvoting.voteraccess.application.port.out.SnapshotRepository;
 import com.saasvoting.voteraccess.application.port.out.UnitOfWork;
+import com.saasvoting.voteraccess.application.port.out.VoterIdentityVerifier;
 import com.saasvoting.voteraccess.application.port.out.VotingTokenRepository;
 import com.saasvoting.voteraccess.application.service.AdminActionService;
 import com.saasvoting.voteraccess.application.service.InvitationService;
@@ -26,12 +27,14 @@ import com.saasvoting.voteraccess.infrastructure.adapter.out.client.AdminActionD
 import com.saasvoting.voteraccess.infrastructure.adapter.out.client.IdentityProperties;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.client.KeycloakClientProperties;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.client.ServiceTokenProvider;
+import com.saasvoting.voteraccess.infrastructure.adapter.out.identity.JwtVoterIdentityVerifier;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.mail.SmtpMailer;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.JpaAdminActionOutbox;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.time.Clock;
@@ -102,9 +105,15 @@ public class VoterAccessConfiguration {
     VoterAccessService voterAccessService(
             SnapshotRepository snapshots, RollRepository roll, VotingTokenRepository tokens,
             ResultsTokenRepository resultsTokens, SecretGenerator secrets, Mailer mailer, VoterMessages messages,
-            AccessProperties properties, UnitOfWork unitOfWork, Clock clock) {
+            AccessProperties properties, UnitOfWork unitOfWork, Clock clock, VoterIdentityVerifier identities) {
         return new VoterAccessService(snapshots, roll, tokens, resultsTokens, secrets, mailer, messages,
-                properties.policy(), unitOfWork, clock);
+                properties.policy(), unitOfWork, clock, identities);
+    }
+
+    /** RF-05b (D-48): ID tokens of the institutional account, issued by the same realm to the voter client. */
+    @Bean
+    VoterIdentityVerifier voterIdentityVerifier(JwtDecoder decoder, AccessProperties properties) {
+        return new JwtVoterIdentityVerifier(decoder, properties.ssoClientId());
     }
 
     @Bean

@@ -132,7 +132,12 @@
         "minOptions": "Añade al menos 2 opciones.",
         "maxOptions": "Máximo 50 opciones.",
         "optionRequired": "Escribe la opción en el idioma por defecto."
-      }
+      },
+      "authentication": "Cómo entran los votantes",
+      "emailCode": "Código por correo",
+      "emailCodeHelp": "Al abrir su enlace personal reciben un código de 6 cifras en el correo del censo.",
+      "sso": "Cuenta institucional (SSO)",
+      "ssoHelp": "Entran con la cuenta de la organización; su correo verificado debe ser el del censo."
     },
     "process": {
       "title": "Ciclo de vida",
@@ -211,6 +216,11 @@
         "visibilityValue": {
           "CENSUS_ONLY": "Solo personas del censo",
           "PUBLIC_LINK": "Enlace público"
+        },
+        "authentication": "Acceso de los votantes",
+        "authenticationValue": {
+          "EMAIL_CODE": "Código por correo",
+          "INSTITUTIONAL_SSO": "Cuenta institucional (SSO)"
         }
       },
       "links": {
@@ -645,7 +655,20 @@
       "step3": "Recibes un código de recibo para comprobar que tu voto está en la urna.",
       "duration": "Tardarás unos 3 minutos.",
       "secret": "Tu voto es secreto: nadie puede saber qué has votado. Solo puedes votar una vez.",
-      "start": "Empezar"
+      "start": "Empezar",
+      "step1Sso": "Entrarás con tu cuenta institucional (la del correo al que te llegó la invitación)."
+    },
+    "sso": {
+      "title": "Entra con tu cuenta institucional",
+      "text": "En esta votación se comprueba quién eres con la cuenta de tu organización. Usa la cuenta del correo al que te llegó la invitación.",
+      "button": "Entrar con tu cuenta institucional",
+      "note": "Te llevaremos a la página de acceso de tu organización y volverás aquí. Tu voto sigue siendo secreto: la cuenta solo sirve para saber que eres tú.",
+      "checking": "Comprobando tu cuenta…",
+      "failedTitle": "No hemos podido completar la entrada",
+      "failedText": "Vuelve a abrir el enlace personal de tu correo e inténtalo de nuevo.",
+      "mismatch": "La cuenta con la que has entrado no es la de este enlace. Entra con la cuenta del correo al que te llegó la invitación. Te quedan {{remaining}} intentos.",
+      "cancelled": "Has cancelado la entrada con tu cuenta. Cuando quieras, vuelve a intentarlo.",
+      "invalid": "No hemos podido comprobar tu cuenta. Vuelve a entrar con ella."
     },
     "status": {
       "open": "Votación abierta · Cierra el {{closes}}"

@@ -39,4 +39,7 @@ public interface VoterAccessUseCase {
     CodeSent sendCode(String linkToken);
 
     AccessGranted verifyCode(String linkToken, String code);
+
+    /** RF-05b (D-48): same answer as {@link #verifyCode} for a process that uses the institutional account. */
+    AccessGranted verifyInstitutionalAccount(String linkToken, String idToken);
 }

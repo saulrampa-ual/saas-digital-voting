@@ -32,7 +32,7 @@
             <h1 tabindex="-1">{{ process.title | localized: language() : fallback() }}</h1>
             <p>{{ 'voter.welcome.closes' | translate: { closes: (process.closesAt | localDate: language()) } }}</p>
             <ol class="how">
-              <li>{{ 'voter.welcome.step1' | translate }}</li>
+              <li>{{ (process.authentication === 'INSTITUTIONAL_SSO' ? 'voter.welcome.step1Sso' : 'voter.welcome.step1') | translate }}</li>
               <li>{{ 'voter.welcome.step2' | translate }}</li>
               <li>{{ 'voter.welcome.step3' | translate }}</li>
             </ol>
@@ -68,6 +68,17 @@
             <p class="receipt"><a [routerLink]="['/recibo', r.processId]">{{ 'publicResults.checkReceipt' | translate }}</a></p>
           </section>
         }
+      }
+
+      @case ('sso') {
+        <section class="sso" aria-labelledby="sso-title">
+          <h1 id="sso-title" tabindex="-1">{{ 'voter.sso.title' | translate }}</h1>
+          <p>{{ 'voter.sso.text' | translate }}</p>
+          @if (ssoError(); as e) { <ion-text color="danger"><p role="alert">{{ e }}</p></ion-text> }
+          <ion-button expand="block" color="secondary" (click)="signInWithAccount()" [disabled]="busy()">
+            {{ 'voter.sso.button' | translate }}</ion-button>
+          <ion-text color="medium"><p class="note">{{ 'voter.sso.note' | translate }}</p></ion-text>
+        </section>
       }
 
       @case ('code') {

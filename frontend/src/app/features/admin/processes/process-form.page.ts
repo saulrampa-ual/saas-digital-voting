@@ -6,7 +6,7 @@ import {
 } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
-  ApiError, CensusSummary, FieldError, Lang, LocalizedText, Process, ProcessApiService, ProcessData, ResultsVisibility,
+  ApiError, CensusSummary, FieldError, Lang, LocalizedText, Process, ProcessApiService, ProcessData, ResultsVisibility, VoterAuthentication,
   VoteType,
 } from '../../../core/admin/process-api.service';
 import { AdminPageComponent } from '../admin-page.component';
@@ -17,6 +17,7 @@ interface FormModel {
   description: Record<Lang, string>;
   defaultLanguage: Lang;
   resultsVisibility: ResultsVisibility;
+  voterAuthentication: VoterAuthentication;
   opensAt: string;
   closesAt: string;
   censusId: number | null;
@@ -238,7 +239,7 @@ export class ProcessFormPage implements OnInit {
 function emptyModel(): FormModel {
   return {
     title: { es: '', en: '' }, description: { es: '', en: '' }, defaultLanguage: 'es',
-    resultsVisibility: 'CENSUS_ONLY', opensAt: '', closesAt: '', censusId: null, voteType: 'SINGLE_CHOICE',
+    resultsVisibility: 'CENSUS_ONLY', voterAuthentication: 'EMAIL_CODE', opensAt: '', closesAt: '', censusId: null, voteType: 'SINGLE_CHOICE',
     question: { es: '', en: '' }, options: [{ es: '', en: '' }, { es: '', en: '' }], blankVoteEnabled: true,
   };
 }
@@ -257,7 +258,8 @@ function toLocalInput(iso: string): string {
 function fromProcess(process: Process): FormModel {
   return {
     title: texts(process.title), description: texts(process.description), defaultLanguage: process.defaultLanguage,
-    resultsVisibility: process.resultsVisibility, opensAt: toLocalInput(process.opensAt),
+    resultsVisibility: process.resultsVisibility, voterAuthentication: process.voterAuthentication ?? 'EMAIL_CODE',
+    opensAt: toLocalInput(process.opensAt),
     closesAt: toLocalInput(process.closesAt), censusId: process.censusId, voteType: process.ballot.voteType,
     question: texts(process.ballot.question), blankVoteEnabled: process.ballot.blankVoteEnabled,
     options: process.ballot.voteType === 'SINGLE_CHOICE'
@@ -279,6 +281,7 @@ function toProcessData(m: FormModel): ProcessData {
     censusId: m.censusId!, title: clean(m.title), description: clean(m.description),
     opensAt: new Date(m.opensAt).toISOString(), closesAt: new Date(m.closesAt).toISOString(),
     defaultLanguage: m.defaultLanguage, resultsVisibility: m.resultsVisibility,
+    voterAuthentication: m.voterAuthentication,
     ballot: {
       voteType: m.voteType, question: clean(m.question), blankVoteEnabled: m.blankVoteEnabled,
       options: m.voteType === 'SINGLE_CHOICE'

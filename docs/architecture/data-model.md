@@ -125,6 +125,7 @@ erDiagram
 | --- | --- | --- |
 | `censuses`, `voters` | RI-3 | Duplicados por censo: `UNIQUE (census_id, lower(email))` y `UNIQUE (census_id, institutional_id)` si no es nulo. RF-18 (D-46): `anonymized_at` marca una entrada anonimizada («Persona anonimizada», correo `anonimizada-{id}@anonimizada.invalid`, sin teléfono ni identificador); no se edita ni entra en nuevos censos congelados. |
 | `processes` | RI-4 | `CHECK (closes_at > opens_at)`. Estados: `DRAFT`, `SCHEDULED`, `OPEN`, `CLOSED`, `TALLIED`, `ARCHIVED`. **Desviación (D-03):** sin «re-votación permitida». Título y descripción de cada idioma en `process_texts` (process_id, language, title, description); el idioma por defecto siempre está (D-29). |
+| `processes.voter_authentication` (V6) | RF-05b | `EMAIL_CODE` (por defecto) o `INSTITUTIONAL_SSO` (D-48); se copia a `voter_access_db.process_snapshots.voter_authentication` (V4). |
 | `processes.results_visibility` | RF-13, RF-15 | `CENSUS_ONLY` (por defecto) o `PUBLIC_LINK` (D-16). `results_public_id` es un UUID aleatorio que forma el enlace público. |
 | `ballots`, `ballot_texts`, `ballot_options`, `ballot_option_texts` | RI-5, RF-20 | `vote_type`: `SINGLE_CHOICE` o `YES_NO_ABSTAIN` (opciones fijas generadas). Pregunta 300 y opción 200 caracteres; entre 2 y 50 opciones; `UNIQUE (process_id, position)` diferida. En borrador basta el idioma por defecto; `es` y `en` se exigen al programar (D-29). |
 | `process_status_changes` | RF-07, RF-19 | Quién (usuario o `SYSTEM`), cuándo y qué transición. |

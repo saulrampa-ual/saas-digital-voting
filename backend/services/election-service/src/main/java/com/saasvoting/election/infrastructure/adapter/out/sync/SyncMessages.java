@@ -6,6 +6,7 @@ import com.saasvoting.election.domain.model.ProcessData;
 import com.saasvoting.election.domain.model.ProcessStatus;
 import com.saasvoting.election.domain.model.ResultsVisibility;
 import com.saasvoting.election.domain.model.VoteType;
+import com.saasvoting.election.domain.model.VoterAuthentication;
 import com.saasvoting.election.domain.model.Voter;
 import com.saasvoting.election.domain.model.VotingProcess;
 
@@ -36,7 +37,8 @@ final class SyncMessages {
             Instant closesAt,
             String defaultLanguage,
             ResultsVisibility resultsVisibility,
-            List<RollEntry> roll) {
+            List<RollEntry> roll,
+            VoterAuthentication voterAuthentication) {
     }
 
     record BallotOptionSnapshot(long id, int position, Map<String, String> text) {
@@ -80,7 +82,8 @@ final class SyncMessages {
                                 voter.data().fullName(),
                                 voter.data().email(),
                                 voter.data().language().code()))
-                        .toList());
+                        .toList(),
+                data.voterAuthentication());
     }
 
     /**

@@ -368,3 +368,16 @@ Requiere reimportar el realm (rol `INTEGRATION` y permisos `manage-clients`/`vie
    registro de la urna, trazabilidad, claves, usuarios o cualquier escritura → **403**; un proceso de otra
    organización → **404**.
 4. `DELETE /api/v1/api-keys/{id}` → la clave queda revocada; pedir otro token → **401** (`invalid_client`).
+
+### Votante con cuenta institucional (RF-05b, P6.5, D-48)
+
+Requiere reimportar el realm (cliente `verivoto-voter`) y un usuario del realm, o de un proveedor federado, con el
+correo verificado igual al de una persona del censo.
+
+1. En A3, paso «Censo», elegir «Cuenta institucional (SSO)» (o `"voterAuthentication": "INSTITUTIONAL_SSO"`) y
+   programar. La invitación dice que se entra con la cuenta institucional.
+2. Abrir el enlace personal → «Empezar» → «Entrar con tu cuenta institucional» → login en Keycloak → vuelta a
+   `/votar/sso` y a la papeleta. Con otra cuenta: «La cuenta con la que has entrado no es la de este enlace» y quedan
+   4 intentos.
+3. `POST /api/v1/voter-access/links/{t}/otp` en ese proceso → **409** (`authentication: INSTITUTIONAL_SSO`); `/sso`
+   en un proceso con código → **409**; un token que no es un ID token de `verivoto-voter` → **401**.

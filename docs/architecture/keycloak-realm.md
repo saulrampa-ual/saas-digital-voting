@@ -26,6 +26,7 @@ El realm está versionado en `infra/keycloak/realm/verivoto-realm.json` y Keyclo
 | `election-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access y ballot-box |
 | `ballot-box-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access |
 | `voter-access-service` | Confidencial, *service account* con rol `SERVICE` | Entregar sus acciones administrativas a `/internal/v1/admin-actions` de identity (RF-19, D-45) |
+| `verivoto-voter` | Público, Authorization Code + PKCE (S256), solo vuelta a `/votar/sso` | Votantes de procesos con cuenta institucional (RF-05b, D-48); solo se usa el correo verificado del ID token |
 | `verivoto-dev-swagger` | Público, Authorization Code + PKCE. **Solo desarrollo** | Swagger UI de los servicios (puertos 8081–8084). Ver `api-testing.md` |
 
 Todos los clientes llevan dos mappers propios que añaden al token:
@@ -57,6 +58,14 @@ Keycloak **no** reimporta un realm que ya existe. Tras modificar el JSON, en des
 2. Reiniciar Keycloak: `docker compose -f infra/compose.yaml --env-file infra/.env restart keycloak`.
 
 Se pierden los usuarios creados en ese realm. Alternativa: `docker compose ... down -v` (borra todas las BD locales).
+
+## Cuenta institucional de los votantes (RF-05b, D-48)
+
+Un proceso con `INSTITUTIONAL_SSO` envía al votante a Keycloak con el cliente `verivoto-voter`. Para que entre con
+la cuenta de su universidad hay que dar de alta el proveedor de identidad de la organización en el realm
+(*Identity providers*: SAML o OIDC) y, si se quiere, ocultar el formulario de usuario y contraseña del realm para ese
+cliente. El ID token debe llevar `email` y `email_verified`; voter-access solo compara ese correo con el del censo.
+Hoy esa configuración es manual (IMP-42).
 
 ## SSO institucional (RF-05a)
 

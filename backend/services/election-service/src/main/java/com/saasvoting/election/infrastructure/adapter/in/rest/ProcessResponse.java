@@ -6,6 +6,7 @@ import com.saasvoting.election.domain.model.ProcessData;
 import com.saasvoting.election.domain.model.ProcessStatus;
 import com.saasvoting.election.domain.model.ResultsVisibility;
 import com.saasvoting.election.domain.model.VoteType;
+import com.saasvoting.election.domain.model.VoterAuthentication;
 import com.saasvoting.election.domain.model.VotingProcess;
 
 import java.time.Instant;
@@ -26,7 +27,8 @@ public record ProcessResponse(
         ResultsVisibility resultsVisibility,
         ProcessStatus status,
         BallotResponse ballot,
-        UUID resultsPublicId) {
+        UUID resultsPublicId,
+        VoterAuthentication voterAuthentication) {
 
     public record BallotResponse(
             VoteType voteType, Map<String, String> question, boolean blankVoteEnabled, List<OptionResponse> options) {
@@ -56,7 +58,8 @@ public record ProcessResponse(
                                 .map(option -> new OptionResponse(option.id(), option.position(), codes(option.text())))
                                 .toList()),
                 // Only a PUBLIC_LINK process has a link to share (D-16); otherwise it is never shown
-                data.resultsVisibility() == ResultsVisibility.PUBLIC_LINK ? process.resultsPublicId() : null);
+                data.resultsVisibility() == ResultsVisibility.PUBLIC_LINK ? process.resultsPublicId() : null,
+                data.voterAuthentication());
     }
 
     /** Language codes as keys, in the order of the {@code Language} enum. */

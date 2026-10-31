@@ -1,6 +1,10 @@
 package com.saasvoting.voteraccess.infrastructure.adapter.in.rest;
 
 import com.saasvoting.voteraccess.domain.model.AccessLockedException;
+import com.saasvoting.voteraccess.domain.model.AccountMismatchException;
+import com.saasvoting.voteraccess.domain.model.InvalidIdentityTokenException;
+import com.saasvoting.voteraccess.domain.model.VoterAuthentication;
+import com.saasvoting.voteraccess.domain.model.WrongAccessMethodException;
 import com.saasvoting.voteraccess.domain.model.CodeExpiredException;
 import com.saasvoting.voteraccess.domain.model.CodeRequestTooSoonException;
 import com.saasvoting.voteraccess.domain.model.LinkExpiredException;
@@ -124,6 +128,29 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ResultsTokenExpiredException.class)
     ProblemDetail resultsTokenExpired(ResultsTokenExpiredException e) {
         return problem(HttpStatus.GONE, "Tu acceso a los resultados ha caducado. Vuelve a entrar con tu enlace.");
+    }
+
+    @ExceptionHandler(WrongAccessMethodException.class)
+    ProblemDetail wrongMethod(WrongAccessMethodException e) {
+        ProblemDetail problem = problem(HttpStatus.CONFLICT, e.expected() == VoterAuthentication.INSTITUTIONAL_SSO
+                ? "En esta votación se entra con tu cuenta institucional."
+                : "En esta votación se entra con el código que te enviamos por correo.");
+        problem.setProperty("authentication", e.expected().name());
+        return problem;
+    }
+
+    @ExceptionHandler(InvalidIdentityTokenException.class)
+    ProblemDetail invalidIdentity(InvalidIdentityTokenException e) {
+        return problem(HttpStatus.UNAUTHORIZED,
+                "No hemos podido comprobar tu cuenta institucional. Vuelve a entrar con ella.");
+    }
+
+    @ExceptionHandler(AccountMismatchException.class)
+    ProblemDetail accountMismatch(AccountMismatchException e) {
+        ProblemDetail problem = problem(HttpStatus.FORBIDDEN, "La cuenta con la que has entrado no es la de este "
+                + "enlace. Entra con la cuenta institucional del correo al que te llegó la invitación.");
+        problem.setProperty("remainingAttempts", e.remainingAttempts());
+        return problem;
     }
 
     @ExceptionHandler(ReminderNotFoundException.class)

@@ -62,7 +62,7 @@ cuando hay conflicto (ver «Incoherencias»).
 | RF-03 | A2, G1 | Sí (implementadas, D-36) |
 | RF-04 | D1 | Sí |
 | RF-05a | D1 | Parcial: no consta un botón de SSO de gestión; por confirmar |
-| RF-05b | B1 (alternativa SSO) | Parcial |
+| RF-05b | B1 (alternativa SSO) | Sí (P6.5, D-48): en un proceso con cuenta institucional, B1 muestra solo «Entrar con tu cuenta institucional» en lugar del código; A3 añade la elección en el paso «Censo» |
 | RF-06 | A3, F3, Gestión de candidatos | Sí |
 | RF-07 | A4, V4 | Sí |
 | RF-08 | V1, B1, V2, C2, C3, C4, V5, V6 | Sí |

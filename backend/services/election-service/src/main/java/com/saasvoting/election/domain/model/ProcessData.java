@@ -16,7 +16,14 @@ public record ProcessData(
         Instant closesAt,
         Language defaultLanguage,
         ResultsVisibility resultsVisibility,
-        Ballot ballot) {
+        Ballot ballot,
+        VoterAuthentication voterAuthentication) {
+
+    /** A process whose voters receive a code by email (RF-08). */
+    public ProcessData(long censusId, LocalizedText title, LocalizedText description, Instant opensAt,
+            Instant closesAt, Language defaultLanguage, ResultsVisibility resultsVisibility, Ballot ballot) {
+        this(censusId, title, description, opensAt, closesAt, defaultLanguage, resultsVisibility, ballot, null);
+    }
 
     public static final int TITLE_MAX_LENGTH = 150;
     public static final int DESCRIPTION_MAX_LENGTH = 1000;
@@ -28,6 +35,7 @@ public record ProcessData(
         title = title == null ? LocalizedText.EMPTY : title;
         description = description == null ? LocalizedText.EMPTY : description;
         resultsVisibility = resultsVisibility == null ? ResultsVisibility.CENSUS_ONLY : resultsVisibility;
+        voterAuthentication = voterAuthentication == null ? VoterAuthentication.EMAIL_CODE : voterAuthentication;
 
         if (!title.has(defaultLanguage)) {
             throw new InvalidProcessDataException("title", "Escribe el título en el idioma por defecto del proceso.");

@@ -132,7 +132,12 @@
         "minOptions": "Add at least 2 options.",
         "maxOptions": "At most 50 options.",
         "optionRequired": "Write the option in the default language."
-      }
+      },
+      "authentication": "How voters sign in",
+      "emailCode": "Code by email",
+      "emailCodeHelp": "When they open their personal link they receive a 6-digit code at the email of the voter list.",
+      "sso": "Institutional account (SSO)",
+      "ssoHelp": "They sign in with the account of the organization; its verified email must be the one of the voter list."
     },
     "process": {
       "title": "Lifecycle",
@@ -211,6 +216,11 @@
         "visibilityValue": {
           "CENSUS_ONLY": "Census members only",
           "PUBLIC_LINK": "Public link"
+        },
+        "authentication": "Voter sign-in",
+        "authenticationValue": {
+          "EMAIL_CODE": "Code by email",
+          "INSTITUTIONAL_SSO": "Institutional account (SSO)"
         }
       },
       "links": {
@@ -645,7 +655,20 @@
       "step3": "You get a receipt code to check that your vote is in the ballot box.",
       "duration": "It takes about 3 minutes.",
       "secret": "Your vote is secret: nobody can know what you voted. You can vote only once.",
-      "start": "Start"
+      "start": "Start",
+      "step1Sso": "You will sign in with your institutional account (the one of the email that received the invitation)."
+    },
+    "sso": {
+      "title": "Sign in with your institutional account",
+      "text": "In this vote we check who you are with the account of your organization. Use the account of the email that received the invitation.",
+      "button": "Sign in with your institutional account",
+      "note": "We will take you to the sign-in page of your organization and bring you back here. Your vote stays secret: the account only tells us it is you.",
+      "checking": "Checking your account…",
+      "failedTitle": "We could not complete the sign-in",
+      "failedText": "Open the personal link of your email again and try once more.",
+      "mismatch": "The account you signed in with is not the one of this link. Use the account of the email that received the invitation. {{remaining}} attempts left.",
+      "cancelled": "You cancelled the sign-in. Try again whenever you want.",
+      "invalid": "We could not check your account. Please sign in again."
     },
     "status": {
       "open": "Voting open · Closes on {{closes}}"

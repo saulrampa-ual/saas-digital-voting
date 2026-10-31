@@ -25,7 +25,10 @@ import java.util.Objects;
 public class VoterAccessController {
 
     public record LinkStatusResponse(long processId, Map<String, String> title, String status, Instant opensAt,
-            Instant closesAt, String defaultLanguage) {
+            Instant closesAt, String defaultLanguage, String authentication) {
+    }
+
+    public record InstitutionalAccountRequest(@NotNull String idToken) {
     }
 
     public record CodeSentResponse(String maskedEmail, Instant expiresAt, Instant resendAvailableAt) {
@@ -50,7 +53,7 @@ public class VoterAccessController {
         Map<String, String> title = new LinkedHashMap<>();
         process.title().forEach((language, text) -> title.put(language.code(), text));
         return new LinkStatusResponse(process.processId(), title, process.status().name(), process.opensAt(),
-                process.closesAt(), process.defaultLanguage().code());
+                process.closesAt(), process.defaultLanguage().code(), process.authentication().name());
     }
 
     @PostMapping("/otp")
@@ -63,6 +66,15 @@ public class VoterAccessController {
     @PostMapping("/otp/verify")
     public AccessGrantedResponse verify(@PathVariable String linkToken, @Valid @RequestBody VerifyRequest request) {
         VoterAccessUseCase.AccessGranted granted = access.verifyCode(linkToken, request.code());
+        return new AccessGrantedResponse(granted.hasVoted(), granted.votedOn(), granted.votingToken(),
+                granted.votingTokenExpiresAt(), granted.resultsToken(), granted.resultsTokenExpiresAt());
+    }
+
+    /** RF-05b (D-48): the ID token of the institutional account, in the body (never in the URL). */
+    @PostMapping("/sso")
+    public AccessGrantedResponse institutionalAccount(@PathVariable String linkToken,
+            @Valid @RequestBody InstitutionalAccountRequest request) {
+        VoterAccessUseCase.AccessGranted granted = access.verifyInstitutionalAccount(linkToken, request.idToken());
         return new AccessGrantedResponse(granted.hasVoted(), granted.votedOn(), granted.votingToken(),
                 granted.votingTokenExpiresAt(), granted.resultsToken(), granted.resultsTokenExpiresAt());
     }

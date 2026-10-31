@@ -18,7 +18,8 @@ public record ProcessSnapshot(
         Instant opensAt,
         Instant closesAt,
         Language defaultLanguage,
-        ResultsVisibility resultsVisibility) {
+        ResultsVisibility resultsVisibility,
+        VoterAuthentication authentication) {
 
     public ProcessSnapshot {
         Objects.requireNonNull(organizationId, "organizationId must not be null");
@@ -28,6 +29,7 @@ public record ProcessSnapshot(
         Objects.requireNonNull(closesAt, "closesAt must not be null");
         Objects.requireNonNull(defaultLanguage, "defaultLanguage must not be null");
         Objects.requireNonNull(resultsVisibility, "resultsVisibility must not be null");
+        authentication = authentication == null ? VoterAuthentication.EMAIL_CODE : authentication;
         title = Collections.unmodifiableMap(new EnumMap<>(title));
         if (!title.containsKey(defaultLanguage)) {
             throw new IllegalArgumentException("title must exist in the default language");
@@ -58,7 +60,7 @@ public record ProcessSnapshot(
             return this;
         }
         return new ProcessSnapshot(processId, organizationId, title, newStatus, opensAt, closesAt, defaultLanguage,
-                resultsVisibility);
+                resultsVisibility, authentication);
     }
 
     /** Title in the requested language, or in the default language if there is no translation (RI-5). */

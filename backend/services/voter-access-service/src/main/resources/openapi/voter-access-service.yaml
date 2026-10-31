@@ -71,7 +71,7 @@ paths:
       operationId: verifyAccessCode
       summary: Verify the access code and obtain a voting token
       description: |
-        RF-08 steps 3.2–4. If the voter has not voted yet, returns a single-use, short-lived voting
+        RF-08 steps 3.2–4 (409 if the process uses the institutional account, RF-05b). If the voter has not voted yet, returns a single-use, short-lived voting
         token that only proves eligibility. If the voter already voted, returns `hasVoted = true` and
         the date (screen V3), without a token. A wrong code returns 400 with the remaining attempts;
         after 5 failures access is locked temporarily (423).
@@ -104,6 +104,58 @@ paths:
                     properties:
                       remainingAttempts: { type: integer, minimum: 0 }
         '404': { $ref: '#/components/responses/NotFound' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '423': { $ref: '#/components/responses/Locked' }
+  /api/v1/voter-access/links/{linkToken}/sso:
+    parameters:
+      - $ref: '#/components/parameters/LinkToken'
+    post:
+      tags: [voter]
+      operationId: verifyInstitutionalAccount
+      summary: Sign in with the institutional account and obtain a voting token (RF-05b)
+      description: |
+        D-48. Only for a process whose `authentication` is `INSTITUTIONAL_SSO` (otherwise 409, and the code
+        endpoints answer 409 for such a process). The PWA signs the voter in with Keycloak (Authorization Code + PKCE,
+        client `verivoto-voter`, which brokers the identity provider of the organization) and sends the ID token here,
+        in the body. It must be signed by the realm, issued to `verivoto-voter` (`aud`) and not expired (401
+        otherwise). Its email must be verified and equal (any case) to the email of the roll entry of the link;
+        another account answers 403 and counts as a failed attempt (5 lock the link, 423). Same answers as
+        `/otp/verify`. The token is not stored.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [idToken]
+              properties:
+                idToken: { type: string, maxLength: 8192 }
+      responses:
+        '200':
+          description: Account accepted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AccessGranted' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401':
+          description: Not a valid ID token of the voter client
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '403':
+          description: The account is not the person of the link
+          content:
+            application/problem+json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Problem'
+                  - type: object
+                    properties:
+                      remainingAttempts: { type: integer, minimum: 0 }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
         '410': { $ref: '#/components/responses/Gone' }
         '422': { $ref: '#/components/responses/Unprocessable' }
         '423': { $ref: '#/components/responses/Locked' }
@@ -585,6 +637,10 @@ components:
         opensAt: { type: string, format: date-time }
         closesAt: { type: string, format: date-time }
         defaultLanguage: { $ref: '#/components/schemas/Language' }
+        authentication:
+          type: string
+          enum: [EMAIL_CODE, INSTITUTIONAL_SSO]
+          description: RF-05b (D-48). Code by email (`/otp`) or institutional account (`/sso`)
     CodeSent:
       type: object
       required: [maskedEmail, expiresAt, resendAvailableAt]

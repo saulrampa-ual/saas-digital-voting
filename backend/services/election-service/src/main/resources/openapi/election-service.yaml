@@ -635,6 +635,11 @@ components:
         defaultLanguage: { $ref: '#/components/schemas/Language' }
         resultsVisibility: { $ref: '#/components/schemas/ResultsVisibility' }
         ballot: { $ref: '#/components/schemas/BallotData' }
+        voterAuthentication:
+          type: string
+          enum: [EMAIL_CODE, INSTITUTIONAL_SSO]
+          default: EMAIL_CODE
+          description: RF-05b (D-48). How the voters prove who they are after opening their personal link
     ProcessSummary:
       type: object
       required: [id, title, status, opensAt, closesAt]

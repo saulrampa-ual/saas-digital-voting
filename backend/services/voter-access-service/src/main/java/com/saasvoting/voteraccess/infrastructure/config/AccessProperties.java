@@ -9,7 +9,8 @@ import java.util.Objects;
 
 /**
  * Voter access settings (D-31): base URL of the voter PWA for the personal links, time zone of the dates shown and
- * of the voting day (D-18), sender address and the limits of {@link AccessPolicy}.
+ * of the voting day (D-18), sender address, the limits of {@link AccessPolicy} and the Keycloak client of the
+ * institutional account of voters (RF-05b).
  */
 @ConfigurationProperties(prefix = "verivoto.access")
 public record AccessProperties(
@@ -25,12 +26,15 @@ public record AccessProperties(
         Duration lockDuration,
         Duration votingTokenValidity,
         Duration linkValidityAfterClose,
-        Duration resultsTokenValidity) {
+        Duration resultsTokenValidity,
+        String ssoClientId) {
 
     public AccessProperties {
         Objects.requireNonNull(publicBaseUrl, "verivoto.access.public-base-url must be set");
         zone = zone == null ? ZoneId.of("Europe/Madrid") : zone;
         mailFrom = mailFrom == null ? "no-reply@verivoto.local" : mailFrom;
+        // RF-05b (D-48): Keycloak client of the voter PWA for the institutional account
+        ssoClientId = ssoClientId == null || ssoClientId.isBlank() ? "verivoto-voter" : ssoClientId;
     }
 
     public AccessPolicy policy() {

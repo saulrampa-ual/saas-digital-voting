@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-31 · Rama de trabajo: `feat/api-keys` (P6.4 sin commitear, sobre `feat/privacy` `45d0594`) · Último commit en `dev`: `e3d4859`
+Última actualización: 2026-10-31 · Rama de trabajo: `feat/voter-sso` (P6.5 sin commitear, sobre `feat/api-keys` `c092e3c`) · Último commit en `dev`: `e3d4859`
 
 ## Hitos
 
@@ -12,7 +12,7 @@
 | P3 | 09/11 – 17/11 | Organizaciones y roles, configuración de Keycloak, censo, base del frontend y login | Hecho (`b7aea1c`) |
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
-| P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | En curso (RF-19 y RF-17 en `dev`; RF-18 en `feat/privacy`; RF-21 en `feat/api-keys`; queda RF-05b) |
+| P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (RF-19 y RF-17 en `dev`; RF-18, RF-21 y RF-05b en `feat/privacy`, `feat/api-keys` y `feat/voter-sso`, pendientes de integrar) |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Bloqueada (`ACTIVAR TESTS`) |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | Pendiente |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
@@ -96,6 +96,7 @@
 
 ## En curso
 
+- P6.5: inicio de sesión del votante con cuenta institucional (RF-05b, D-48): cada proceso elige código por correo o cuenta institucional (election V6, voter-access V4); con SSO el votante abre su enlace y entra con Keycloak (cliente público `verivoto-voter`, PKCE), y voter-access acepta el ID token si su correo verificado es el del censo (otra cuenta cuenta como intento fallido); pantallas B1 (entrada con la cuenta), `/votar/sso` (vuelta) y opción en A3; invitación adaptada. Prueba de extremo a extremo de la IA (24/24) y en navegador (19/19); regresión completa en verde.
 - P6.4: API documentada con claves por organización (RF-21, D-47): cada clave es un cliente confidencial de Keycloak creado por identity (V5 `api_keys`, sin secreto) con rol `INTEGRATION` de solo lectura y `organization_id` fijo; lectura de procesos, participación y resultados; pantalla «Claves de API» (secreto mostrado una vez, revocación); realm con el rol nuevo y permisos de clientes para identity; gateway con `/api/v1/api-keys`. Prueba de extremo a extremo de la IA (26/26) y en navegador (20/20); regresión completa en verde.
 - P6.3: derechos sobre datos personales (RF-18, D-46) en election: búsqueda por correo o teléfono, exportación JSON (datos del censo, participación y correos, preguntados a voter-access) y borrado: se borran las entradas de censos no usados y se anonimizan las de censos usados, con la anonimización del censo congelado de voter-access por la *outbox* (`ANONYMIZE`, Flyway V5); bloqueado con procesos programados o abiertos. Pantalla F2 «Privacidad (RGPD)» para ADMIN; gateway con `/api/v1/privacy/**`. Prueba de extremo a extremo de la IA (34/34) y en navegador (22/22); regresión completa en verde.
 - P6.2: notificaciones a votantes (RF-17, D-45): recordatorios del ADMIN a quien no ha votado (solo el número de destinatarios), aviso de cierre a todo el censo, estado `CANCELLED`, vista de correos con fallidos y reintento en A5, y su trazabilidad (nuevo cliente de Keycloak `voter-access-service`). Prueba de extremo a extremo (40/40) y en navegador (26/26); regresión completa en verde. En `dev` (`ab1f55c`).
@@ -170,6 +171,6 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-1. Integrar `feat/privacy` (P6.3) y `feat/api-keys` (P6.4) en `dev`; reimportar el realm de Keycloak.
-2. **RF-05b** si queda tiempo (último requisito de P6).
-3. P7 (pruebas y medición) cuando se diga `ACTIVAR TESTS`; P8 memoria.
+1. Integrar `feat/voter-sso` (incluye P6.3, P6.4 y P6.5) en `dev`; reimportar el realm de Keycloak.
+2. P7 (pruebas y medición, H4) cuando se diga `ACTIVAR TESTS`.
+3. P8: memoria del TFM.

@@ -76,3 +76,5 @@ verivoto:
     link-validity-after-close: P30D
     # D-41: after the tally, the code gives a token to see the result for this long
     results-token-validity: PT30M
+    # RF-05b (D-48): ID tokens of the institutional account must be issued to this Keycloak client
+    sso-client-id: verivoto-voter
