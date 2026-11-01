@@ -22,7 +22,7 @@ El realm está versionado en `infra/keycloak/realm/verivoto-realm.json` y Keyclo
 | Cliente | Tipo | Uso |
 | --- | --- | --- |
 | `verivoto-admin` | Público, Authorization Code + PKCE (S256) | Consola de gestión (`http://localhost:4200`) |
-| `identity-service` | Confidencial, *service account* con `manage-users`, `view-users`, `query-users`, `manage-clients` y `view-clients` de `realm-management` y rol `SERVICE` | Crear usuarios de gestión y asignar roles por la Admin API (RF-02); crear y borrar los clientes de las claves de API (RF-21) |
+| `identity-service` | Confidencial, *service account* con `manage-users`, `view-users`, `query-users`, `manage-clients`, `view-clients` y `view-realm` de `realm-management` y rol `SERVICE` | Crear usuarios de gestión y asignar roles por la Admin API (RF-02; `view-realm` hace falta para leer el rol de realm que se asigna, DEF-04); crear y borrar los clientes de las claves de API (RF-21). En un realm ya importado, añadir `view-realm` a mano: *Clients* → `identity-service` → *Service accounts roles* → *Assign role* → `realm-management` → `view-realm` |
 | `election-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access y ballot-box |
 | `ballot-box-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access |
 | `voter-access-service` | Confidencial, *service account* con rol `SERVICE` | Entregar sus acciones administrativas a `/internal/v1/admin-actions` de identity (RF-19, D-45) |
