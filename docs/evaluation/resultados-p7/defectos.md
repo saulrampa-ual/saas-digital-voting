@@ -6,3 +6,16 @@
 | DEF-02 | Reclasificado: no es defecto | RNF-11 | Aclaración (31/10/2026): el enlace personal entra por `/votar/:linkToken` por diseño (es el enlace de la invitación, D-33); lo que nunca debe ir en la URL ni en el almacenamiento es el código, el token de voto o de resultados y el recibo. El criterio «sin enlace en la URL» del encargo era erróneo. | Aclarar la redacción de D-33; la alternativa de diseño queda como IMP-43 (P9). La aserción E2E comprueba que código, tokens y recibo no aparezcan en URL ni almacenamiento. |
 
 No se detectaron fallos de backend en la batería base ni en las nuevas pruebas CSV/HTTP/urna ejecutadas. No se inventan otros defectos.
+
+## Fase 2 · Incidencia observada en Windows
+
+| DEF-03 | Crítica y seria (según impacto axe) | RNF-1, H1a | En Windows, ejecutar `npm run test:e2e` y abrir `/recibo/7`, estado inicial, 1280×800 o 360×800, ES/EN. ES: `aria-required-children` sobre `ion-segment` (hijos `ion-segment-button[aria-label]`) y `label-content-name-mismatch` sobre botones internos `button[aria-label="Spanish"]` y `button[aria-label="English"]`; EN: `label-content-name-mismatch` sobre ambos botones. Los cuatro casos existentes fallan. JSON detallado fuera del repo: `%TEMP%\\verivoto-p7-e2e\\{desktop-es,desktop-en,mobile-es,mobile-en}-axe.json`. | Investigar la semántica ARIA y el nombre accesible emitido por el `ion-segment` compartido. No aplicar corrección en este encargo. |
+
+La causa común se atribuye provisionalmente al control compartido; debe revisarse si las dos reglas requieren defectos separados. No se inventan defectos de otras pantallas: no fueron recorridas en esta ejecución.
+
+| DEF-04 | Alta / bloquea la preparación de cuentas | RF-02, RNF-14 | Con Keycloak 26.8.1 y el realm importado limpio, ejecutar `POST /api/v1/organizations` como SUPERADMIN. `identity-service` obtiene un token `azp=identity-service` con `manage-users`, pero la consulta del rol de realm necesaria para asignar el rol a la cuenta nueva devuelve `403`. La plantilla `verivoto-realm.json` asigna `manage-users`, `view-users`, `query-users`, `manage-clients` y `view-clients`, pero no `view-realm`. El endpoint de organización responde 503. | Revisar los permisos mínimos de lectura/asignación de roles del cliente de servicio. No se modificó el realm versionado ni el código. Para preparar este entorno de prueba aislado se añadió `view-realm` únicamente al usuario de servicio local de Keycloak; los resultados posteriores de preparación se etiquetarán con esa concesión temporal. |
+
+## Revisión del autor (01/11/2026)
+
+- **DEF-03: descartado.** El HTML que devolvió axe (`button[aria-label="Spanish"]`) solo existe en el selector anterior a la corrección de DEF-01 (`b1b68e6`); la rama evaluada ya no lo contiene. `playwright.config.ts` reutiliza cualquier servidor que ya escuche en el puerto 4200 (`reuseExistingServer`) y en ese puerto seguía el frontend de la worktree de la fase 1. El script local de arranque detiene ese servidor y la repetición debe hacerse contra el frontend de la rama.
+- **DEF-04: corregido** en `fix/keycloak-identity-view-realm` (`0733eef`): `view-realm` añadido a la cuenta de servicio de `identity-service` en `verivoto-realm.json` y documentado en `keycloak-realm.md`. Un realm ya importado necesita la concesión a mano (o el script `scripts/demo/seed-ual.mjs`, que la aplica en local).

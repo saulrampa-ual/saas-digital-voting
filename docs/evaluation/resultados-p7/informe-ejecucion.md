@@ -21,3 +21,5 @@ Comandos ejecutados:
 - `frontend/npm run test:e2e -- --workers=1`: 4 casos ejecutados; fallan en el criterio cero de axe.
 
 Vitest y build frontend se ejecutaron tras instalar las dependencias declaradas; 10/10 pruebas pasan y el build compila. La pasada final confirma que los dos nuevos casos de inspección de esquema/cadena de urna también pasan.
+
+La preparación del escenario encontró DEF-04 en el realm limpio: la operación de identidad falló al asignar el rol a la primera cuenta por un `403` del Admin API. Para continuar los recorridos se concedió `view-realm` solo al service account del proyecto de pruebas `verivoto-p7-phase2`; no se cambió `infra/keycloak/realm/verivoto-realm.json`. Las pruebas que dependan de esa preparación no representan el realm sin esa concesión.

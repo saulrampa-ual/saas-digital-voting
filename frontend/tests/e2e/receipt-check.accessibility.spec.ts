@@ -39,12 +39,22 @@ for (const viewport of viewportCases) {
         viewport: viewport.name,
         language: language.code,
         counts: {
-          critical: axe.violations.filter((item) => item.impact === 'critical').length,
-          serious: axe.violations.filter((item) => item.impact === 'serious').length,
-          moderate: axe.violations.filter((item) => item.impact === 'moderate').length,
-          minor: axe.violations.filter((item) => item.impact === 'minor').length,
+          critical: axe.violations.reduce((total, item) => total + (item.impact === 'critical' ? item.nodes.length : 0), 0),
+          serious: axe.violations.reduce((total, item) => total + (item.impact === 'serious' ? item.nodes.length : 0), 0),
+          moderate: axe.violations.reduce((total, item) => total + (item.impact === 'moderate' ? item.nodes.length : 0), 0),
+          minor: axe.violations.reduce((total, item) => total + (item.impact === 'minor' ? item.nodes.length : 0), 0),
         },
         rules: axe.violations.map((item) => item.id),
+        violations: axe.violations.map((item) => ({
+          id: item.id,
+          impact: item.impact,
+          help: item.help,
+          nodes: item.nodes.map((node) => ({
+            target: node.target,
+            html: node.html,
+            failureSummary: node.failureSummary,
+          })),
+        })),
       };
       const artifactDir = process.env.E2E_ARTIFACTS_DIR ?? join(tmpdir(), 'verivoto-p7-e2e');
       await mkdir(artifactDir, { recursive: true });
