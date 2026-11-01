@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-10-31 · Rama: `dev` · Últimos merges: `bdad06f` (encargo de pruebas) y `5acf2d8` (`test/p7-pending-suite`); sin push
+Última actualización: 2026-11-01 · Rama: `dev` · Últimos merges: `b24d231` (DEF-04) y `f125688` (resultados de la fase 2 y script de demo); sin push · Ramas locales: solo `dev` y `main`
 
 ## Hitos
 
@@ -231,14 +231,23 @@
 ## Cómo continuar (siguiente paso exacto)
 
 0. Autor: resolver las decisiones pendientes (modelo de sustitución en P9, RF-11 Could/Won't, «sin ayuda» en RNF-4, RF-22/RF-23 en la tabla 1.1).
-1. DEF-01 corregido en `fix/a11y-language-switcher` (axe 0 en recibo y entrada del votante, 1280/360, ES/EN; Vitest 10/10;
-   build correcto). Repetir `npm run test:e2e` en Windows.
+1. Cargar la demo UAL con `scripts/demo/seed-ual.mjs` (primer intento fallido al capturar el código de autorización;
+   corregido, pendiente de repetir) y repetir `npm run test:e2e` contra el frontend de la rama (DEF-03 descartado).
 2. Entregar el segundo encargo (`docs/evaluation/encargo-pruebas-p7-fase2.md`) a la IA de pruebas: k6, E2E con stack real
    y axe en todas las pantallas, logs, matriz de autorización completa, concurrencia y outbox.
 3. Realizar la sesión de usabilidad con cinco votantes (autor, prioritaria) y registrar resultados como cantidades (x de 5);
    RNF-4 solo si se prepara un protocolo para administradores.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
+
+## Consolidación de ramas (01/11/2026)
+
+- DEF-04 corregido (`0733eef`): `view-realm` para la cuenta de servicio de identity-service en `verivoto-realm.json`.
+- Resultados de la fase 2 de la otra IA confirmados con notas de revisión: DEF-03 descartado (se probó el frontend antiguo
+  que seguía en el puerto 4200), repetición de axe no válida, entorno original `verivoto` incoherente con el `.env` actual.
+- `scripts/demo/seed-ual.mjs`: organización UAL, cuentas de gestión y elecciones pasada, en curso y futura (solo local).
+- `fix/keycloak-identity-view-realm`, `test/p7-phase2-results`, `test/p7-phase2` y `test/p7-pending-suite` integradas en `dev`
+  y borradas; comprobado que `dev` contiene sus commits y no pierde ningún fichero respecto a ellas.
 
 ## P7.7 · Encargo de pruebas (31/10/2026)
 
