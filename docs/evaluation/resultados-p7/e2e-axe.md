@@ -13,3 +13,20 @@ Pendiente: flujo votante completo, gestión, estados de error, backend real, Mai
 ## Repetición tras corregir DEF-01 (31/10/2026)
 
 Con el cambio de `fix/a11y-language-switcher`, axe (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`) da 0 incumplimientos en `/recibo/7` y en `/votar/…` (estado de error, sin backend), en 1280×800 y 360×800, ES y EN. Ejecución en el entorno de la IA con Chromium de Playwright 1.63 y `@axe-core/playwright` 4.14.0; falta repetir `npm run test:e2e` en el equipo del autor. Esto no cambia H1a: siguen pendientes el resto de pantallas y estados y la revisión manual.
+
+## Fase 2 · Confirmación Windows (31/10/2026)
+
+Comando: `npm run test:e2e` (Playwright 1.64.1, Chromium del entorno local), desde `frontend/` en Windows 11. La primera invocación no pudo iniciar porque faltaban los paquetes locales; después de `npm ci` (lockfile sin cambios) se ejecutaron los cuatro casos existentes, y los cuatro fallaron en el criterio axe. Los cuatro conservaron foco visible, almacenamiento/URL sin datos sensibles y consola sin errores.
+
+| pantalla | estado | ancho | idioma | críticos | serios | moderados | menores | reglas |
+| --- | --- | ---: | --- | ---: | ---: | ---: | ---: | --- |
+| Comprobar recibo | inicial | 1280 | ES | 1 | 2 | 0 | 0 | `aria-required-children`, `label-content-name-mismatch` |
+| Comprobar recibo | inicial | 1280 | EN | 0 | 2 | 0 | 0 | `label-content-name-mismatch` |
+| Comprobar recibo | inicial | 360 | ES | 1 | 2 | 0 | 0 | `aria-required-children`, `label-content-name-mismatch` |
+| Comprobar recibo | inicial | 360 | EN | 0 | 2 | 0 | 0 | `label-content-name-mismatch` |
+
+Selectores devueltos por axe: `ion-segment` (`aria-required-children`; detectado en ES; informa hijos `ion-segment-button[aria-label]`) y los botones internos `button[aria-label="Spanish"]` / `button[aria-label="English"]` (`label-content-name-mismatch`; el texto visible ES/EN no forma parte del nombre accesible). La causa está en el selector compartido; no se modificó código de producción. Véase DEF-03.
+
+JSON completo, con regla, impacto, selector, HTML y resumen de fallo: `%TEMP%\\verivoto-p7-e2e\\desktop-es-axe.json`, `desktop-en-axe.json`, `mobile-es-axe.json`, `mobile-en-axe.json`. Informe Playwright: `%TEMP%\\verivoto-p7-e2e\\playwright-report\\index.html` (fuera del repositorio). La repetición contradice la verificación previa hecha en otro entorno; el resultado Windows de esta fase se informa tal cual. H1a automática: no cumple en estas pantallas; evaluación total PENDIENTE.
+
+**Revisión del autor (01/11/2026):** esta repetición no es válida. Se ejecutó contra el frontend antiguo que seguía escuchando en el puerto 4200 (véase DEF-03 descartado en `defectos.md`). Hay que repetirla con `E2E_BASE_URL` apuntando al frontend de la rama o con ese puerto libre.
