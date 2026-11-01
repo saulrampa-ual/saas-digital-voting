@@ -164,7 +164,10 @@ async function login(username, email = username) {
   const context = await browser.newContext();
   const page = await context.newPage();
   let code;
-  await page.route(`${APP}/**`, (route) => { code = new URL(route.request().url()).searchParams.get('code'); route.fulfill({ status: 200, body: 'ok' }); });
+  const grab = (url) => { if (!code && url.startsWith(APP)) { const c = new URL(url).searchParams.get('code'); if (c) code = c; } };
+  await context.route((url) => url.href.startsWith(APP), (route) => { grab(route.request().url()); route.fulfill({ status: 200, body: 'ok' }); });
+  page.on('request', (req) => grab(req.url()));
+  page.on('framenavigated', (frame) => grab(frame.url()));
   try {
     await page.goto(authUrl);
     await page.fill('#username', username);
@@ -185,6 +188,7 @@ async function login(username, email = username) {
       if (await error.count() && await error.isVisible()) throw new Error(`Login error for ${username}: ${(await error.innerText()).slice(0, 120)}`);
       await sleep(500);
     }
+    grab(page.url());
     if (!code) throw new Error(`Login did not complete for ${username} (page: ${(await page.title()).slice(0, 60)})`);
   } finally { await context.close(); }
   const { data } = await http('POST', `${KC}/realms/${REALM}/protocol/openid-connect/token`, { form: {
