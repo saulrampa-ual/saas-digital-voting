@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { ProcessStatus, ProcessSummary } from '../../../core/admin/process-api.service';
-import { censusOverview, checkState, countByStatus, openNow, recentlyClosed, upcoming } from './home-dashboard';
+import {
+  censusOverview, checkState, countByStatus, cumulativeByDay, latestCheck, openNow, participationTotals, recentlyClosed, adminCount,
+  upcoming,
+} from './home-dashboard';
 
 let next = 1;
 function process(status: ProcessStatus, opensAt: string, closesAt: string): ProcessSummary {
@@ -52,5 +55,35 @@ describe('home dashboard', () => {
     expect(checkState(null)).toBe('NEVER');
     expect(checkState({ ...base, intact: true })).toBe('INTACT');
     expect(checkState({ ...base, intact: false })).toBe('BROKEN');
+  });
+
+  it('adds people who voted over people in the censuses, not an average of percentages', () => {
+    const totals = participationTotals([
+      { eligibleVoters: 100, votesCast: 50, byDay: [] },
+      { eligibleVoters: 300, votesCast: 30, byDay: [] },
+    ]);
+    expect(totals).toEqual({ votes: 80, eligible: 400, pct: 20 });
+    expect(participationTotals([]).pct).toBeNull();
+  });
+
+  it('accumulates votes per day across processes, carrying the last value of each process', () => {
+    const points = cumulativeByDay([
+      { eligibleVoters: 10, votesCast: 4, byDay: [{ day: '2026-11-01', votes: 1, cumulative: 1 }, { day: '2026-11-03', votes: 3, cumulative: 4 }] },
+      { eligibleVoters: 10, votesCast: 2, byDay: [{ day: '2026-11-02', votes: 2, cumulative: 2 }] },
+    ]);
+    expect(points).toEqual([
+      { day: '2026-11-01', cumulative: 1, pct: 5 },
+      { day: '2026-11-02', cumulative: 3, pct: 15 },
+      { day: '2026-11-03', cumulative: 6, pct: 30 },
+    ]);
+  });
+
+  it('picks the most recent chain check and counts administrators', () => {
+    const a = { checkedAt: '2026-11-01T10:00:00Z' };
+    const b = { checkedAt: '2026-11-02T08:00:00Z' };
+    expect(latestCheck([null, a, b, null])).toBe(b);
+    expect(latestCheck([null])).toBeNull();
+    expect(adminCount([{ role: 'ADMIN' }, { role: 'AUDITOR' }])).toBe(1);
+    expect(adminCount([{ role: 'ADMIN' }, { role: 'ADMIN' }, { role: 'CENSUS_MANAGER' }])).toBe(2);
   });
 });

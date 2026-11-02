@@ -61,3 +61,60 @@ function time(value: string): number {
   const parsed = Date.parse(value);
   return Number.isNaN(parsed) ? 0 : parsed;
 }
+
+/** Minimal shape of RF-14 participation used by the home (counts of people only, per day, D-18). */
+export interface ParticipationCounts {
+  eligibleVoters: number;
+  votesCast: number;
+  byDay: readonly { day: string; votes: number; cumulative: number }[];
+}
+
+export interface ParticipationTotals {
+  votes: number;
+  eligible: number;
+  /** Votes over the summed censuses, 0–100; null when there is no census to divide by. */
+  pct: number | null;
+}
+
+/** Totals over several processes: people who voted over people in their censuses (not an average of percentages). */
+export function participationTotals(items: readonly ParticipationCounts[]): ParticipationTotals {
+  const votes = items.reduce((sum, p) => sum + p.votesCast, 0);
+  const eligible = items.reduce((sum, p) => sum + p.eligibleVoters, 0);
+  return { votes, eligible, pct: eligible > 0 ? (votes * 100) / eligible : null };
+}
+
+export interface DayPoint {
+  /** Calendar day `YYYY-MM-DD` (never a time, D-18). */
+  day: string;
+  cumulative: number;
+  /** Cumulative votes over the summed censuses, 0–100. */
+  pct: number;
+}
+
+/**
+ * Cumulative votes per day across processes. A process without votes on a day keeps its previous cumulative value, so
+ * every day adds up all processes. Days only (D-18): there is no finer breakdown to show.
+ */
+export function cumulativeByDay(items: readonly ParticipationCounts[]): DayPoint[] {
+  const eligible = items.reduce((sum, p) => sum + p.eligibleVoters, 0);
+  const days = [...new Set(items.flatMap((p) => p.byDay.map((d) => d.day)))].sort();
+  return days.map((day) => {
+    const cumulative = items.reduce((sum, p) => {
+      const upTo = p.byDay.filter((d) => d.day <= day);
+      return sum + (upTo.length ? Math.max(...upTo.map((d) => d.cumulative)) : 0);
+    }, 0);
+    return { day, cumulative, pct: eligible > 0 ? (cumulative * 100) / eligible : 0 };
+  });
+}
+
+/** The most recent chain verification among the given ones, or null if none was ever run. */
+export function latestCheck<T extends { checkedAt: string } | null>(checks: readonly T[]): NonNullable<T> | null {
+  const done = checks.filter((c): c is NonNullable<T> => c !== null);
+  if (done.length === 0) return null;
+  return done.reduce((a, b) => (time(b.checkedAt) > time(a.checkedAt) ? b : a));
+}
+
+/** Management accounts with the ADMIN role; with only one, the organization depends on a single person. */
+export function adminCount(users: readonly { role: string }[]): number {
+  return users.filter((u) => u.role === 'ADMIN').length;
+}
