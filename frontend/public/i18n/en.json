@@ -28,7 +28,64 @@
       "title": "Home",
       "welcome": "Hello, {{name}}",
       "roles": "Roles",
-      "organization": "Organization"
+      "organization": "Organization",
+      "intro": "What needs your attention today, by role.",
+      "noRole": "Your account has no management role. Ask an administrator to assign one.",
+      "retry": "Try again",
+      "superadmin": {
+        "title": "Platform organizations",
+        "manage": "Manage organizations",
+        "total": "Organizations",
+        "active": "Active",
+        "suspended": "Suspended",
+        "none": "There are no organizations yet.",
+        "scope": "As super-administrator you manage organizations and their administrators; you do not see censuses, votes or results."
+      },
+      "admin": {
+        "title": "Your organization's processes",
+        "create": "Create process",
+        "strip": "Processes by status",
+        "openNow": "Open now",
+        "noneOpen": "No vote is open right now.",
+        "closes": "Closes on {{date}}",
+        "votes": "{{votes}} of {{eligible}} people have voted",
+        "seeParticipation": "View participation",
+        "moreOpen": "And {{count}} more open votes",
+        "secrecy": "Only how many people have voted is shown, never what they voted.",
+        "upcoming": "Upcoming and in preparation",
+        "noneUpcoming": "There are no scheduled or draft processes.",
+        "opens": "Opens on {{date}}",
+        "draftHint": "Draft: not scheduled yet",
+        "tallied": "Recently tallied",
+        "noneTallied": "No process has been tallied yet.",
+        "seeResults": "View results",
+        "allProcesses": "View all processes"
+      },
+      "census": {
+        "title": "Censuses",
+        "manage": "Manage censuses",
+        "none": "There are no censuses yet. Create the first one so that a process can be prepared.",
+        "total": "Censuses",
+        "people": "People in total",
+        "editable": "Editable",
+        "frozen": "Frozen",
+        "emptyWarning": "“{{name}}” has no people: it cannot be used in a process.",
+        "frozenHelp": "A frozen census is used by a scheduled or open process and cannot change until it ends."
+      },
+      "audit": {
+        "title": "Ballot box verification",
+        "open": "Open audit",
+        "intro": "Closed processes and the result of their last event-chain verification.",
+        "none": "There are no closed processes to verify yet.",
+        "checkedAt": "Last verified: {{date}}",
+        "verify": "Not verified yet",
+        "state": {
+          "INTACT": "Intact",
+          "BROKEN": "Problems found",
+          "NEVER": "Not verified",
+          "ERROR": "Unavailable"
+        }
+      }
     },
     "organizations": {
       "title": "Organizations",

@@ -28,7 +28,64 @@
       "title": "Inicio",
       "welcome": "Hola, {{name}}",
       "roles": "Roles",
-      "organization": "Organización"
+      "organization": "Organización",
+      "intro": "Lo que necesita tu atención hoy, según tu rol.",
+      "noRole": "Tu cuenta no tiene ningún rol de gestión. Pide a la persona administradora que te asigne uno.",
+      "retry": "Reintentar",
+      "superadmin": {
+        "title": "Organizaciones de la plataforma",
+        "manage": "Gestionar organizaciones",
+        "total": "Organizaciones",
+        "active": "Activas",
+        "suspended": "Suspendidas",
+        "none": "Todavía no hay organizaciones.",
+        "scope": "Como superadministrador gestionas organizaciones y sus personas administradoras; no ves censos, votos ni resultados."
+      },
+      "admin": {
+        "title": "Procesos de tu organización",
+        "create": "Crear proceso",
+        "strip": "Procesos por estado",
+        "openNow": "Abierto ahora",
+        "noneOpen": "No hay ninguna votación abierta.",
+        "closes": "Cierra el {{date}}",
+        "votes": "Han votado {{votes}} de {{eligible}} personas",
+        "seeParticipation": "Ver participación",
+        "moreOpen": "Y {{count}} votaciones abiertas más",
+        "secrecy": "Solo se muestra cuántas personas han votado, nunca qué han votado.",
+        "upcoming": "Próximos y en preparación",
+        "noneUpcoming": "No hay procesos programados ni en borrador.",
+        "opens": "Abre el {{date}}",
+        "draftHint": "Borrador: falta programarlo",
+        "tallied": "Escrutados recientemente",
+        "noneTallied": "Todavía no hay procesos escrutados.",
+        "seeResults": "Ver resultados",
+        "allProcesses": "Ver todos los procesos"
+      },
+      "census": {
+        "title": "Censos",
+        "manage": "Gestionar censos",
+        "none": "Todavía no hay censos. Crea el primero para que se pueda preparar un proceso.",
+        "total": "Censos",
+        "people": "Personas en total",
+        "editable": "Editables",
+        "frozen": "Congelados",
+        "emptyWarning": "«{{name}}» no tiene personas: no se podrá usar en un proceso.",
+        "frozenHelp": "Un censo congelado lo usa un proceso programado o abierto y no se puede cambiar hasta que termine."
+      },
+      "audit": {
+        "title": "Verificación de la urna",
+        "open": "Abrir auditoría",
+        "intro": "Procesos cerrados y el resultado de su última verificación de la cadena de eventos.",
+        "none": "Todavía no hay procesos cerrados que verificar.",
+        "checkedAt": "Última verificación: {{date}}",
+        "verify": "Pendiente de verificar",
+        "state": {
+          "INTACT": "Íntegra",
+          "BROKEN": "Con problemas",
+          "NEVER": "Sin verificar",
+          "ERROR": "No disponible"
+        }
+      }
     },
     "organizations": {
       "title": "Organizaciones",
