@@ -67,6 +67,8 @@ services:
       - "127.0.0.1:8080:8080"
     volumes:
       - ./keycloak/realm:/opt/keycloak/data/import:ro
+      # VeriVoto login theme; start-dev does not cache themes, so CSS changes show on reload
+      - ./keycloak/themes/verivoto:/opt/keycloak/themes/verivoto:ro
     depends_on:
       pg-main:
         condition: service_healthy
