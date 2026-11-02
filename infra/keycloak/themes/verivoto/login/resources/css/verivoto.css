@@ -1,10 +1,16 @@
-/* VeriVoto login theme: a CSS layer over keycloak.v2 (PatternFly 5). No template is overridden.
+/* VeriVoto login theme: a CSS layer over keycloak.v2 (PatternFly 5). Only login-update-password.ftl is overridden
+   (password requirements); the brand panel comes from the loginTitleHtml message (messages_*.properties).
    Palette: navy #14365c, action green #1f7a5a, error red #8f1f14, background #f3f5f8, Inter. */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  --vv-navy: #14365c; --vv-navy-deep: #0b2240; --vv-green: #1f7a5a; --vv-green-hover: #1b6b4f;
-  --vv-red: #8f1f14; --vv-text: #1b2733; --vv-muted: #4a5868; --vv-line: #c6d0db; --vv-focus: #2f80d1;
+  --vv-navy: #14365c; --vv-navy-deep: #0b2240; --vv-green: #1f7a5a; --vv-green-hover: #1b6b4f; --vv-green-light: #6fd0a8;
+  --vv-red: #8f1f14; --vv-red-soft: #fbe9e6; --vv-bg: #f3f5f8; --vv-surface: #fff; --vv-surface-2: #f7f9fb;
+  --vv-text: #1b2733; --vv-muted: #4a5868; --vv-line: #dde3ea; --vv-line-strong: #7b8794; --vv-focus: #2f80d1;
+  --vv-panel-text: #d5e0ec;
+  /* keycloak.v2: no line pattern in the background and no blue line on top of the card */
+  --keycloak-bg-logo-url: none;
+  --keycloak-card-top-color: transparent;
   --pf-v5-global--FontFamily--text: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
   --pf-v5-global--FontFamily--heading: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
   --pf-v5-global--primary-color--100: var(--vv-green);
@@ -13,69 +19,160 @@
   --pf-v5-global--link--Color--hover: var(--vv-navy-deep);
   --pf-v5-global--danger-color--100: var(--vv-red);
   --pf-v5-global--danger-color--200: var(--vv-red);
+  --pf-v5-global--Color--100: var(--vv-text);
+  --pf-v5-global--Color--200: var(--vv-muted);
 }
 
-/* Navy background with a soft gradient */
-html, body, .pf-v5-c-login {
-  background:
-    radial-gradient(1100px 600px at 12% -10%, #2a5b93 0%, transparent 55%),
-    radial-gradient(800px 520px at 100% 110%, #1f7a5a59 0%, transparent 60%),
-    linear-gradient(165deg, #14365c 0%, #0b2240 58%, #071628 100%) fixed !important;
-  font-family: var(--pf-v5-global--FontFamily--text);
+/* ---------- Page: navy brand panel on the left, light working area on the right ---------- */
+html.login-pf, html.login-pf body, .login-pf body {
+  background: var(--vv-bg) !important; /* replaces keycloak-bg-darken.svg (the lines) */
+  font-family: var(--pf-v5-global--FontFamily--text); color: var(--vv-text);
+}
+.pf-v5-c-login { display: block !important; min-height: 100vh; padding: 0 !important; background: var(--vv-bg); }
+.pf-v5-c-login .pf-v5-c-login__container {
+  display: grid !important; width: 100%; max-width: none !important; min-height: 100vh; margin: 0; padding: 0 !important; gap: 0 !important;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr) !important; grid-template-areas: "header main" !important;
 }
 
-/* Brand: shield mark + VERIVOTO wordmark + motto (the realm display name is kept as accessible text) */
-#kc-header, .pf-v5-c-login__header { text-align: center; color: #fff; }
-#kc-header-wrapper {
-  display: flex; flex-direction: column; align-items: center; gap: 14px;
-  font-size: 0; color: transparent; /* hides the plain realm name; the wordmark below replaces it visually */
-  padding-top: 64px; background: url("../img/verivoto-mark.svg") no-repeat center top / 60px 60px;
+/* Brand panel (header). Solid navy: no gradients, borders or patterns. */
+.pf-v5-c-login .pf-v5-c-login__header {
+  grid-area: header; margin: 0 !important; padding: 48px clamp(32px, 6vw, 88px) !important;
+  background: var(--vv-navy); color: #fff; text-align: left;
 }
-#kc-header-wrapper::before {
-  content: "VERIVOTO"; font: 600 28px/1 Inter, system-ui, sans-serif; letter-spacing: .34em; margin-right: -.34em; color: #fff;
+#kc-header-wrapper.pf-v5-c-brand, #kc-header-wrapper {
+  display: flex; flex-direction: column; min-height: 100%; gap: 0; margin: 0; padding: 0; background: none;
+  font: 400 16px/1.5 Inter, system-ui, sans-serif; letter-spacing: normal; text-transform: none; text-align: left;
+  color: #fff !important; white-space: normal;
 }
-#kc-header-wrapper::after {
-  content: "Votaciones secretas y verificables para tu organización";
-  font: 400 14px/1.5 Inter, system-ui, sans-serif; color: #c3d2e3; max-width: 30ch;
-}
-html[lang^="en"] #kc-header-wrapper::after { content: "Secret, verifiable voting for your organisation"; }
+#kc-header-wrapper::before, #kc-header-wrapper::after { content: none !important; }
+.vv-brand { display: flex; align-items: center; gap: 12px; margin-bottom: auto; font-size: 24px; font-weight: 700; letter-spacing: -.01em; color: #fff; }
+.vv-brand::before { content: ""; width: 36px; height: 36px; flex: none; background: url("../img/verivoto-shield.svg") no-repeat center / contain; }
+.vv-claim { margin: 48px 0 24px; max-width: 18ch; font-size: clamp(28px, 3vw, 38px); line-height: 1.2; font-weight: 700; letter-spacing: -.015em; color: #fff; }
+.vv-points { list-style: none; margin: 0 0 auto; padding: 0; display: grid; gap: 16px; max-width: 46ch; }
+.vv-points li { position: relative; padding-left: 34px; font-size: 16px; line-height: 1.5; color: var(--vv-panel-text); }
+.vv-points li::before { content: ""; position: absolute; left: 0; top: 1px; width: 22px; height: 22px; background: url("../img/check.svg") no-repeat center / contain; }
 
-/* Card */
-.pf-v5-c-login__main {
-  background: #fff; color: var(--vv-text); border-radius: 14px; border-top: 4px solid var(--vv-green);
-  box-shadow: 0 30px 70px -20px #000a;
+/* ---------- Card ---------- */
+.pf-v5-c-login .pf-v5-c-login__main {
+  grid-area: main; align-self: center; justify-self: center; width: calc(100% - 32px); max-width: 480px; margin: 48px 16px !important;
+  background: var(--vv-surface); color: var(--vv-text); border: 1px solid var(--vv-line); border-radius: 16px;
+  box-shadow: 0 1px 2px #14365c14, 0 16px 40px -20px #14365c40; overflow: visible;
 }
-#kc-page-title, .pf-v5-c-login__main-header .pf-v5-c-title { font-weight: 650; letter-spacing: -.01em; color: var(--vv-text); }
+.pf-v5-c-login__main-header {
+  border-top: 0 !important; display: grid !important; grid-template-columns: minmax(0, 1fr) auto; align-items: start;
+  column-gap: 16px; row-gap: 8px; padding: 36px 36px 8px !important;
+}
+#kc-page-title, .pf-v5-c-login__main-header .pf-v5-c-title {
+  margin: 0; font-size: 28px; line-height: 1.2; font-weight: 700; letter-spacing: -.015em; color: var(--vv-navy);
+}
+#kc-page-title { grid-column: 1; grid-row: 1; align-self: center; }
+.pf-v5-c-login__main-header-utilities { grid-column: 2; grid-row: 1; justify-self: end; }
+.vv-subtitle { grid-column: 1 / -1; grid-row: 2; margin: 0; font-size: 15px; line-height: 1.5; color: var(--vv-muted); }
+.pf-v5-c-login__main-body { padding: 16px 36px 8px !important; }
+.pf-v5-c-login__main-footer { padding: 0 36px 28px !important; }
+.pf-v5-c-login__main-footer-band { border-top: 0 !important; background: none !important; text-align: center; color: var(--vv-muted); }
 
-/* Fields: 48 px tall, strong border, visible focus */
-.pf-v5-c-form-control { min-height: 48px; border-radius: 8px; --pf-v5-c-form-control--before--BorderColor: var(--vv-line); --pf-v5-c-form-control--after--BorderColor: transparent; }
-.pf-v5-c-form-control:focus-within { outline: 3px solid var(--vv-focus); outline-offset: 2px; }
-.pf-v5-c-form-control input { font-size: 16px; min-height: 46px; }
-.pf-v5-c-form__label-text { font-weight: 600; color: var(--vv-text); }
-.pf-v5-c-form-control.pf-m-error, [aria-invalid="true"] { --pf-v5-c-form-control--before--BorderColor: var(--vv-red); }
-#input-error, .pf-v5-c-helper-text__item.pf-m-error { color: var(--vv-red); font-weight: 500; }
+/* Language: one compact control, no double borders */
+.pf-v5-c-login__main-header-utilities .pf-v5-c-form-control {
+  width: auto; display: inline-grid; min-height: 44px !important; border-radius: 8px; background: var(--vv-surface);
+}
+.pf-v5-c-login__main-header-utilities select { min-height: 42px; padding: 0 36px 0 12px; font-size: 14px; font-weight: 600; color: var(--vv-navy); cursor: pointer; }
 
-/* Buttons: green primary action, 48 px, visible focus */
-.pf-v5-c-button.pf-m-primary, #kc-login {
-  min-height: 48px; border-radius: 8px; font-weight: 600; font-size: 15px;
+/* ---------- Fields: one 1.5 px border, 48 px tall, clear focus ---------- */
+.pf-v5-c-form__label-text { font-size: 15px; font-weight: 600; color: var(--vv-text); }
+.pf-v5-c-form__group-label { padding-bottom: 8px !important; }
+.pf-v5-c-login .pf-v5-c-form-control {
+  --pf-v5-c-form-control--before--BorderColor: transparent; --pf-v5-c-form-control--after--BorderColor: transparent;
+  --pf-v5-c-form-control--hover--after--BorderColor: transparent; --pf-v5-c-form-control--focus--after--BorderColor: transparent;
+  min-height: 48px; border: 1.5px solid var(--vv-line-strong); border-radius: 8px; background: var(--vv-surface);
+}
+.pf-v5-c-login .pf-v5-c-form-control::before, .pf-v5-c-login .pf-v5-c-form-control::after { border: 0 !important; }
+.pf-v5-c-login .pf-v5-c-form-control:focus-within { border-color: var(--vv-focus); box-shadow: 0 0 0 3px #2f80d140; }
+.pf-v5-c-login .pf-v5-c-form-control input, .pf-v5-c-login .pf-v5-c-form-control select { min-height: 45px; font-size: 16px; outline: 0; }
+.pf-v5-c-login .pf-v5-c-form-control.pf-m-error, .pf-v5-c-login .pf-v5-c-form-control:has(input[aria-invalid="true"]) { border-color: var(--vv-red); }
+/* Input + show/hide button read as one control */
+.pf-v5-c-login .pf-v5-c-input-group {
+  border: 1.5px solid var(--vv-line-strong); border-radius: 8px; background: var(--vv-surface); overflow: hidden;
+}
+.pf-v5-c-login .pf-v5-c-input-group:focus-within { border-color: var(--vv-focus); box-shadow: 0 0 0 3px #2f80d140; }
+.pf-v5-c-login .pf-v5-c-input-group:has(.pf-m-error) { border-color: var(--vv-red); }
+.pf-v5-c-login .pf-v5-c-input-group .pf-v5-c-form-control { border: 0; border-radius: 0; box-shadow: none; }
+.pf-v5-c-login .pf-v5-c-button.pf-m-control {
+  min-width: 52px; min-height: 45px; height: 100%; border: 0; border-left: 1px solid var(--vv-line); border-radius: 0;
+  background: var(--vv-surface-2); color: var(--vv-navy);
+}
+.pf-v5-c-login .pf-v5-c-button.pf-m-control::after { border: 0 !important; }
+.pf-v5-c-login .pf-v5-c-button.pf-m-control:hover { background: #e9eef4; }
+#input-error, #input-error-username, #input-error-password, .pf-v5-c-helper-text__item.pf-m-error,
+.pf-v5-c-helper-text__item-text.pf-m-error { color: var(--vv-red) !important; font-size: 14px; font-weight: 500; }
+
+/* ---------- Buttons ---------- */
+.pf-v5-c-login .pf-v5-c-button { min-height: 48px; border-radius: 8px; font-size: 16px; font-weight: 600; letter-spacing: .005em; transition: background-color .15s ease; }
+.pf-v5-c-login .pf-v5-c-button::after { border-radius: 8px; }
+.pf-v5-c-login .pf-v5-c-button.pf-m-primary, #kc-login, #kc-submit {
   --pf-v5-c-button--m-primary--BackgroundColor: var(--vv-green);
   --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--vv-green-hover);
   --pf-v5-c-button--m-primary--focus--BackgroundColor: var(--vv-green-hover);
+  --pf-v5-c-button--m-primary--active--BackgroundColor: var(--vv-green-hover);
+  background-color: var(--vv-green); color: #fff; box-shadow: 0 1px 2px #0b224033;
 }
-.pf-v5-c-button.pf-m-secondary, #kc-social-providers a, #kc-social-providers .pf-v5-c-button {
-  min-height: 48px; border-radius: 8px; font-weight: 600; color: var(--vv-navy);
-  --pf-v5-c-button--after--BorderColor: var(--vv-line);
+.pf-v5-c-login .pf-v5-c-button.pf-m-primary:hover { background-color: var(--vv-green-hover); }
+.pf-v5-c-login .pf-v5-c-button.pf-m-secondary, .pf-v5-c-login .pf-v5-c-button.pf-m-tertiary {
+  --pf-v5-c-button--m-secondary--Color: var(--vv-navy); --pf-v5-c-button--m-secondary--BackgroundColor: var(--vv-surface);
+  --pf-v5-c-button--m-secondary--hover--Color: var(--vv-navy); --pf-v5-c-button--m-secondary--hover--BackgroundColor: var(--vv-bg);
+  --pf-v5-c-button--after--BorderColor: var(--vv-line-strong); --pf-v5-c-button--hover--after--BorderWidth: 1.5px;
+  background-color: var(--vv-surface); color: var(--vv-navy);
 }
-.pf-v5-c-login :focus-visible { outline: 3px solid var(--vv-focus) !important; outline-offset: 2px; border-radius: 6px; }
-.pf-v5-c-login a { font-weight: 600; text-underline-offset: 3px; }
+.pf-v5-c-login .pf-v5-c-button.pf-m-secondary::after, .pf-v5-c-login .pf-v5-c-button.pf-m-tertiary::after { border: 1.5px solid var(--vv-line-strong) !important; }
+.pf-v5-c-login .pf-v5-c-button.pf-m-secondary:hover, .pf-v5-c-login .pf-v5-c-button.pf-m-tertiary:hover { background-color: var(--vv-bg); }
+.pf-v5-c-login .pf-v5-c-form__actions { margin-top: 8px; gap: 12px; }
+.pf-v5-c-login .pf-v5-c-form__actions .pf-v5-c-button { flex: 1 1 160px; }
 
-/* Trust seals under the card (decorative text, also in English) */
-.pf-v5-c-login__main::after {
-  content: "🔒 Conexión cifrada   ·   ✉ Verificación en dos pasos   ·   🛡 Cumple el RGPD";
-  display: block; position: absolute; left: 0; right: 0; bottom: -40px; text-align: center;
-  font: 400 13px/1.4 Inter, system-ui, sans-serif; color: #c3d2e3; white-space: pre-wrap;
+/* Links: navy, underlined, 44 px tall target */
+.pf-v5-c-login__main a:not(.pf-v5-c-button) {
+  display: inline-flex; align-items: center; min-height: 44px; color: var(--vv-navy); font-weight: 600; font-size: 15px;
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px;
 }
-html[lang^="en"] .pf-v5-c-login__main::after { content: "🔒 Encrypted connection   ·   ✉ Two-step verification   ·   🛡 GDPR compliant"; }
-.pf-v5-c-login__main { position: relative; margin-bottom: 56px; }
+.pf-v5-c-login__main a:not(.pf-v5-c-button):hover { color: var(--vv-navy-deep); text-decoration-thickness: 2px; }
+
+/* Focus: always visible */
+.pf-v5-c-login :focus-visible { outline: 3px solid var(--vv-focus) !important; outline-offset: 2px; border-radius: 6px; }
+.pf-v5-c-login .pf-v5-c-form-control input:focus-visible, .pf-v5-c-login .pf-v5-c-form-control select:focus-visible { outline: 0 !important; }
+
+/* Messages (error, info, success) */
+.pf-v5-c-login .pf-v5-c-alert.pf-m-inline {
+  border: 1px solid var(--vv-line); border-radius: 10px; box-shadow: none; --pf-v5-c-alert--BorderTopWidth: 0; --pf-v5-c-alert--BorderTopColor: transparent;
+}
+.pf-v5-c-login .pf-v5-c-alert.pf-m-danger { background: var(--vv-red-soft); border-color: #d9a39c; --pf-v5-c-alert__title--Color: var(--vv-red); --pf-v5-c-alert__icon--Color: var(--vv-red); }
+.pf-v5-c-login .pf-v5-c-alert__title { font-weight: 600; }
+
+/* ---------- Password requirements (login-update-password.ftl) ---------- */
+.vv-rules { margin: 4px 0 0; padding: 14px 16px; border: 1px solid var(--vv-line); border-radius: 10px; background: var(--vv-surface-2); }
+.vv-rules-title { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: var(--vv-text); }
+.vv-rules ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.vv-rule { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.45; color: var(--vv-muted); }
+.vv-rule::before { content: ""; flex: none; width: 18px; height: 18px; margin-top: 1px; border-radius: 50%; border: 2px solid #7b8794; box-sizing: border-box; }
+.vv-rule[data-state="met"] { color: var(--vv-green); font-weight: 500; }
+.vv-rule[data-state="met"]::before { border: 0; background: var(--vv-green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12.5 4 4L18 8'/%3E%3C/svg%3E") no-repeat center / 14px; }
+.vv-rule[data-state="server"]::before { border-style: dashed; }
+.vv-rule-state { font-weight: 400; color: var(--vv-muted); }
+.vv-match { margin: 8px 0 0; font-size: 14px; color: var(--vv-muted); min-height: 20px; }
+.vv-match[data-state="met"] { color: var(--vv-green); font-weight: 500; }
+.vv-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- Small screens: brand band on top, card below ---------- */
+@media (max-width: 899px) {
+  .pf-v5-c-login .pf-v5-c-login__container { grid-template-columns: minmax(0, 1fr) !important; grid-template-areas: "header" "main" !important; min-height: 0; }
+  .pf-v5-c-login .pf-v5-c-login__header { padding: 20px 16px 24px !important; }
+  .vv-brand { font-size: 20px; margin-bottom: 0; }
+  .vv-brand::before { width: 30px; height: 30px; }
+  .vv-claim { margin: 16px 0 0; max-width: none; font-size: 22px; }
+  .vv-points { display: none; }
+  .pf-v5-c-login .pf-v5-c-login__main { width: auto; max-width: 480px; margin: 20px 16px 32px !important; justify-self: stretch; }
+  .pf-v5-c-login__main-header { padding: 24px 20px 4px !important; }
+  #kc-page-title { font-size: 24px; }
+  .pf-v5-c-login__main-body { padding: 12px 20px 4px !important; }
+  .pf-v5-c-login__main-footer { padding: 0 20px 20px !important; }
+}
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
