@@ -133,6 +133,6 @@ Revisado el 2026-10-29 contra la guía de adaptación, la revisión UI/UX y las 
 | Áreas por rol con carga bajo demanda y `canMatch` | Hecho (rutas `/admin/...`, ver D-28) |
 | `ErrorState` | Hecho; en P4.5: `StepIndicator`, barra de estado, recibo (B4), opciones de 64 px (B2) y campo de código `ion-input-otp` (B1). `LoadingState` y `StatusBadge` con las pantallas de gestión |
 | Flujo del votante V1, B1/V2, B2/C1, B3, B4, B5 y estados C2–C4, V3–V7 | Hecho (P4.5, D-33). V5 se muestra como «enlace no válido»; sin «Cambiar mi voto» (D-03) |
-| Login D1 con el aspecto de los prototipos | Pendiente: lo pinta Keycloak con su tema (IMP-14) |
+| Login D1 con el aspecto de los prototipos | Hecho: tema `verivoto` de Keycloak (IMP-14, revisado el 02/11/2026) |
 | Aviso antes de caducar la sesión | Pendiente (IMP-15) |
 | Tarjeta «Próximos eventos» (`Mejora.png`) | En el panel A1 (P5) |

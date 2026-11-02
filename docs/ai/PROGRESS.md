@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-01 · Rama: `dev` · Últimos merges: `b24d231` (DEF-04) y `f125688` (resultados de la fase 2 y script de demo); sin push · Ramas locales: solo `dev` y `main`
+Última actualización: 2026-11-02 · Rama: `dev` · Último merge: `feat/login-and-home-polish` (incluye `feat/role-home-dashboards`, IMP-44); sin push
 
 ## Hitos
 
@@ -239,6 +239,17 @@
    RNF-4 solo si se prepara un protocolo para administradores.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
+
+## Login y panel de inicio (02/11/2026)
+
+Rama `feat/login-and-home-polish` creada desde `feat/role-home-dashboards` (sin fusionar entonces) y fusionada en `dev` con autorización del autor.
+
+- Login (IMP-14): el patrón de líneas de `keycloak.v2` (`keycloak-bg-darken.svg`), el borde azul de la cabecera de la tarjeta y los degradados se sustituyen por un panel azul liso a la izquierda y una tarjeta blanca sobre `#f3f5f8` a la derecha (una columna por debajo de 900 px). Botón verde de 48 px, campos con un único borde de 1,5 px (contraste 3,66:1), foco de 3 px, enlaces de 44 px, sin los sellos con emojis. Textos del panel y títulos en `messages_es/en.properties`; subtítulo de la tarjeta con `js/verivoto.js`.
+- Contraseña: `login-update-password.ftl` (primera contraseña, cambio y final de «He olvidado mi contraseña») lista los requisitos de `passwordPolicies` (hoy: 12 caracteres, distinta del usuario y del correo, distinta de las 3 últimas), asociados con `aria-describedby`; en vivo solo longitud y coincidencia; el resto «se comprueba al guardar».
+- Panel de inicio (IMP-44): línea de rol con lo que puede hacer, nombre de la organización (`GET /organizations/{id}`), tarjetas de cifras y bloques por rol. ADMIN: procesos abiertos, votos y participación de los procesos abiertos (personas sobre el censo), avisos (correos no entregados de `/notifications`, censos vacíos, borradores, censos congelados), procesos activos con barra y gráfico de votos acumulados **por día** con tabla oculta para lectores de pantalla. Gestor de censo: cifras y avisos de censos. Auditor: última verificación de la urna, estados por proceso con huella y acciones recientes (`/admin-actions`). Superadministrador: organizaciones, cuentas y organizaciones con un solo administrador.
+- No implementado por no existir en el backend: gráfico por horas (contradice D-18) e «intentos de acceso fallidos» (IMP-45). «Registro de auditoría verificado» solo lo ve el AUDITOR (el ADMIN no tiene permiso de lectura de la cadena).
+- Presupuesto de estilos por componente de Angular: aviso a 8 kB y error a 12 kB (el SCSS del inicio ocupa 7,8 kB).
+- Comprobaciones: `npm run test:ci` 19/19 (3 pruebas nuevas de agregados) y `npm run build` sin avisos, ejecutados en una copia Linux del frontend con Node 22.23. Login real en Keycloak a 1280 y 360 px y pantalla de contraseña nueva en ES y EN (flujo «He olvidado mi contraseña» con la cuenta de auditoría, sin guardar la contraseña): axe 4.10.2 sin incumplimientos. PENDIENTE_PANEL
 
 ## Consolidación de ramas (01/11/2026)
 
