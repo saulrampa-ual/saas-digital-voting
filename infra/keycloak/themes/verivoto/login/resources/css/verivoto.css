@@ -1,0 +1,81 @@
+/* VeriVoto login theme: a CSS layer over keycloak.v2 (PatternFly 5). No template is overridden.
+   Palette: navy #14365c, action green #1f7a5a, error red #8f1f14, background #f3f5f8, Inter. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --vv-navy: #14365c; --vv-navy-deep: #0b2240; --vv-green: #1f7a5a; --vv-green-hover: #1b6b4f;
+  --vv-red: #8f1f14; --vv-text: #1b2733; --vv-muted: #4a5868; --vv-line: #c6d0db; --vv-focus: #2f80d1;
+  --pf-v5-global--FontFamily--text: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --pf-v5-global--FontFamily--heading: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --pf-v5-global--primary-color--100: var(--vv-green);
+  --pf-v5-global--primary-color--200: var(--vv-green-hover);
+  --pf-v5-global--link--Color: var(--vv-navy);
+  --pf-v5-global--link--Color--hover: var(--vv-navy-deep);
+  --pf-v5-global--danger-color--100: var(--vv-red);
+  --pf-v5-global--danger-color--200: var(--vv-red);
+}
+
+/* Navy background with a soft gradient */
+html, body, .pf-v5-c-login {
+  background:
+    radial-gradient(1100px 600px at 12% -10%, #2a5b93 0%, transparent 55%),
+    radial-gradient(800px 520px at 100% 110%, #1f7a5a59 0%, transparent 60%),
+    linear-gradient(165deg, #14365c 0%, #0b2240 58%, #071628 100%) fixed !important;
+  font-family: var(--pf-v5-global--FontFamily--text);
+}
+
+/* Brand: shield mark + VERIVOTO wordmark + motto (the realm display name is kept as accessible text) */
+#kc-header, .pf-v5-c-login__header { text-align: center; color: #fff; }
+#kc-header-wrapper {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  font-size: 0; color: transparent; /* hides the plain realm name; the wordmark below replaces it visually */
+  padding-top: 64px; background: url("../img/verivoto-mark.svg") no-repeat center top / 60px 60px;
+}
+#kc-header-wrapper::before {
+  content: "VERIVOTO"; font: 600 28px/1 Inter, system-ui, sans-serif; letter-spacing: .34em; margin-right: -.34em; color: #fff;
+}
+#kc-header-wrapper::after {
+  content: "Votaciones secretas y verificables para tu organización";
+  font: 400 14px/1.5 Inter, system-ui, sans-serif; color: #c3d2e3; max-width: 30ch;
+}
+html[lang^="en"] #kc-header-wrapper::after { content: "Secret, verifiable voting for your organisation"; }
+
+/* Card */
+.pf-v5-c-login__main {
+  background: #fff; color: var(--vv-text); border-radius: 14px; border-top: 4px solid var(--vv-green);
+  box-shadow: 0 30px 70px -20px #000a;
+}
+#kc-page-title, .pf-v5-c-login__main-header .pf-v5-c-title { font-weight: 650; letter-spacing: -.01em; color: var(--vv-text); }
+
+/* Fields: 48 px tall, strong border, visible focus */
+.pf-v5-c-form-control { min-height: 48px; border-radius: 8px; --pf-v5-c-form-control--before--BorderColor: var(--vv-line); --pf-v5-c-form-control--after--BorderColor: transparent; }
+.pf-v5-c-form-control:focus-within { outline: 3px solid var(--vv-focus); outline-offset: 2px; }
+.pf-v5-c-form-control input { font-size: 16px; min-height: 46px; }
+.pf-v5-c-form__label-text { font-weight: 600; color: var(--vv-text); }
+.pf-v5-c-form-control.pf-m-error, [aria-invalid="true"] { --pf-v5-c-form-control--before--BorderColor: var(--vv-red); }
+#input-error, .pf-v5-c-helper-text__item.pf-m-error { color: var(--vv-red); font-weight: 500; }
+
+/* Buttons: green primary action, 48 px, visible focus */
+.pf-v5-c-button.pf-m-primary, #kc-login {
+  min-height: 48px; border-radius: 8px; font-weight: 600; font-size: 15px;
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--vv-green);
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--vv-green-hover);
+  --pf-v5-c-button--m-primary--focus--BackgroundColor: var(--vv-green-hover);
+}
+.pf-v5-c-button.pf-m-secondary, #kc-social-providers a, #kc-social-providers .pf-v5-c-button {
+  min-height: 48px; border-radius: 8px; font-weight: 600; color: var(--vv-navy);
+  --pf-v5-c-button--after--BorderColor: var(--vv-line);
+}
+.pf-v5-c-login :focus-visible { outline: 3px solid var(--vv-focus) !important; outline-offset: 2px; border-radius: 6px; }
+.pf-v5-c-login a { font-weight: 600; text-underline-offset: 3px; }
+
+/* Trust seals under the card (decorative text, also in English) */
+.pf-v5-c-login__main::after {
+  content: "🔒 Conexión cifrada   ·   ✉ Verificación en dos pasos   ·   🛡 Cumple el RGPD";
+  display: block; position: absolute; left: 0; right: 0; bottom: -40px; text-align: center;
+  font: 400 13px/1.4 Inter, system-ui, sans-serif; color: #c3d2e3; white-space: pre-wrap;
+}
+html[lang^="en"] .pf-v5-c-login__main::after { content: "🔒 Encrypted connection   ·   ✉ Two-step verification   ·   🛡 GDPR compliant"; }
+.pf-v5-c-login__main { position: relative; margin-bottom: 56px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

@@ -9,6 +9,9 @@ ADD --checksum=sha256:8013758fe4f24dfb561d57f83c0853387fb18c9b35925c77fb60ccd9af
 RUN chmod 644 /opt/keycloak/providers/email-otp-authenticator.jar \
     && chown keycloak:keycloak /opt/keycloak/providers/email-otp-authenticator.jar
 
+# VeriVoto login theme (realm loginTheme=verivoto)
+COPY --chown=keycloak:keycloak themes/verivoto /opt/keycloak/themes/verivoto
+
 # Build-time options: PostgreSQL storage and health endpoints on the management port (9000)
 ENV KC_DB=postgres
 ENV KC_HEALTH_ENABLED=true

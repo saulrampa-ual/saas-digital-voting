@@ -1,6 +1,7 @@
 {
   "realm": "verivoto",
   "displayName": "VeriVoto",
+  "loginTheme": "verivoto",
   "enabled": true,
   "sslRequired": "external",
   "registrationAllowed": false,
