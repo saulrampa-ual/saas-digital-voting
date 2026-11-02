@@ -27,6 +27,8 @@ const REALM = 'verivoto';
 const ORG = 'UAL';
 const PASSWORD = process.env.DEMO_PASSWORD;
 if (!PASSWORD || PASSWORD.length < 12) throw new Error('DEMO_PASSWORD (12+ characters) is required');
+// SEED_MODE=accounts: only named local test accounts (no censuses, processes or votes)
+const MODE = process.env.SEED_MODE ?? 'demo';
 
 const env = Object.fromEntries(readFileSync(join(ROOT, 'infra', '.env'), 'utf8').split(/\r?\n/)
   .filter((l) => /^[A-Z0-9_]+=/.test(l)).map((l) => [l.slice(0, l.indexOf('=')), l.slice(l.indexOf('=') + 1).trim()]));
@@ -35,11 +37,18 @@ const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ---------- people ----------
-const MANAGERS = {
+const LOCAL_ACCOUNTS = {
+  admin: { fullName: 'Laura Moreno', email: 'laura.moreno@ual.test', role: 'ADMIN' },
+  censo: { fullName: 'Sergio Cano', email: 'sergio.cano@ual.test', role: 'CENSUS_MANAGER' },
+  auditor: { fullName: 'Irene Vega', email: 'irene.vega@ual.test', role: 'AUDITOR' },
+};
+const LOCAL_SUPERADMIN = { username: 'daniel.ortiz@ual.test', email: 'daniel.ortiz@ual.test', firstName: 'Daniel', lastName: 'Ortiz' };
+const DEMO_MANAGERS = {
   admin: { fullName: 'Administración UAL (demo)', email: 'admin@ual.test', role: 'ADMIN' },
   censo: { fullName: 'Gestión de censo UAL (demo)', email: 'censo@ual.test', role: 'CENSUS_MANAGER' },
   auditor: { fullName: 'Auditoría UAL (demo)', email: 'auditor@ual.test', role: 'AUDITOR' },
 };
+const MANAGERS = MODE === 'accounts' ? LOCAL_ACCOUNTS : DEMO_MANAGERS;
 const voters = (key, label, n) => Array.from({ length: n }, (_, i) => ({
   fullName: `${label} · Votante ${i + 1}`, email: `${key}.votante${i + 1}@ual.test`,
   institutionalId: `UAL-${key.toUpperCase()}-${i + 1}`, preferredLanguage: i % 3 === 2 ? 'en' : 'es',
@@ -141,6 +150,17 @@ async function setPassword(adm, username) {
   await http('DELETE', `${KC}/admin/realms/${REALM}/attack-detection/brute-force/users/${u.id}`, { token: adm, ok: [200, 204, 404] });
   log(`password set: ${username}`);
 }
+async function ensureSuperadmin(adm, u) { // realm-level account with role SUPERADMIN (no organization)
+  let user = await kcUser(adm, u.username);
+  if (!user) {
+    await http('POST', `${KC}/admin/realms/${REALM}/users`, { token: adm, body: { username: u.username, email: u.email, firstName: u.firstName, lastName: u.lastName, enabled: true, emailVerified: true } });
+    user = await kcUser(adm, u.username);
+    log(`superadmin created: ${u.username}`);
+  } else log(`superadmin exists: ${u.username}`);
+  const { data: role } = await http('GET', `${KC}/admin/realms/${REALM}/roles/SUPERADMIN`, { token: adm });
+  await http('POST', `${KC}/admin/realms/${REALM}/users/${user.id}/role-mappings/realm`, { token: adm, body: [role] });
+  await setPassword(adm, u.username);
+}
 async function ensureIdentityViewRealm(adm) { // DEF-04 for realms imported before the fix
   const { data: clients } = await http('GET', `${KC}/admin/realms/${REALM}/clients?clientId=identity-service`, { token: adm });
   const { data: sa } = await http('GET', `${KC}/admin/realms/${REALM}/clients/${clients[0].id}/service-account-user`, { token: adm });
@@ -231,10 +251,9 @@ try {
   browser = await chromium.launch();
   const adm = await adminToken();
   await ensureIdentityViewRealm(adm);
-  await setPassword(adm, 'superadmin');
-  const saEmail = (await kcUser(adm, 'superadmin')).email;
-
-  const sa = await login('superadmin', saEmail);
+  let sa;
+  if (MODE === 'accounts') { await ensureSuperadmin(adm, LOCAL_SUPERADMIN); sa = await login(LOCAL_SUPERADMIN.username, LOCAL_SUPERADMIN.email); }
+  else { await setPassword(adm, 'superadmin'); const saEmail = (await kcUser(adm, 'superadmin')).email; sa = await login('superadmin', saEmail); }
   const org = await http('GET', `${GW}/api/v1/organizations/${ORG}`, { token: sa, ok: [200, 404] });
   if (org.status === 404) {
     await http('POST', `${GW}/api/v1/organizations`, { token: sa, body: { id: ORG, name: 'Universidad de Almería',
@@ -249,6 +268,7 @@ try {
     log(`user created: ${m.email} (${m.role})`);
   }
   for (const m of Object.values(MANAGERS)) await setPassword(adm, m.email);
+  if (MODE !== 'accounts') {
 
   const censo = await login(MANAGERS.censo.email);
   const { data: censuses } = await http('GET', `${GW}/api/v1/censuses`, { token: censo });
@@ -298,8 +318,18 @@ try {
   const { data: chain } = await http('POST', `${GW}/api/v1/ballot-box/processes/${past.processId}/audit-events/verification`, { token: auditor });
   log(`auditor verification of the past election: intact=${chain.intact}, events=${chain.eventsChecked}`);
   for (const e of ELECTIONS) summary.processes[e.key] = (await http('GET', `${GW}/api/v1/processes/${e.processId}`, { token: admin })).data;
+  }
 } finally {
   if (browser) await browser.close();
+}
+if (MODE === 'accounts') {
+  mkdirSync(join(ROOT, '.local'), { recursive: true });
+  writeFileSync(join(ROOT, '.local', 'cuentas-locales.md'), ['# Cuentas locales de prueba (solo este equipo)', '',
+    `Consola: ${APP}/admin · Códigos de acceso: ${MAILPIT}. Contraseña: la indicada en DEMO_PASSWORD.`, '',
+    '| Rol | Nombre | Usuario |', '| --- | --- | --- |', `| Superadministrador | ${LOCAL_SUPERADMIN.firstName} ${LOCAL_SUPERADMIN.lastName} | \`${LOCAL_SUPERADMIN.username}\` |`,
+    ...Object.values(MANAGERS).map((m) => `| ${m.role} (UAL) | ${m.fullName} | \`${m.email}\` |`), ''].join('\n'), 'utf8');
+  log('DONE · accounts in .local/cuentas-locales.md');
+  process.exit(0);
 }
 
 // ---------- access summary (local file, git-ignored) ----------
