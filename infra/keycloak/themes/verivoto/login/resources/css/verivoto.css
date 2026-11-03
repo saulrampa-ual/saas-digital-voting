@@ -250,9 +250,9 @@ html.login-pf, html.login-pf body, .login-pf body {
 @media (max-width: 767px) {
   .pf-v5-c-login .pf-v5-c-login__container {
     grid-template-columns: minmax(0, 1fr) !important;
-    /* tall phones: the top band grows with the screen (padding below) and the trust strip takes the rest */
-    grid-template-rows: auto auto auto auto 1fr !important;
-    grid-template-areas: "brand" "claim" "main" "hint" "trust" !important;
+    /* spare height: 2/3 to the top band (the form moves down), 1/3 as a light gap above a compact trust strip */
+    grid-template-rows: auto minmax(auto, 2fr) auto auto 1fr auto !important;
+    grid-template-areas: "brand" "claim" "main" "hint" "." "trust" !important;
   }
   /* The panel's pieces become grid items so the trust points can go to the bottom without duplicating them */
   .pf-v5-c-login .pf-v5-c-login__header, #kc-header-wrapper.pf-v5-c-brand, #kc-header-wrapper, .vv-hero { display: contents !important; }
@@ -264,7 +264,7 @@ html.login-pf, html.login-pf body, .login-pf body {
   .vv-claim {
     grid-area: claim; margin: 0; max-width: none; background: var(--vv-navy); color: var(--vv-panel-text);
     box-shadow: 0 -2px 0 var(--vv-navy); /* hides the sub-pixel seam with the logo row */
-    padding: clamp(4px, 1dvh, 10px) 16px clamp(36px, calc(36px + (100dvh - 740px) / 3), 96px); font-size: clamp(15px, 2.1dvh, 18px); line-height: 1.35; font-weight: 600; letter-spacing: 0;
+    padding: clamp(4px, 1dvh, 10px) 16px 36px; font-size: clamp(15px, 2.1dvh, 18px); line-height: 1.35; font-weight: 600; letter-spacing: 0;
   }
   .pf-v5-c-login .pf-v5-c-login__main {
     grid-area: main; position: relative; z-index: 1; align-self: start; width: calc(100% - 24px); max-width: 480px;
@@ -280,8 +280,7 @@ html.login-pf, html.login-pf body, .login-pf body {
   .vv-lang { padding: 0 6px; gap: 5px; }
   .vv-voter-hint { width: auto; margin: 10px 20px clamp(10px, 2dvh, 20px); }
   .vv-points {
-    /* fills what is left of the screen, so tall phones get a navy footer instead of an empty gap */
-    grid-area: trust; align-self: stretch; align-content: center; max-width: none; gap: 4px; margin-top: 4px; background: var(--vv-navy);
+    grid-area: trust; align-self: end; max-width: none; gap: 4px; margin: 0; background: var(--vv-navy);
     padding: 12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   }
   .vv-points li { padding-left: 26px; font-size: 14px; line-height: 1.45; }
