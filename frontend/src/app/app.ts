@@ -6,7 +6,7 @@ import {
   closeOutline, closeCircleOutline, cloudOfflineOutline, cloudUploadOutline, copyOutline, createOutline,
   documentTextOutline, listOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline, keyOutline,
   linkOutline, lockClosedOutline, peopleOutline, refreshOutline, searchOutline, sendOutline, shieldCheckmarkOutline,
-  timeOutline, trashOutline, mailOutline, warningOutline,
+  timeOutline, trashOutline, mailOutline, warningOutline, menuOutline, logOutOutline,
 } from 'ionicons/icons';
 import { LanguageService } from './core/i18n/language.service';
 import { FocusOnNavigationService } from './core/a11y/focus-on-navigation.service';
@@ -23,7 +23,7 @@ export class App {
       closeOutline, closeCircleOutline, cloudOfflineOutline, cloudUploadOutline, copyOutline, createOutline,
   documentTextOutline, listOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline, keyOutline,
       linkOutline, lockClosedOutline, peopleOutline, refreshOutline, searchOutline, sendOutline, shieldCheckmarkOutline,
-  timeOutline, trashOutline, mailOutline, warningOutline,
+  timeOutline, trashOutline, mailOutline, warningOutline, menuOutline, logOutOutline,
     });
     inject(LanguageService).init();
     inject(FocusOnNavigationService).init();

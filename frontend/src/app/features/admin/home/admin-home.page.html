@@ -132,15 +132,7 @@
             @if (days().length === 0) {
               <p class="empty">{{ 'admin.home.chart.none' | translate }}</p>
             } @else {
-              <div class="chart" aria-hidden="true">
-                @for (d of days(); track d.day) {
-                  <div class="col">
-                    <span class="col-val">{{ pct(d.pct) }} %</span>
-                    <span class="col-bar"><i [style.height.%]="(d.pct / chartMax()) * 100"></i></span>
-                    <span class="col-lab">{{ shortDay(d.day) }}</span>
-                  </div>
-                }
-              </div>
+              <app-day-chart [points]="days()" [from]="period().from" [to]="period().to" [language]="language()" />
               <table class="sr-only">
                 <caption>{{ 'admin.home.chart.title' | translate }}</caption>
                 <thead><tr><th scope="col">{{ 'admin.home.chart.day' | translate }}</th><th scope="col">{{ 'admin.home.chart.cumulative' | translate }}</th><th scope="col">{{ 'admin.home.chart.pct' | translate }}</th></tr></thead>
