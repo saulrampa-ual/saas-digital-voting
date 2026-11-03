@@ -10,6 +10,7 @@ import { ProcessStatus } from '../../../core/admin/process-api.service';
 import { AdminPageComponent } from '../admin-page.component';
 import { ProcessPickerComponent } from '../process-picker/process-picker.component';
 import { NotificationsPanelComponent } from './notifications-panel.component';
+import { DayChartComponent, DayChartPoint } from '../../../shared/day-chart/day-chart.component';
 
 const REFRESH_MS = 15_000;
 
@@ -21,7 +22,7 @@ const REFRESH_MS = 15_000;
 @Component({
   selector: 'app-participation',
   imports: [AdminPageComponent, ProcessPickerComponent, RouterLink, IonIcon, IonSpinner, IonText, TranslatePipe,
-    LocalDatePipe, StatusBadgeComponent, NotificationsPanelComponent],
+    LocalDatePipe, StatusBadgeComponent, NotificationsPanelComponent, DayChartComponent],
   template: `
     <app-admin-page titleKey="admin.participation.title">
       <div class="top">
@@ -65,16 +66,7 @@ const REFRESH_MS = 15_000;
           } @else if (d.byDay.length === 0) {
             <p class="help">{{ 'admin.participation.noVotes' | translate }}</p>
           } @else {
-            <ol class="bars" aria-labelledby="by-day">
-              @for (day of d.byDay; track day.day) {
-                <li [title]="('admin.participation.dayTip' | translate: { day: (day.day | localDate: language() : false), votes: day.votes, total: day.cumulative })">
-                  <span class="bar-value">{{ share(day.cumulative, d.eligibleVoters) }} %</span>
-                  <span class="bar-track"><span class="bar" [style.height.%]="ratio(day.cumulative, d.eligibleVoters)"></span></span>
-                  <span class="bar-label">{{ day.day | localDate: language() : false }}</span>
-                  <span class="sr-only">{{ 'admin.participation.dayTip' | translate: { day: (day.day | localDate: language() : false), votes: day.votes, total: day.cumulative } }}</span>
-                </li>
-              }
-            </ol>
+            <app-day-chart [points]="chartPoints()" [from]="d.opensAt" [to]="d.closesAt" [language]="language()" />
             <table class="sr-only">
               <caption>{{ 'admin.participation.byDayTitle' | translate }}</caption>
               <tr><th scope="col">{{ 'admin.participation.day' | translate }}</th><th scope="col">{{ 'admin.participation.votes' | translate }}</th>
@@ -116,13 +108,6 @@ const REFRESH_MS = 15_000;
     .metric strong { font-size: 2rem; color: var(--ion-color-primary); line-height: 1.1; }
     .metric small { color: var(--ion-color-medium); }
     .help { color: var(--ion-color-medium); font-size: 0.875rem; }
-    .bars { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; overflow-x: auto; }
-    .bars li { flex: 1 0 56px; max-width: 110px; display: grid; grid-template-rows: auto 180px auto; justify-items: center; gap: 4px; }
-    .bar-track { width: 100%; height: 180px; display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid #c9d2dd; }
-    .bar { width: 60%; min-height: 2px; background: var(--ion-color-primary); border-radius: 4px 4px 0 0; }
-    .bar-value { font-size: 0.75rem; color: #4a5868; }
-    .bar-label { font-size: 0.75rem; color: var(--ion-color-medium); text-align: center; line-height: 1.2; }
-    .bars li:hover .bar { background: var(--ion-color-secondary); }
     .lock { display: flex; gap: 8px; align-items: flex-start; margin-top: 24px; }
     .lock ion-icon { flex: none; margin-top: 3px; }
     .link { display: inline-block; margin-top: 12px; min-height: 44px; line-height: 44px; color: var(--ion-color-primary); font-weight: 600; }
@@ -143,6 +128,12 @@ export class ParticipationPage implements OnDestroy {
   protected readonly loadedAt = signal(0);
   private readonly now = signal(Date.now());
   protected readonly secondsAgo = computed(() => Math.max(0, Math.round((this.now() - this.loadedAt()) / 1000)));
+  /** Cumulative share of the census per day, for the chart (people only, D-18). */
+  protected readonly chartPoints = computed<DayChartPoint[]>(() => {
+    const d = this.data();
+    if (!d) return [];
+    return d.byDay.map((day) => ({ day: day.day, cumulative: day.cumulative, pct: this.ratio(day.cumulative, d.eligibleVoters) }));
+  });
   private timer: ReturnType<typeof setInterval> | undefined;
   private ticker: ReturnType<typeof setInterval> | undefined;
 

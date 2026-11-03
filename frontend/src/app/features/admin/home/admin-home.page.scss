@@ -111,14 +111,7 @@
 .when { flex: none; text-align: right; }
 .hash { font-family: var(--vv-font-mono); }
 
-/* Per-day chart (D-18): a visual summary; the table below carries the same values for screen readers */
-.chart { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; align-items: end; height: 220px; padding-top: 4px;
-  border-bottom: 1px solid #7b8794; }
-.col { display: grid; grid-template-rows: auto 1fr; height: 100%; min-width: 0; text-align: center; position: relative; padding-bottom: 26px; }
-.col-val { font-size: 0.875rem; font-weight: 600; color: var(--ion-color-primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.col-bar { display: flex; align-items: flex-end; justify-content: center; }
-.col-bar i { display: block; width: min(100%, 64px); min-height: 3px; border-radius: 4px 4px 0 0; background: var(--ion-color-primary); }
-.col-lab { position: absolute; left: 0; right: 0; bottom: 2px; font-size: 0.875rem; color: var(--home-muted); white-space: nowrap; }
+/* Per-day chart: app-day-chart (visual); the hidden table below carries the same values for screen readers */
 .note { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0 0; font-size: 0.875rem; color: var(--home-muted); }
 .note ion-icon { flex: none; margin-top: 2px; font-size: 18px; }
 
@@ -138,7 +131,4 @@
 @media (max-width: 480px) {
   .kpi-value { font-size: 1.75rem; }
   .block-head .btn { width: 100%; }
-  .chart { height: 180px; gap: 6px; }
 }
-/* Narrow screens: the last 7 days (the hidden table still lists every day) */
-@media (max-width: 767px) { .col:nth-last-child(n + 8) { display: none; } }

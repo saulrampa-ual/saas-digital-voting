@@ -15,6 +15,7 @@ import { ChainCheck, Participation, ResultsApiService } from '../../../core/admi
 import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 import { LocalizedPipe } from '../../../shared/pipes/localized.pipe';
 import { StatusBadgeComponent } from '../../../shared/status-badge/status-badge.component';
+import { DayChartComponent } from '../../../shared/day-chart/day-chart.component';
 import { AdminPageComponent } from '../admin-page.component';
 import {
   CheckState, VERIFIABLE_STATUSES, censusOverview, checkState, countByStatus, cumulativeByDay, latestCheck, openNow,
@@ -55,9 +56,6 @@ interface AttentionItem {
   query?: Record<string, string | number>;
 }
 
-/** Days shown in the per-day chart (the last ones). */
-const CHART_DAYS = 14;
-
 /**
  * Console home (IMP-44): one panel per role of the person, built only from the existing read APIs. Participation is a
  * count of people, by day at most (D-18); nothing about options is shown before the tally and there is no revote (D-03).
@@ -65,7 +63,7 @@ const CHART_DAYS = 14;
 @Component({
   selector: 'app-admin-home',
   imports: [AdminPageComponent, NgTemplateOutlet, RouterLink, IonIcon, IonSpinner, IonText, TranslatePipe, LocalDatePipe, LocalizedPipe,
-    StatusBadgeComponent],
+    StatusBadgeComponent, DayChartComponent],
   templateUrl: './admin-home.page.html',
   styleUrl: './admin-home.page.scss',
 })
@@ -111,8 +109,13 @@ export class AdminHomePage {
   private readonly openParticipation = computed(() =>
     (this.openCards() ?? []).map((c) => c.participation).filter((p): p is Participation => p !== null));
   protected readonly openTotals = computed(() => participationTotals(this.openParticipation()));
-  protected readonly days = computed(() => cumulativeByDay(this.openParticipation()).slice(-CHART_DAYS));
-  protected readonly chartMax = computed(() => Math.max(1, ...this.days().map((d) => d.pct)));
+  protected readonly days = computed(() => cumulativeByDay(this.openParticipation()));
+  /** Voting period covered by the chart: from the first opening to the last closing of the open processes. */
+  protected readonly period = computed(() => {
+    const processes = (this.openCards() ?? []).map((c) => c.process);
+    const sorted = (values: string[]) => values.filter(Boolean).sort((a, b) => Date.parse(a) - Date.parse(b));
+    return { from: sorted(processes.map((p) => p.opensAt))[0] ?? null, to: sorted(processes.map((p) => p.closesAt)).at(-1) ?? null };
+  });
 
   protected readonly attention = computed<AttentionItem[]>(() => {
     const items: AttentionItem[] = [];
@@ -280,9 +283,6 @@ export class AdminHomePage {
     return new Intl.NumberFormat(this.language()).format(value);
   }
 
-  protected shortDay(day: string): string {
-    return new Intl.DateTimeFormat(this.language(), { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${day}T12:00:00Z`));
-  }
 
   protected shortHash(hash: string | null): string {
     return hash ? `${hash.slice(0, 4)}…${hash.slice(-4)}` : '—';

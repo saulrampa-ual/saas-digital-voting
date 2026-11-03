@@ -12,6 +12,7 @@
     "menu": {
       "label": "Management menu",
       "open": "Open menu",
+      "close": "Close menu",
       "home": "Home",
       "organizations": "Organizations",
       "censuses": "Censuses",

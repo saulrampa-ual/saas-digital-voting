@@ -1,21 +1,23 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonMenuButton, IonContent } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonContent } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
 import { AuthService } from '../../core/auth/auth.service';
+import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component';
 
 /**
- * Common header of the console pages: menu button (mobile), title, session context (organization, role and user,
- * from 768 px; it makes the management header clearly different from the voter one) and language switcher.
+ * Common header of the console pages: title, VeriVoto logo in the centre (shield from 768 px, shield and name from
+ * 992 px), session context (organization, role and user, from 768 px; it makes the management header clearly
+ * different from the voter one) and language switcher with flags. The menu button lives at the top of the side rail.
  */
 @Component({
   selector: 'app-admin-page',
-  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonMenuButton, IonContent, TranslatePipe, LanguageSwitcherComponent],
+  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, BrandLogoComponent, TranslatePipe, LanguageSwitcherComponent],
   template: `
     <ion-header>
       <ion-toolbar color="primary">
-        <ion-buttons slot="start"><ion-menu-button [attr.aria-label]="'admin.menu.open' | translate" /></ion-buttons>
         <ion-title><h1 class="title">{{ titleKey() | translate }}</h1></ion-title>
+        <app-brand-logo class="logo name-wide ion-hide-md-down" />
         <ion-buttons slot="end">
           <span class="session ion-hide-md-down">
             <span>{{ auth.displayName() }}</span>
@@ -37,6 +39,7 @@ import { AuthService } from '../../core/auth/auth.service';
        ion-content collapses to a few pixels and the page looks covered. */
     :host { display: contents; }
     .title { font-size: 1.125rem; margin: 0; }
+    .logo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none; }
     .page { max-width: 72rem; margin: 0 auto; }
     .session { display: flex; flex-direction: column; align-items: flex-end; margin-inline-end: 12px; line-height: 1.25; }
     .context { font-size: 0.875rem; opacity: 0.9; }
