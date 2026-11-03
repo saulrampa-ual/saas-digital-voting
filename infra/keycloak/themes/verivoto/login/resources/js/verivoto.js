@@ -1,6 +1,8 @@
 // VeriVoto login theme. Two small additions to keycloak.v2, both without touching template.ftl:
 // 1) a one-line subtitle under the sign-in title (the second step, the email code, is announced in advance);
-// 2) live password requirements on login-update-password.ftl (only rules the browser can check; the rest say
+// 2) the language select shown as two small flag buttons (links to the same URLs Keycloak puts in the select), plus a
+//    one-line hint for voters who land here by mistake;
+// 3) live password requirements on login-update-password.ftl (only rules the browser can check; the rest say
 //    "checked when saving"). Texts that come from the server are rendered by the template, not here.
 (function () {
   'use strict';
@@ -9,6 +11,60 @@
     es: 'Accede con tu cuenta de gestión. Después te pediremos un código de verificación.',
     en: 'Sign in with your management account. Next, we will ask you for a verification code.'
   };
+
+  var VOTER_HINT = {
+    es: '¿Vas a votar? Usa el enlace personal que recibiste por correo.',
+    en: 'Going to vote? Use the personal link you received by email.'
+  };
+  var LANGS = {
+    es: { label: 'Español', code: 'ES',
+      flag: '<svg viewBox="0 0 30 20" aria-hidden="true" focusable="false"><rect width="30" height="20" fill="#AA151B"/><rect y="5" width="30" height="10" fill="#F1BF00"/></svg>' },
+    en: { label: 'English', code: 'EN',
+      flag: '<svg viewBox="0 0 60 40" aria-hidden="true" focusable="false"><clipPath id="vv-uk"><path d="M0 0h60v40H0z"/></clipPath><g clip-path="url(#vv-uk)"><path d="M0 0h60v40H0z" fill="#012169"/><path d="M0 0l60 40M60 0L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0l60 40M60 0L0 40" stroke="#C8102E" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#C8102E" stroke-width="7"/></g></svg>' }
+  };
+  var NAV_LABEL = { es: 'Idioma', en: 'Language' };
+
+  function languageButtons() {
+    var select = document.getElementById('login-select-toggle');
+    if (!select || document.querySelector('.vv-langs')) return;
+    var holder = select.closest('.pf-v5-c-login__main-header-utilities');
+    if (!holder) return;
+    var nav = document.createElement('nav');
+    nav.className = 'vv-langs';
+    nav.setAttribute('aria-label', NAV_LABEL[lang]);
+    Array.prototype.forEach.call(select.options, function (option) {
+      var match = /[?&]kc_locale=([a-zA-Z-]+)/.exec(option.value);
+      var code = match ? match[1].toLowerCase().slice(0, 2) : null;
+      var info = code && LANGS[code];
+      if (!info) return;
+      var a = document.createElement('a');
+      a.className = 'vv-lang';
+      a.href = option.value;
+      a.lang = code;
+      a.hreflang = code;
+      a.setAttribute('aria-label', info.label + ' (' + info.code + ')');
+      if (option.selected) a.setAttribute('aria-current', 'true');
+      a.innerHTML = info.flag + '<span aria-hidden="true">' + info.code + '</span>';
+      nav.appendChild(a);
+    });
+    if (nav.children.length < 2) return; // unknown locales: keep Keycloak's select
+    // Always ES, then EN (Keycloak sorts the options by their translated label)
+    Array.prototype.slice.call(nav.children).sort(function (x, y) {
+      return Object.keys(LANGS).indexOf(x.lang) - Object.keys(LANGS).indexOf(y.lang);
+    }).forEach(function (el) { nav.appendChild(el); });
+    holder.appendChild(nav);
+    holder.classList.add('vv-has-langs');
+  }
+
+  function voterHint() {
+    var main = document.querySelector('.pf-v5-c-login__main');
+    if (!main || document.querySelector('.vv-voter-hint')) return;
+    if (document.body.getAttribute('data-page-id') !== 'login-login') return;
+    var footer = document.createElement('footer'); // a landmark, so the hint is not loose content
+    footer.className = 'vv-voter-hint';
+    footer.textContent = VOTER_HINT[lang];
+    main.insertAdjacentElement('afterend', footer);
+  }
 
   function addSubtitle() {
     if (document.body.getAttribute('data-page-id') !== 'login-login') return;
@@ -80,6 +136,6 @@
     update(false);
   }
 
-  function start() { addSubtitle(); passwordRules(); }
+  function start() { addSubtitle(); languageButtons(); voterHint(); passwordRules(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
