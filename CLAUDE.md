@@ -78,6 +78,7 @@ No se usan Lombok ni MapStruct: `record` y mappers manuales.
 | --- | --- |
 | `CONTEXT.md` | Qué es el proyecto; autocontenido |
 | `PROGRESS.md` | Estado por hito y siguiente paso exacto |
+| `PLAN.md` | Lo que falta hasta la entrega: tareas, preguntas al autor y calendario |
 | `DECISIONS.md` | Decisiones cerradas (D-xx) |
 | `TRACEABILITY.md` | RF → servicio → endpoint → pantalla → estado |
 | `IMPROVEMENTS.md` | Mejoras propuestas pendientes de aprobación |
