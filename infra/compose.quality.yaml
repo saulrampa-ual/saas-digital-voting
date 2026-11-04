@@ -1,0 +1,35 @@
+# Code quality server for local analysis (F1 of docs/ai/PLAN.md): SonarQube Community Build, free.
+# Separate from infra/compose.yaml so the application stack does not need it.
+# Usage (from the repository root):
+#   docker compose -f infra/compose.quality.yaml up -d      -> http://localhost:9000 (first login admin/admin, then change it)
+#   pwsh scripts/quality/sonar.ps1                          -> analyses backend and frontend (needs SONAR_TOKEN)
+#   docker compose -f infra/compose.quality.yaml down       -> stops it (the volumes keep the analyses)
+# Development only: embedded database (Sonar's evaluation mode, not for production and not upgradable across versions;
+# delete the volumes when changing the image version), port bound to 127.0.0.1. Docker Desktop sets the
+# vm.max_map_count that Elasticsearch needs; on plain Linux: sudo sysctl -w vm.max_map_count=524288
+# Guide: docs/architecture/quality-and-security.md
+
+name: verivoto-quality
+
+services:
+  sonarqube:
+    image: sonarqube:26.10.0.133078-community
+    ports:
+      - "127.0.0.1:9000:9000"
+    environment:
+      SONAR_WEB_JAVAOPTS: -Xmx512m -Xms128m
+      SONAR_CE_JAVAOPTS: -Xmx1024m -Xms128m
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-extensions:/opt/sonarqube/extensions
+      - sonarqube-logs:/opt/sonarqube/logs
+    ulimits:
+      nofile:
+        soft: 131072
+        hard: 131072
+    # No healthcheck: the image does not guarantee curl/wget; scripts/quality/sonar.ps1 waits on /api/system/status.
+
+volumes:
+  sonarqube-data:
+  sonarqube-extensions:
+  sonarqube-logs:

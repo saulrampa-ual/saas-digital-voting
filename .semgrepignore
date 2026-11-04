@@ -1,0 +1,10 @@
+# Paths Semgrep skips (security workflow and local runs). Files ignored by .gitignore are skipped as well.
+# TFM report, prototypes and documentation are not product code.
+Plantilla-TFM-Informatica-UAL/
+prototiposPantallas/
+docs/
+node_modules/
+target/
+dist/
+.angular/
+.local/

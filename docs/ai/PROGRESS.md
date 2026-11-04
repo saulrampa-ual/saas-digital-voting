@@ -230,6 +230,8 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
+Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Novedad del 04/11: ejecutar `seed-usab.mjs` con el stack real, la primera ejecución de SonarQube y revisar el primer resultado del workflow `security` (F5).
+
 0. Autor: resolver las decisiones pendientes (modelo de sustitución en P9, RF-11 Could/Won't, «sin ayuda» en RNF-4, RF-22/RF-23 en la tabla 1.1).
 1. Cargar la demo UAL con `scripts/demo/seed-ual.mjs` (primer intento fallido al capturar el código de autorización;
    corregido, pendiente de repetir) y repetir `npm run test:e2e` contra el frontend de la rama (DEF-03 descartado).
@@ -239,6 +241,25 @@
    RNF-4 solo si se prepara un protocolo para administradores.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
+
+## Sesión H1b y calidad del código (04/11/2026)
+
+- A11 (`feat/usability-session-seed`, `d5608f9`, en `dev`): `scripts/demo/seed-usab.mjs` monta el escenario `USAB` de
+  `docs/evaluation/usabilidad/preparacion-sesion.md` (organización, cuentas ADMIN y CENSUS_MANAGER, censo importado de
+  `censo-sesion.csv` en dos pasos, proceso programado) y un proceso de ensayo con su propio censo; espera invitaciones y
+  apertura y escribe `.local/sesion-usab.md` (buzón de Mailpit por entrada). No abre enlaces, no pide códigos ni vota.
+  Ayudas comunes en `scripts/demo/lib/common.mjs`; `seed-ual.mjs` las usa sin cambiar su comportamiento. `.local/` pasa a
+  `.gitignore` (antes solo en `.git/info/exclude`). Probado en el entorno de la IA contra un Keycloak, *gateway* y
+  Mailpit simulados con navegador real: ejecución completa, segunda ejecución idempotente y demo UAL con votos. **Sin
+  probar contra el stack real.**
+- F1–F4 (D-51, `docs/architecture/quality-and-security.md`): SonarQube Community 26.10 en `infra/compose.quality.yaml`,
+  `sonar-maven-plugin` 5.8.0.7211 en `backend/pom.xml`, `frontend/sonar-project.properties`, `scripts/quality/sonar.ps1`;
+  `.github/workflows/security.yml` (gitleaks, Semgrep, Trivy, `npm audit`), `.semgrepignore`, `.pre-commit-config.yaml`.
+  `actionlint` 1.7.12 sin errores y `docker compose config` del fichero de calidad válido. Línea base: 0 secretos en todo
+  el historial, 0 vulnerabilidades npm, 1 aviso LOW de Trivy, Semgrep sin hallazgos `ERROR` tras marcar un falso
+  positivo en `verivoto.js` (`nosemgrep`). No se ejecutó: SonarQube (sin acceso a Docker Hub ni a Maven Central desde la
+  IA), las vulnerabilidades Maven de Trivy y los paquetes `p/…` de Semgrep (sin acceso a sus registros). Registradas
+  IMP-46–IMP-49.
 
 ## Login y panel de inicio (02/11/2026)
 
