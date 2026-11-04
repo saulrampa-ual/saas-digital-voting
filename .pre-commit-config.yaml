@@ -1,0 +1,8 @@
+# Local hooks (F4 of docs/ai/PLAN.md): gitleaks stops a commit that contains a secret.
+# Install once: pip install pre-commit && pre-commit install
+# Same version as the security workflow (.github/workflows/security.yml).
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
