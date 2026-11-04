@@ -7,34 +7,21 @@
 //   set DEMO_PASSWORD=<password for the demo management accounts>
 //   node scripts/demo/seed-ual.mjs
 // Reads infra/.env (Keycloak bootstrap admin). Writes the access summary to .local/demo-ual.md (git-ignored).
-// The log never prints tokens, codes, personal links or passwords.
+// The log never prints tokens, codes, personal links or passwords. Shared helpers: lib/common.mjs.
 
-import { createRequire } from 'node:module';
-import { createHash, randomBytes } from 'node:crypto';
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { writeFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
+import {
+  ROOT, APP, MAILPIT, GW, log, iso, http, demoPassword, readInfraEnv, loadChromium, createKeycloakAdmin, createLogin,
+  ensureOrganization, waitStatus, waitMail, sixDigits, inviteLink,
+} from './lib/common.mjs';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const require = createRequire(join(ROOT, 'frontend', 'package.json'));
-const { chromium } = require('@playwright/test');
-
-const KC = process.env.KC_URL ?? 'http://localhost:8080';
-const GW = process.env.GATEWAY_URL ?? 'http://localhost:8000';
-const MAILPIT = process.env.MAILPIT_URL ?? 'http://localhost:8025';
-const APP = 'http://localhost:4200';
-const REALM = 'verivoto';
 const ORG = 'UAL';
-const PASSWORD = process.env.DEMO_PASSWORD;
-if (!PASSWORD || PASSWORD.length < 12) throw new Error('DEMO_PASSWORD (12+ characters) is required');
+const PASSWORD = demoPassword();
 // SEED_MODE=accounts: only named local test accounts (no censuses, processes or votes)
 const MODE = process.env.SEED_MODE ?? 'demo';
-
-const env = Object.fromEntries(readFileSync(join(ROOT, 'infra', '.env'), 'utf8').split(/\r?\n/)
-  .filter((l) => /^[A-Z0-9_]+=/.test(l)).map((l) => [l.slice(0, l.indexOf('=')), l.slice(l.indexOf('=') + 1).trim()]));
-
-const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const chromium = loadChromium();
+const kc = createKeycloakAdmin(readInfraEnv(), PASSWORD);
 
 // ---------- people ----------
 const LOCAL_ACCOUNTS = {
@@ -54,7 +41,6 @@ const voters = (key, label, n) => Array.from({ length: n }, (_, i) => ({
   institutionalId: `UAL-${key.toUpperCase()}-${i + 1}`, preferredLanguage: i % 3 === 2 ? 'en' : 'es',
 }));
 
-const iso = (ms) => new Date(ms).toISOString();
 const ELECTIONS = [
   {
     key: 'pasada', census: 'Demo UAL · Censo elección pasada',
@@ -94,133 +80,7 @@ const ELECTIONS = [
   },
 ];
 
-// ---------- HTTP helpers ----------
-async function http(method, url, { token, body, headers = {}, form, ok = [200, 201, 202, 204] } = {}) {
-  const h = { ...headers };
-  if (token) h.Authorization = `Bearer ${token}`;
-  let payload;
-  if (form) { h['Content-Type'] = 'application/x-www-form-urlencoded'; payload = new URLSearchParams(form).toString(); }
-  else if (body !== undefined) { h['Content-Type'] = 'application/json'; payload = JSON.stringify(body); }
-  const res = await fetch(url, { method, headers: h, body: payload });
-  const text = await res.text();
-  const data = text ? (() => { try { return JSON.parse(text); } catch { return text; } })() : null;
-  if (!ok.includes(res.status)) {
-    const err = new Error(`${method} ${url.replace(/\/links\/[^/]+/, '/links/…')} -> ${res.status} ${typeof data === 'string' ? data.slice(0, 200) : JSON.stringify(data)?.slice(0, 300)}`);
-    err.status = res.status; throw err;
-  }
-  return { status: res.status, data };
-}
-
-// ---------- Mailpit ----------
-async function mails(to, since) {
-  const { data } = await http('GET', `${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:"${to}"`)}&limit=50`);
-  return (data.messages ?? []).filter((m) => !since || Date.parse(m.Created) >= since - 2000);
-}
-async function mailText(id) { return (await http('GET', `${MAILPIT}/api/v1/message/${id}`)).data.Text ?? ''; }
-async function waitMail(to, since, predicate, label) {
-  for (let i = 0; i < 60; i++) {
-    for (const m of await mails(to, since)) {
-      const text = await mailText(m.ID);
-      const v = predicate(text, m);
-      if (v) return v;
-    }
-    await sleep(2000);
-  }
-  throw new Error(`Mail not received (${label}) for ${to}`);
-}
-const sixDigits = (t) => (t.match(/(?<![\d/.:-])\d{6}(?![\d/.:-])/) ?? [])[0];
-
-// ---------- Keycloak admin ----------
-async function adminToken() {
-  const { data } = await http('POST', `${KC}/realms/master/protocol/openid-connect/token`, { form: {
-    grant_type: 'password', client_id: 'admin-cli',
-    username: env.KC_BOOTSTRAP_ADMIN_USERNAME || 'local-admin', password: env.KC_BOOTSTRAP_ADMIN_PASSWORD } });
-  return data.access_token;
-}
-async function kcUser(adm, username) {
-  const { data } = await http('GET', `${KC}/admin/realms/${REALM}/users?username=${encodeURIComponent(username)}&exact=true`, { token: adm });
-  return data[0];
-}
-async function setPassword(adm, username) {
-  const u = await kcUser(adm, username);
-  if (!u) throw new Error(`Keycloak user not found: ${username}`);
-  await http('PUT', `${KC}/admin/realms/${REALM}/users/${u.id}/reset-password`, { token: adm, body: { type: 'password', value: PASSWORD, temporary: false } });
-  await http('PUT', `${KC}/admin/realms/${REALM}/users/${u.id}`, { token: adm, body: { requiredActions: [], emailVerified: true } });
-  // Unlock in case brute-force detection locked it during earlier attempts
-  await http('DELETE', `${KC}/admin/realms/${REALM}/attack-detection/brute-force/users/${u.id}`, { token: adm, ok: [200, 204, 404] });
-  log(`password set: ${username}`);
-}
-async function ensureSuperadmin(adm, u) { // realm-level account with role SUPERADMIN (no organization)
-  let user = await kcUser(adm, u.username);
-  if (!user) {
-    await http('POST', `${KC}/admin/realms/${REALM}/users`, { token: adm, body: { username: u.username, email: u.email, firstName: u.firstName, lastName: u.lastName, enabled: true, emailVerified: true } });
-    user = await kcUser(adm, u.username);
-    log(`superadmin created: ${u.username}`);
-  } else log(`superadmin exists: ${u.username}`);
-  const { data: role } = await http('GET', `${KC}/admin/realms/${REALM}/roles/SUPERADMIN`, { token: adm });
-  await http('POST', `${KC}/admin/realms/${REALM}/users/${user.id}/role-mappings/realm`, { token: adm, body: [role] });
-  await setPassword(adm, u.username);
-}
-async function ensureIdentityViewRealm(adm) { // DEF-04 for realms imported before the fix
-  const { data: clients } = await http('GET', `${KC}/admin/realms/${REALM}/clients?clientId=identity-service`, { token: adm });
-  const { data: sa } = await http('GET', `${KC}/admin/realms/${REALM}/clients/${clients[0].id}/service-account-user`, { token: adm });
-  const { data: rm } = await http('GET', `${KC}/admin/realms/${REALM}/clients?clientId=realm-management`, { token: adm });
-  const { data: assigned } = await http('GET', `${KC}/admin/realms/${REALM}/users/${sa.id}/role-mappings/clients/${rm[0].id}`, { token: adm });
-  if (assigned.some((r) => r.name === 'view-realm')) { log('identity-service already has view-realm'); return; }
-  const { data: role } = await http('GET', `${KC}/admin/realms/${REALM}/clients/${rm[0].id}/roles/view-realm`, { token: adm });
-  await http('POST', `${KC}/admin/realms/${REALM}/users/${sa.id}/role-mappings/clients/${rm[0].id}`, { token: adm, body: [role] });
-  log('DEF-04: view-realm granted to identity-service in the local realm');
-}
-
-// ---------- management login (Authorization Code + PKCE + Email OTP, like the console) ----------
-let browser;
-async function login(username, email = username) {
-  const verifier = randomBytes(32).toString('base64url');
-  const challenge = createHash('sha256').update(verifier).digest('base64url');
-  const redirect = `${APP}/admin`;
-  const authUrl = `${KC}/realms/${REALM}/protocol/openid-connect/auth?` + new URLSearchParams({
-    client_id: 'verivoto-admin', redirect_uri: redirect, response_type: 'code', scope: 'openid',
-    code_challenge: challenge, code_challenge_method: 'S256', state: randomBytes(8).toString('hex'), nonce: randomBytes(8).toString('hex') });
-  const context = await browser.newContext();
-  const page = await context.newPage();
-  let code;
-  const grab = (url) => { if (!code && url.startsWith(APP)) { const c = new URL(url).searchParams.get('code'); if (c) code = c; } };
-  await context.route((url) => url.href.startsWith(APP), (route) => { grab(route.request().url()); route.fulfill({ status: 200, body: 'ok' }); });
-  page.on('request', (req) => grab(req.url()));
-  page.on('framenavigated', (frame) => grab(frame.url()));
-  try {
-    await page.goto(authUrl);
-    await page.fill('#username', username);
-    await page.fill('#password', PASSWORD);
-    const since = Date.now();
-    await page.click('#kc-login');
-    for (let i = 0; i < 40 && !code; i++) {
-      const otp = page.locator('input[type="text"]:visible, input[type="number"]:visible, input[inputmode="numeric"]:visible, input[autocomplete="one-time-code"]:visible').first();
-      if (await otp.count()) {
-        const value = await waitMail(email, since, (t) => sixDigits(t), 'login code');
-        await otp.fill(value);
-        const submit = page.locator('#kc-login:visible, input[type="submit"]:visible, button[type="submit"]:visible').first();
-        if (await submit.count()) await submit.click(); else await otp.press('Enter');
-        for (let j = 0; j < 20 && !code; j++) await sleep(500);
-        break;
-      }
-      const error = page.locator('.kc-feedback-text, #input-error, .pf-v5-c-alert__title').first();
-      if (await error.count() && await error.isVisible()) throw new Error(`Login error for ${username}: ${(await error.innerText()).slice(0, 120)}`);
-      await sleep(500);
-    }
-    grab(page.url());
-    if (!code) throw new Error(`Login did not complete for ${username} (page: ${(await page.title()).slice(0, 60)})`);
-  } finally { await context.close(); }
-  const { data } = await http('POST', `${KC}/realms/${REALM}/protocol/openid-connect/token`, { form: {
-    grant_type: 'authorization_code', client_id: 'verivoto-admin', code, redirect_uri: redirect, code_verifier: verifier } });
-  log(`logged in: ${username}`);
-  return data.access_token;
-}
-
 // ---------- voter (link + code, like the PWA) ----------
-async function inviteLink(email) {
-  return waitMail(email, 0, (t) => (t.match(/\/votar\/([A-Za-z0-9_-]{64})/) ?? [])[1], 'invitation');
-}
 async function vote(election, voter, choice, processId) {
   const link = await inviteLink(voter.email);
   const since = Date.now();
@@ -236,38 +96,19 @@ async function vote(election, voter, choice, processId) {
   return receipt.receiptCode;
 }
 
-async function waitStatus(token, id, wanted, minutes) {
-  for (let i = 0; i < minutes * 12; i++) {
-    const { data } = await http('GET', `${GW}/api/v1/processes/${id}`, { token });
-    if (wanted.includes(data.status)) return data;
-    await sleep(5000);
-  }
-  throw new Error(`Process ${id} did not reach ${wanted.join('/')} in ${minutes} min`);
-}
-
 // ---------- main ----------
 const summary = { links: {}, receipts: {}, processes: {} };
+let browser;
 try {
   browser = await chromium.launch();
-  const adm = await adminToken();
-  await ensureIdentityViewRealm(adm);
+  const login = createLogin(browser, PASSWORD);
+  const adm = await kc.token();
+  await kc.ensureIdentityViewRealm(adm);
   let sa;
-  if (MODE === 'accounts') { await ensureSuperadmin(adm, LOCAL_SUPERADMIN); sa = await login(LOCAL_SUPERADMIN.username, LOCAL_SUPERADMIN.email); }
-  else { await setPassword(adm, 'superadmin'); const saEmail = (await kcUser(adm, 'superadmin')).email; sa = await login('superadmin', saEmail); }
-  const org = await http('GET', `${GW}/api/v1/organizations/${ORG}`, { token: sa, ok: [200, 404] });
-  if (org.status === 404) {
-    await http('POST', `${GW}/api/v1/organizations`, { token: sa, body: { id: ORG, name: 'Universidad de Almería',
-      initialAdministrator: { fullName: MANAGERS.admin.fullName, email: MANAGERS.admin.email } } });
-    log('organization UAL created');
-  } else log('organization UAL already exists');
-  const { data: users } = await http('GET', `${GW}/api/v1/organizations/${ORG}/users`, { token: sa });
-  const list = Array.isArray(users) ? users : (users.content ?? users.items ?? []);
-  for (const m of Object.values(MANAGERS)) {
-    if (list.some((u) => (u.email ?? '').toLowerCase() === m.email)) { log(`user exists: ${m.email}`); continue; }
-    await http('POST', `${GW}/api/v1/organizations/${ORG}/users`, { token: sa, body: m });
-    log(`user created: ${m.email} (${m.role})`);
-  }
-  for (const m of Object.values(MANAGERS)) await setPassword(adm, m.email);
+  if (MODE === 'accounts') { await kc.ensureSuperadmin(adm, LOCAL_SUPERADMIN); sa = await login(LOCAL_SUPERADMIN.username, LOCAL_SUPERADMIN.email); }
+  else { await kc.setPassword(adm, 'superadmin'); const saEmail = (await kc.user(adm, 'superadmin')).email; sa = await login('superadmin', saEmail); }
+  await ensureOrganization(sa, { id: ORG, name: 'Universidad de Almería', managers: MANAGERS });
+  for (const m of Object.values(MANAGERS)) await kc.setPassword(adm, m.email);
   if (MODE !== 'accounts') {
 
   const censo = await login(MANAGERS.censo.email);
