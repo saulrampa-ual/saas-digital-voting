@@ -44,7 +44,9 @@
       a.hreflang = code;
       a.setAttribute('aria-label', info.label + ' (' + info.code + ')');
       if (option.selected) a.setAttribute('aria-current', 'true');
-      a.innerHTML = info.flag + '<span aria-hidden="true">' + info.code + '</span>';
+      // Only constants of LANGS (flag SVG and code), looked up by a code that must be a LANGS key: no page input.
+      // nosemgrep (reviewed 2026-11-04, docs/architecture/quality-and-security.md)
+      a.innerHTML =info.flag + '<span aria-hidden="true">' + info.code + '</span>';
       nav.appendChild(a);
     });
     if (nav.children.length < 2) return; // unknown locales: keep Keycloak's select

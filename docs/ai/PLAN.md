@@ -66,11 +66,11 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
 - [ ] **A8 · Gantt de la memoria** (`IA`, IMP-02): la iteración 3 aún dice «re-voto».
 - [ ] **A9 · RF-05a** (`IA`, según Q-07): IdP externo de prueba y prueba de inicio de sesión de gestión federado.
 - [ ] **A10 · Job E2E en CI** (`IA`): Playwright + axe en GitHub Actions (al menos con servicios simulados).
-- [ ] **A11 · Elección y votantes para la sesión H1b** (`IA` prepara, `Autor` ejecuta): en VeriVoto las personas
-  votantes no tienen usuario ni contraseña: son entradas de un censo que reciben un enlace personal y un código por
-  correo. Preparar un script tipo `seed-ual.mjs` que cree el escenario `USAB` (censo sintético de 7 personas
-  `votante1@verivoto.test` … con 2 reservas, papeleta neutra, proceso abierto) y una hoja para el moderador con el
-  enlace de cada participante, que se abre en Mailpit (`http://localhost:8025`). Ningún correo real.
+- [x] **A11 · Elección y votantes para la sesión H1b** (`IA` prepara, `Autor` ejecuta): hecho el 04/11/2026
+  (`d5608f9`): `node scripts/demo/seed-usab.mjs` monta el escenario `USAB` de `preparacion-sesion.md` (censo de 7
+  entradas `p01…p05@verivoto.test` + `r1`, `r2`, papeleta neutra, proceso abierto 7 días) y un proceso de ensayo
+  aparte; deja la hoja de la persona moderadora en `.local/sesion-usab.md` con el buzón de Mailpit de cada entrada.
+  Probado contra un entorno simulado; **falta que el autor lo ejecute con el stack real** antes del ensayo (B2).
 - [ ] **A12 · Registrar la sesión RNF-4** (`IA`, tras Q-11): hoja de resultados de administradores en
   `docs/evaluation/usabilidad/`, resultado como cantidades (x de 5) y su paso a la memoria (C1).
 
@@ -96,15 +96,21 @@ federar con Google sin pedir nada a informática:
 
 Herramientas gratuitas como alternativa a Fortify:
 
-- [ ] **F1 · SonarQube Community Build** (`IA`): servicio en `infra/compose.yaml` (perfil `quality`, solo local) y
-  análisis del backend (Maven, con JaCoCo) y del frontend (TypeScript, con lcov); *quality gate* documentado.
-  SonarQube Cloud solo es gratis para repositorios públicos.
-- [ ] **F2 · Análisis estático de seguridad (SAST)** (`IA`): Semgrep Community Edition en CI con reglas de Java,
-  TypeScript y secretos. CodeQL es gratis solo en repositorios públicos.
-- [ ] **F3 · Dependencias y contenedores** (`IA`): OWASP Dependency-Check (Maven) y `npm audit`, y Trivy para las
-  imágenes de `infra/`.
-- [ ] **F4 · Secretos** (`IA`, IMP-09): gitleaks en CI y como *pre-commit*.
-- [ ] **F5 · Corregir lo que salga** (`IA`) y anotar en la memoria (capítulo de evaluación) los resultados de F1–F4.
+Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-51).
+
+- [x] **F1 · SonarQube Community Build** (`IA`, 04/11/2026): `infra/compose.quality.yaml` (aparte del stack),
+  `sonar-maven-plugin` fijado en `backend/pom.xml`, `frontend/sonar-project.properties` y
+  `scripts/quality/sonar.ps1`. **Falta la primera ejecución del autor** (token de SonarQube) y revisar su *quality
+  gate*. Sin cobertura del frontend hasta IMP-49.
+- [x] **F2 · SAST** (`IA`, 04/11/2026): Semgrep CE 1.183.0 en `.github/workflows/security.yml` (bloquea con `ERROR`).
+- [x] **F3 · Dependencias y configuración** (`IA`, 04/11/2026): Trivy 0.76.1 (Maven, npm, Dockerfile; bloquea
+  `HIGH`/`CRITICAL` corregibles) y `npm audit --omit=dev`. Trivy sustituye a OWASP Dependency-Check, que necesita una
+  clave de la NVD.
+- [x] **F4 · Secretos** (`IA`, IMP-09, 04/11/2026): gitleaks 8.30.1 sobre todo el historial en el CI y
+  `.pre-commit-config.yaml`. Línea base: 0 secretos.
+- [ ] **F5 · Corregir lo que salga** (`IA`): mirar el primer resultado del workflow `security` en GitHub (las
+  vulnerabilidades de Maven solo se ven allí) y el *quality gate* de SonarQube; pendientes de la línea base: IMP-46
+  (Actions de `build.yml` por SHA), IMP-47, IMP-48 e IMP-49 (necesitan aprobación). Anotar los resultados en la memoria.
 - [ ] **F6 · Primer `dev` → `main`** (`Autor`, sábado tras F1–F5).
 
 ## 3. Necesitan al autor
@@ -181,3 +187,4 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | --- | --- | --- |
 | 03/11/2026 | — | Plan creado |
 | 03/11/2026 | Q-05, Q-07, Q-09, Q-10 | Respuestas del autor; añadidas A11, A12, secciones 2b, 2c y 7; B4 hecha |
+| 04/11/2026 | A11, F1–F4 | Script de la sesión H1b (`seed-usab.mjs`); SonarQube local, workflow `security` (Semgrep, Trivy, npm audit, gitleaks) y línea base |
