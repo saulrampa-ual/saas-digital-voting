@@ -30,13 +30,13 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Q-03 | ¿Se anotan RF-22 y RF-23 como fuera del MVP en la tabla 1.1? | C3 | ¿? |
 | Q-04 | ¿En P9 se depura el modelo de datos de sustitución del voto (`votes.status` `SUBSTITUTED`, RI-6/RI-8/RI-9) o se deja descrito? | C3 | ¿? |
 | Q-05 | ¿Se hace la sesión RNF-4 con cinco administradores o se declara pendiente en la memoria? | B4 | **Respondida (03/11):** la sesión con administradores ya se hizo. Falta pasar los datos: ver Q-11 |
-| Q-06 | ¿Fecha para el ensayo y para las cinco sesiones con votantes (H1b)? ¿Quiénes participan (sin datos reales)? | B2 | **Parcial (03/11):** sin fecha. Antes hay que preparar la elección y las personas votantes de prueba (tarea A11). ¿Fecha? |
+| Q-06 | ¿Fecha para el ensayo y para las cinco sesiones con votantes (H1b)? ¿Quiénes participan (sin datos reales)? | B2 | **Respondida (04/11):** ensayo el 08/11/2026 y sesiones H1b el 09/11/2026. Antes del ensayo, `seed-usab.mjs` tiene que funcionar con el stack real (A11) |
 | Q-07 | ¿Se prueba RF-05a con un IdP externo (p. ej. un segundo realm de Keycloak como «universidad») o se deja como limitación? | A9 | **Respondida (03/11):** sí, con las cuentas `@inlumine.ual.es` de 4 compañeros (Google Workspace). Plan en la sección 2b; falta Q-12 |
-| Q-08 | ¿Qué mejoras de `IMPROVEMENTS.md` se aprueban antes de la entrega? Propuesta en la sección 4 | D1–D5 | **Pendiente:** el autor pide propuesta; la IA recomienda D1, D2 y D5 ya, D3 con el despliegue y D4 si sobra tiempo. ¿Se aprueban? |
+| Q-08 | ¿Qué mejoras de `IMPROVEMENTS.md` se aprueban antes de la entrega? Propuesta en la sección 4 | D1–D5 | **Respondida (04/11, D-52):** se aprueban D1, D2 y D5 ya, D3 con el despliegue y D4 si queda tiempo |
 | Q-09 | ¿Cuándo se fusiona `dev` en `main` (al cerrar P7, o antes para tener una versión estable)? | E2 | **Respondida (03/11):** en fin de semana (sábado), después de implantar SonarQube y un análisis de seguridad gratuito similar a Fortify (sección 2c) |
 | Q-10 | ¿Qué fecha tiene la próxima revisión con el tutor y qué quiere ver? (marca el orden de C1–C4) | C | **En espera (03/11):** se le envió la memoria actualizada y aún no ha respondido. Las indicaciones de la reunión del 21/10/2026 ya están aplicadas (sección 7) |
-| Q-11 | Resultados de la sesión RNF-4: para cada administrador (A1–A5), ¿terminó crear, configurar y programar un proceso de opción única?, ¿cuánto tardó?, ¿necesitó ayuda (y de qué tipo)? Fecha de la sesión y si firmaron consentimiento | C1 | ¿? |
-| Q-12 | SSO con cuentas de la UAL: ¿los 4 compañeros aceptan por escrito que se usen sus correos solo para la prueba, en local y borrándolos después? ¿Tienes una cuenta de Google personal para crear el proyecto de Google Cloud? | A9 | ¿? |
+| Q-11 | Resultados de la sesión RNF-4: para cada administrador (A1–A5), ¿terminó crear, configurar y programar un proceso de opción única?, ¿cuánto tardó?, ¿necesitó ayuda (y de qué tipo)? Fecha de la sesión y si firmaron consentimiento | C1 | **Parcial (04/11):** sesión el 03/11/2026, consentimiento firmado, según el registro del autor todos terminaron sin ayuda. Falta, para A1–A5, si terminó y cuánto tardó cada uno, y aclarar si los 30 minutos son por administrador o de toda la sesión |
+| Q-12 | SSO con cuentas de la UAL: ¿los 4 compañeros aceptan por escrito que se usen sus correos solo para la prueba, en local y borrándolos después? ¿Tienes una cuenta de Google personal para crear el proyecto de Google Cloud? | A9 | **Parcial (04/11):** hay cuenta de Google para el proyecto de Google Cloud. Falta confirmar que los 4 compañeros aceptan por escrito |
 
 ---
 
@@ -127,7 +127,7 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
 
 ## 4. Mejoras opcionales (solo si se aprueban en Q-08)
 
-Propuesta de la IA (03/11): hacer ya D1, D2 y D5 (bajo coste y mejoran accesibilidad y seguridad), D3 al preparar
+**Aprobado por el autor el 04/11/2026 (Q-08, D-52).** Propuesta de la IA (03/11): hacer ya D1, D2 y D5 (bajo coste y mejoran accesibilidad y seguridad), D3 al preparar
 el despliegue y D4 si sobra tiempo. Las que más aportan antes de entregar, de más a menos:
 
 - [ ] **D1 · IMP-15**: aviso 2 minutos antes de que caduque la sesión de gestión (WCAG 2.2.1).
@@ -188,3 +188,4 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 03/11/2026 | — | Plan creado |
 | 03/11/2026 | Q-05, Q-07, Q-09, Q-10 | Respuestas del autor; añadidas A11, A12, secciones 2b, 2c y 7; B4 hecha |
 | 04/11/2026 | A11, F1–F4 | Script de la sesión H1b (`seed-usab.mjs`); SonarQube local, workflow `security` (Semgrep, Trivy, npm audit, gitleaks) y línea base |
+| 04/11/2026 | Q-06, Q-08, Q-11, Q-12; F5 | Respuestas del autor (D-52). Primer `security`: gitleaks y Semgrep pasan; Trivy falla por 429 de Maven Central (arreglado: `~/.m2` resuelto y montado). SonarQube: 401, token no válido |
