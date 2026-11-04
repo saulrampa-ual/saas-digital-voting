@@ -98,3 +98,12 @@ Revisión de los hallazgos de Semgrep:
 | `lazy-load-module` | `scripts/demo/lib/common.mjs:38` | WARNING | Aceptado: Playwright se carga desde el frontend solo en los scripts de demo locales |
 | `missing-template-string-indicator` (×108), `i18next-key-format` (×18) | Componentes Angular | INFO/WARNING | Ruido: reglas de JavaScript genérico e i18next que no aplican a plantillas Angular ni a `ngx-translate`. No están en los paquetes `p/…` del CI |
 | Error de análisis | `frontend/src/app/features/admin/processes/process-form.page.html:193` | — | El analizador HTML de Semgrep no entiende el *control flow* de Angular (`@if`). Sin efecto en el resultado |
+
+## Primera ejecución (F5, 04/11/2026)
+
+| Herramienta | Resultado | Acción |
+| --- | --- | --- |
+| gitleaks (CI) | Pasa | — |
+| Semgrep CE (CI, paquetes `p/…`) | Pasa el umbral `ERROR` | Falta revisar el informe completo (`semgrep-report`) |
+| Trivy (CI) | Error `FATAL`: Maven Central respondió `429 Too Many Requests` al descargar POM padre (p. ej. `spring-cloud-dependencies-parent`) desde la IP compartida del *runner*; no se generó `trivy-report.txt` y no se ejecutaron el umbral ni `npm audit` | El job resuelve antes las dependencias (`mvnw dependency:resolve`, caché de `~/.m2` con `setup-java`) y monta `~/.m2` en Trivy; el informe ya no corta el job y `npm audit` se ejecuta siempre. Pendiente de repetir |
+| SonarQube (local) | El escáner no arranca: `GET /api/v2/analysis/version` devuelve `401 Unauthorized` | Token no válido: generar uno nuevo («Global Analysis Token») y repetir. Sin cambios en el proyecto |
