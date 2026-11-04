@@ -42,6 +42,23 @@ el proceso no se puede editar y cada enlace personal admite un solo voto; por es
 
 ## 3. Montaje del escenario (una sola vez)
 
+**Opción automática (recomendada):** con todo el entorno arrancado, desde la raíz del repositorio:
+
+```
+set DEMO_PASSWORD=<contraseña de las cuentas de gestión de USAB, 12 caracteres o más>
+node scripts/demo/seed-usab.mjs
+```
+
+El script hace los pasos 1 a 5 de abajo y, además, crea un proceso de **ensayo** con su propio censo de dos entradas
+(`e1@verivoto.test`, `e2@verivoto.test`), para que el ensayo no gaste entradas del censo real. Espera las 9 invitaciones
+y la apertura (5 minutos por defecto; `USAB_OPEN_MINUTES`) y deja la hoja de la persona moderadora en
+`.local/sesion-usab.md` (fuera del repositorio): por cada entrada, su buzón filtrado en Mailpit y, solo como respaldo, su
+enlace personal. No abre enlaces, no pide códigos ni vota. Los procesos quedan abiertos 7 días (`USAB_DAYS`). Se puede
+volver a ejecutar para regenerar la hoja: reutiliza la organización, las cuentas, los censos y los procesos.
+
+**Opción manual:**
+
+
 1. Como superadministración, crear la organización `USAB` con `admin.usab@verivoto.test` como administración inicial
    (`api-testing.md`, apartado 3) y dar de alta `censo.usab@verivoto.test` con rol de gestión del censo. Fijar las
    contraseñas desde los correos de Mailpit.
