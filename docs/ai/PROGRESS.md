@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-02 · Rama: `dev` · Último merge: `feat/login-and-home-polish` (incluye `feat/role-home-dashboards`, IMP-44); sin push
+Última actualización: 2026-11-05 · Rama: `dev` (F5 fusionada en `2fb5f02` más las respuestas del autor) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar · sin push
 
 ## Hitos
 
@@ -230,7 +230,7 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Novedad del 04/11: ejecutar `seed-usab.mjs` con el stack real, la primera ejecución de SonarQube y revisar el primer resultado del workflow `security` (F5).
+Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Novedad del 04/11: ejecutar `seed-usab.mjs` con el stack real, la primera ejecución de SonarQube y revisar el primer resultado del workflow `security` (F5). Novedad del 05/11: escenario `USAB` preparado; antes del sábado 07/11 completar el consentimiento y confirmar participantes; ejecutar las pruebas de la rama `feat/voter-access-limit-jwt-audience` (D2, D5) y no fusionarla antes del 09/11; exportar las incidencias de SonarQube y los artefactos de `security` (F5).
 
 0. Autor: resolver las decisiones pendientes (modelo de sustitución en P9, RF-11 Could/Won't, «sin ayuda» en RNF-4, RF-22/RF-23 en la tabla 1.1).
 1. Cargar la demo UAL con `scripts/demo/seed-ual.mjs` (primer intento fallido al capturar el código de autorización;
@@ -242,9 +242,67 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
 
+## D2, D5, calendario H1b y respuestas del autor (05/11/2026)
+
+- **D2 · IMP-21 (límite por IP en el *gateway*)**, commit `4ec0efc` en `feat/voter-access-limit-jwt-audience` (sin fusionar): filtro estándar `RequestRateLimiter` de Spring Cloud
+  Gateway 5.0.3 en la ruta `voter-access`, con un `RateLimiter` propio en memoria (cubo de fichas por dirección IP; el
+  *gateway* WebFlux solo trae el de Redis) y un `KeyResolver` por dirección de la conexión (`X-Forwarded-For` solo con
+  `GATEWAY_TRUSTED_PROXIES` > 0). Paquete `com.saasvoting.gateway.ratelimit`; valores propuestos: ráfaga 120 y 120
+  peticiones/min (`GATEWAY_VOTER_ACCESS_RATE_LIMIT_CAPACITY`, `…_PER_MINUTE`); `…_ENABLED=false` lo desactiva (carga
+  H1c desde una sola máquina). Responde 429 con `Retry-After` y `X-RateLimit-Remaining`. En local todo el navegador
+  entra por el *proxy* de Angular (127.0.0.1): el límite es común a todos los usuarios locales. No guarda enlaces,
+  códigos ni identidades y no escribe logs (RNF-11). Comprobado en el entorno de la IA arrancando el *gateway* con las
+  bibliotecas reales del build (compilado con Java 21): 5 peticiones permitidas y 429 a la sexta con ráfaga 5, otras
+  rutas sin límite, `X-Forwarded-For` falso ignorado, recuperación tras `Retry-After` y desactivado sin límite.
+  Pruebas nuevas (no ejecutadas: sin Maven Central ni JUnit en el entorno de la IA): `TokenBucketRateLimiterTest`,
+  `ClientAddressKeyResolverTest`, `VoterAccessRateLimitIntegrationTest`.
+- **D5 · IMP-27 (audiencia del JWT)**, commit `72bdfba` en la misma rama (sin fusionar): los cuatro servicios exigen `aud` = `verivoto-api`
+  (`spring.security.oauth2.resourceserver.jwt.audiences`). Mapeador `oidc-audience-mapper` en `verivoto-admin`, las
+  cuatro cuentas de servicio y `verivoto-dev-swagger` (realm y fichero `dev`), y en los clientes de claves de API que
+  crea `KeycloakAdminClient` (RF-21). `verivoto-voter` no cambia: voter-access comprueba sus ID tokens (RF-05b) con un
+  decodificador propio (mismo emisor, sin la audiencia de la API) porque el del servidor de recursos ya la exige.
+  Prueba nueva `KeycloakAdminClientTest` (no ejecutada). Para un realm local ya importado:
+  `node scripts/dev/keycloak-api-audience.mjs` (idempotente; probado contra un Keycloak simulado). Quitar
+  `verivoto-dev-swagger` «en producción» no aplica sin despliegue (D-53); en local conserva la audiencia para Swagger.
+  Main de los cinco servicios compilado con Java 21 contra las bibliotecas reales; **sin compilar con Java 25 ni
+  ejecutar con Maven**.
+- **No mezclar D2/D5 con las sesiones H1b**: con D5 activo, un realm sin el mapeador rechaza todas las llamadas (401).
+  Propuesta: no fusionar la rama en `dev` hasta después de las sesiones del 09/11, o actualizar el realm antes.
+- **Q-06**: ensayo 08/11 y sesiones 09/11, viables solo con las tres condiciones de `PLAN.md` el sábado 07/11. Si
+  fallan, el autor propone 15/11 (ensayo) y 16/11 (sesiones), como fechas propuestas, no definitivas.
+- **Q-11 / A12**: `docs/evaluation/usabilidad/resultados-rnf4-administradores.md`; 5 participantes, 5 de 5 sin ayuda;
+  tiempos comunicados por el autor: 5, 5 y 6 min y 3,4 min para cada una de las otras dos personas, sin asignar a nadie.
+  5 de 5 en ≤ 10 min: RNF-4 se cumple con esos datos, a falta de Q-02 y de confirmar «sin formación previa».
+- **Q-12 (D-54)**: aceptación **verbal** de los 4 compañeros, sin constancia escrita; el autor no la pedirá por ahora.
+  Se registra como limitación de A9 (RNF-16), nunca como consentimiento documentado.
+
+- **Stack local**: los servicios arrancados el 03/11 siguen vivos tras suspender el equipo. El 05/11 a las 10:38
+  `arrancar.ps1` los encontró sanos y no los reinició, así que siguen siendo los JAR del 31/10 y el 03/11 (sin D2/D5).
+- **A11 · `seed-usab.mjs` con el stack real (05/11, 10:41)**: falla al crear la organización `USAB` con 503 «No se ha
+  podido contactar con el servicio de identidad». Causa (log de identity-service): Keycloak responde 400
+  `error-person-name-invalid-character` en `firstName`, porque el nombre de las cuentas de gestión llevaba paréntesis
+  («Administración USAB (prueba)») y el validador `person-name-prohibited-characters` del realm los prohíbe. Keycloak
+  rechazó el alta antes de crear nada y la organización no se guardó: no quedan datos a medias. Nombres corregidos en el
+  script («Administración de prueba USAB», «Gestión del censo de prueba USAB»). El 503 en vez de un error de validación
+  se registra como IMP-53.
+- **A11 · segundo intento (05/11)**: falla antes de crear nada, en `PUT …/users/{id}/reset-password` de `superadmin`
+  (400 `invalidPasswordHistoryMessage`). La política del realm (`length(12)`, `notUsername`, `notEmail`,
+  `passwordHistory(3)`) no admite ninguna de las 3 últimas contraseñas, y el script fija `DEMO_PASSWORD` en
+  `superadmin` en cada ejecución: repetirlo con la misma contraseña siempre falla (IMP-54). **La preparación de `USAB`
+  no está hecha** hasta que el script termine y exista `.local/sesion-usab.md`.
+- **A11 · tercer intento (05/11, 12:04)**: termina bien con una contraseña nueva: organización `USAB`, cuentas de
+  administración y censo, censo de 7 entradas, censo de ensayo de 2, procesos #4 (sesión) y #5 (ensayo) abiertos hasta
+  el 12/11/2026 a las 12:04, 9 invitaciones y `.local/sesion-usab.md`. **Escenario `USAB` preparado** (condición 1 de
+  Q-06). Si las sesiones pasan al 15–16/11, los procesos ya estarán cerrados y habrá que preparar otros.
+- D2 y D5 ya no están en el árbol de trabajo de `dev`: tienen commit en su rama y no deben fusionarse antes de las
+  sesiones del 09/11 ni sin las pruebas del autor; al fusionar, ejecutar `scripts/dev/keycloak-api-audience.mjs`.
+- Mejoras nuevas: IMP-50 (mensaje para el 429 del *gateway*), IMP-51 (el log de errores del *gateway* incluye el enlace
+  personal en la ruta), IMP-52 (`frontend/.scannerwork/` en `.gitignore`).
+
 ## F5 · SonarQube y CI (05/11/2026)
 
-- Rama `docs/f5-sonarqube-ci` (desde `dev` en `6c30035`), solo documentación de F5, sin commit.
+- Rama `docs/f5-sonarqube-ci` (desde `dev` en `6c30035`), solo documentación de F5: commit `a2e0fa9`, fusionada en
+  `dev` (`2fb5f02`).
 - SonarQube (captura del autor, análisis del 04/11): los dos *quality gates* en «Passed». Backend: seguridad D (6),
   fiabilidad C (5), mantenibilidad A (6), cobertura 18,8 %, duplicación 3,5 %. Frontend: seguridad A (0), fiabilidad D
   (12), mantenibilidad A (1), cobertura 0,0 %, duplicación 0,3 %. Pasar el *gate* no significa que no haya hallazgos.

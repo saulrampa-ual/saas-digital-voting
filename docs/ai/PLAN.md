@@ -30,13 +30,13 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Q-03 | ¿Se anotan RF-22 y RF-23 como fuera del MVP en la tabla 1.1? | C3 | ¿? |
 | Q-04 | ¿En P9 se depura el modelo de datos de sustitución del voto (`votes.status` `SUBSTITUTED`, RI-6/RI-8/RI-9) o se deja descrito? | C3 | ¿? |
 | Q-05 | ¿Se hace la sesión RNF-4 con cinco administradores o se declara pendiente en la memoria? | B4 | **Respondida (03/11):** la sesión con administradores ya se hizo. Falta pasar los datos: ver Q-11 |
-| Q-06 | ¿Fecha para el ensayo y para las cinco sesiones con votantes (H1b)? ¿Quiénes participan (sin datos reales)? | B2 | **Respondida (04/11):** ensayo el 08/11/2026 y sesiones H1b el 09/11/2026. Antes del ensayo, `seed-usab.mjs` tiene que funcionar con el stack real (A11) |
+| Q-06 | ¿Fecha para el ensayo y para las cinco sesiones con votantes (H1b)? ¿Quiénes participan (sin datos reales)? | B2 | **Respondida (05/11):** ensayo el domingo 08/11/2026 y cinco sesiones el lunes 09/11/2026, con el escenario sintético `USAB`, solo si el sábado 07/11 se cumplen tres condiciones: `seed-usab.mjs` ha funcionado con el stack real y existe `.local/sesion-usab.md`; el consentimiento tiene los datos institucionales y el contacto; hay cinco participantes y dos reservas confirmados. Si falla alguna, el autor propone ensayo el 15/11 y sesiones el 16/11/2026 (fechas propuestas, no definitivas). Estado el 05/11: **primera condición cumplida** (A11); faltan las otras dos. Los procesos #4 y #5 cierran el 12/11/2026 a las 12:04, así que con las fechas alternativas haría falta preparar un escenario nuevo |
 | Q-07 | ¿Se prueba RF-05a con un IdP externo (p. ej. un segundo realm de Keycloak como «universidad») o se deja como limitación? | A9 | **Respondida (03/11):** sí, con las cuentas `@inlumine.ual.es` de 4 compañeros (Google Workspace). Plan en la sección 2b; falta Q-12 |
 | Q-08 | ¿Qué mejoras de `IMPROVEMENTS.md` se aprueban antes de la entrega? Propuesta en la sección 4 | D1–D5 | **Respondida (04/11, D-52):** se aprueban D1, D2 y D5 ya, D3 con el despliegue y D4 si queda tiempo |
 | Q-09 | ¿Cuándo se fusiona `dev` en `main` (al cerrar P7, o antes para tener una versión estable)? | E2 | **Respondida (03/11):** en fin de semana (sábado), después de implantar SonarQube y un análisis de seguridad gratuito similar a Fortify (sección 2c) |
 | Q-10 | ¿Qué fecha tiene la próxima revisión con el tutor y qué quiere ver? (marca el orden de C1–C4) | C | **En espera (03/11):** se le envió la memoria actualizada y aún no ha respondido. Las indicaciones de la reunión del 21/10/2026 ya están aplicadas (sección 7) |
-| Q-11 | Resultados de la sesión RNF-4: para cada administrador (A1–A5), ¿terminó crear, configurar y programar un proceso de opción única?, ¿cuánto tardó?, ¿necesitó ayuda (y de qué tipo)? Fecha de la sesión y si firmaron consentimiento | C1 | **Parcial (04/11):** sesión el 03/11/2026, consentimiento firmado, según el registro del autor todos terminaron sin ayuda. Falta, para A1–A5, si terminó y cuánto tardó cada uno, y aclarar si los 30 minutos son por administrador o de toda la sesión |
-| Q-12 | SSO con cuentas de la UAL: ¿los 4 compañeros aceptan por escrito que se usen sus correos solo para la prueba, en local y borrándolos después? ¿Tienes una cuenta de Google personal para crear el proyecto de Google Cloud? | A9 | **Parcial (04/11):** hay cuenta de Google para el proyecto de Google Cloud. Falta confirmar que los 4 compañeros aceptan por escrito |
+| Q-11 | Resultados de la sesión RNF-4: para cada administrador (A1–A5), ¿terminó crear, configurar y programar un proceso de opción única?, ¿cuánto tardó?, ¿necesitó ayuda (y de qué tipo)? Fecha de la sesión y si firmaron consentimiento | C1 | **Respondida (05/11):** sesión el 03/11/2026, 5 participantes, consentimiento firmado, 5 de 5 terminaron sin ayuda. Tiempos comunicados por el autor: 5, 5 y 6 min (3 personas) y 3,4 min para cada una de las otras 2; ninguno se asigna a una persona concreta. Registro en `docs/evaluation/usabilidad/resultados-rnf4-administradores.md`: 5 de 5 en ≤ 10 min y sin ayuda, así que RNF-4 se cumple con los datos del autor, a falta de Q-02 y de confirmar que no tenían formación previa |
+| Q-12 | SSO con cuentas de la UAL: ¿los 4 compañeros aceptan por escrito que se usen sus correos solo para la prueba, en local y borrándolos después? ¿Tienes una cuenta de Google personal para crear el proyecto de Google Cloud? | A9 | **Respondida (05/11, D-54):** cuenta de Google Cloud creada. Los 4 compañeros dieron su aceptación **verbal** (uso de sus correos solo en la prueba, en local y borrado después). **No hay constancia escrita** y el autor no la pedirá por ahora: se registra como limitación, no como consentimiento documentado |
 
 ---
 
@@ -71,8 +71,18 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   entradas `p01…p05@verivoto.test` + `r1`, `r2`, papeleta neutra, proceso abierto 7 días) y un proceso de ensayo
   aparte; deja la hoja de la persona moderadora en `.local/sesion-usab.md` con el buzón de Mailpit de cada entrada.
   Probado contra un entorno simulado; **falta que el autor lo ejecute con el stack real** antes del ensayo (B2).
+  **05/11: la primera ejecución real falló** (503 al crear la organización: Keycloak rechaza los paréntesis en el nombre
+  de las cuentas de gestión). Nombres corregidos en el script. **Segundo intento (05/11): falló al restablecer la contraseña
+  de `superadmin`** (`invalidPasswordHistoryMessage`: la política del realm no admite ninguna de las 3 últimas
+  contraseñas y el script vuelve a fijar `DEMO_PASSWORD` en cada ejecución). Hay que repetir con una contraseña nueva
+  (IMP-54). **Tercer intento (05/11, 12:04): terminó bien** con una contraseña nueva: organización `USAB`, dos cuentas
+  de gestión, censo de 7 entradas, censo de ensayo de 2, procesos #4 (sesión) y #5 (ensayo) abiertos hasta el 12/11/2026
+  a las 12:04, 9 invitaciones y `.local/sesion-usab.md` generado. **Escenario `USAB` preparado.**
 - [ ] **A12 · Registrar la sesión RNF-4** (`IA`, tras Q-11): hoja de resultados de administradores en
-  `docs/evaluation/usabilidad/`, resultado como cantidades (x de 5) y su paso a la memoria (C1).
+  `docs/evaluation/usabilidad/`, resultado como cantidades (x de 5) y su paso a la memoria (C1). **En curso (05/11):**
+  `resultados-rnf4-administradores.md`: 5 de 5 sin ayuda y 5 de 5 en ≤ 10 min (5, 5, 6, 3,4 y 3,4 min, comunicados por el
+  autor y sin asignar a nadie). RNF-4 se cumple con esos datos; falta Q-02 y confirmar «sin formación previa» antes de
+  pasarlo a la memoria (C1).
 
 ## 2b. SSO con cuentas de la universidad (A9, RF-05a y RF-05b)
 
@@ -91,6 +101,7 @@ federar con Google sin pedir nada a informática:
 5. Riesgos: el administrador de Google Workspace de la UAL puede bloquear aplicaciones de terceros (probar primero
    con tu propia cuenta `@inlumine.ual.es`); los correos son datos personales reales: consentimiento, solo en local,
    nunca en el repositorio ni en capturas, y borrado al terminar (dejarlo anotado como limitación en la memoria).
+   Situación (05/11, D-54): aceptación verbal de los 4 compañeros, sin constancia escrita; se anota como limitación.
 
 ## 2c. Calidad y seguridad del código antes de pasar a `main` (Q-09)
 
@@ -136,10 +147,14 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
 el despliegue y D4 si sobra tiempo. Las que más aportan antes de entregar, de más a menos:
 
 - [ ] **D1 · IMP-15**: aviso 2 minutos antes de que caduque la sesión de gestión (WCAG 2.2.1).
-- [ ] **D2 · IMP-21**: límite de peticiones por IP en el *gateway* para `/api/v1/voter-access/**` (RNF-14).
-- [ ] **D3 · IMP-32**: cabeceras CSP, HSTS y `Referrer-Policy` en el despliegue del frontal.
+- [ ] **D2 · IMP-21**: límite de peticiones por IP en el *gateway* para `/api/v1/voter-access/**` (RNF-14). **En curso
+  (05/11):** commit `4ec0efc` en la rama `feat/voter-access-limit-jwt-audience`, sin fusionar; faltan las pruebas del autor.
+- [ ] **D3 · IMP-32**: cabeceras CSP, HSTS y `Referrer-Policy` en el despliegue del frontal. Solo si hay despliegue: el
+  TFM se ejecuta y evalúa en local y no está previsto desplegarlo (05/11, D-53).
 - [ ] **D4 · IMP-11 / IMP-40**: al suspender una organización, deshabilitar sus usuarios y claves de API en Keycloak.
-- [ ] **D5 · IMP-27**: comprobar la audiencia del JWT en cada servicio y quitar `verivoto-dev-swagger` en producción.
+- [ ] **D5 · IMP-27**: comprobar la audiencia del JWT en cada servicio y quitar `verivoto-dev-swagger` en producción
+  (esta segunda parte solo aplica si hay despliegue, D-53). **En curso (05/11):** commit `72bdfba` en la misma rama que D2, sin fusionar;
+  faltan las pruebas del autor y actualizar el realm local (`scripts/dev/keycloak-api-audience.mjs`).
 
 El resto de `IMPROVEMENTS.md` queda para P9 salvo que se decida otra cosa.
 
@@ -181,7 +196,7 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | Semanas | Foco |
 | --- | --- |
 | 03/11 – 16/11/2026 | A1–A6, A11, A12, B1 (preguntas), F1–F4 |
-| 17/11 – 30/11/2026 | A7, A8, A9 (SSO UAL), A10, B3, ensayo de B2, F5–F6; D1–D5 si se aprueban |
+| 17/11 – 30/11/2026 | A7, A8, A9 (SSO UAL), A10, B3, F5–F6; D1, D2 y D5 (aprobadas, D-52) |
 | 01/12 – 21/12/2026 | B2 (sesiones con votantes) |
 | 22/12/2026 – 10/01/2027 | C1, C2, C3, E1 |
 | 11/01 – 27/01/2027 | C4, E2, E3 |
@@ -195,3 +210,7 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 04/11/2026 | A11, F1–F4 | Script de la sesión H1b (`seed-usab.mjs`); SonarQube local, workflow `security` (Semgrep, Trivy, npm audit, gitleaks) y línea base |
 | 04/11/2026 | Q-06, Q-08, Q-11, Q-12; F5 | Respuestas del autor (D-52). Primer `security`: gitleaks y Semgrep pasan; Trivy falla por 429 de Maven Central (arreglado: `~/.m2` resuelto y montado). SonarQube: 401, token no válido |
 | 05/11/2026 | F5 | SonarQube: *quality gates* «Passed» con seguridad D en backend y fiabilidad D en frontend (captura); clasificación pendiente. `build` en verde; `security` sin verificar |
+| 05/11/2026 | Q-06, Q-11, Q-12, A12, F5, D2, D5 | Condiciones del calendario H1b; RNF-4 registrado como agregado (PENDIENTE); aceptación verbal en Q-12; resultado comunicado de F5; D2 y D5 implementados sin commit |
+| 05/11/2026 | Q-06, Q-11, Q-12 (D-54), A11, F5 | Segunda tanda de respuestas: fechas alternativas 15–16/11 como propuesta; RNF-4 con 2 tiempos declarados (PENDIENTE); aceptación verbal como limitación; `seed-usab.mjs` falla con el stack real (nombres con paréntesis), corregido sin repetir; métricas de SonarQube de la captura |
+| 05/11/2026 | Q-11, A11 | Tercera tanda: RNF-4 con 3 tiempos confirmados (5, 5 y 6 min; PENDIENTE, 3 de 5); `seed-usab.mjs` falla por el historial de contraseñas (IMP-54); F5 en la rama `docs/f5-sonarqube-ci` |
+| 05/11/2026 | A11, Q-06, Q-11, F5, D2, D5 | `seed-usab.mjs` termina con el stack real (escenario `USAB` preparado); RNF-4 con los 5 tiempos del autor (5 de 5 ≤ 10 min); F5 fusionada en `dev`; D2 y D5 con commit en su rama, sin fusionar |
