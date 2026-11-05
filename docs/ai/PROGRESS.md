@@ -242,6 +242,17 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
 
+## F5 · SonarQube y CI (05/11/2026)
+
+- Rama `docs/f5-sonarqube-ci` (desde `dev` en `6c30035`), solo documentación de F5, sin commit.
+- SonarQube (captura del autor, análisis del 04/11): los dos *quality gates* en «Passed». Backend: seguridad D (6),
+  fiabilidad C (5), mantenibilidad A (6), cobertura 18,8 %, duplicación 3,5 %. Frontend: seguridad A (0), fiabilidad D
+  (12), mantenibilidad A (1), cobertura 0,0 %, duplicación 0,3 %. Pasar el *gate* no significa que no haya hallazgos.
+- Workflow `build` (ejecución 41829391258): los tres jobs en verde y Vitest 19 de 19 (captura). Workflow `security`:
+  sin verificar; solo consta la comunicación del autor.
+- Pendiente: exportar la lista de incidencias de SonarQube y los artefactos `semgrep-report` y `trivy-report` a `.local/`,
+  clasificar cada hallazgo (real / falso positivo / aceptado) y corregir los reales antes de F6.
+
 ## Sesión H1b y calidad del código (04/11/2026)
 
 - A11 (`feat/usability-session-seed`, `d5608f9`, en `dev`): `scripts/demo/seed-usab.mjs` monta el escenario `USAB` de

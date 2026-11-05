@@ -111,6 +111,11 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
 - [ ] **F5 · Corregir lo que salga** (`IA`): mirar el primer resultado del workflow `security` en GitHub (las
   vulnerabilidades de Maven solo se ven allí) y el *quality gate* de SonarQube; pendientes de la línea base: IMP-46
   (Actions de `build.yml` por SHA), IMP-47, IMP-48 e IMP-49 (necesitan aprobación). Anotar los resultados en la memoria.
+  **En curso (05/11):** SonarQube, según la captura del autor: los dos *quality gates* en «Passed»; backend con seguridad
+  D (6 incidencias), fiabilidad C (5), mantenibilidad A (6) y cobertura 18,8 %; frontend con seguridad A (0), fiabilidad D
+  (12), mantenibilidad A (1) y cobertura 0,0 %. Clasificación pendiente hasta exportar la lista de incidencias. Workflow
+  `build`: todo en verde y Vitest 19 de 19 (captura). Workflow `security`: sin verificar (solo comunicación del autor);
+  faltan `semgrep-report` y `trivy-report`. Detalle y pasos de exportación en `docs/architecture/quality-and-security.md`.
 - [ ] **F6 · Primer `dev` → `main`** (`Autor`, sábado tras F1–F5).
 
 ## 3. Necesitan al autor
@@ -189,3 +194,4 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 03/11/2026 | Q-05, Q-07, Q-09, Q-10 | Respuestas del autor; añadidas A11, A12, secciones 2b, 2c y 7; B4 hecha |
 | 04/11/2026 | A11, F1–F4 | Script de la sesión H1b (`seed-usab.mjs`); SonarQube local, workflow `security` (Semgrep, Trivy, npm audit, gitleaks) y línea base |
 | 04/11/2026 | Q-06, Q-08, Q-11, Q-12; F5 | Respuestas del autor (D-52). Primer `security`: gitleaks y Semgrep pasan; Trivy falla por 429 de Maven Central (arreglado: `~/.m2` resuelto y montado). SonarQube: 401, token no válido |
+| 05/11/2026 | F5 | SonarQube: *quality gates* «Passed» con seguridad D en backend y fiabilidad D en frontend (captura); clasificación pendiente. `build` en verde; `security` sin verificar |

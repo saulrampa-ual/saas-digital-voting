@@ -107,3 +107,57 @@ Revisión de los hallazgos de Semgrep:
 | Semgrep CE (CI, paquetes `p/…`) | Pasa el umbral `ERROR` | Falta revisar el informe completo (`semgrep-report`) |
 | Trivy (CI) | Error `FATAL`: Maven Central respondió `429 Too Many Requests` al descargar POM padre (p. ej. `spring-cloud-dependencies-parent`) desde la IP compartida del *runner*; no se generó `trivy-report.txt` y no se ejecutaron el umbral ni `npm audit` | El job resuelve antes las dependencias (`mvnw dependency:resolve`, caché de `~/.m2` con `setup-java`) y monta `~/.m2` en Trivy; el informe ya no corta el job y `npm audit` se ejecuta siempre. Pendiente de repetir |
 | SonarQube (local) | El escáner no arranca: `GET /api/v2/analysis/version` devuelve `401 Unauthorized` | Token no válido: generar uno nuevo («Global Analysis Token») y repetir. Sin cambios en el proyecto |
+
+### Segunda ejecución (commit `6c30035`)
+
+Qué está comprobado y qué no. La IA no tiene acceso a GitHub Actions ni al SonarQube local: separa lo que ha podido
+verificar (ficheros del repositorio y capturas del autor) de lo que el autor solo ha comunicado.
+
+| Herramienta | Resultado | Fuente |
+| --- | --- | --- |
+| Workflow `security` (gitleaks, Semgrep CE, Trivy y `npm audit`) | Sin verificar: no hay captura, registros ni artefactos de este workflow. Solo consta lo que comunicó el autor el 05/11/2026 (que aparecía en verde) | Comunicación del autor |
+| Workflow `build` (ejecución 41829391258) | Tres jobs en verde (backend con Java 25 y cobertura, compose, frontend); Vitest: 4 de 4 ficheros y 19 de 19 pruebas | Captura del autor (05/11/2026) |
+| Semgrep CE, hallazgos por debajo de `ERROR` | Sin revisar | Falta el artefacto `semgrep-report` (`semgrep.sarif`) |
+| Trivy, hallazgos por debajo de `HIGH`/`CRITICAL` o sin corrección | Sin revisar | Falta el artefacto `trivy-report` (`trivy-report.txt`) |
+| SonarQube, análisis enviados | `verivoto-backend` y `verivoto-frontend` analizados el 04/11/2026 contra SonarQube 26.10.0.133078 | Comprobado: `backend/target/sonar/report-task.txt` y `frontend/.scannerwork/report-task.txt` |
+| SonarQube, *quality gate* | «Passed» en los dos proyectos | Captura del autor (05/11/2026) |
+| SonarQube, métricas | Ver la tabla siguiente | Captura del autor (05/11/2026) |
+
+Métricas de SonarQube según la captura (análisis del 04/11/2026; número de incidencias abiertas y calificación):
+
+| Proyecto | Líneas | Seguridad | Fiabilidad | Mantenibilidad | *Hotspots* revisados | Cobertura | Duplicación |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `verivoto-backend` (Java, XML) | 14k | D · 6 | C · 5 | A · 6 | A · «—» | 18,8 % | 3,5 % |
+| `verivoto-frontend` (TypeScript, HTML…) | 7,1k | A · 0 | D · 12 | A · 1 | A · «—» | 0,0 % | 0,3 % |
+
+En la escala de SonarQube, una D significa que hay al menos una incidencia de severidad alta: la D de seguridad del
+backend (el filtro lateral de la captura muestra un proyecto con «≥ 1 high issue») y la D de fiabilidad del frontend. La
+cobertura del frontend es 0 % porque todavía no se publica `lcov` (F1, IMP-49).
+
+**Clasificación de las incidencias: PENDIENTE.** Sin la lista exportada no se conocen sus reglas, tipos, severidades
+exactas ni causas, y no se anotan. Cuando esté exportada (pasos de abajo), cada incidencia se clasifica como real, falso
+positivo o aceptada en una tabla como la de Semgrep de la línea base, y las reales se corrigen en ramas `fix/*`.
+
+Pasar el *quality gate* no quiere decir que no haya hallazgos. El *gate* por defecto («Sonar way») mira sobre todo el
+código nuevo, y en el primer análisis todavía no hay código nuevo con el que comparar. Por eso SonarQube puede dar «Passed» y a la vez
+mostrar problemas, *hotspots* sin revisar o una cobertura baja. Esos datos se anotan aparte, cuando se exporten.
+
+Para completar F5 hay que llevar los datos a `.local/` (carpeta ignorada por git) y que la IA los clasifique como
+real, falso positivo o aceptado:
+
+1. Artefactos del CI: GitHub → *Actions* → ejecución `security` de `6c30035` → *Artifacts* → descargar
+   `semgrep-report` y `trivy-report` y descomprimirlos en `.local/ci/`.
+2. *Quality gate*, lista de incidencias y *hotspots* de SonarQube (PowerShell, desde la raíz del repositorio y con
+   `$env:SONAR_TOKEN` definido):
+
+   ```powershell
+   $h = @{ Authorization = "Bearer $env:SONAR_TOKEN" }; New-Item -ItemType Directory -Force .local\sonar | Out-Null
+   foreach ($k in 'verivoto-backend', 'verivoto-frontend') {
+     Invoke-RestMethod "http://localhost:9000/api/qualitygates/project_status?projectKey=$k" -Headers $h |
+       ConvertTo-Json -Depth 10 | Out-File ".local\sonar\$k-gate.json" -Encoding utf8
+     Invoke-RestMethod "http://localhost:9000/api/issues/search?components=$k&resolved=false&ps=500" -Headers $h |
+       ConvertTo-Json -Depth 10 | Out-File ".local\sonar\$k-issues.json" -Encoding utf8
+     Invoke-RestMethod "http://localhost:9000/api/hotspots/search?project=$k&ps=500" -Headers $h |
+       ConvertTo-Json -Depth 10 | Out-File ".local\sonar\$k-hotspots.json" -Encoding utf8
+   }
+   ```
