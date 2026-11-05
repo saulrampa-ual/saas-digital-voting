@@ -44,6 +44,9 @@ environment-report.txt
 # === Claude Code (ajustes locales) ===
 .claude/settings.local.json
 
+# === SonarQube: carpeta de trabajo del escáner (F1, IMP-52) ===
+.scannerwork/
+
 # === Herramientas locales de IDE ===
 .github/modernize/
 
