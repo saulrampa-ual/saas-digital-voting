@@ -2,6 +2,15 @@
 
 **Estudio:** evaluación de una plataforma de votación digital mediante un proceso de prueba.
 
+**Trabajo Fin de Máster:** «Diseño e implementación de una plataforma SaaS de votación digital segura y auditable para
+organizaciones con arquitectura cloud multi-tenant y API abierta». Máster Universitario en Ingeniería Informática,
+Universidad de Almería, curso 2026/2027.
+
+**Responsable:** Saul David Ramos Pacheco (autor del TFM). **Tutor:** Javier Criado Rodríguez (Departamento de
+Informática, Universidad de Almería).
+
+**Contacto para dudas sobre el estudio:** srp207@inlumine.ual.es
+
 La sesión consiste en navegar por un proceso de prueba, emitir un voto sintético, localizar un recibo y explicar qué
 entiende de su verificación. No se utilizan elecciones reales ni se solicitan opiniones políticas. La actividad dura
 entre 10 y 15 minutos.
@@ -25,5 +34,5 @@ Firma o confirmación de la persona participante: ______________________________
 
 Confirmación de la persona moderadora: ______________________________________
 
-**Nota para quien organiza la sesión:** completar los datos institucionales y el canal de contacto responsable antes
-de usar este documento. No recopilar datos identificativos en la hoja de resultados.
+**Nota para quien organiza la sesión:** imprimir dos copias (una para la persona participante y otra para el
+responsable). No recopilar datos identificativos en la hoja de resultados.

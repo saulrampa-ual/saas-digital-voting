@@ -26,7 +26,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | ID | Pregunta | Desbloquea | Respuesta |
 | --- | --- | --- | --- |
 | Q-01 | ¿RF-11 (revoto) queda como «Could» o pasa a «Won't» en la tabla 4.3? | C3 | ¿? |
-| Q-02 | ¿«Sin ayuda» en RNF-4 excluye también consultar la documentación? (marcador `[PENDIENTE DEL AUTOR]` en `especificacion_detallada.tex`) | C3, B4 | ¿? |
+| Q-02 | ¿«Sin ayuda» en RNF-4 excluye también consultar la documentación? (marcador `[PENDIENTE DEL AUTOR]` en `especificacion_detallada.tex`) | C3, B4 | **Respondida (05/11, D-55):** «sin ayuda» = sin intervención de personas; consultar la documentación sí está permitido. Marcador de `especificacion_detallada.tex` resuelto |
 | Q-03 | ¿Se anotan RF-22 y RF-23 como fuera del MVP en la tabla 1.1? | C3 | ¿? |
 | Q-04 | ¿En P9 se depura el modelo de datos de sustitución del voto (`votes.status` `SUBSTITUTED`, RI-6/RI-8/RI-9) o se deja descrito? | C3 | ¿? |
 | Q-05 | ¿Se hace la sesión RNF-4 con cinco administradores o se declara pendiente en la memoria? | B4 | **Respondida (03/11):** la sesión con administradores ya se hizo. Falta pasar los datos: ver Q-11 |
@@ -35,7 +35,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Q-08 | ¿Qué mejoras de `IMPROVEMENTS.md` se aprueban antes de la entrega? Propuesta en la sección 4 | D1–D5 | **Respondida (04/11, D-52):** se aprueban D1, D2 y D5 ya, D3 con el despliegue y D4 si queda tiempo |
 | Q-09 | ¿Cuándo se fusiona `dev` en `main` (al cerrar P7, o antes para tener una versión estable)? | E2 | **Respondida (03/11):** en fin de semana (sábado), después de implantar SonarQube y un análisis de seguridad gratuito similar a Fortify (sección 2c) |
 | Q-10 | ¿Qué fecha tiene la próxima revisión con el tutor y qué quiere ver? (marca el orden de C1–C4) | C | **En espera (03/11):** se le envió la memoria actualizada y aún no ha respondido. Las indicaciones de la reunión del 21/10/2026 ya están aplicadas (sección 7) |
-| Q-11 | Resultados de la sesión RNF-4: para cada administrador (A1–A5), ¿terminó crear, configurar y programar un proceso de opción única?, ¿cuánto tardó?, ¿necesitó ayuda (y de qué tipo)? Fecha de la sesión y si firmaron consentimiento | C1 | **Respondida (05/11):** sesión el 03/11/2026, 5 participantes, consentimiento firmado, 5 de 5 terminaron sin ayuda. Tiempos comunicados por el autor: 5, 5 y 6 min (3 personas) y 3,4 min para cada una de las otras 2; ninguno se asigna a una persona concreta. Registro en `docs/evaluation/usabilidad/resultados-rnf4-administradores.md`: 5 de 5 en ≤ 10 min y sin ayuda, así que RNF-4 se cumple con los datos del autor, a falta de Q-02 y de confirmar que no tenían formación previa |
+| Q-11 | Resultados de la sesión RNF-4: para cada administrador (A1–A5), ¿terminó crear, configurar y programar un proceso de opción única?, ¿cuánto tardó?, ¿necesitó ayuda (y de qué tipo)? Fecha de la sesión y si firmaron consentimiento | C1 | **Respondida (05/11):** sesión el 03/11/2026, 5 participantes, consentimiento firmado, 5 de 5 sin ayuda de personas (D-55). Tiempos **estimados** por el autor después de la sesión, no medidos: 5, 5, 6, 3,4 y 3,4 min, sin asignar a nadie. **Alguno de los participantes tenía formación previa** (falta saber cuántos). RNF-4 no se puede declarar aceptado: resultado indicativo favorable (ver `docs/evaluation/usabilidad/resultados-rnf4-administradores.md`) |
 | Q-12 | SSO con cuentas de la UAL: ¿los 4 compañeros aceptan por escrito que se usen sus correos solo para la prueba, en local y borrándolos después? ¿Tienes una cuenta de Google personal para crear el proyecto de Google Cloud? | A9 | **Respondida (05/11, D-54):** cuenta de Google Cloud creada. Los 4 compañeros dieron su aceptación **verbal** (uso de sus correos solo en la prueba, en local y borrado después). **No hay constancia escrita** y el autor no la pedirá por ahora: se registra como limitación, no como consentimiento documentado |
 
 ---
@@ -80,9 +80,9 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   a las 12:04, 9 invitaciones y `.local/sesion-usab.md` generado. **Escenario `USAB` preparado.**
 - [ ] **A12 · Registrar la sesión RNF-4** (`IA`, tras Q-11): hoja de resultados de administradores en
   `docs/evaluation/usabilidad/`, resultado como cantidades (x de 5) y su paso a la memoria (C1). **En curso (05/11):**
-  `resultados-rnf4-administradores.md`: 5 de 5 sin ayuda y 5 de 5 en ≤ 10 min (5, 5, 6, 3,4 y 3,4 min, comunicados por el
-  autor y sin asignar a nadie). RNF-4 se cumple con esos datos; falta Q-02 y confirmar «sin formación previa» antes de
-  pasarlo a la memoria (C1).
+  `resultados-rnf4-administradores.md`: 5 de 5 sin ayuda de personas; tiempos estimados ≤ 10 min en 5 de 5; alguno con
+  formación previa. RNF-4 **no demostrado** (indicativo favorable): falta saber cuántos tenían formación previa; con
+  tiempos estimados no se puede verificar el umbral de 10 min.
 
 ## 2b. SSO con cuentas de la universidad (A9, RF-05a y RF-05b)
 
@@ -139,7 +139,7 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
 - [ ] **B3 · Revisión manual de accesibilidad** (`Autor`, parte manual de H1a): teclado y lector de pantalla
   (NVDA o Narrador) en acceso, voto y recibo siguiendo `docs/evaluation/accesibilidad-manual.md`.
 - [x] **B4 · RNF-4 con administradores** (`Autor`): sesión realizada (comunicado el 03/11/2026). Falta registrar
-  los datos (Q-11 → A12) y fijar la definición de «sin ayuda» (Q-02).
+  los datos (Q-11 → A12; hecho el 05/11) y fijar la definición de «sin ayuda» (Q-02; hecho, D-55).
 
 ## 4. Mejoras opcionales (solo si se aprueban en Q-08)
 
@@ -214,3 +214,4 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 05/11/2026 | Q-06, Q-11, Q-12 (D-54), A11, F5 | Segunda tanda de respuestas: fechas alternativas 15–16/11 como propuesta; RNF-4 con 2 tiempos declarados (PENDIENTE); aceptación verbal como limitación; `seed-usab.mjs` falla con el stack real (nombres con paréntesis), corregido sin repetir; métricas de SonarQube de la captura |
 | 05/11/2026 | Q-11, A11 | Tercera tanda: RNF-4 con 3 tiempos confirmados (5, 5 y 6 min; PENDIENTE, 3 de 5); `seed-usab.mjs` falla por el historial de contraseñas (IMP-54); F5 en la rama `docs/f5-sonarqube-ci` |
 | 05/11/2026 | A11, Q-06, Q-11, F5, D2, D5 | `seed-usab.mjs` termina con el stack real (escenario `USAB` preparado); RNF-4 con los 5 tiempos del autor (5 de 5 ≤ 10 min); F5 fusionada en `dev`; D2 y D5 con commit en su rama, sin fusionar |
+| 05/11/2026 | Q-02, Q-11, IMP-52, B2 | D-55 («sin ayuda» admite documentación); tiempos RNF-4 estimados y alguno con formación previa: RNF-4 no demostrado; consentimiento completado con los datos institucionales; IMP-52 hecha |
