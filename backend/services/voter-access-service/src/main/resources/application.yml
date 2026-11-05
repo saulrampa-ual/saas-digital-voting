@@ -31,6 +31,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${VOTER_ACCESS_OIDC_ISSUER_URI:http://localhost:8080/realms/verivoto}
+          # IMP-27 (D-52, threat T-05): only access tokens with the API audience (audience mapper of the realm clients)
+          audiences: verivoto-api
   mail:
     # Mailpit in local development (infra/compose.yaml); real SMTP with TLS and credentials in production
     host: ${VOTER_ACCESS_SMTP_HOST:localhost}
