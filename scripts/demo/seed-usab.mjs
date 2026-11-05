@@ -27,8 +27,9 @@ import {
 
 const ORG = { id: 'USAB', name: 'Organización de prueba (usabilidad)' };
 const MANAGERS = {
-  admin: { fullName: 'Administración USAB (prueba)', email: 'admin.usab@verivoto.test', role: 'ADMIN' },
-  censo: { fullName: 'Gestión del censo USAB (prueba)', email: 'censo.usab@verivoto.test', role: 'CENSUS_MANAGER' },
+  // No ( ) or other characters forbidden by Keycloak's person-name validator: they make the user creation fail (503)
+  admin: { fullName: 'Administración de prueba USAB', email: 'admin.usab@verivoto.test', role: 'ADMIN' },
+  censo: { fullName: 'Gestión del censo de prueba USAB', email: 'censo.usab@verivoto.test', role: 'CENSUS_MANAGER' },
 };
 const CSV_PATH = join(ROOT, 'docs', 'evaluation', 'usabilidad', 'censo-sesion.csv');
 const OPEN_MINUTES = Math.max(2, Number(process.env.USAB_OPEN_MINUTES ?? 5));
