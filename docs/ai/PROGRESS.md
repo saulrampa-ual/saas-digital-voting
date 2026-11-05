@@ -270,9 +270,10 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
   Propuesta: no fusionar la rama en `dev` hasta después de las sesiones del 09/11, o actualizar el realm antes.
 - **Q-06**: ensayo 08/11 y sesiones 09/11, viables solo con las tres condiciones de `PLAN.md` el sábado 07/11. Si
   fallan, el autor propone 15/11 (ensayo) y 16/11 (sesiones), como fechas propuestas, no definitivas.
-- **Q-11 / A12**: `docs/evaluation/usabilidad/resultados-rnf4-administradores.md`; 5 participantes, 5 de 5 sin ayuda;
-  tiempos comunicados por el autor: 5, 5 y 6 min y 3,4 min para cada una de las otras dos personas, sin asignar a nadie.
-  5 de 5 en ≤ 10 min: RNF-4 se cumple con esos datos, a falta de Q-02 y de confirmar «sin formación previa».
+- **Q-11 / A12**: `docs/evaluation/usabilidad/resultados-rnf4-administradores.md`; 5 participantes, 5 de 5 sin ayuda de
+  personas (Q-02 resuelta en D-55: la documentación sí se podía consultar). Tiempos **estimados** por el autor (5, 5, 6,
+  3,4 y 3,4 min) y **alguno con formación previa**: RNF-4 no demostrado, resultado indicativo favorable. Falta saber
+  cuántos tenían formación previa.
 - **Q-12 (D-54)**: aceptación **verbal** de los 4 compañeros, sin constancia escrita; el autor no la pedirá por ahora.
   Se registra como limitación de A9 (RNF-16), nunca como consentimiento documentado.
 
@@ -297,7 +298,8 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
 - D2 y D5 ya no están en el árbol de trabajo de `dev`: tienen commit en su rama y no deben fusionarse antes de las
   sesiones del 09/11 ni sin las pruebas del autor; al fusionar, ejecutar `scripts/dev/keycloak-api-audience.mjs`.
 - Mejoras nuevas: IMP-50 (mensaje para el 429 del *gateway*), IMP-51 (el log de errores del *gateway* incluye el enlace
-  personal en la ruta), IMP-52 (`frontend/.scannerwork/` en `.gitignore`).
+  personal en la ruta), IMP-52 (`.scannerwork/` en `.gitignore`; aprobada y hecha el 05/11, `333c27e`).
+- Consentimiento de la sesión H1b completado con los datos institucionales y el contacto del autor (condición 2 de Q-06).
 
 ## F5 · SonarQube y CI (05/11/2026)
 
