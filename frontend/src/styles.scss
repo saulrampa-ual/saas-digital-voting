@@ -54,7 +54,24 @@ ion-card {
 
 /* Management console blocks shared by A2, A3 and A4 (same look as the prototypes). Scoped to app-admin-page so the voter area keeps its own styles. */
 app-admin-page {
-  .back { display: inline-block; margin-bottom: 0.5rem; color: var(--ion-color-primary); min-height: 44px; line-height: 44px; }
+  /* SR1/SR4/SR5: "back" is a ghost button (44 px target, arrow icon) aligned with the page title. */
+  .back {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 0 0 4px -10px; padding: 0 14px 0 10px;
+    border-radius: var(--vv-radius-control); color: var(--ion-color-primary); font-weight: 600; text-decoration: none;
+  }
+  .back ion-icon { font-size: 20px; flex: none; }
+  .back:hover { background: #eaeff5; }
+  .back:active { background: #d8e1ec; }
+  /* SR4/SR5: secondary navigation actions ("Ver participación", "Ver resultados"...) look like outlined buttons. */
+  .action-link {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px;
+    border: 1.5px solid #7b8794; border-radius: var(--vv-radius-control); background: #fff;
+    color: var(--ion-color-primary); font-weight: 600; text-decoration: none; text-align: center;
+  }
+  .action-link ion-icon { font-size: 20px; flex: none; }
+  .action-link:hover { background: #eaeff5; }
+  .action-link:active { background: #d8e1ec; }
+  @media (max-width: 767.98px) { .action-link { display: flex; width: 100%; } }
   .card { background: #fff; border: 1px solid var(--vv-border-color); border-radius: var(--vv-radius-card); padding: 20px; margin-bottom: 16px; }
   .card h3 { margin: 0 0 12px; font-size: 1.125rem; font-weight: 600; }
   .notice { background: #e6f4ee; color: var(--ion-color-success); padding: 12px 16px; border-radius: var(--vv-radius-control); font-weight: 600; }

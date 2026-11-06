@@ -81,8 +81,8 @@ const REFRESH_MS = 15_000;
         <p class="info-box lock"><ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>
           <span><strong>{{ 'admin.participation.lockTitle' | translate }}</strong> {{ 'admin.participation.lockText' | translate }}</span></p>
         @if (d.status === 'TALLIED' || d.status === 'ARCHIVED') {
-          <a class="link" [routerLink]="['/admin/resultados']" [queryParams]="{ proceso: d.processId }">
-            {{ 'admin.participation.seeResults' | translate }} →</a>
+          <a class="action-link" [routerLink]="['/admin/resultados']" [queryParams]="{ proceso: d.processId }">
+            <ion-icon name="document-text-outline" aria-hidden="true"></ion-icon>{{ 'admin.participation.seeResults' | translate }}</a>
         }
       }
     </app-admin-page>
@@ -108,7 +108,7 @@ const REFRESH_MS = 15_000;
     .help { color: var(--ion-color-medium); font-size: 0.875rem; }
     .lock { display: flex; gap: 8px; align-items: flex-start; margin-top: 24px; }
     .lock ion-icon { flex: none; margin-top: 3px; }
-    .link { display: inline-block; margin-top: 12px; min-height: 44px; line-height: 44px; color: var(--ion-color-primary); font-weight: 600; }
+    .action-link { margin-top: 12px; }
   `,
 })
 export class ParticipationPage implements OnDestroy {

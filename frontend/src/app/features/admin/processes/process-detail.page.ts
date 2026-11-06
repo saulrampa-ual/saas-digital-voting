@@ -47,9 +47,9 @@ export class ProcessDetailPage {
     if (!status || status === 'DRAFT') return [];
     const closed = ['CLOSED', 'TALLIED', 'ARCHIVED'].includes(status);
     return [
-      ...(this.canManage ? [{ path: '/admin/participacion', key: 'admin.process.links.participation' }] : []),
-      ...(closed ? [{ path: '/admin/resultados', key: 'admin.process.links.results' }] : []),
-      ...(this.isAuditor ? [{ path: '/admin/auditoria', key: 'admin.process.links.audit' }] : []),
+      ...(this.canManage ? [{ path: '/admin/participacion', key: 'admin.process.links.participation', icon: 'bar-chart-outline' }] : []),
+      ...(closed ? [{ path: '/admin/resultados', key: 'admin.process.links.results', icon: 'document-text-outline' }] : []),
+      ...(this.isAuditor ? [{ path: '/admin/auditoria', key: 'admin.process.links.audit', icon: 'shield-checkmark-outline' }] : []),
     ];
   });
   protected readonly statuses = PROCESS_STATUSES;

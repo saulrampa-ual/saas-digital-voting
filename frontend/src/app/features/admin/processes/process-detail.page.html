@@ -5,7 +5,7 @@
     <ion-text color="danger"><p role="alert">{{ 'common.loadError' | translate }}</p></ion-text>
   } @else {
     @let p = process()!;
-    <a class="back" routerLink="/admin/procesos">← {{ 'admin.process.backToList' | translate }}</a>
+    <a class="back" routerLink="/admin/procesos"><ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon>{{ 'admin.process.backToList' | translate }}</a>
     <h2 class="name">{{ p.title | localized: language() : p.defaultLanguage }}</h2>
     <p class="meta">
       <app-status-badge [status]="p.status" />
@@ -60,7 +60,7 @@
         @if (links().length) {
           <nav class="links" [attr.aria-label]="'admin.process.links.label' | translate">
             @for (l of links(); track l.path) {
-              <a [routerLink]="l.path" [queryParams]="{ proceso: p.id }">{{ l.key | translate }} →</a>
+              <a class="action-link" [routerLink]="l.path" [queryParams]="{ proceso: p.id }"><ion-icon [name]="l.icon" aria-hidden="true"></ion-icon>{{ l.key | translate }}</a>
             }
           </nav>
         }

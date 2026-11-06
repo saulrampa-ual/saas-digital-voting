@@ -34,5 +34,4 @@
 .summary div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; }
 .summary dt { color: var(--ion-color-medium); font-size: 0.875rem; }
 .summary dd { margin: 0; font-weight: 600; }
-.links { display: flex; flex-direction: column; margin: 8px 0 12px; }
-.links a { min-height: 44px; line-height: 44px; color: var(--ion-color-primary); font-weight: 600; }
+.links { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
