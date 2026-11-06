@@ -128,6 +128,8 @@ const PAGE_SIZE = 50;
       td { border: 0; padding: 2px 0; display: flex; gap: 8px; }
       td[data-label]::before { content: attr(data-label); flex: 0 0 35%; color: var(--ion-color-medium); font-size: 0.875rem; }
       td > * { min-width: 0; }
+      /* The visually hidden header row kept its table width and left a phantom horizontal scroll at 320 px. */
+      .table-wrap { overflow-x: clip; }
     }
   `,
 })
