@@ -365,3 +365,6 @@ html.login-pf, html.login-pf body, .login-pf body {
 }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* SR15: way out of the error page («Volver a iniciar sesión») */
+#kc-error-message .vv-restart { display: flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 20px; text-decoration: none; }
