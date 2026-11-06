@@ -1,9 +1,10 @@
-// VeriVoto login theme. Two small additions to keycloak.v2, both without touching template.ftl:
+// VeriVoto login theme. Small additions to keycloak.v2, both without touching template.ftl:
 // 1) a one-line subtitle under the sign-in title (the second step, the email code, is announced in advance);
 // 2) the language select shown as two small flag buttons (links to the same URLs Keycloak puts in the select), plus a
 //    one-line hint for voters who land here by mistake;
 // 3) live password requirements on login-update-password.ftl (only rules the browser can check; the rest say
-//    "checked when saving"). Texts that come from the server are rendered by the template, not here.
+//    "checked when saving"). Texts that come from the server are rendered by the template, not here;
+// 4) the email code as six boxes with the resend countdown (login-email-otp.ftl).
 (function () {
   'use strict';
   var lang = (document.documentElement.lang || 'es').toLowerCase().indexOf('en') === 0 ? 'en' : 'es';
@@ -138,6 +139,75 @@
     update(false);
   }
 
-  function start() { addSubtitle(); languageButtons(); voterHint(); passwordRules(); }
+  // 4) SR13: the email code (login-email-otp.ftl) drawn as six boxes. The real input stays on top of them, transparent,
+  //    so typing, paste, Backspace and one-time-code autofill are the browser's own; this only mirrors its value.
+  //    «Continuar» is enabled at six digits and «Reenviar código» waits for the realm resend cooldown after a send.
+  function otpBoxes() {
+    var form = document.getElementById('kc-otp-login-form');
+    var input = document.getElementById('email-otp');
+    if (!form || !input || input.parentNode.querySelector('.vv-otp-boxes')) return;
+    var field = input.parentNode;
+    var size = parseInt(input.getAttribute('maxlength'), 10) || 6;
+    var boxes = document.createElement('div');
+    boxes.className = 'vv-otp-boxes';
+    boxes.setAttribute('aria-hidden', 'true');
+    for (var i = 0; i < size; i++) {
+      var box = document.createElement('span');
+      box.className = 'vv-otp-box';
+      boxes.appendChild(box);
+    }
+    field.insertBefore(boxes, input);
+    field.classList.add('vv-otp-js');
+    if (input.getAttribute('aria-invalid') === 'true') field.classList.add('is-invalid');
+    var submit = document.getElementById('kc-login');
+
+    function digits(value) { return (value || '').replace(/\D/g, '').slice(0, size); }
+    function caretToEnd() { var n = input.value.length; try { input.setSelectionRange(n, n); } catch (e) { /* not a text input */ } }
+    function render() {
+      var value = input.value;
+      Array.prototype.forEach.call(boxes.children, function (box, index) {
+        box.textContent = value.charAt(index);
+        box.classList.toggle('is-filled', index < value.length);
+        box.classList.toggle('is-active', index === Math.min(value.length, size - 1));
+      });
+      if (submit) submit.disabled = value.length !== size;
+    }
+    input.addEventListener('input', function () {
+      var clean = digits(input.value);
+      if (clean !== input.value) input.value = clean;
+      field.classList.remove('is-invalid');
+      render();
+    });
+    input.addEventListener('paste', function (event) {
+      var data = event.clipboardData && event.clipboardData.getData('text');
+      if (!data) return;
+      event.preventDefault();
+      input.value = digits(data);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    input.addEventListener('focus', function () { field.classList.add('is-focus'); caretToEnd(); });
+    input.addEventListener('blur', function () { field.classList.remove('is-focus'); });
+    input.addEventListener('click', caretToEnd);
+    input.addEventListener('keyup', caretToEnd);
+    if (document.activeElement === input) field.classList.add('is-focus');
+    render();
+
+    var wait = parseInt(form.getAttribute('data-resend-wait'), 10) || 0;
+    var resend = document.getElementById('kc-resend-email');
+    var note = document.getElementById('vv-otp-wait');
+    if (wait > 0 && resend && note && form.getAttribute('data-start-wait') === 'true') {
+      var end = Date.now() + wait * 1000;
+      var template = note.getAttribute('data-template') || '';
+      resend.disabled = true;
+      (function tick() {
+        var left = Math.max(0, Math.ceil((end - Date.now()) / 1000));
+        if (left === 0) { resend.disabled = false; note.textContent = ''; return; }
+        note.textContent = template.replace('%TIME%', Math.floor(left / 60) + ':' + ('0' + (left % 60)).slice(-2));
+        setTimeout(tick, 1000);
+      })();
+    }
+  }
+
+  function start() { addSubtitle(); languageButtons(); voterHint(); passwordRules(); otpBoxes(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
