@@ -6,7 +6,8 @@
   },
   "common": {
     "loading": "Cargando…",
-    "loadError": "No se han podido cargar los datos. Inténtalo de nuevo."
+    "loadError": "No se han podido cargar los datos. Inténtalo de nuevo.",
+    "goHome": "Ir al inicio"
   },
   "admin": {
     "menu": {
@@ -261,7 +262,9 @@
       "emailCode": "Código por correo",
       "emailCodeHelp": "Al abrir su enlace personal reciben un código de 6 cifras en el correo del censo.",
       "sso": "Cuenta institucional (SSO)",
-      "ssoHelp": "Entran con la cuenta de la organización; su correo verificado debe ser el del censo."
+      "ssoHelp": "Entran con la cuenta de la organización; su correo verificado debe ser el del censo.",
+      "titleShort": "Nuevo proceso",
+      "editTitleShort": "Editar proceso"
     },
     "process": {
       "title": "Ciclo de vida",
@@ -469,7 +472,8 @@
       "cumulative": "Acumulado",
       "lockTitle": "Los resultados por opción no se muestran hasta el escrutinio.",
       "lockText": "Aquí solo ves cuántas personas han votado, nunca qué han votado. La participación se cuenta por día, sin horas, para proteger el secreto del voto.",
-      "seeResults": "Ver los resultados"
+      "seeResults": "Ver los resultados",
+      "titleShort": "Participación"
     },
     "notifications": {
       "remindersTitle": "Recordatorios a quien no ha votado",
@@ -593,7 +597,8 @@
         "FINAL_HASH_PUBLISHED": "Publicación de la huella final"
       },
       "noTime": "sin hora",
-      "showing": "Mostrando {{from}}–{{to}} de {{total}} eventos · los votos se muestran sin identidad ni hora"
+      "showing": "Mostrando {{from}}–{{to}} de {{total}} eventos · los votos se muestran sin identidad ni hora",
+      "titleShort": "Auditoría"
     },
     "trace": {
       "title": "Trazabilidad",
@@ -722,7 +727,8 @@
       "willDelete": "En los censos que no ha usado ningún proceso ({{count}}), sus datos se borrarán.",
       "confirm": "Confirmo la solicitud de borrado de esta persona",
       "erase": "Borrar datos personales",
-      "erased": "Datos borrados. Registros borrados: {{deleted}}; anonimizados: {{anonymized}}."
+      "erased": "Datos borrados. Registros borrados: {{deleted}}; anonimizados: {{anonymized}}.",
+      "titleShort": "Privacidad"
     },
     "apiKeys": {
       "title": "Claves de API",
@@ -915,7 +921,8 @@
   "errors": {
     "notFound": {
       "title": "Página no encontrada",
-      "message": "La dirección no existe. Revisa el enlace o vuelve al inicio."
+      "message": "La dirección no existe. Revisa el enlace o vuelve al inicio.",
+      "voterMessage": "La dirección no existe. Si vas a votar, usa el enlace personal que recibiste por correo."
     }
   },
   "roles": {

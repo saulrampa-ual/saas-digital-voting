@@ -1,4 +1,5 @@
-<app-admin-page [titleKey]="editing() ? 'admin.processForm.editTitle' : 'admin.processForm.title'">
+<app-admin-page [titleKey]="editing() ? 'admin.processForm.editTitle' : 'admin.processForm.title'"
+                [shortTitleKey]="editing() ? 'admin.processForm.editTitleShort' : 'admin.processForm.titleShort'">
   @if (loading()) {
     <ion-spinner role="status" [attr.aria-label]="'common.loading' | translate" />
   } @else if (notEditable()) {
@@ -17,7 +18,7 @@
                 <span class="num" aria-hidden="true">
                   @if (created() || i < stepIndex()) { <ion-icon name="checkmark-outline"></ion-icon> } @else { {{ i + 1 }} }
                 </span>
-                {{ 'admin.processForm.steps.' + s | translate }}
+                <span class="step-name">{{ 'admin.processForm.steps.' + s | translate }}</span>
               </button>
             </li>
           }

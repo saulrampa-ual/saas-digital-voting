@@ -1,10 +1,18 @@
 // A3: steps on the left (top on mobile) and the panel of the current step on the right.
 .intro { color: var(--ion-color-medium); margin-top: 0; }
-.wizard { display: grid; gap: 16px; grid-template-columns: 1fr; }
-@media (min-width: 900px) { .wizard { grid-template-columns: 240px 1fr; align-items: start; } }
+.wizard { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+/* SR6/SR7: grid items may shrink below their content (min-width: auto made the panel 364 px wide on phones) */
+.wizard > * { min-width: 0; }
+@media (min-width: 900px) { .wizard { grid-template-columns: 240px minmax(0, 1fr); align-items: start; } }
 .steps ol { list-style: none; margin: 0; padding: 12px; background: #fff; border: 1px solid var(--vv-border-color);
   border-radius: var(--vv-radius-card); display: grid; gap: 4px; }
-@media (max-width: 899px) { .steps ol { grid-template-columns: repeat(4, 1fr); } .steps button { flex-direction: column; font-size: 0.875rem; } }
+@media (max-width: 899px) { .steps ol { grid-template-columns: repeat(4, minmax(0, 1fr)); } .steps button { flex-direction: column; font-size: 0.875rem; text-align: center; } }
+/* Below 520 px the four names do not fit side by side: only the numbers are shown (the panel heading names the current
+   step); the names stay as the accessible name of each button. Interim fix until the wizard prototype is approved. */
+@media (max-width: 519.98px) {
+  .step-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .steps ol { padding: 8px; }
+}
 .steps button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; border: 0; background: none;
   font: inherit; color: var(--ion-text-color); padding: 6px; border-radius: var(--vv-radius-control); text-align: left; cursor: pointer; }
 .steps button:disabled { cursor: default; color: var(--ion-color-medium); }
@@ -18,17 +26,21 @@
 .step-panel h2 { margin-top: 0; font-size: 1.25rem; }
 .label { font-weight: 600; margin: 1.25rem 0 0.5rem; }
 .help { font-size: 0.875rem; color: var(--ion-color-medium); }
-.pair { display: grid; gap: 12px; grid-template-columns: 1fr; margin-bottom: 12px; }
-@media (min-width: 700px) { .pair { grid-template-columns: 1fr 1fr; } }
-.lang { max-width: 320px; }
+.pair { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); margin-bottom: 12px; }
+@media (min-width: 700px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.lang { max-width: 320px; width: 100%; }
+.lang ion-segment-button { min-width: 0; }
 .choice { --background: #fff; border: 1px solid var(--vv-border-color); border-radius: var(--vv-radius-card); margin-bottom: 10px; --min-height: 60px; }
 .choice.selected { border: 2px solid var(--ion-color-primary); --background: rgba(var(--ion-color-primary-rgb), 0.05); }
 .choice small { color: var(--ion-color-medium); white-space: normal; }
-.types { display: grid; gap: 10px; }
-@media (min-width: 700px) { .types { grid-template-columns: 1fr 1fr; } .types .choice { margin: 0; } }
-.option-row { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: start; margin-bottom: 8px; }
+/* SR8: the gap between the type cards and the question fields lives in the group; before, from 700 px the cards lost their
+   margin and the floating label of «Pregunta» touched them */
+.types { display: grid; gap: 10px; margin-bottom: 24px; }
+.types .choice { margin: 0; }
+@media (min-width: 700px) { .types { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.option-row { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 8px; align-items: start; margin-bottom: 8px; }
 .option-row .field:nth-of-type(2) { grid-column: 2; }
-@media (min-width: 700px) { .option-row { grid-template-columns: 28px 1fr 1fr auto; } .option-row .field:nth-of-type(2) { grid-column: auto; } }
+@media (min-width: 700px) { .option-row { grid-template-columns: 28px minmax(0, 1fr) minmax(0, 1fr) auto; } .option-row .field:nth-of-type(2) { grid-column: auto; } }
 .pos { font-weight: 700; padding-top: 14px; text-align: center; color: var(--ion-color-medium); }
 .info { display: flex; gap: 8px; align-items: flex-start; background: #e8eef6; color: var(--ion-color-primary);
   border-radius: var(--vv-radius-control); padding: 12px; margin: 12px 0; }

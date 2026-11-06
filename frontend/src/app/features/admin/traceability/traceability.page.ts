@@ -120,12 +120,14 @@ const PAGE_SIZE = 50;
     td { padding: 10px 12px; border-top: 1px solid var(--vv-border-color); vertical-align: top; }
     .pager { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-top: 12px; }
     .pager ion-button { margin: 0 0 0 6px; }
-    @media (max-width: 767px) {
+    /* SR9: cards up to 899 px (at 768 px the five columns did not fit and «Proceso» was cut with no hint of scrolling) */
+    @media (max-width: 899px) {
       thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
       table, tbody, tr, td { display: block; }
       tr { border-top: 1px solid var(--vv-border-color); padding: 10px 0; }
       td { border: 0; padding: 2px 0; display: flex; gap: 8px; }
       td[data-label]::before { content: attr(data-label); flex: 0 0 35%; color: var(--ion-color-medium); font-size: 0.875rem; }
+      td > * { min-width: 0; }
     }
   `,
 })

@@ -19,7 +19,7 @@ import { AdminPageComponent } from '../admin-page.component';
   imports: [AdminPageComponent, IonButton, IonIcon, IonSpinner, TranslatePipe, LocalDatePipe, LocalizedPipe,
     StatusBadgeComponent],
   template: `
-    <app-admin-page titleKey="admin.privacy.title">
+    <app-admin-page titleKey="admin.privacy.title" shortTitleKey="admin.privacy.titleShort">
       <p class="intro">{{ 'admin.privacy.intro' | translate }}</p>
 
       <section class="card" aria-labelledby="step1">

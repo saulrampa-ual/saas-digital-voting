@@ -5,7 +5,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { Participation, ResultsApiService } from '../../../core/admin/results-api.service';
 import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
-import { StatusBadgeComponent } from '../../../shared/status-badge/status-badge.component';
 import { ProcessStatus } from '../../../core/admin/process-api.service';
 import { AdminPageComponent } from '../admin-page.component';
 import { ProcessPickerComponent } from '../process-picker/process-picker.component';
@@ -22,11 +21,11 @@ const REFRESH_MS = 15_000;
 @Component({
   selector: 'app-participation',
   imports: [AdminPageComponent, ProcessPickerComponent, RouterLink, IonIcon, IonSpinner, IonText, TranslatePipe,
-    LocalDatePipe, StatusBadgeComponent, NotificationsPanelComponent, DayChartComponent],
+    LocalDatePipe, NotificationsPanelComponent, DayChartComponent],
   template: `
-    <app-admin-page titleKey="admin.participation.title">
+    <app-admin-page titleKey="admin.participation.title" shortTitleKey="admin.participation.titleShort">
       <div class="top">
-        <app-process-picker [statuses]="statuses" [selected]="selectedId()" (selectedChange)="select($event)"
+        <app-process-picker [statuses]="statuses" [selected]="selectedId()" (selectedChange)="select($event)" [showCurrent]="true"
                             emptyKey="admin.participation.empty" />
       </div>
       @if (loading()) {
@@ -35,7 +34,6 @@ const REFRESH_MS = 15_000;
         <ion-text color="danger"><p role="alert">{{ 'common.loadError' | translate }}</p></ion-text>
       } @else if (data(); as d) {
         <p class="meta">
-          <app-status-badge [status]="$any(d.status)" />
           @if (d.status === 'SCHEDULED') { {{ 'admin.participation.opens' | translate: { date: (d.opensAt | localDate: language()) } }} }
           @else { {{ 'admin.participation.closes' | translate: { date: (d.closesAt | localDate: language()) } }} }
         </p>
@@ -90,7 +88,7 @@ const REFRESH_MS = 15_000;
     </app-admin-page>
   `,
   styles: `
-    .top { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+    .top { margin-bottom: 12px; }
     .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--ion-color-medium); margin: 0 0 4px; }
     .live { display: flex; gap: 6px; align-items: center; color: var(--ion-color-success); font-weight: 600; font-size: 0.875rem; margin: 0 0 12px; }
     .metrics { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; margin-bottom: 16px; }

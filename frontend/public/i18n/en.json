@@ -6,7 +6,8 @@
   },
   "common": {
     "loading": "Loading…",
-    "loadError": "The data could not be loaded. Please try again."
+    "loadError": "The data could not be loaded. Please try again.",
+    "goHome": "Go to home"
   },
   "admin": {
     "menu": {
@@ -261,7 +262,9 @@
       "emailCode": "Code by email",
       "emailCodeHelp": "When they open their personal link they receive a 6-digit code at the email of the voter list.",
       "sso": "Institutional account (SSO)",
-      "ssoHelp": "They sign in with the account of the organization; its verified email must be the one of the voter list."
+      "ssoHelp": "They sign in with the account of the organization; its verified email must be the one of the voter list.",
+      "titleShort": "New process",
+      "editTitleShort": "Edit process"
     },
     "process": {
       "title": "Lifecycle",
@@ -469,7 +472,8 @@
       "cumulative": "Cumulative",
       "lockTitle": "Results per option are not shown until the tally.",
       "lockText": "Here you only see how many people have voted, never what they voted. Turnout is counted per day, without hours, to protect the secrecy of the vote.",
-      "seeResults": "See the results"
+      "seeResults": "See the results",
+      "titleShort": "Participation"
     },
     "notifications": {
       "remindersTitle": "Reminders to people who have not voted",
@@ -593,7 +597,8 @@
         "FINAL_HASH_PUBLISHED": "Final hash published"
       },
       "noTime": "no time",
-      "showing": "Showing {{from}}–{{to}} of {{total}} events · votes are shown without identity or time"
+      "showing": "Showing {{from}}–{{to}} of {{total}} events · votes are shown without identity or time",
+      "titleShort": "Audit"
     },
     "trace": {
       "title": "Traceability",
@@ -722,7 +727,8 @@
       "willDelete": "In the voter lists no process used ({{count}}), their data will be deleted.",
       "confirm": "I confirm the erasure request of this person",
       "erase": "Erase personal data",
-      "erased": "Data erased. Entries deleted: {{deleted}}; anonymized: {{anonymized}}."
+      "erased": "Data erased. Entries deleted: {{deleted}}; anonymized: {{anonymized}}.",
+      "titleShort": "Privacy"
     },
     "apiKeys": {
       "title": "API keys",
@@ -915,7 +921,8 @@
   "errors": {
     "notFound": {
       "title": "Page not found",
-      "message": "This address does not exist. Check the link or go back to the start."
+      "message": "This address does not exist. Check the link or go back to the start.",
+      "voterMessage": "This address does not exist. If you are going to vote, use the personal link you received by email."
     }
   },
   "roles": {

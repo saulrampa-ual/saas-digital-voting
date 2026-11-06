@@ -16,7 +16,13 @@ import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component
   template: `
     <ion-header>
       <ion-toolbar color="primary">
-        <ion-title><h1 class="title">{{ titleKey() | translate }}</h1></ion-title>
+        <ion-title>
+          <h1 class="title">
+            <!-- SR3/SR10: a shorter title on phones; the full one stays as the accessible name -->
+            <span [class.full-on-wide]="!!shortTitleKey()">{{ titleKey() | translate }}</span>
+            @if (shortTitleKey(); as shortKey) { <span class="short" aria-hidden="true">{{ shortKey | translate }}</span> }
+          </h1>
+        </ion-title>
         <app-brand-logo class="logo name-wide ion-hide-md-down" />
         <ion-buttons slot="end">
           <span class="session ion-hide-md-down">
@@ -39,6 +45,11 @@ import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component
        ion-content collapses to a few pixels and the page looks covered. */
     :host { display: contents; }
     .title { font-size: 1.125rem; margin: 0; }
+    .short { display: none; }
+    @media (max-width: 575.98px) {
+      .full-on-wide { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+      .short { display: inline; }
+    }
     .logo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none; }
     .page { max-width: 72rem; margin: 0 auto; }
     .session { display: flex; flex-direction: column; align-items: flex-end; margin-inline-end: 12px; line-height: 1.25; }
@@ -49,4 +60,6 @@ export class AdminPageComponent {
   protected readonly auth = inject(AuthService);
   protected readonly roleKeys = computed(() => this.auth.roles().map((role) => `roles.${role}`));
   readonly titleKey = input.required<string>();
+  /** Optional shorter title shown below 576 px, so long titles are not cut on phones. */
+  readonly shortTitleKey = input<string | null>(null);
 }

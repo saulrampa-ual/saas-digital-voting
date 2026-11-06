@@ -54,7 +54,7 @@
   .grid-two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 .card { background: #fff; border: 1px solid var(--home-line); border-radius: var(--vv-radius-card); padding: 18px 20px; margin: 0; min-width: 0;
-  box-shadow: var(--home-shadow); }
+  box-shadow: var(--home-shadow); container-type: inline-size; }
 .grid > .card { margin: 0; }
 .card.flush { padding: 18px 0 6px; }
 .card.flush .card-title { padding: 0 20px; }
@@ -69,7 +69,7 @@
 .proc:first-child { padding-top: 0; }
 .proc:last-child { border-bottom: 0; }
 .proc-top { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
-.proc-title { display: inline-flex; align-items: center; min-height: 44px; font-weight: 650; color: var(--ion-text-color); text-decoration: none; overflow-wrap: anywhere; }
+.proc-title { display: inline-flex; align-items: center; min-height: 44px; font-weight: 650; color: var(--ion-text-color); text-decoration: none; }
 .proc-title:hover { text-decoration: underline; text-underline-offset: 3px; }
 .proc-top app-status-badge { margin-top: 10px; flex: none; }
 .proc .muted { margin: 0 0 8px; }
@@ -106,9 +106,19 @@
 .row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 10px 0; }
 .row-link { flex: 1; min-width: 0; min-height: 44px; padding: 10px 0; display: flex; flex-direction: column; justify-content: center; color: inherit; text-decoration: none; }
 .row-link:hover .row-main { text-decoration: underline; text-underline-offset: 3px; }
-.row-main { font-weight: 600; overflow-wrap: anywhere; }
+.row-main { font-weight: 600; }
 .muted { color: var(--home-muted); font-size: 0.875rem; }
-.when { flex: none; text-align: right; }
+.when { flex: 0 1 auto; text-align: right; }
+
+/* SR2/SR11: in a narrow card (phones, and the right column from 992 px) the badge, chip or date goes under the text, which
+   then uses the whole width: no title squeezed into a few letters per line and no word split in two. */
+@container (max-width: 520px) {
+  .rows li { flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px; padding: 10px 0; }
+  .rows li > .row-text, .rows li > .row-link { width: 100%; padding: 0; }
+  .rows li > .when { text-align: left; }
+  .proc-top { flex-direction: column; gap: 4px; }
+  .proc-top app-status-badge { margin-top: 0; }
+}
 .hash { font-family: var(--vv-font-mono); }
 
 /* Per-day chart: app-day-chart (visual); the hidden table below carries the same values for screen readers */
