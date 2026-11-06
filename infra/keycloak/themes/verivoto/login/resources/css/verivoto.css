@@ -303,6 +303,16 @@ html.login-pf, html.login-pf body, .login-pf body {
   .vv-long, .vv-legal { display: none; }
   .vv-short { display: inline; }
 }
+/* SR15: error pages ("Lo sentimos…", error.ftl) have a short card; on phones it sits in the vertical centre between the
+   brand band and the trust strip instead of leaving a large empty area under it */
+@media (max-width: 767px) {
+  .pf-v5-c-login .pf-v5-c-login__container:has(#kc-error-message) {
+    grid-template-rows: auto auto 1fr auto auto 1fr auto !important;
+    grid-template-areas: "brand" "claim" "." "main" "hint" "." "trust" !important;
+  }
+  .pf-v5-c-login__container:has(#kc-error-message) .vv-claim { padding-bottom: clamp(16px, 3dvh, 28px); }
+  .pf-v5-c-login__container:has(#kc-error-message) .pf-v5-c-login__main { align-self: center; margin: 24px 12px !important; }
+}
 /* Tall phones (390 x 844, 430 x 932): use the extra height to make the form roomier, not to open gaps */
 @media (max-width: 767px) and (min-height: 780px) {
   .pf-v5-c-login__main-header { padding: 24px 22px 4px !important; }
