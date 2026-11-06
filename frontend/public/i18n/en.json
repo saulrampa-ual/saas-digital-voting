@@ -922,7 +922,8 @@
     "notFound": {
       "title": "Page not found",
       "message": "This address does not exist. Check the link or go back to the start.",
-      "voterMessage": "This address does not exist. If you are going to vote, use the personal link you received by email."
+      "voterMessage": "This address does not exist. If you are going to vote, use the personal link you received by email.",
+      "consoleLink": "Do you manage elections? Sign in to the console"
     }
   },
   "roles": {

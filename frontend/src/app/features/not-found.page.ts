@@ -8,7 +8,8 @@ import { ErrorStateComponent } from '../shared/error-state/error-state.component
 
 /**
  * C5 (404). SR12: brand header and a way out. With a management session started in this tab, a button to the console;
- * without one (it may be a voter) no button, only the hint to use the personal link of the invitation email.
+ * without one (it may be a voter) no button, only the hint to use the personal link of the invitation email and a discreet
+ * text link to the console for managers.
  * Keycloak is not initialized here on purpose: an unknown address must not send anyone to the management login.
  */
 @Component({
@@ -26,13 +27,16 @@ import { ErrorStateComponent } from '../shared/error-state/error-state.component
           </ion-button>
         </app-error-state>
       } @else {
-        <app-error-state titleKey="errors.notFound.title" messageKey="errors.notFound.voterMessage" icon="help-circle-outline" />
+        <app-error-state titleKey="errors.notFound.title" messageKey="errors.notFound.voterMessage" icon="help-circle-outline">
+          <a class="console" routerLink="/admin">{{ 'errors.notFound.consoleLink' | translate }}</a>
+        </app-error-state>
       }
     </ion-content>
   `,
   styles: `
     .logo { padding: 0 16px; min-height: 56px; }
     .home { margin-top: 8px; }
+    .console { display: inline-flex; align-items: center; min-height: 44px; margin-top: 4px; color: var(--ion-color-primary); font-size: 0.9375rem; }
   `,
 })
 export class NotFoundPage {

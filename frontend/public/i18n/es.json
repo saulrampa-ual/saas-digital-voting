@@ -922,7 +922,8 @@
     "notFound": {
       "title": "Página no encontrada",
       "message": "La dirección no existe. Revisa el enlace o vuelve al inicio.",
-      "voterMessage": "La dirección no existe. Si vas a votar, usa el enlace personal que recibiste por correo."
+      "voterMessage": "La dirección no existe. Si vas a votar, usa el enlace personal que recibiste por correo.",
+      "consoleLink": "¿Gestionas votaciones? Entrar en la consola"
     }
   },
   "roles": {
