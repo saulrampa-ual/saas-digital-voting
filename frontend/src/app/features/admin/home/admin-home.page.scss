@@ -134,6 +134,8 @@
 .integrity-text h4 { margin: 0 0 4px; font-size: 1.125rem; font-weight: 700; }
 .integrity-text p { margin: 0; color: var(--home-muted); }
 .integrity .btn { grid-column: 1 / -1; justify-self: start; }
+/* At 320 px «Verificar integridad ahora» (nowrap) was wider than the card: full width, wrapping if needed */
+@container (max-width: 520px) { .integrity .btn { justify-self: stretch; white-space: normal; text-align: center; padding-block: 8px; } }
 @media (min-width: 768px) { .integrity { grid-template-columns: auto minmax(0, 1fr) auto; } .integrity .btn { grid-column: auto; } }
 
 .empty { color: var(--home-muted); margin: 0 0 8px; }
