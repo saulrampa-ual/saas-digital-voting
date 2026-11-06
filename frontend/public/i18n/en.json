@@ -264,7 +264,16 @@
       "sso": "Institutional account (SSO)",
       "ssoHelp": "They sign in with the account of the organization; its verified email must be the one of the voter list.",
       "titleShort": "New process",
-      "editTitleShort": "Edit process"
+      "editTitleShort": "Edit process",
+      "stepOf": "Step {{n}} of {{total}}",
+      "afterStep": "Next: {{name}}",
+      "nextHint": "Next: {{name}}",
+      "textsLanguage": "Language of the texts",
+      "pending": "pending",
+      "inLang": {
+        "es": "in Spanish",
+        "en": "in English"
+      }
     },
     "process": {
       "title": "Lifecycle",

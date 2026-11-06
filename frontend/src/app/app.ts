@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
-  addOutline, alertCircleOutline, arrowBackOutline, barChartOutline, businessOutline, calendarOutline, checkboxOutline, checkmarkCircleOutline, checkmarkOutline,
+  addOutline, alertCircleOutline, arrowBackOutline, arrowForwardOutline, barChartOutline, businessOutline, calendarOutline, checkboxOutline, checkmarkCircleOutline, checkmarkOutline,
   closeOutline, closeCircleOutline, cloudOfflineOutline, cloudUploadOutline, copyOutline, createOutline,
   documentTextOutline, listOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline, keyOutline,
   linkOutline, lockClosedOutline, peopleOutline, refreshOutline, searchOutline, sendOutline, shieldCheckmarkOutline,
@@ -19,7 +19,7 @@ import { FocusOnNavigationService } from './core/a11y/focus-on-navigation.servic
 export class App {
   constructor() {
     addIcons({
-      addOutline, alertCircleOutline, arrowBackOutline, barChartOutline, businessOutline, calendarOutline, checkboxOutline, checkmarkCircleOutline, checkmarkOutline,
+      addOutline, alertCircleOutline, arrowBackOutline, arrowForwardOutline, barChartOutline, businessOutline, calendarOutline, checkboxOutline, checkmarkCircleOutline, checkmarkOutline,
       closeOutline, closeCircleOutline, cloudOfflineOutline, cloudUploadOutline, copyOutline, createOutline,
   documentTextOutline, listOutline, downloadOutline, helpCircleOutline, homeOutline, informationCircleOutline, keyOutline,
       linkOutline, lockClosedOutline, peopleOutline, refreshOutline, searchOutline, sendOutline, shieldCheckmarkOutline,

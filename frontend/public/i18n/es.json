@@ -264,7 +264,16 @@
       "sso": "Cuenta institucional (SSO)",
       "ssoHelp": "Entran con la cuenta de la organización; su correo verificado debe ser el del censo.",
       "titleShort": "Nuevo proceso",
-      "editTitleShort": "Editar proceso"
+      "editTitleShort": "Editar proceso",
+      "stepOf": "Paso {{n}} de {{total}}",
+      "afterStep": "Después: {{name}}",
+      "nextHint": "Siguiente: {{name}}",
+      "textsLanguage": "Idioma de los textos",
+      "pending": "pendiente",
+      "inLang": {
+        "es": "en español",
+        "en": "en inglés"
+      }
     },
     "process": {
       "title": "Ciclo de vida",
