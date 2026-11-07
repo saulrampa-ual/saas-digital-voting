@@ -128,7 +128,7 @@ const POLL_MS = 5_000;
     </app-admin-page>
   `,
   styles: `
-    .top { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+    .top { margin-bottom: 12px; }
     .head { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; margin-bottom: 16px; }
     .name { font-size: 1.5rem; margin: 0; }
     @media (min-width: 768px) { .name { font-size: 1.75rem; } }

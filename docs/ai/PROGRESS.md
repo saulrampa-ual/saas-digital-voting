@@ -242,6 +242,36 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
 
+## Evaluación H1a, H1b y H1c (05/11/2026, tarde)
+
+- **H1a (parte automática)**: `frontend/tests/e2e/voter-flow.accessibility.spec.ts` recorre 22 pantallas y estados del
+  votante con respuestas de API sintéticas y ejecuta axe 4.14.0 (WCAG 2.0–2.2 A/AA) a 1280 y 360 px en ES y EN: 88
+  auditorías, 8 incumplimientos críticos (todos DEF-05: `aria-required-children` en el `ion-list` de la papeleta), 0
+  serios. Ejecutado en el entorno de la IA sobre `dev` `4a5e593`. Informe `docs/evaluation/accesibilidad-axe-2026-11-05.md`;
+  tabla 13.1, conclusiones, informe y defectos actualizados. Primer barrido: H1a rechazada en la versión medida.
+- **DEF-05 corregido** (aprobado por el autor; sin commit): `ballot-step.component.ts` usa `div.options` en lugar de
+  `ion-list`. Nuevo barrido con las mismas herramientas: 88 auditorías, 0 críticos, 0 serios, 0 moderados, 0 menores;
+  Vitest 19 de 19 y compilación correctos. **H1a: parte automática cumple; revisión manual pendiente** (la hace el autor
+  con teclado y NVDA). **DEF-06** abierto: el error de formato del código de recibo no se muestra (Ionic quita
+  `ion-invalid`; WCAG 3.3.1); la prueba lo marca con `test.fail`. `receipt-check.accessibility.spec.ts` adaptada al
+  selector de idioma con banderas (pasa). Lighthouse no ejecutado (no añade cobertura).
+- **DEF-06 corregido** (05/11/2026, noche; aprobado por el autor; sin commit): `receipt-check.page.ts` muestra el
+  error de formato en un elemento propio dentro de una región `role="alert"` en lugar de `errorText` (Ionic quitaba
+  `ion-invalid`). Quitado el `test.fail` del estado «formato erróneo» en `voter-flow.accessibility.spec.ts`; la
+  comprobación se conserva, se añade la del `role="alert"` y pasa en verde. Tercer barrido axe con las mismas
+  versiones: 88 auditorías, 0 críticos, 0 serios, 0 moderados, 0 menores; `receipt-check.accessibility.spec.ts` 4 de 4;
+  Vitest 19 de 19 y compilación correctos. DEF-05 cerrado por el autor. **H1a: parte automática medida y favorable;
+  parte manual pendiente** (NVDA, autor, sobre esta misma versión).
+- **H1a, parte manual (06/11/2026)**: preparado `docs/evaluation/accesibilidad-manual-guion.md` (paso a paso, sin
+  resultados) y las hojas vacías `accesibilidad-manual-obligatorias.csv` (39 filas) y `accesibilidad-manual-recomendadas.csv`
+  (10). Datos: demo UAL (`seed-ual.mjs`), no `USAB`. La revisión la hace el autor; sin datos todavía. El anexo del
+  guion tiene la redacción por si no se realiza («parte automática favorable; parte manual no realizada»), sin aplicar.
+- **H1b**: sin datos; sesiones el 09/11 (escenario `USAB` listo; hoja `hoja-registro-h1b.csv` y
+  `scripts/evaluation/h1b-summary.mjs` preparados, probados solo con datos inventados fuera del repositorio). Con 5 participantes, el criterio de 90 % y 80 % que
+  cita el autor equivale al validado por el tutor (5 de 5 en ≤ 3 min; 4 de 5 interpretan el recibo).
+- **H1c**: sin datos. `scripts/load/prepare-voting-tokens.mjs` (sin probar) prepara cada ejecución; k6 sin instalar;
+  hay que ejecutarlo después de H1b (Mailpit guarda 500 mensajes). Variables y ejecución válida definidas en `carga.md`.
+
 ## D2, D5, calendario H1b y respuestas del autor (05/11/2026)
 
 - **D2 · IMP-21 (límite por IP en el *gateway*)**, commit `4ec0efc` en `feat/voter-access-limit-jwt-audience` (sin fusionar): filtro estándar `RequestRateLimiter` de Spring Cloud
@@ -270,10 +300,10 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
   Propuesta: no fusionar la rama en `dev` hasta después de las sesiones del 09/11, o actualizar el realm antes.
 - **Q-06**: ensayo 08/11 y sesiones 09/11, viables solo con las tres condiciones de `PLAN.md` el sábado 07/11. Si
   fallan, el autor propone 15/11 (ensayo) y 16/11 (sesiones), como fechas propuestas, no definitivas.
-- **Q-11 / A12**: `docs/evaluation/usabilidad/resultados-rnf4-administradores.md`; 5 participantes, 5 de 5 sin ayuda de
-  personas (Q-02 resuelta en D-55: la documentación sí se podía consultar). Tiempos **estimados** por el autor (5, 5, 6,
-  3,4 y 3,4 min) y **alguno con formación previa**: RNF-4 no demostrado, resultado indicativo favorable. Falta saber
-  cuántos tenían formación previa.
+- **Q-11 / A12 / C1 (RNF-4)**: `docs/evaluation/usabilidad/resultados-rnf4-administradores.md`; 5 participantes (P01–P05,
+  anónimos), 5 de 5 sin ayuda de personas (D-55); tiempos **estimados** 5, 5, 11, 3,4 y 3,4 min (4 de 5 ≤ 10 min); solo
+  2 de 5 sin formación previa. RNF-4 no demostrado, evidencia indicativa; aplicado en la memoria (tabla de hipótesis,
+  procedimiento, conclusiones y comentario de la especificación).
 - **Q-12 (D-54)**: aceptación **verbal** de los 4 compañeros, sin constancia escrita; el autor no la pedirá por ahora.
   Se registra como limitación de A9 (RNF-16), nunca como consentimiento documentado.
 

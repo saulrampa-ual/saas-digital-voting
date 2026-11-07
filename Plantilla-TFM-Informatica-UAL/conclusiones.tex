@@ -34,13 +34,19 @@ pendientes.
 \section{Limitaciones y trabajo futuro}
 \label{sec:limitaciones-trabajo-futuro}
 Quedan por ejecutar la integración de repositorios y flujos con PostgreSQL,
-las pruebas E2E del stack completo, la auditoría axe con revisión manual de
-accesibilidad (H1a), tres ejecuciones medidas de carga con k6 (H1c) y la
+las pruebas E2E del stack completo, la revisión manual de accesibilidad con
+teclado y lector de pantalla (H1a: parte automática favorable; parte manual pendiente; la parte
+automática se midió en el flujo del votante tras corregir las incidencias de
+la papeleta y del recibo), tres ejecuciones medidas de
+carga con k6 (H1c) y la
 sesión con cinco participantes votantes (H1b), que es la evaluación
 prioritaria; el consentimiento, el guion y la hoja de registro se conservan en
-\texttt{docs/evaluation/usabilidad/}. RNF-4 requiere una sesión con cinco
-administradores de organización que no se ha realizado; mientras no se haga,
-RNF-4 permanece pendiente y no se presenta como evaluado. Si alguna de estas
+\texttt{docs/evaluation/usabilidad/}. La sesión de RNF-4 con cinco
+administradores se realizó el 03/11/2026: los cinco completaron la tarea sin
+ayuda de otras personas, pero solo dos no tenían formación previa y los
+tiempos se estimaron después de la sesión, por lo que RNF-4 queda como no
+demostrado y su resultado solo es indicativo. Cerrarlo requiere repetir la
+sesión con administradores sin formación previa y tiempos cronometrados. Si alguna de estas
 evaluaciones no se completa antes de la entrega, su resultado figura como
 PENDIENTE en la tabla~\ref{tab:estado-hipotesis} y constituye una limitación
 de este trabajo. También se debe ampliar la cobertura de código.

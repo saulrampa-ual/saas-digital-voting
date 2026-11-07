@@ -19,10 +19,10 @@ const PAGE_SIZE = 50;
   selector: 'app-audit',
   imports: [AdminPageComponent, ProcessPickerComponent, IonButton, IonIcon, IonSpinner, IonText, TranslatePipe, LocalDatePipe],
   template: `
-    <app-admin-page titleKey="admin.audit.title">
+    <app-admin-page titleKey="admin.audit.title" shortTitleKey="admin.audit.titleShort">
       <div class="top">
         <p class="intro">{{ 'admin.audit.intro' | translate }}</p>
-        <app-process-picker [statuses]="statuses" [selected]="selectedId()" (selectedChange)="select($event)"
+        <app-process-picker [statuses]="statuses" [selected]="selectedId()" (selectedChange)="select($event)" [showCurrent]="true"
                             emptyKey="admin.audit.empty" />
       </div>
       @if (loading()) {
@@ -105,7 +105,7 @@ const PAGE_SIZE = 50;
     </app-admin-page>
   `,
   styles: `
-    .top { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; margin-bottom: 16px; }
+    .top { display: grid; gap: 12px; margin-bottom: 16px; }
     .intro { margin: 0; color: var(--ion-color-medium); max-width: 520px; }
     .integrity { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; background: #fff;
       border: 2px solid #c9d2dd; border-radius: var(--vv-radius-card); padding: 16px 20px; margin-bottom: 16px; }

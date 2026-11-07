@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -42,7 +43,7 @@ const STEP_OF_FIELD: Record<string, Step> = {
   selector: 'app-process-form',
   imports: [
     AdminPageComponent, RouterLink, IonButton, IonCheckbox, IonIcon, IonInput, IonItem, IonLabel, IonRadio,
-    IonRadioGroup, IonSegment, IonSegmentButton, IonSpinner, IonText, IonTextarea, TranslatePipe,
+    IonRadioGroup, IonSegment, IonSegmentButton, IonSpinner, IonText, IonTextarea, NgTemplateOutlet, TranslatePipe,
   ],
   templateUrl: './process-form.page.html',
   styleUrl: './process-form.page.scss',
@@ -68,9 +69,12 @@ export class ProcessFormPage implements OnInit {
   protected readonly serverErrors = signal<FieldError[]>([]);
   protected readonly serverDetail = signal<string | null>(null);
   protected readonly created = signal<{ id: number; title: string } | null>(null);
+  /** SR6/SR7: language of the texts shown on phones (below 700 px only one language is visible at a time). */
+  protected readonly textTab = signal<Lang>('es');
 
   protected readonly editing = computed(() => !!this.id());
   protected readonly stepIndex = computed(() => STEPS.indexOf(this.step()));
+  protected readonly nextStep = computed<Step | null>(() => STEPS[this.stepIndex() + 1] ?? null);
   protected readonly selectedCensus = computed(() => this.censuses().find((c) => c.id === this.model().censusId));
 
   async ngOnInit(): Promise<void> {
@@ -83,6 +87,7 @@ export class ProcessFormPage implements OnInit {
           this.notEditable.set(true);
         }
         this.model.set(fromProcess(process));
+        this.textTab.set(process.defaultLanguage);
         this.visited.set(new Set(STEPS));
       }
     } catch {
@@ -94,7 +99,59 @@ export class ProcessFormPage implements OnInit {
 
   protected update(change: Partial<FormModel>): void {
     this.model.update((model) => ({ ...model, ...change }));
+    if (change.defaultLanguage) {
+      this.textTab.set(change.defaultLanguage);
+    }
     this.stepErrors.set([]);
+  }
+
+  /** «pendiente» chip of the language tabs: the other language still has empty texts in this step. */
+  protected pending(lang: Lang): boolean {
+    const m = this.model();
+    if (lang === m.defaultLanguage) return false;
+    if (this.step() === 'basics') return !m.title[lang].trim();
+    if (this.step() === 'ballot') {
+      return !m.question[lang].trim() || (m.voteType === 'SINGLE_CHOICE' && m.options.some((option) => !option[lang].trim()));
+    }
+    return false;
+  }
+
+  /** Arrow keys move between the two language tabs (ARIA tabs pattern). */
+  protected onTabKey(event: KeyboardEvent): void {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const index = this.langs.indexOf(this.textTab());
+    const target = event.key === 'Home' ? 0 : event.key === 'End' ? this.langs.length - 1
+      : (index + (event.key === 'ArrowRight' ? 1 : this.langs.length - 1)) % this.langs.length;
+    this.textTab.set(this.langs[target]);
+    document.getElementById('text-tab-' + this.langs[target])?.focus();
+  }
+
+  /**
+   * SR6/SR7: on phones the Atrás/Siguiente bar sticks to the bottom of the screen; a focused field that ends up behind it
+   * (or behind the on-screen keyboard) is scrolled to the middle of the visible area.
+   */
+  protected keepVisible(event: FocusEvent): void {
+    if (!window.matchMedia('(max-width: 767.98px)').matches) return;
+    const target = event.target as HTMLElement;
+    setTimeout(() => {
+      const bar = document.querySelector<HTMLElement>('.step-panel .actions');
+      if (!bar || bar.contains(target)) return;
+      const visibleBottom = Math.min(bar.getBoundingClientRect().top, window.visualViewport?.height ?? window.innerHeight);
+      const rect = target.getBoundingClientRect();
+      if (rect.bottom > visibleBottom - 8 || rect.top < 0) {
+        target.scrollIntoView({ block: 'center' });
+      }
+    }, 300);
+  }
+
+  /** After a validation error, show the language tab that holds the first wrong field if the current one has none. */
+  private showErrorLanguage(errors: FieldError[]): void {
+    const langs = errors.map((error) => error.field.split('.').pop());
+    const first = langs.find((part): part is Lang => part === 'es' || part === 'en');
+    if (first && !langs.includes(this.textTab())) {
+      this.textTab.set(first);
+    }
   }
 
   protected setText(field: 'title' | 'description' | 'question', lang: Lang, value: string): void {
@@ -130,6 +187,7 @@ export class ProcessFormPage implements OnInit {
     const errors = this.validate(this.step());
     this.stepErrors.set(errors);
     if (errors.length > 0) {
+      this.showErrorLanguage(errors);
       return;
     }
     const nextStep = STEPS[this.stepIndex() + 1];
@@ -150,6 +208,7 @@ export class ProcessFormPage implements OnInit {
       if (errors.length > 0) {
         this.step.set(step);
         this.stepErrors.set(errors);
+        this.showErrorLanguage(errors);
         return;
       }
     }
@@ -173,6 +232,7 @@ export class ProcessFormPage implements OnInit {
         const first = error.errors[0];
         if (first) {
           this.step.set(first.field.startsWith('ballot') ? 'ballot' : (STEP_OF_FIELD[first.field] ?? this.step()));
+          this.showErrorLanguage(error.errors);
         }
       } else {
         this.serverDetail.set(this.translate.instant('common.loadError'));

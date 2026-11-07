@@ -37,13 +37,15 @@ import { AdminPageComponent } from '../admin-page.component';
           @for (process of processes(); track process.id) {
             <ion-item button detail [routerLink]="['/admin/procesos', process.id]">
               <ion-label>
+                <!-- SR2: on phones the status goes above the title, which then uses the whole width -->
+                <app-status-badge class="badge-top" [status]="process.status" />
                 <h2>{{ process.title | localized: language() }}</h2>
                 <p>
                   {{ 'admin.processes.opens' | translate: { date: (process.opensAt | localDate: language()) } }} ·
                   {{ 'admin.processes.closes' | translate: { date: (process.closesAt | localDate: language()) } }}
                 </p>
               </ion-label>
-              <app-status-badge slot="end" [status]="process.status" />
+              <app-status-badge slot="end" class="badge-end" [status]="process.status" />
             </ion-item>
           } @empty {
             <ion-item><ion-note>{{ 'admin.processes.empty' | translate }}</ion-note></ion-item>
@@ -58,6 +60,8 @@ import { AdminPageComponent } from '../admin-page.component';
     .cards ion-item { --background: #fff; border: 1px solid var(--vv-border-color); border-radius: var(--vv-radius-card);
       margin-bottom: 12px; --min-height: 72px; }
     h2 { font-weight: 600; }
+    .badge-top { display: none; margin-bottom: 4px; }
+    @media (max-width: 575.98px) { .badge-top { display: block; } .badge-end { display: none; } }
   `,
 })
 export class ProcessesPage {

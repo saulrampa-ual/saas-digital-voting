@@ -208,6 +208,32 @@ html.login-pf, html.login-pf body, .login-pf body {
 #kc-form-buttons, #kc-form-buttons > div { display: flex; flex-direction: column; gap: 12px; }
 #kc-form-buttons .pf-v5-c-button { width: 100%; margin: 0; min-height: 48px !important; } /* both buttons the same height */
 
+/* SR13 (approved prototype): six boxes, 24 px digits, «Continuar» enabled at six digits, resend countdown, account row.
+   The real input (one-time-code, numeric) lies transparent on top of the boxes; js/verivoto.js adds .vv-otp-js. */
+.vv-otp-intro { margin: 0 0 20px; font-size: 16px; line-height: 1.5; color: var(--vv-text); }
+body[data-page-id="login-login-email-otp"] #kc-page-title { white-space: normal; } /* «Código de acceso» next to ES/EN at 390 px */
+.vv-otp-intro strong { overflow-wrap: anywhere; }
+.pf-v5-c-login__main:has(#kc-otp-login-form) .pf-v5-c-form:has(#kc-attempted-username) { display: none; } /* replaced by .vv-otp-account */
+.vv-otp-field { position: relative; }
+.vv-otp-boxes { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.vv-otp-box { min-width: 0; height: 56px; display: grid; place-items: center; border: 1.5px solid var(--vv-line-strong); border-radius: 12px;
+  background: #fff; font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--vv-text); }
+.vv-otp-box.is-filled { border-color: var(--vv-navy); }
+.vv-otp-field.is-focus .vv-otp-box.is-active { border-color: var(--vv-focus); box-shadow: 0 0 0 3px rgba(47, 128, 209, .25); }
+.vv-otp-field.is-invalid .vv-otp-box { border-color: var(--vv-red); }
+#kc-otp-login-form .vv-otp-js input.vv-otp-input { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; padding: 0; margin: 0;
+  border: 0; background: transparent; color: transparent; caret-color: transparent; font-size: 24px; letter-spacing: 0; box-shadow: none; outline: 0; cursor: text; }
+#kc-otp-login-form .vv-otp-js input.vv-otp-input::selection { background: transparent; }
+#kc-otp-login-form .vv-otp-js input.vv-otp-input:focus-visible { outline: none !important; } /* the focus ring is drawn on the active box */
+#kc-otp-login-form #kc-login:disabled { background-color: #8fbfae; color: #fff; opacity: 1; cursor: not-allowed; }
+#kc-otp-login-form #kc-resend-email:disabled { opacity: .6; cursor: not-allowed; }
+.vv-otp-wait { margin: 0; text-align: center; font-size: 15px; color: var(--vv-muted); }
+.vv-otp-wait:empty { display: none; }
+.vv-otp-account { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 20px; padding-top: 12px;
+  border-top: 1px solid var(--vv-line); font-size: 15px; }
+.vv-otp-user { min-width: 0; overflow-wrap: anywhere; color: var(--vv-muted); }
+#vv-change-account { flex: none; min-height: 44px; display: inline-flex; align-items: center; font-weight: 600; text-underline-offset: 3px; }
+
 /* ---------- Password requirements (login-update-password.ftl) ---------- */
 .vv-rules { margin: 4px 0 0; padding: 14px 16px; border: 1px solid var(--vv-line); border-radius: 10px; background: var(--vv-surface-2); }
 .vv-rules-title { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: var(--vv-text); }
@@ -303,6 +329,16 @@ html.login-pf, html.login-pf body, .login-pf body {
   .vv-long, .vv-legal { display: none; }
   .vv-short { display: inline; }
 }
+/* SR15: error pages ("Lo sentimos…", error.ftl) have a short card; on phones it sits in the vertical centre between the
+   brand band and the trust strip instead of leaving a large empty area under it */
+@media (max-width: 767px) {
+  .pf-v5-c-login .pf-v5-c-login__container:has(#kc-error-message) {
+    grid-template-rows: auto auto 1fr auto auto 1fr auto !important;
+    grid-template-areas: "brand" "claim" "." "main" "hint" "." "trust" !important;
+  }
+  .pf-v5-c-login__container:has(#kc-error-message) .vv-claim { padding-bottom: clamp(16px, 3dvh, 28px); }
+  .pf-v5-c-login__container:has(#kc-error-message) .pf-v5-c-login__main { align-self: center; margin: 24px 12px !important; }
+}
 /* Tall phones (390 x 844, 430 x 932): use the extra height to make the form roomier, not to open gaps */
 @media (max-width: 767px) and (min-height: 780px) {
   .pf-v5-c-login__main-header { padding: 24px 22px 4px !important; }
@@ -355,3 +391,6 @@ html.login-pf, html.login-pf body, .login-pf body {
 }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* SR15: way out of the error page («Volver a iniciar sesión») */
+#kc-error-message .vv-restart { display: flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 20px; text-decoration: none; }

@@ -54,7 +54,24 @@ ion-card {
 
 /* Management console blocks shared by A2, A3 and A4 (same look as the prototypes). Scoped to app-admin-page so the voter area keeps its own styles. */
 app-admin-page {
-  .back { display: inline-block; margin-bottom: 0.5rem; color: var(--ion-color-primary); min-height: 44px; line-height: 44px; }
+  /* SR1/SR4/SR5: "back" is a ghost button (44 px target, arrow icon) aligned with the page title. */
+  .back {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 0 0 4px -10px; padding: 0 14px 0 10px;
+    border-radius: var(--vv-radius-control); color: var(--ion-color-primary); font-weight: 600; text-decoration: none;
+  }
+  .back ion-icon { font-size: 20px; flex: none; }
+  .back:hover { background: #eaeff5; }
+  .back:active { background: #d8e1ec; }
+  /* SR4/SR5: secondary navigation actions ("Ver participación", "Ver resultados"...) look like outlined buttons. */
+  .action-link {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px;
+    border: 1.5px solid #7b8794; border-radius: var(--vv-radius-control); background: #fff;
+    color: var(--ion-color-primary); font-weight: 600; text-decoration: none; text-align: center;
+  }
+  .action-link ion-icon { font-size: 20px; flex: none; }
+  .action-link:hover { background: #eaeff5; }
+  .action-link:active { background: #d8e1ec; }
+  @media (max-width: 767.98px) { .action-link { display: flex; width: 100%; } }
   .card { background: #fff; border: 1px solid var(--vv-border-color); border-radius: var(--vv-radius-card); padding: 20px; margin-bottom: 16px; }
   .card h3 { margin: 0 0 12px; font-size: 1.125rem; font-weight: 600; }
   .notice { background: #e6f4ee; color: var(--ion-color-success); padding: 12px 16px; border-radius: var(--vv-radius-control); font-weight: 600; }
@@ -64,4 +81,18 @@ app-admin-page {
   .info-box { background: #e8eef6; color: var(--ion-color-primary); border-radius: var(--vv-radius-control); padding: 12px 16px; }
   .field-error { color: var(--ion-color-danger); font-size: 0.875rem; margin: 4px 0 0; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+
+/* SR6/SR7 (approved prototype): fields of the process wizard with the label above the box (15 px, semibold) and a 48 px
+   bordered box. ion-input and ion-textarea are scoped (not shadow) components, so their inner parts can be styled here; the class is doubled to outweigh the scoped Ionic rules. */
+app-process-form {
+  ion-input.vv-field.vv-field, ion-textarea.vv-field.vv-field { --highlight-height: 0; --padding-start: 0; --padding-end: 0; --background: transparent; min-height: 0; }
+  .vv-field.vv-field .input-wrapper, .vv-field.vv-field .textarea-wrapper { padding: 0; }
+  .vv-field.vv-field .label-text-wrapper { transform: none !important; max-width: 100% !important; margin-bottom: 6px; }
+  .vv-field.vv-field .label-text { font-size: 0.9375rem; font-weight: 600; color: var(--ion-text-color); white-space: normal; }
+  .vv-field.vv-field .native-wrapper { min-height: 48px; padding: 0 14px; border: 1.5px solid #7b8794; border-radius: var(--vv-radius-control); background: #fff; }
+  ion-textarea.vv-field.vv-field .native-wrapper { padding: 10px 14px; }
+  .vv-field.vv-field.has-focus .native-wrapper { border-color: var(--ion-color-primary); box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.25); }
+  .vv-field.vv-field.invalid .native-wrapper { border-color: var(--ion-color-danger); }
+  .vv-field.vv-field .input-bottom, .vv-field.vv-field .textarea-bottom { border-top: 0; padding-inline: 0; }
 }

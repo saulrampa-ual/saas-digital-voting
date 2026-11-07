@@ -219,21 +219,28 @@ descriptiva limitada al prototipo, la configuración y la población evaluados.
 
 El procedimiento y su estado son los siguientes:
 \begin{enumerate}
-  \item [PENDIENTE] Ejecutar una auditoría automática de accesibilidad (por ejemplo,
+  \item [parte automática favorable; parte manual pendiente] Ejecutar una auditoría automática de accesibilidad (por ejemplo,
   axe) en las pantallas evaluadas, con cero incumplimientos críticos ni
   serios, y una revisión manual con teclado y lector de pantalla sin bloqueos
   en el flujo de acceso, voto y recibo. La auditoría automática por sí sola no
-  certifica conformidad WCAG.
+  certifica conformidad WCAG. El barrido axe del flujo del votante
+  (05/11/2026) encontró 8 incumplimientos críticos de una misma incidencia en
+  la papeleta; corregida, el nuevo barrido da 0 críticos y 0 serios. También
+  se corrigió el error de formato del recibo, que no se mostraba (axe no lo
+  detecta); un tercer barrido con las dos correcciones da 0 críticos y 0
+  serios. La revisión manual está pendiente.
   \item [PENDIENTE] Realizar pruebas moderadas con cinco personas no técnicas.
   Pedirles que accedan a una votación de prueba, emitan un voto y comprueben
   el recibo. Registrar éxito sin ayuda, duración, errores y comprensión del
   mensaje; recoger consentimiento y no usar votos reales.
-  \item [PENDIENTE] RNF-4 (sin hipótesis asociada): sesión con cinco
+  \item [NO DEMOSTRADO] RNF-4 (sin hipótesis asociada): sesión con cinco
   administradores de organización sin formación previa; al menos cuatro de
   cinco deben crear, configurar y programar un proceso de opción única en
-  10 minutos o menos (valor propuesto) y sin ayuda. El protocolo de usabilidad
-  actual describe solo a votantes; si la sesión no se realiza, RNF-4 se declara
-  pendiente.
+  10 minutos o menos (valor propuesto) y sin ayuda de otras personas (se
+  permite consultar la documentación). La sesión se realizó el 03/11/2026 con
+  cinco participantes, pero solo dos no tenían formación previa y los tiempos
+  se estimaron después de la sesión; el resultado es indicativo y RNF-4 no se
+  declara aceptado.
   \item [PENDIENTE] Ejecutar una prueba de carga en un entorno aislado con datos
   sintéticos y hasta 500 sesiones concurrentes. Medir latencia por percentiles,
   errores y consumo de recursos durante varias ejecuciones reproducibles.

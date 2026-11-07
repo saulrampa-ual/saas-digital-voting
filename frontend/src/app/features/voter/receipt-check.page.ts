@@ -38,14 +38,19 @@ type Result = 'present' | 'absent' | 'unknownProcess' | 'error' | null;
             labelPlacement="stacked"
             [label]="'voter.verify.label' | translate"
             [helperText]="'voter.verify.helper' | translate"
-            [errorText]="'voter.verify.format' | translate"
-            [class.ion-invalid]="formatError()"
-            [class.ion-touched]="formatError()"
+            [class.field-invalid]="formatError()"
             [value]="code()"
             (ionInput)="code.set(($event.detail.value ?? '').toString()); formatError.set(false); result.set(null)"
             autocomplete="off"
             spellcheck="false"
           ></ion-input>
+          <!-- DEF-06 (WCAG 3.3.1): own error element; Ionic's errorText depends on the ion-invalid class, which Ionic
+               drops when it re-renders the host. role="alert" announces the error when it appears. -->
+          <div role="alert" class="field-error-region">
+            @if (formatError()) {
+              <p class="field-error">{{ 'voter.verify.format' | translate }}</p>
+            }
+          </div>
           <ion-button type="submit" expand="block" color="secondary" [disabled]="busy()">
             @if (busy()) {
               <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
@@ -82,6 +87,8 @@ type Result = 'present' | 'absent' | 'unknownProcess' | 'error' | null;
   styles: `
     .voter { max-width: 35rem; margin: 0 auto; }
     ion-input { margin: 1rem 0 0.75rem; font-size: 1rem; }
+    ion-input.field-invalid { --border-color: var(--ion-color-danger); --highlight-color: var(--ion-color-danger); }
+    .field-error { color: var(--ion-color-danger); font-size: 0.875rem; font-weight: 600; margin: 0 0 0.75rem; }
     ion-button { --min-height: 52px; }
     .result { display: flex; gap: 8px; align-items: center; padding: 12px; border-radius: var(--vv-radius-control);
       margin-top: 1rem; font-weight: 600; }
