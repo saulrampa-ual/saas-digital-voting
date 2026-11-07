@@ -1,0 +1,519 @@
+openapi: 3.1.0
+info:
+  title: VeriVoto identity-service API
+  version: v1
+  description: |
+    Organizations (RF-01), management users and roles (RF-02), traceability (RF-19) and the API keys of each
+    organization (RF-21).
+    Authentication of management users is delegated to Keycloak (RF-04, RF-05a); this service only
+    validates bearer tokens. Error `detail` texts are written in plain Spanish (RNF-8).
+servers:
+  - url: http://localhost:8000
+    description: Local API gateway
+tags:
+  - name: organizations
+    description: RF-01
+  - name: users
+    description: RF-02
+  - name: api-keys
+    description: RF-21 (keys of the organization for its integrations)
+security:
+  - bearerAuth: []
+paths:
+  /api/v1/organizations:
+    post:
+      tags: [organizations]
+      operationId: createOrganization
+      summary: Create an organization with its initial administrator
+      description: "Role: SUPERADMIN. RF-01."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateOrganizationRequest' }
+      responses:
+        '201':
+          description: Organization created
+          headers:
+            Location:
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    get:
+      tags: [organizations]
+      operationId: listOrganizations
+      summary: List organizations
+      description: "Role: SUPERADMIN. RF-01."
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: Page of organizations
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OrganizationPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/organizations/{organizationId}:
+    parameters:
+      - $ref: '#/components/parameters/OrganizationId'
+    get:
+      tags: [organizations]
+      operationId: getOrganization
+      summary: Get an organization
+      description: "Roles: SUPERADMIN, or any management role of the same organization. RF-01, RNF-15."
+      responses:
+        '200':
+          description: Organization
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [organizations]
+      operationId: updateOrganizationStatus
+      summary: Suspend or reactivate an organization
+      description: "Role: SUPERADMIN. RF-01."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateOrganizationStatusRequest' }
+      responses:
+        '200':
+          description: Organization updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/organizations/{organizationId}/users:
+    parameters:
+      - $ref: '#/components/parameters/OrganizationId'
+    get:
+      tags: [users]
+      operationId: listUsers
+      summary: List management users of an organization with their role
+      description: "Roles: SUPERADMIN, ADMIN of the organization. RF-02."
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: Page of users
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ManagementUserPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [users]
+      operationId: createUser
+      summary: Create a management user with a role
+      description: "Roles: SUPERADMIN, ADMIN of the organization. The user is created in Keycloak and must set a password and the email second factor on first login. RF-02."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateManagementUserRequest' }
+      responses:
+        '201':
+          description: User created
+          headers:
+            Location:
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ManagementUser' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/organizations/{organizationId}/users/{userId}/role:
+    parameters:
+      - $ref: '#/components/parameters/OrganizationId'
+      - name: userId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    put:
+      tags: [users]
+      operationId: changeUserRole
+      summary: Change the role of a management user
+      description: |
+        Roles: SUPERADMIN, ADMIN of the organization. RF-02.
+        Rejected with 409 if the organization would be left without any ADMIN.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChangeRoleRequest' }
+      responses:
+        '200':
+          description: Role changed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ManagementUser' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/admin-actions:
+    get:
+      tags: [traceability]
+      operationId: searchAdminActions
+      summary: Administrative actions of the caller's organization (RF-19)
+      description: |
+        ADMIN and AUDITOR of the organization in the token; newest first. Who, what, on which object and when.
+        Read only: the table rejects updates and deletes (RNF-13, D-44). No personal data of voters is recorded.
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: from, in: query, description: 'Inclusive', schema: { type: string, format: date-time } }
+        - { name: to, in: query, description: 'Exclusive', schema: { type: string, format: date-time } }
+        - { name: actorId, in: query, schema: { type: string, format: uuid } }
+        - { name: action, in: query, schema: { $ref: '#/components/schemas/AdminActionCode' } }
+        - { name: processId, in: query, schema: { type: integer, format: int64 } }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: Page of actions
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, page, size, totalItems]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/AdminAction' } }
+                  page: { type: integer }
+                  size: { type: integer }
+                  totalItems: { type: integer, format: int64 }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/admin-actions/actors:
+    get:
+      tags: [traceability]
+      operationId: listAdminActionActors
+      summary: People who appear in the traceability of the organization, for the filter (RF-19)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Actors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [actorId, actorName]
+                  properties:
+                    actorId: { type: string, format: uuid }
+                    actorName: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/api-keys:
+    get:
+      tags: [api-keys]
+      operationId: listApiKeys
+      summary: Keys of the organization for its integrations
+      description: |
+        Role: ADMIN of the organization in the token (the super-administrator has none: 403). RF-21, D-47. Active and
+        revoked keys, newest first, with who created them. Never the secret.
+      responses:
+        '200':
+          description: Keys
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, maxActive]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/ApiKey' } }
+                  maxActive: { type: integer, const: 5 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [api-keys]
+      operationId: createApiKey
+      summary: Create a key (a Keycloak client of the organization)
+      description: |
+        Role: ADMIN. Creates a confidential Keycloak client with only the client-credentials grant; its tokens (5 min)
+        carry the role `INTEGRATION` and the `organization_id` of the organization. The secret appears only in this
+        answer (`Cache-Control: no-store`) and is never stored by VeriVoto. At most 5 active keys (409); a suspended
+        organization cannot create them (409). Recorded for the traceability (`API_KEY_CREATED`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 60 }
+      responses:
+        '201':
+          description: Key created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [key, clientSecret, tokenUrl]
+                properties:
+                  key: { $ref: '#/components/schemas/ApiKey' }
+                  clientSecret: { type: string }
+                  tokenUrl: { type: string, format: uri }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/api-keys/{apiKeyId}:
+    parameters:
+      - name: apiKeyId
+        in: path
+        required: true
+        schema: { type: integer, format: int64, minimum: 1 }
+    delete:
+      tags: [api-keys]
+      operationId: revokeApiKey
+      summary: Revoke a key
+      description: |
+        Role: ADMIN. Deletes the Keycloak client: no new tokens; tokens already issued expire within 5 minutes. The key
+        stays in the list as revoked. 404 if it is not an active key of the organization. Recorded (`API_KEY_REVOKED`).
+      responses:
+        '200':
+          description: Key revoked
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiKey' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /internal/v1/admin-actions:
+    post:
+      tags: [internal]
+      operationId: recordAdminAction
+      summary: Receive an administrative action from election-service, ballot-box-service or voter-access-service (D-44)
+      description: |
+        Delivered from the outbox of the origin service and retried until accepted; idempotent by `eventId`. Only the
+        clients `election-service`, `ballot-box-service` and `voter-access-service` (claim `azp`, IMP-26). Never routed by the gateway.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/AdminAction'
+                - type: object
+                  required: [eventId, organizationId]
+                  properties:
+                    eventId: { type: string, format: uuid }
+                    organizationId: { $ref: '#/components/schemas/OrganizationIdentifier' }
+      responses:
+        '204':
+          description: Recorded (or already recorded)
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Keycloak access token with claims `roles` and `organization_id`.
+    serviceAuth:
+      type: oauth2
+      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE and the expected client in `azp`).
+      flows:
+        clientCredentials:
+          tokenUrl: http://localhost:8080/realms/verivoto/protocol/openid-connect/token
+          scopes: {}
+  parameters:
+    OrganizationId:
+      name: organizationId
+      in: path
+      required: true
+      schema: { $ref: '#/components/schemas/OrganizationIdentifier' }
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 0, default: 0 }
+    Size:
+      name: size
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: The caller's role or organization does not allow this operation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Resource not found in the caller's organization
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: The operation conflicts with the current state
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    AdminActionCode:
+      type: string
+      enum: [ORGANIZATION_CREATED, ORGANIZATION_STATUS_CHANGED, USER_CREATED, USER_ROLE_CHANGED, CENSUS_CREATED,
+        VOTER_ADDED, VOTER_UPDATED, VOTER_REMOVED, VOTERS_IMPORTED, PROCESS_CREATED, PROCESS_UPDATED, PROCESS_SCHEDULED,
+        PROCESS_ARCHIVED, CHAIN_VERIFIED, RESULTS_EXPORTED, MINUTES_DOWNLOADED, REMINDER_SCHEDULED, REMINDER_CANCELLED,
+        NOTIFICATIONS_RETRIED, PERSONAL_DATA_EXPORTED, PERSONAL_DATA_ERASED, API_KEY_CREATED,
+        API_KEY_REVOKED]
+    AdminAction:
+      type: object
+      required: [occurredAt, actorId, actorName, action, objectType, source]
+      properties:
+        occurredAt: { type: string, format: date-time }
+        actorId: { type: string, format: uuid }
+        actorName: { type: string, maxLength: 120 }
+        action: { $ref: '#/components/schemas/AdminActionCode' }
+        objectType: { type: string, enum: [ORGANIZATION, USER, CENSUS, VOTER, PROCESS, API_KEY] }
+        objectId: { type: [string, 'null'], maxLength: 64 }
+        objectLabel: { type: [string, 'null'], maxLength: 200, description: 'Name of the object; never a voter''s name' }
+        detail: { type: [string, 'null'], maxLength: 200, description: 'New role or status, number imported or retried, INTACT/BROKEN, ES/EN, reminder time, census entries exported or deleted:anonymized' }
+        processId: { type: [integer, 'null'], format: int64 }
+        source: { type: string, enum: [IDENTITY, ELECTION, BALLOT_BOX, VOTER_ACCESS] }
+    OrganizationIdentifier:
+      type: string
+      pattern: '^[A-Za-z0-9]{1,20}$'
+      description: RI-1 organization identifier (also `organization_id` everywhere else).
+    OrganizationStatus:
+      type: string
+      enum: [ACTIVE, SUSPENDED]
+    ManagementRole:
+      type: string
+      enum: [ADMIN, CENSUS_MANAGER, AUDITOR]
+      description: SUPERADMIN belongs to the platform and is not assignable inside an organization.
+    CreateOrganizationRequest:
+      type: object
+      required: [id, name, initialAdministrator]
+      properties:
+        id: { $ref: '#/components/schemas/OrganizationIdentifier' }
+        name: { type: string, minLength: 1, maxLength: 100 }
+        initialAdministrator: { $ref: '#/components/schemas/PersonData' }
+    UpdateOrganizationStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/OrganizationStatus' }
+    Organization:
+      type: object
+      required: [id, name, status, createdAt]
+      properties:
+        id: { $ref: '#/components/schemas/OrganizationIdentifier' }
+        name: { type: string, maxLength: 100 }
+        status: { $ref: '#/components/schemas/OrganizationStatus' }
+        createdAt: { type: string, format: date-time }
+    OrganizationPage:
+      type: object
+      required: [items, page, size, totalItems]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Organization' }
+        page: { type: integer }
+        size: { type: integer }
+        totalItems: { type: integer }
+    PersonData:
+      type: object
+      required: [fullName, email]
+      properties:
+        fullName: { type: string, minLength: 1, maxLength: 60 }
+        email: { type: string, format: email, maxLength: 100 }
+    CreateManagementUserRequest:
+      allOf:
+        - $ref: '#/components/schemas/PersonData'
+        - type: object
+          required: [role]
+          properties:
+            role: { $ref: '#/components/schemas/ManagementRole' }
+    ChangeRoleRequest:
+      type: object
+      required: [role]
+      properties:
+        role: { $ref: '#/components/schemas/ManagementRole' }
+    ManagementUser:
+      type: object
+      required: [id, organizationId, fullName, email, role, status]
+      properties:
+        id: { type: string, format: uuid }
+        organizationId: { $ref: '#/components/schemas/OrganizationIdentifier' }
+        fullName: { type: string, maxLength: 60 }
+        email: { type: string, format: email, maxLength: 100 }
+        role: { $ref: '#/components/schemas/ManagementRole' }
+        status:
+          type: string
+          enum: [ACTIVE, LOCKED, INACTIVE]
+    ManagementUserPage:
+      type: object
+      required: [items, page, size, totalItems]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ManagementUser' }
+        page: { type: integer }
+        size: { type: integer }
+        totalItems: { type: integer }
+    ApiKey:
+      type: object
+      required: [id, name, clientId, createdAt, active]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string, maxLength: 60 }
+        clientId: { type: string, description: 'Keycloak client id, `api-{organization}-{8 hex}`' }
+        createdByName: { type: [string, 'null'] }
+        createdAt: { type: string, format: date-time }
+        revokedAt: { type: [string, 'null'], format: date-time }
+        active: { type: boolean }
+    Problem:
+      type: object
+      description: RFC 9457 problem details. `detail` is plain Spanish for the end user (RNF-8).
+      required: [title, status]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }

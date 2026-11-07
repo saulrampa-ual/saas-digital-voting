@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VeriVoto · Propuesta de login e inicio por rol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* ===== Tokens (se traducen 1:1 a src/theme/variables.scss) ===== */
+:root{
+  --navy:#14365c; --navy-deep:#0b2240; --navy-ink:#0e2a4a;
+  --green:#1f7a5a; --green-hover:#1b6b4f; --green-soft:#e2f2ec; --action:#1f7a5a; --action-hover:#1b6b4f;
+  --red:#8f1f14; --red-soft:#fbe9e6;
+  --amber-ink:#8a4b0f; --amber-soft:#fdebd3;
+  --blue-focus:#2f80d1;
+  --bg:#f3f5f8; --surface:#ffffff; --surface-2:#f7f9fb;
+  --text:#1b2733; --muted:#4a5868; --line:#dde3ea; --line-strong:#c6d0db;
+  --menu-text:#c9d6e5; --menu-active:#ffffff1f;
+  --ink:#14365c; --ink-soft:#e6edf6; --ink-mark:#14365c;
+  --radius-s:8px; --radius-m:12px;
+  --shadow:0 1px 2px #14365c14, 0 8px 24px -12px #14365c26;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1621; --surface:#16202c; --surface-2:#1b2735; --text:#e7edf4; --muted:#a8b5c3; --line:#26374a; --line-strong:#33475d;
+  --green:#6fd0a8; --green-hover:#4cb38c; --green-soft:#173a2f; --red:#e0796c; --red-soft:#3a1b18; --amber-ink:#f1c58b; --amber-soft:#3d2c14;
+  --navy:#0f2846; --navy-deep:#091a30; --shadow:0 1px 2px #0006; --ink:#9cc3ef; --ink-soft:#1d3150; --ink-mark:#6e9cd0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1621; --surface:#16202c; --surface-2:#1b2735; --text:#e7edf4; --muted:#a8b5c3; --line:#26374a; --line-strong:#33475d;
+  --green:#6fd0a8; --green-hover:#4cb38c; --green-soft:#173a2f; --red:#e0796c; --red-soft:#3a1b18; --amber-ink:#f1c58b; --amber-soft:#3d2c14;
+  --navy:#0f2846; --navy-deep:#091a30; --shadow:0 1px 2px #0006; --ink:#9cc3ef; --ink-soft:#1d3150; --ink-mark:#6e9cd0; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font:400 15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-feature-settings:"cv11","ss01"}
+h1,h2,h3,p{margin:0}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue-focus);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== Navegador de pantallas del prototipo ===== */
+.proto{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;gap:2px;padding:4px;border-radius:12px;background:#0b2240e6;backdrop-filter:blur(8px);box-shadow:0 10px 30px #0006;max-width:calc(100% - 24px);overflow-x:auto}
+.proto a,.proto button{border:0;background:none;color:#dbe6f3;font-size:13px;padding:8px 11px;border-radius:9px;text-decoration:none;white-space:nowrap;cursor:pointer;min-height:36px}
+.proto a[aria-current="page"]{background:#ffffff26;color:#fff;font-weight:600}
+.proto .sep{width:1px;background:#ffffff2e;margin:6px 4px}
+[data-screen]{display:none}
+body[data-view="login"] [data-screen~="login"],body[data-view="codigo"] [data-screen~="codigo"],
+body[data-view="admin"] [data-screen~="app"],body[data-view="superadmin"] [data-screen~="app"],
+body[data-view="censo"] [data-screen~="app"],body[data-view="auditor"] [data-screen~="app"],
+body[data-view="patrones"] [data-screen~="app"]{display:block}
+body[data-view="admin"] [data-panel="admin"],body[data-view="superadmin"] [data-panel="superadmin"],
+body[data-view="censo"] [data-panel="censo"],body[data-view="auditor"] [data-panel="auditor"],
+body[data-view="patrones"] [data-panel="patrones"]{display:block}
+[data-panel]{display:none}
+
+/* ===== LOGIN (tema Keycloak) ===== */
+.login{min-height:100vh;padding:40px 20px 96px;color:#fff;
+  background:
+    radial-gradient(1100px 600px at 12% -10%,#2a5b93 0%,transparent 55%),
+    radial-gradient(800px 520px at 100% 110%,#1f7a5a59 0%,transparent 60%),
+    linear-gradient(165deg,#14365c 0%,#0b2240 58%,#071628 100%)}
+.login-wrap{max-width:440px;margin:0 auto}
+.brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;margin:12px 0 28px}
+.brand svg{width:60px;height:60px;filter:drop-shadow(0 8px 20px #0007)}
+.wordmark{font-size:28px;font-weight:600;letter-spacing:.34em;margin-right:-.34em;line-height:1}
+.motto{font-size:14px;color:#c3d2e3;max-width:30ch}
+.panel{background:var(--surface);color:var(--text);border-radius:14px;padding:30px 30px 26px;box-shadow:0 30px 70px -20px #000a;border-top:4px solid var(--green)}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.panel-head h1{font-size:22px;font-weight:650;letter-spacing:-.01em}
+.lang-select{min-height:40px;border:1px solid var(--line-strong);border-radius:var(--radius-s);background:var(--surface);padding:0 10px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.control{display:flex;align-items:stretch;border:1.5px solid var(--line-strong);border-radius:var(--radius-s);background:var(--surface);min-height:48px;overflow:hidden}
+.control:focus-within{border-color:var(--blue-focus);box-shadow:0 0 0 3px #2f80d140}
+.control input{flex:1;min-width:0;border:0;background:transparent;padding:12px 14px;font-size:16px;outline:0}
+.control .reveal{border:0;border-left:1px solid var(--line);background:var(--surface-2);padding:0 14px;min-width:48px;cursor:pointer;color:var(--muted);display:grid;place-items:center}
+.control.is-invalid{border-color:var(--red)}
+.field-error{display:none;gap:6px;align-items:flex-start;color:var(--red);font-size:14px;margin-top:8px;font-weight:500}
+.has-error .field-error{display:flex}
+.has-error .control.user{border-color:var(--red)}
+.row-between{display:flex;justify-content:space-between;align-items:center;margin:-4px 0 22px}
+.link{color:var(--ink);font-weight:600;font-size:14px;text-underline-offset:3px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:var(--radius-s);border:1.5px solid transparent;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none}
+.btn-primary{background:var(--action);color:#fff}
+.btn-primary:hover{background:var(--action-hover)}
+.btn-secondary{background:var(--surface);border-color:var(--line-strong);color:var(--ink)}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-block{width:100%}
+.btn-sm{min-height:40px;font-size:14px;padding:0 14px}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px;margin:18px 0}
+.or::before,.or::after{content:"";height:1px;flex:1;background:var(--line)}
+.sso-note{font-size:13px;color:var(--muted);margin-top:10px;text-align:center}
+.seals{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 18px;margin-top:22px;font-size:13px;color:#c3d2e3}
+.seals span{display:inline-flex;align-items:center;gap:6px}
+.seals svg.i{width:16px;height:16px}
+.voter-hint{text-align:center;color:#c3d2e3;font-size:13px;margin-top:16px}
+.otp{display:flex;gap:8px;justify-content:space-between;margin:6px 0 10px}
+.otp input{width:100%;max-width:52px;height:56px;text-align:center;font-size:22px;font-weight:600;border:1.5px solid var(--line-strong);border-radius:var(--radius-s);background:var(--surface)}
+.otp input:focus{border-color:var(--blue-focus);box-shadow:0 0 0 3px #2f80d140;outline:0}
+.hint{font-size:14px;color:var(--muted)}
+.mail-badge{width:48px;height:48px;border-radius:12px;background:var(--green-soft);color:var(--green);display:grid;place-items:center;margin-bottom:14px}
+
+/* ===== APP shell ===== */
+.shell{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:100vh}
+.side{background:var(--navy);color:var(--menu-text);display:flex;flex-direction:column;padding:18px 14px;position:sticky;top:0;height:100vh}
+.side .logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:650;letter-spacing:.16em;font-size:15px;padding:4px 8px 22px}
+.side .logo svg{width:30px;height:30px}
+.side nav a{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:var(--radius-s);text-decoration:none;font-size:14.5px;color:var(--menu-text)}
+.side nav a:hover{background:#ffffff14;color:#fff}
+.side nav a[aria-current="page"]{background:var(--menu-active);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #6fd0a8}
+.side .me{margin-top:auto;border-top:1px solid #ffffff22;padding:14px 8px 0;font-size:13.5px;color:#fff}
+.side .me small{display:block;color:#9fb3c9}
+.topbar{display:flex;align-items:center;gap:12px;padding:12px clamp(16px,3vw,32px);background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.crumb{font-size:14px;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--text);font-weight:600}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:var(--radius-s);overflow:hidden}
+.seg button{border:0;background:var(--surface);min-width:44px;min-height:40px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--navy);color:#fff;box-shadow:inset 0 0 0 1px #ffffff33}
+.icon-btn{border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--radius-s);width:44px;height:40px;display:grid;place-items:center;cursor:pointer;color:var(--text)}
+.burger{display:none}
+.scrim{display:none}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--green-soft);color:var(--green);display:grid;place-items:center;font-weight:700;font-size:13px}
+.content{padding:24px clamp(16px,3vw,32px) 110px;max-width:1220px}
+
+.role-line{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin-bottom:18px}
+.role-chip{font-size:12.5px;font-weight:600;color:var(--ink);background:var(--ink-soft);border-radius:999px;padding:3px 10px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.page-head h1{font-size:28px;font-weight:650;letter-spacing:-.015em;line-height:1.15}
+.page-head p{color:var(--muted);margin-top:6px}
+
+/* Franja de resumen: una sola superficie dividida, no cuatro tarjetas iguales */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-m);box-shadow:var(--shadow);margin-bottom:20px}
+.strip > div{padding:16px 20px;border-left:1px solid var(--line)}
+.strip > div:first-child{border-left:0}
+.strip dt{font-size:13.5px;color:var(--muted)}
+.strip dd{margin:4px 0 0;font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.strip dd small{display:block;font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0;margin-top:4px}
+
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:start}
+.stack{display:grid;gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-m);padding:20px 22px;box-shadow:var(--shadow)}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.card-head h2{font-size:17px;font-weight:650}
+.card-head a{font-size:14px;font-weight:600;color:var(--green);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.card-head a:hover{text-decoration:underline}
+
+/* Tarjeta «Ahora» */
+.now{border-top:4px solid var(--green)}
+.now-body{display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center}
+.donut{position:relative;width:150px;height:150px}
+.donut svg{transform:rotate(-90deg)}
+.donut .val{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.donut .val b{font-size:32px;font-weight:700;letter-spacing:-.02em}
+.donut .val small{font-size:12.5px;color:var(--muted)}
+.facts{display:grid;gap:8px;font-size:14.5px}
+.facts .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:baseline}
+.days{display:flex;gap:6px;align-items:flex-end;height:54px;margin-top:6px}
+.days span{flex:1;max-width:28px;background:var(--ink-mark);border-radius:4px 4px 0 0;opacity:.85}
+.days-cap{font-size:12.5px;color:var(--muted);margin-top:6px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
+/* Eventos */
+.ev{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.ev:first-of-type{border-top:0;padding-top:4px}
+.date{border:1px solid var(--line-strong);border-radius:10px;height:60px;display:grid;place-content:center;text-align:center;background:var(--surface-2)}
+.date b{font-size:21px;line-height:1}
+.date small{font-size:12px;color:var(--muted)}
+.ev p{font-size:15px;font-weight:550;margin:6px 0 2px}
+.ev .meta{font-size:13.5px;color:var(--muted)}
+
+/* Chips de estado: icono + texto, nunca solo color */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:650;padding:3px 10px 3px 8px;border-radius:999px;white-space:nowrap}
+.chip svg.i{width:14px;height:14px;stroke-width:2.2}
+.chip.ok{background:var(--green-soft);color:var(--green)}
+.chip.warn{background:var(--amber-soft);color:var(--amber-ink)}
+.chip.bad{background:var(--red-soft);color:var(--red)}
+.chip.info{background:var(--ink-soft);color:var(--ink)}
+.chip.neutral{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+
+/* Ciclo de vida: el elemento propio de VeriVoto */
+.proc{padding:16px 0;border-top:1px solid var(--line)}
+.proc:first-of-type{border-top:0;padding-top:4px}
+.proc-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.proc-top h3{font-size:15.5px;font-weight:600}
+.proc-top .meta{font-size:13.5px;color:var(--muted);margin-top:2px}
+.life{list-style:none;display:grid;grid-template-columns:repeat(6,1fr);margin:14px 0 0;padding:0;position:relative}
+.life::before{content:"";position:absolute;left:8px;right:8px;top:7px;height:2px;background:var(--line-strong)}
+.life li{position:relative;font-size:12px;color:var(--muted);padding-top:22px;text-align:center}
+.life li:first-child{text-align:left}.life li:last-child{text-align:right}
+.life li::before{content:"";position:absolute;top:1px;left:50%;transform:translateX(-50%);width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--line-strong);box-sizing:border-box}
+.life li:first-child::before{left:7px}.life li:last-child::before{left:auto;right:-5px;transform:none}
+.life li.done::before{background:var(--ink-mark);border-color:var(--ink-mark)}
+.life li.here{color:var(--text);font-weight:700}
+.life li.here::before{width:16px;height:16px;top:-1px;background:var(--green);border:3px solid var(--green-soft);box-shadow:0 0 0 2px var(--green)}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--green);border-radius:99px}
+
+/* Tablas que pasan a tarjetas */
+.table{width:100%;border-collapse:collapse;font-size:14.5px}
+.table th{text-align:left;font-size:13px;font-weight:600;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line-strong);background:var(--surface-2)}
+.table td{padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.table tr:last-child td{border-bottom:0}
+.table .r{text-align:right}
+.table-wrap{border:1px solid var(--line);border-radius:var(--radius-m);overflow:hidden;background:var(--surface)}
+.cell-main{font-weight:600}
+.cell-sub{font-size:13px;color:var(--muted)}
+.hash{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:13px;letter-spacing:.02em}
+
+/* Integridad (auditor) */
+.integrity{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;border:1px solid var(--line);border-left:6px solid var(--green);background:var(--surface);border-radius:var(--radius-m);padding:20px 22px;box-shadow:var(--shadow);margin-bottom:20px}
+.integrity .seal{width:56px;height:56px;border-radius:14px;background:var(--green-soft);color:var(--green);display:grid;place-items:center}
+.integrity .seal svg.i{width:30px;height:30px}
+.integrity h2{font-size:20px;font-weight:650;color:var(--green)}
+.integrity p{color:var(--muted);font-size:14.5px;margin-top:4px}
+.chain{display:flex;gap:3px;margin-top:10px}
+.chain i{width:22px;height:8px;border-radius:2px;background:var(--green);opacity:.25}
+.chain i:nth-child(3n){opacity:.55}.chain i:last-child{opacity:1}
+
+/* Importación */
+.import-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.import-sum div{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.import-sum b{display:block;font-size:24px;font-weight:700}
+.import-sum span{font-size:13.5px;color:var(--muted)}
+.errlist{list-style:none;margin:0;padding:0;font-size:14px}
+.errlist li{display:grid;grid-template-columns:72px 1fr;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.errlist li b{color:var(--red);font-weight:600}
+
+/* Nota para desarrollo (no forma parte de la interfaz final) */
+.devnote{margin-top:14px;border:1.5px dashed #b07a1c;background:#fff8ec;color:#5c3b06;border-radius:10px;padding:10px 12px;font-size:13px}
+:root[data-theme="dark"] .devnote{background:#2b2210;color:#f3d49c;border-color:#8a6a2a}
+.devnote b{font-weight:700}
+.devnote code{overflow-wrap:anywhere}
+.crumb{min-width:0}
+
+/* Estados vacío, carga y error */
+.empty{text-align:center;padding:34px 18px;border:1.5px dashed var(--line-strong);border-radius:var(--radius-m);background:var(--surface)}
+.empty .ill{width:56px;height:56px;border-radius:16px;background:var(--ink-soft);color:var(--ink);display:grid;place-items:center;margin:0 auto 12px}
+.empty h3{font-size:17px;font-weight:650}
+.empty p{color:var(--muted);max-width:46ch;margin:6px auto 16px}
+.skel{border-radius:8px;background:linear-gradient(90deg,var(--line) 0%,var(--surface-2) 50%,var(--line) 100%);background-size:200% 100%;animation:sk 1.4s ease-in-out infinite}
+@keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
+.alert{display:flex;gap:12px;align-items:flex-start;border-radius:var(--radius-m);padding:14px 16px;border:1px solid;font-size:14.5px}
+.alert.bad{background:var(--red-soft);border-color:#d9a39c;color:var(--red)}
+:root[data-theme="dark"] .alert.bad{border-color:#6b2c25}
+.alert p{color:var(--text);margin-top:2px}
+
+/* ===== Responsive ===== */
+@media (max-width:1100px){.grid{grid-template-columns:1fr}}
+@media (max-width:991px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;inset:0 auto 0 0;width:280px;z-index:30;transform:translateX(-100%);transition:transform .2s ease}
+  body.menu-open .side{transform:none;box-shadow:20px 0 60px #0007}
+  body.menu-open .scrim{display:block}
+  .scrim{display:none;position:fixed;inset:0;background:#0007;z-index:20}
+  .burger{display:grid}
+  .strip{grid-template-columns:repeat(2,1fr)}
+  .strip > div:nth-child(3){border-left:0}
+  .strip > div:nth-child(n+3){border-top:1px solid var(--line)}
+}
+@media (max-width:720px){
+  .now-body{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .facts{justify-items:center}
+  .integrity{grid-template-columns:1fr}
+  .import-sum{grid-template-columns:1fr 1fr 1fr}
+  .table thead{display:none}
+  .table, .table tbody, .table tr, .table td{display:block;width:100%}
+  .table tr{padding:12px 14px;border-bottom:1px solid var(--line)}
+  .table tr:last-child{border-bottom:0}
+  .table td{border:0;padding:4px 0;display:flex;justify-content:space-between;gap:16px;text-align:right}
+  .table td::before{content:attr(data-label);color:var(--muted);font-size:13px;text-align:left;flex:none}
+  .table td.lead{display:block;text-align:left;padding-bottom:6px}
+  .table td.lead::before{content:none}
+  .table .r{text-align:right}
+  .life li{font-size:0}
+  .life li.here{font-size:12px}
+  .page-head h1{font-size:24px}
+  .crumb .org-full{display:none}
+}
+@media (max-width:480px){.strip dd{font-size:26px}.panel{padding:24px 20px}.wordmark{font-size:24px}.otp input{height:52px}}
+</style>
+</head>
+<body data-view="login">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="g-shield" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f80d1"/><stop offset="1" stop-color="#1f9a73"/></linearGradient>
+  <symbol id="mark" viewBox="0 0 64 64"><path d="M32 4 55 12v18c0 15-9.5 25.5-23 30C18.5 55.5 9 45 9 30V12z" fill="url(#g-shield)"/><path d="M32 4 55 12v18c0 15-9.5 25.5-23 30z" fill="#fff" opacity=".1"/><path d="M21 33l8 8 15-17" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.6c1.9.7 3.1 2.6 3.5 5.4"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
+  <symbol id="i-checkbox" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12.5l3 3 5-6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2.8 20 6v6c0 5-3.4 8.4-8 9.4-4.6-1-8-4.4-8-9.4V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M14 9l2 2"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5l8-3v19M12 21V9l8 3v9M2 21h20M7 9h2M7 13h2M7 17h2M15 15h2"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M4 7l16 10M20 7 4 17"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></symbol>
+  <symbol id="i-uni" viewBox="0 0 24 24"><path d="M2 9 12 4l10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/></symbol>
+</defs></svg>
+
+<!-- ======================= LOGIN: contraseña ======================= -->
+<main class="login" data-screen="login" id="screen-login">
+  <div class="login-wrap">
+    <div class="brand">
+      <svg aria-hidden="true"><use href="#mark"/></svg>
+      <div class="wordmark" aria-label="VeriVoto">VERIVOTO</div>
+      <p class="motto" data-en="Secret, verifiable voting for your organisation">Votaciones secretas y verificables para tu organización</p>
+    </div>
+
+    <form class="panel" id="login-form" novalidate>
+      <div class="panel-head">
+        <h1 data-en="Sign in to your account">Acceder a tu cuenta</h1>
+        <select class="lang-select" aria-label="Idioma" data-en-aria="Language" data-lang-select>
+          <option value="es">Español</option><option value="en">English</option>
+        </select>
+      </div>
+
+      <div class="field" id="f-user">
+        <label for="username" data-en="Username or email">Usuario o email</label>
+        <div class="control user"><input id="username" name="username" autocomplete="username" value="auditor@ual.test" aria-describedby="login-error"></div>
+      </div>
+      <div class="field">
+        <label for="password" data-en="Password">Contraseña</label>
+        <div class="control">
+          <input id="password" name="password" type="password" autocomplete="current-password" value="contraseña">
+          <button type="button" class="reveal" aria-label="Mostrar contraseña" data-en-aria="Show password" data-reveal="password"><svg class="i"><use href="#i-eye"/></svg></button>
+        </div>
+        <div class="field-error" id="login-error" role="alert"><svg class="i" aria-hidden="true" style="width:18px;height:18px;margin-top:1px"><use href="#i-alert"/></svg><span data-en="Invalid username or password.">Usuario o contraseña incorrectos.</span></div>
+      </div>
+      <div class="row-between">
+        <a class="link" href="#login" data-en="Forgot your password?">¿Has olvidado tu contraseña?</a>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" data-en="Sign in">Iniciar sesión</button>
+
+      <div class="or" data-en="or">o</div>
+      <a class="btn btn-secondary btn-block" href="#login"><svg class="i" aria-hidden="true"><use href="#i-uni"/></svg><span data-en="Sign in with your organisation account">Acceder con la cuenta de tu organización</span></a>
+      <p class="sso-note" data-en="Only shown when your organisation has single sign-on set up.">Solo aparece si tu organización tiene configurado el acceso único (SSO).</p>
+    </form>
+
+    <div class="seals">
+      <span><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg><span data-en="Encrypted connection">Conexión cifrada</span></span>
+      <span><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg><span data-en="Two-step verification">Verificación en dos pasos</span></span>
+      <span><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg><span data-en="GDPR compliant">Cumple el RGPD</span></span>
+    </div>
+    <p class="voter-hint" data-en="Here to vote? Use the personal link from your invitation email.">¿Vienes a votar? Usa el enlace personal de tu correo de invitación.</p>
+  </div>
+</main>
+
+<!-- ======================= LOGIN: código ======================= -->
+<main class="login" data-screen="codigo">
+  <div class="login-wrap">
+    <div class="brand">
+      <svg aria-hidden="true"><use href="#mark"/></svg>
+      <div class="wordmark" aria-label="VeriVoto">VERIVOTO</div>
+    </div>
+    <form class="panel" onsubmit="go('admin');return false">
+      <div class="mail-badge" aria-hidden="true"><svg class="i"><use href="#i-mail"/></svg></div>
+      <div class="panel-head" style="margin-bottom:8px"><h1 data-en="Check your email">Revisa tu correo</h1></div>
+      <p class="hint" style="margin-bottom:18px"><span data-en="We sent a 6-digit code to">Hemos enviado un código de 6 cifras a</span> <b>a•••@ual.test</b>. <span data-en="It expires in 10 minutes.">Caduca en 10 minutos.</span></p>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend class="field" style="font-size:14px;font-weight:600;margin-bottom:6px;padding:0" data-en="Verification code">Código de verificación</legend>
+        <div class="otp">
+          <input inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="Cifra 1 de 6" value="4">
+          <input inputmode="numeric" maxlength="1" aria-label="Cifra 2 de 6" value="8">
+          <input inputmode="numeric" maxlength="1" aria-label="Cifra 3 de 6" value="2">
+          <input inputmode="numeric" maxlength="1" aria-label="Cifra 4 de 6">
+          <input inputmode="numeric" maxlength="1" aria-label="Cifra 5 de 6">
+          <input inputmode="numeric" maxlength="1" aria-label="Cifra 6 de 6">
+        </div>
+      </fieldset>
+      <p class="hint" style="margin-bottom:20px"><span data-en="You have 5 attempts left.">Te quedan 5 intentos.</span> <a class="link" href="#codigo" data-en="Resend the code">Reenviar el código</a></p>
+      <button class="btn btn-primary btn-block" type="submit" data-en="Verify and continue">Verificar y entrar</button>
+      <p style="text-align:center;margin-top:14px"><a class="link" href="#login" data-en="Back to sign in">Volver al inicio de sesión</a></p>
+    </form>
+    <div class="seals"><span><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg><span data-en="Encrypted connection">Conexión cifrada</span></span></div>
+  </div>
+</main>
+
+<!-- ======================= APP ======================= -->
+<div data-screen="app">
+<div class="shell">
+  <div class="scrim" onclick="document.body.classList.remove('menu-open')"></div>
+  <aside class="side" id="menu" aria-label="Menú principal" data-en-aria="Main menu">
+    <div class="logo"><svg aria-hidden="true"><use href="#mark"/></svg>VERIVOTO</div>
+    <nav id="nav"></nav>
+    <div class="me"><span id="me-name">Administración UAL</span><small id="me-role">Administrador · UAL</small></div>
+  </aside>
+
+  <div>
+    <header class="topbar">
+      <button class="icon-btn burger" aria-label="Abrir menú" data-en-aria="Open menu" aria-controls="menu" onclick="document.body.classList.toggle('menu-open')"><svg class="i"><use href="#i-menu"/></svg></button>
+      <div class="crumb" id="crumb"><span data-en="Organisation">Organización</span> <b><span class="org-full">Universidad de Almería</span> (UAL)</b></div>
+      <div class="seg" role="group" aria-label="Idioma" data-en-aria="Language"><button type="button" aria-pressed="true" data-set-lang="es">ES</button><button type="button" aria-pressed="false" data-set-lang="en">EN</button></div>
+      <button class="icon-btn" type="button" aria-label="Cambiar tema claro u oscuro" data-en-aria="Switch light or dark theme" onclick="toggleTheme()"><svg class="i"><use href="#i-moon"/></svg></button>
+      <div class="avatar" aria-hidden="true" id="me-initials">AU</div>
+    </header>
+
+    <main class="content" id="main">
+
+<!-- ---------- ADMINISTRADOR ---------- -->
+<section data-panel="admin" aria-labelledby="h-admin">
+  <div class="role-line"><span class="role-chip" data-en="Organisation administrator">Administrador de organización</span><span data-en="Create and schedule processes, follow participation and publish results. Only your organisation's data.">Crea y programa procesos, sigue la participación y publica resultados. Solo datos de tu organización.</span></div>
+  <div class="page-head">
+    <div><h1 id="h-admin" data-en="Home">Inicio</h1><p data-en="What is happening in your organisation's processes today.">Lo que pasa hoy en los procesos de tu organización.</p></div>
+    <a class="btn btn-primary" href="#admin"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span data-en="Create process">Crear proceso</span></a>
+  </div>
+
+  <dl class="strip num">
+    <div><dt data-en="Open processes">Procesos abiertos</dt><dd>1<small data-en="1 scheduled">1 programado</small></dd></div>
+    <div><dt data-en="People in censuses">Personas en censos</dt><dd>14<small data-en="3 censuses">3 censos</small></dd></div>
+    <div><dt data-en="Votes in open processes">Votos en procesos abiertos</dt><dd>2<small data-en="of 5 people (40 %)">de 5 personas (40 %)</small></dd></div>
+    <div><dt data-en="Results published">Resultados publicados</dt><dd>1<small data-en="fingerprint checked">huella comprobada</small></dd></div>
+  </dl>
+
+  <div class="grid">
+    <div class="stack">
+      <article class="card now" aria-labelledby="h-now">
+        <div class="card-head"><h2 id="h-now" data-en="Open now">Abierto ahora</h2><a href="#admin" data-en="See participation">Ver participación</a></div>
+        <div class="now-body">
+          <div class="donut num" role="img" aria-label="Participación 40 %: 2 de 5 personas han votado" data-en-aria="Turnout 40%: 2 of 5 people have voted">
+            <svg viewBox="0 0 120 120" width="150" height="150" aria-hidden="true"><circle cx="60" cy="60" r="50" fill="none" stroke="var(--line)" stroke-width="14"/><circle cx="60" cy="60" r="50" fill="none" stroke="var(--green)" stroke-width="14" stroke-linecap="round" stroke-dasharray="125.7 314.2"/></svg>
+            <div class="val"><b>40 %</b><small data-en="turnout">participación</small></div>
+          </div>
+          <div>
+            <h3 style="font-size:16px;font-weight:650;margin-bottom:8px" data-en="School board representatives">Representantes en Junta de Centro</h3>
+            <div class="facts num">
+              <span><i class="sw" style="background:var(--green)"></i><b>2</b> <span data-en="have voted">han votado</span></span>
+              <span><i class="sw" style="background:var(--line-strong)"></i><b>3</b> <span data-en="still to vote">pendientes</span></span>
+              <span class="hint"><svg class="i" aria-hidden="true" style="width:16px;height:16px;vertical-align:-3px"><use href="#i-clock"/></svg> <span data-en="Closes on 15 Nov at 18:00 (Madrid time)">Cierra el 15 nov a las 18:00 (hora peninsular)</span></span>
+            </div>
+            <div class="days" aria-hidden="true"><span style="height:100%"></span><span style="height:4%"></span><span style="height:4%"></span></div>
+            <p class="days-cap" data-en="Votes per day (1–3 Nov). Day only, never the time: it protects ballot secrecy.">Votos por día (1–3 nov). Solo el día, nunca la hora: protege el secreto del voto.</p>
+          </div>
+        </div>
+        <div class="actions"><a class="btn btn-secondary btn-sm" href="#admin" data-en="Send reminder">Enviar recordatorio</a><a class="btn btn-secondary btn-sm" href="#admin" data-en="View process">Ver proceso</a></div>
+      </article>
+
+      <article class="card" aria-labelledby="h-procs">
+        <div class="card-head"><h2 id="h-procs" data-en="Processes">Procesos</h2><a href="#admin" data-en="See all">Ver todos</a></div>
+
+        <div class="proc">
+          <div class="proc-top"><div><h3 data-en="School board representatives">Representantes en Junta de Centro</h3><p class="meta num" data-en="2 of 5 votes · closes 15 Nov">2 de 5 votos · cierra el 15 nov</p></div>
+            <span class="chip ok"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span data-en="Open">Abierto</span></span></div>
+          <ol class="life" aria-label="Ciclo de vida: abierto, paso 3 de 6" data-en-aria="Lifecycle: open, step 3 of 6">
+            <li class="done" data-en="Draft">Borrador</li><li class="done" data-en="Scheduled">Programado</li><li class="here" aria-current="step" data-en="Open">Abierto</li><li data-en="Closed">Cerrado</li><li data-en="Tallied">Escrutado</li><li data-en="Archived">Archivado</li>
+          </ol>
+          <div class="bar" aria-hidden="true"><i style="width:40%"></i></div>
+        </div>
+
+        <div class="proc">
+          <div class="proc-top"><div><h3 data-en="Participatory budget 2027">Presupuestos participativos 2027</h3><p class="meta" data-en="Census frozen · opens 1 Dec">Censo congelado · abre el 1 dic</p></div>
+            <span class="chip warn"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg><span data-en="Scheduled">Programado</span></span></div>
+          <ol class="life" aria-label="Ciclo de vida: programado, paso 2 de 6" data-en-aria="Lifecycle: scheduled, step 2 of 6">
+            <li class="done" data-en="Draft">Borrador</li><li class="here" aria-current="step" data-en="Scheduled">Programado</li><li data-en="Open">Abierto</li><li data-en="Closed">Cerrado</li><li data-en="Tallied">Escrutado</li><li data-en="Archived">Archivado</li>
+          </ol>
+        </div>
+
+        <div class="proc">
+          <div class="proc-top"><div><h3 data-en="Class delegate 2026">Delegación de curso 2026</h3><p class="meta num" data-en="4 of 5 votes · result verified">4 de 5 votos · resultado verificado</p></div>
+            <span class="chip info"><svg class="i" aria-hidden="true"><use href="#i-checkbox"/></svg><span data-en="Tallied">Escrutado</span></span></div>
+          <ol class="life" aria-label="Ciclo de vida: escrutado, paso 5 de 6" data-en-aria="Lifecycle: tallied, step 5 of 6">
+            <li class="done" data-en="Draft">Borrador</li><li class="done" data-en="Scheduled">Programado</li><li class="done" data-en="Open">Abierto</li><li class="done" data-en="Closed">Cerrado</li><li class="here" aria-current="step" data-en="Tallied">Escrutado</li><li data-en="Archived">Archivado</li>
+          </ol>
+        </div>
+      </article>
+    </div>
+
+    <div class="stack">
+      <article class="card" aria-labelledby="h-ev">
+        <div class="card-head"><h2 id="h-ev" data-en="Coming up">Próximos eventos</h2><a href="#admin" data-en="See processes">Ver procesos</a></div>
+        <div class="ev"><div class="date num"><b>15</b><small>nov</small></div><div><span class="chip warn"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg><span data-en="Closing">Cierre</span></span><p data-en="School board representatives">Representantes en Junta de Centro</p><span class="meta" data-en="18:00 (Madrid time) · tally starts automatically">18:00 (hora peninsular) · el escrutinio empieza solo</span></div></div>
+        <div class="ev"><div class="date num"><b>1</b><small>dic</small></div><div><span class="chip ok"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span data-en="Opening">Apertura</span></span><p data-en="Participatory budget 2027">Presupuestos participativos 2027</p><span class="meta" data-en="09:00 (Madrid time) · invitations already sent">09:00 (hora peninsular) · invitaciones ya enviadas</span></div></div>
+      </article>
+
+      <article class="card" aria-labelledby="h-todo">
+        <div class="card-head"><h2 id="h-todo" data-en="Needs your attention">Necesita tu atención</h2></div>
+        <div class="ev" style="grid-template-columns:28px 1fr"><svg class="i" aria-hidden="true" style="color:var(--amber-ink);margin-top:2px"><use href="#i-mail"/></svg><div><p style="margin-top:0" data-en="1 invitation could not be delivered">1 invitación no se ha podido entregar</p><span class="meta" data-en="Representatives · retry from Participation">Representantes · reintenta desde Participación</span></div></div>
+        <div class="ev" style="grid-template-columns:28px 1fr"><svg class="i" aria-hidden="true" style="color:var(--green);margin-top:2px"><use href="#i-checkbox"/></svg><div><p style="margin-top:0" data-en="Minutes not generated yet">Acta sin generar</p><span class="meta" data-en="Class delegate 2026 · generate the PDF in Results">Delegación de curso 2026 · genera el PDF en Resultados</span></div></div>
+      </article>
+    </div>
+  </div>
+  <p class="devnote"><b>Nota para desarrollo.</b> Todo sale de API existentes: <code>GET /processes</code> (estados y fechas), <code>/voter-access/processes/{id}/participation</code> (censo, votos y por día), <code>/censuses</code>, <code>/ballot-box/processes/{id}/results</code> y <code>/notifications</code> (fallidos). No hay gráfico por horas (D-18) ni alertas de accesos fallidos: no existe API y mostrarían metadatos sensibles.</p>
+</section>
+
+<!-- ---------- SUPERADMINISTRADOR ---------- -->
+<section data-panel="superadmin" aria-labelledby="h-sa">
+  <div class="role-line"><span class="role-chip" data-en="Super administrator">Superadministrador</span><span data-en="Create, edit and suspend organisations and assign their administrators. You do not see censuses, processes or votes.">Crea, edita y suspende organizaciones y asigna sus administradores. No ves censos, procesos ni votos.</span></div>
+  <div class="page-head">
+    <div><h1 id="h-sa" data-en="Platform">Plataforma</h1><p data-en="Organisations using VeriVoto and their management accounts.">Organizaciones que usan VeriVoto y sus cuentas de gestión.</p></div>
+    <a class="btn btn-primary" href="#superadmin"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span data-en="New organisation">Nueva organización</span></a>
+  </div>
+  <dl class="strip num">
+    <div><dt data-en="Active organisations">Organizaciones activas</dt><dd>2<small data-en="0 suspended">0 suspendidas</small></dd></div>
+    <div><dt data-en="Management accounts">Cuentas de gestión</dt><dd>7<small data-en="in all organisations">en todas las organizaciones</small></dd></div>
+    <div><dt data-en="With a single administrator">Con un solo administrador</dt><dd>1<small data-en="add a second one">conviene añadir otro</small></dd></div>
+    <div><dt data-en="Latest addition">Última alta</dt><dd style="font-size:22px">1 nov<small>UAL</small></dd></div>
+  </dl>
+  <div class="grid">
+    <article class="card" aria-labelledby="h-orgs" style="padding:0;overflow:hidden">
+      <div class="card-head" style="padding:18px 22px 4px"><h2 id="h-orgs" data-en="Organisations">Organizaciones</h2><a href="#superadmin" data-en="Manage">Gestionar</a></div>
+      <table class="table">
+        <thead><tr><th data-en="Organisation">Organización</th><th data-en="Status">Estado</th><th class="r" data-en="Administrators">Administradores</th><th class="r" data-en="Accounts">Cuentas</th></tr></thead>
+        <tbody class="num">
+          <tr><td class="lead"><div class="cell-main">Universidad de Almería</div><div class="cell-sub">UAL</div></td><td data-label="Estado" data-en-label="Status"><span class="chip ok"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span data-en="Active">Activa</span></span></td><td class="r" data-label="Administradores" data-en-label="Administrators">1 <span class="chip warn" style="margin-left:6px"><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg><span data-en="only one">solo uno</span></span></td><td class="r" data-label="Cuentas" data-en-label="Accounts">3</td></tr>
+          <tr><td class="lead"><div class="cell-main" data-en="Synthetic organisation A">Organización sintética A</div><div class="cell-sub">TESTA</div></td><td data-label="Estado" data-en-label="Status"><span class="chip ok"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span data-en="Active">Activa</span></span></td><td class="r" data-label="Administradores" data-en-label="Administrators">2</td><td class="r" data-label="Cuentas" data-en-label="Accounts">4</td></tr>
+        </tbody>
+      </table>
+    </article>
+    <article class="card" aria-labelledby="h-act">
+      <div class="card-head"><h2 id="h-act" data-en="Platform activity">Actividad de la plataforma</h2></div>
+      <div class="ev" style="grid-template-columns:28px 1fr"><svg class="i" aria-hidden="true" style="color:var(--green);margin-top:2px"><use href="#i-building"/></svg><div><p style="margin-top:0" data-en="Organisation UAL created">Organización UAL creada</p><span class="meta" data-en="1 Nov, 17:24 · by Super administrator">1 nov, 17:24 · por Superadministrador</span></div></div>
+      <div class="ev" style="grid-template-columns:28px 1fr"><svg class="i" aria-hidden="true" style="color:var(--navy);margin-top:2px"><use href="#i-users"/></svg><div><p style="margin-top:0" data-en="2 accounts added to UAL">2 cuentas añadidas a UAL</p><span class="meta" data-en="Census manager and auditor">Gestión de censo y auditoría</span></div></div>
+      <p class="devnote"><b>Nota para desarrollo.</b> Organizaciones, estados y cuentas salen de <code>GET /organizations</code> y <code>/organizations/{id}/users</code>. La actividad necesita que <code>GET /admin-actions</code> admita al superadministrador para las acciones de plataforma (hoy es de ADMIN y AUDITOR por organización): propuesta de mejora, no está implementada.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ---------- GESTOR DE CENSO ---------- -->
+<section data-panel="censo" aria-labelledby="h-ce">
+  <div class="role-line"><span class="role-chip" data-en="Census manager">Gestor de censo</span><span data-en="Create censuses and import people. A census used by a scheduled process can no longer change.">Crea censos e importa personas. Un censo usado por un proceso programado ya no se puede cambiar.</span></div>
+  <div class="page-head">
+    <div><h1 id="h-ce" data-en="Home">Inicio</h1><p data-en="Your censuses and the result of your latest import.">Tus censos y el resultado de tu última importación.</p></div>
+    <div class="actions" style="margin:0"><a class="btn btn-secondary" href="#censo"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span data-en="New census">Nuevo censo</span></a><a class="btn btn-primary" href="#censo"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg><span data-en="Import CSV">Importar CSV</span></a></div>
+  </div>
+  <dl class="strip num">
+    <div><dt data-en="Censuses">Censos</dt><dd>3</dd></div>
+    <div><dt data-en="People">Personas</dt><dd>14</dd></div>
+    <div><dt data-en="Frozen (in use)">Congelados (en uso)</dt><dd>3</dd></div>
+    <div><dt data-en="Editable">Editables</dt><dd>0<small data-en="create one for new processes">crea uno para procesos nuevos</small></dd></div>
+  </dl>
+  <div class="grid">
+    <article class="card" aria-labelledby="h-cl" style="padding:0;overflow:hidden">
+      <div class="card-head" style="padding:18px 22px 4px"><h2 id="h-cl" data-en="Censuses">Censos</h2><a href="#censo" data-en="See all">Ver todos</a></div>
+      <table class="table">
+        <thead><tr><th data-en="Census">Censo</th><th class="r" data-en="People">Personas</th><th data-en="Status">Estado</th></tr></thead>
+        <tbody class="num">
+          <tr><td class="lead"><div class="cell-main" data-en="Ongoing election census">Censo elección en curso</div><div class="cell-sub" data-en="Used by: School board representatives">Lo usa: Representantes en Junta de Centro</div></td><td class="r" data-label="Personas" data-en-label="People">5</td><td data-label="Estado" data-en-label="Status"><span class="chip info"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg><span data-en="Frozen">Congelado</span></span></td></tr>
+          <tr><td class="lead"><div class="cell-main" data-en="Future election census">Censo elección futura</div><div class="cell-sub" data-en="Used by: Participatory budget 2027">Lo usa: Presupuestos participativos 2027</div></td><td class="r" data-label="Personas" data-en-label="People">4</td><td data-label="Estado" data-en-label="Status"><span class="chip info"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg><span data-en="Frozen">Congelado</span></span></td></tr>
+          <tr><td class="lead"><div class="cell-main" data-en="Past election census">Censo elección pasada</div><div class="cell-sub" data-en="Used by: Class delegate 2026">Lo usa: Delegación de curso 2026</div></td><td class="r" data-label="Personas" data-en-label="People">5</td><td data-label="Estado" data-en-label="Status"><span class="chip info"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg><span data-en="Frozen">Congelado</span></span></td></tr>
+        </tbody>
+      </table>
+    </article>
+    <article class="card" aria-labelledby="h-imp">
+      <div class="card-head"><h2 id="h-imp" data-en="Latest import">Última importación</h2><span class="chip warn"><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg><span data-en="With errors">Con errores</span></span></div>
+      <p class="hint" style="margin-bottom:12px" data-en="voters-sample.csv into “Members 2026” · checked, not applied yet">voters-sample.csv en «Socios 2026» · revisado, aún sin aplicar</p>
+      <div class="import-sum num">
+        <div><b style="color:var(--green)">4</b><span data-en="new people">altas</span></div>
+        <div><b>1</b><span data-en="duplicates">duplicados</span></div>
+        <div><b style="color:var(--red)">3</b><span data-en="lines with errors">líneas con error</span></div>
+      </div>
+      <ul class="errlist">
+        <li><b data-en="Line 7">Línea 7</b><span data-en="Name is missing.">Falta el nombre.</span></li>
+        <li><b data-en="Line 8">Línea 8</b><span data-en="“no-es-un-correo” is not a valid email.">«no-es-un-correo» no es un correo válido.</span></li>
+        <li><b data-en="Line 9">Línea 9</b><span data-en="Language “fr” is not supported (use es or en).">El idioma «fr» no está admitido (usa es o en).</span></li>
+      </ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="#censo" data-en="Skip error lines and import 4">Descartar líneas con error e importar 4</a><a class="btn btn-secondary btn-sm" href="#censo" data-en="Fix the file">Corregir el fichero</a></div>
+      <p class="devnote"><b>Nota para desarrollo.</b> El servidor no guarda el resumen de importación: esta tarjeta muestra el último resultado de la sesión actual (respuesta de <code>POST /censuses/{id}/imports</code>) y desaparece al salir. Con <code>dryRun</code> no se guarda nada.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ---------- AUDITOR ---------- -->
+<section data-panel="auditor" aria-labelledby="h-au">
+  <div class="role-line"><span class="role-chip" data-en="Auditor">Auditor</span><span data-en="Check the ballot box record and administrative traceability. Read only.">Compruebas el registro de la urna y la trazabilidad administrativa. Solo lectura.</span></div>
+  <div class="page-head">
+    <div><h1 id="h-au" data-en="Home">Inicio</h1><p data-en="Integrity of each process and the latest administrative actions.">Integridad de cada proceso y últimas acciones administrativas.</p></div>
+  </div>
+
+  <section class="integrity" aria-labelledby="h-int">
+    <div class="seal" aria-hidden="true"><svg class="i"><use href="#i-shield"/></svg></div>
+    <div>
+      <h2 id="h-int" data-en="Intact record">Registro íntegro</h2>
+      <p class="num" data-en="Class delegate 2026 · 6 events checked, no changes found · checked on 1 Nov at 17:31">Delegación de curso 2026 · 6 eventos comprobados, ninguna alteración · comprobado el 1 nov a las 17:31</p>
+      <div class="chain" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <a class="btn btn-navy" href="#auditor" data-en="Check integrity now">Verificar integridad ahora</a>
+  </section>
+
+  <div class="grid">
+    <article class="card" aria-labelledby="h-ap" style="padding:0;overflow:hidden">
+      <div class="card-head" style="padding:18px 22px 4px"><h2 id="h-ap" data-en="Processes">Procesos</h2><a href="#auditor" data-en="Open audit">Abrir auditoría</a></div>
+      <table class="table">
+        <thead><tr><th data-en="Process">Proceso</th><th data-en="Last check">Última comprobación</th><th class="r" data-en="Final fingerprint">Huella final</th></tr></thead>
+        <tbody class="num">
+          <tr><td class="lead"><div class="cell-main" data-en="Class delegate 2026">Delegación de curso 2026</div><div class="cell-sub" data-en="Tallied">Escrutado</div></td><td data-label="Última comprobación" data-en-label="Last check"><span class="chip ok"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span data-en="Intact · 1 Nov">Íntegro · 1 nov</span></span></td><td class="r" data-label="Huella final" data-en-label="Final fingerprint"><span class="hash">9c41…e07a</span></td></tr>
+          <tr><td class="lead"><div class="cell-main" data-en="School board representatives">Representantes en Junta de Centro</div><div class="cell-sub" data-en="Open">Abierto</div></td><td data-label="Última comprobación" data-en-label="Last check"><span class="chip neutral"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg><span data-en="Never checked">Sin comprobar</span></span></td><td class="r" data-label="Huella final" data-en-label="Final fingerprint"><span class="cell-sub" data-en="at closing">al cierre</span></td></tr>
+          <tr><td class="lead"><div class="cell-main" data-en="Participatory budget 2027">Presupuestos participativos 2027</div><div class="cell-sub" data-en="Scheduled">Programado</div></td><td data-label="Última comprobación" data-en-label="Last check"><span class="cell-sub" data-en="Not open yet">Aún no abierto</span></td><td class="r" data-label="Huella final" data-en-label="Final fingerprint"><span class="cell-sub">—</span></td></tr>
+        </tbody>
+      </table>
+    </article>
+    <article class="card" aria-labelledby="h-tr" style="padding:0;overflow:hidden">
+      <div class="card-head" style="padding:18px 22px 4px"><h2 id="h-tr" data-en="Recent actions">Acciones recientes</h2><a href="#auditor" data-en="Traceability">Trazabilidad</a></div>
+      <table class="table">
+        <thead><tr><th data-en="Who and what">Quién y qué</th><th data-en="When">Cuándo</th></tr></thead>
+        <tbody class="num">
+          <tr><td class="lead"><div class="cell-main" data-en="Scheduled the process">Programó el proceso</div><div class="cell-sub" data-en="Administración UAL · Participatory budget 2027">Administración UAL · Presupuestos participativos 2027</div></td><td data-label="Cuándo" data-en-label="When" data-en="1 Nov, 17:26">1 nov, 17:26</td></tr>
+          <tr><td class="lead"><div class="cell-main" data-en="Created 3 censuses">Creó 3 censos</div><div class="cell-sub" data-en="Census management UAL · 14 people">Gestión de censo UAL · 14 personas</div></td><td data-label="Cuándo" data-en-label="When" data-en="1 Nov, 17:25">1 nov, 17:25</td></tr>
+          <tr><td class="lead"><div class="cell-main" data-en="Checked the ballot box">Verificó la urna</div><div class="cell-sub" data-en="Auditoría UAL · Class delegate 2026">Auditoría UAL · Delegación de curso 2026</div></td><td data-label="Cuándo" data-en-label="When" data-en="1 Nov, 17:31">1 nov, 17:31</td></tr>
+        </tbody>
+      </table>
+    </article>
+  </div>
+  <p class="devnote"><b>Nota para desarrollo.</b> <code>GET /ballot-box/processes/{id}/audit-events/verification</code> devuelve la última comprobación (con su hora, que no es de ningún voto) y <code>GET /admin-actions</code> las acciones. Los eventos de voto nunca muestran hora (D-18) y no existe «voto sustituido» (D-03).</p>
+</section>
+
+<!-- ---------- PATRONES ---------- -->
+<section data-panel="patrones" aria-labelledby="h-pa">
+  <div class="page-head"><div><h1 id="h-pa" data-en="Patterns for the basic screens">Patrones para las pantallas básicas</h1><p data-en="Empty, loading and error states that every list in the console should share.">Estados vacío, de carga y de error que deberían compartir todas las listas de la consola.</p></div></div>
+  <div class="grid">
+    <div class="stack">
+      <div class="empty">
+        <div class="ill" aria-hidden="true"><svg class="i"><use href="#i-cal"/></svg></div>
+        <h3 data-en="No processes yet">Todavía no hay procesos</h3>
+        <p data-en="Create the first one: choose a census, the dates and the options. You can save it as a draft and schedule it later.">Crea el primero: elige un censo, las fechas y las opciones. Puedes guardarlo como borrador y programarlo después.</p>
+        <a class="btn btn-primary" href="#patrones"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span data-en="Create process">Crear proceso</span></a>
+      </div>
+      <div class="alert bad" role="alert">
+        <svg class="i" aria-hidden="true"><use href="#i-x"/></svg>
+        <div><b data-en="Results could not be loaded">No se han podido cargar los resultados</b><p data-en="The ballot box service is not responding. Your data is safe: try again in a few minutes.">El servicio de la urna no responde. Tus datos no se han perdido: inténtalo de nuevo en unos minutos.</p><button class="btn btn-secondary btn-sm" style="margin-top:10px" data-en="Try again">Reintentar</button></div>
+      </div>
+    </div>
+    <div class="card" aria-busy="true" aria-labelledby="h-load">
+      <div class="card-head"><h2 id="h-load" data-en="Loading (skeleton)">Cargando (esqueleto)</h2></div>
+      <p class="sr" data-en="Loading processes">Cargando procesos</p>
+      <div class="skel" style="height:18px;width:60%;margin-bottom:10px"></div>
+      <div class="skel" style="height:12px;width:40%;margin-bottom:22px"></div>
+      <div class="skel" style="height:18px;width:70%;margin-bottom:10px"></div>
+      <div class="skel" style="height:12px;width:35%;margin-bottom:22px"></div>
+      <div class="skel" style="height:18px;width:55%;margin-bottom:10px"></div>
+      <div class="skel" style="height:12px;width:45%"></div>
+      <p class="hint" style="margin-top:16px" data-en="Keeps the layout of the content that will appear, so nothing jumps. Respects reduced motion.">Mantiene la forma del contenido que va a aparecer, así nada salta. Respeta «reducir movimiento».</p>
+    </div>
+  </div>
+</section>
+
+    </main>
+  </div>
+</div>
+</div>
+
+<nav class="proto" aria-label="Pantallas del prototipo">
+  <a href="#login">Login</a><a href="#codigo">Código</a><span class="sep"></span>
+  <a href="#admin">Admin</a><a href="#superadmin">Superadmin</a><a href="#censo">Censo</a><a href="#auditor">Auditor</a><a href="#patrones">Patrones</a><span class="sep"></span>
+  <button type="button" onclick="toggleError()" id="err-toggle">Ver error de login</button>
+</nav>
+
+<script>
+const ROLES = {
+  admin: { name:'Administración UAL', role:['Administrador · UAL','Administrator · UAL'], ini:'AU',
+    nav:[['i-home','Inicio','Home',1],['i-users','Censos','Censuses'],['i-cal','Procesos','Processes'],['i-chart','Participación','Participation'],['i-checkbox','Resultados','Results'],['i-list','Trazabilidad','Traceability'],['i-lock','Privacidad (RGPD)','Privacy (GDPR)'],['i-key','Claves de API','API keys']] },
+  superadmin: { name:'Superadministrador', role:['Plataforma','Platform'], ini:'SA', crumb:['Plataforma <b>Todas las organizaciones</b>','Platform <b>All organisations</b>'],
+    nav:[['i-home','Inicio','Home',1],['i-building','Organizaciones','Organisations']] },
+  censo: { name:'Gestión de censo UAL', role:['Gestor de censo · UAL','Census manager · UAL'], ini:'GC',
+    nav:[['i-home','Inicio','Home',1],['i-users','Censos','Censuses']] },
+  auditor: { name:'Auditoría UAL', role:['Auditor · UAL','Auditor · UAL'], ini:'AU',
+    nav:[['i-home','Inicio','Home',1],['i-cal','Procesos','Processes'],['i-checkbox','Resultados','Results'],['i-shield','Auditoría','Audit'],['i-list','Trazabilidad','Traceability']] },
+};
+ROLES.patrones = ROLES.admin;
+let lang = 'es';
+const ORG_CRUMB = ['<span>Organización</span> <b><span class="org-full">Universidad de Almería</span> (UAL)</b>','<span>Organisation</span> <b><span class="org-full">University of Almería</span> (UAL)</b>'];
+
+function renderShell(view){
+  const r = ROLES[view]; if(!r) return;
+  const L = lang === 'en' ? 1 : 0;
+  document.getElementById('nav').innerHTML = r.nav.map(([ic,es,en,cur]) =>
+    `<a href="#${view}"${cur?' aria-current="page"':''}><svg class="i" aria-hidden="true"><use href="#${ic}"/></svg>${L?en:es}</a>`).join('');
+  document.getElementById('me-name').textContent = r.name;
+  document.getElementById('me-role').textContent = r.role[L];
+  document.getElementById('me-initials').textContent = r.ini;
+  document.getElementById('crumb').innerHTML = (r.crumb || ORG_CRUMB)[L];
+}
+function go(v){ location.hash = v; }
+function route(){
+  const v = (location.hash || '#login').slice(1);
+  const valid = ['login','codigo','admin','superadmin','censo','auditor','patrones'];
+  const view = valid.includes(v) ? v : 'login';
+  document.body.dataset.view = view;
+  document.body.classList.remove('menu-open');
+  document.querySelectorAll('.proto a').forEach(a => a.toggleAttribute('aria-current', a.getAttribute('href') === '#'+view) || a.removeAttribute('aria-current'));
+  document.querySelectorAll('.proto a').forEach(a => { if (a.getAttribute('href') === '#'+view) a.setAttribute('aria-current','page'); });
+  document.getElementById('err-toggle').style.display = view === 'login' ? '' : 'none';
+  renderShell(view);
+  window.scrollTo(0,0);
+}
+function setLang(l){
+  lang = l;
+  document.documentElement.lang = l;
+  document.querySelectorAll('[data-en]').forEach(el => { if(!el.dataset.es) el.dataset.es = el.textContent; el.textContent = l==='en' ? el.dataset.en : el.dataset.es; });
+  document.querySelectorAll('[data-en-aria]').forEach(el => { if(!el.dataset.esAria) el.dataset.esAria = el.getAttribute('aria-label'); el.setAttribute('aria-label', l==='en' ? el.dataset.enAria : el.dataset.esAria); });
+  document.querySelectorAll('[data-en-label]').forEach(el => { if(!el.dataset.esLabel) el.dataset.esLabel = el.dataset.label; el.dataset.label = l==='en' ? el.dataset.enLabel : el.dataset.esLabel; });
+  document.querySelectorAll('[data-set-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.setLang===l)));
+  document.querySelectorAll('[data-lang-select]').forEach(s => s.value = l);
+  renderShell(document.body.dataset.view);
+}
+function toggleTheme(){
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+}
+function toggleError(){
+  const f = document.getElementById('f-user'), on = !document.getElementById('login-form').classList.contains('has-error');
+  document.getElementById('login-form').classList.toggle('has-error', on);
+  document.getElementById('username').setAttribute('aria-invalid', String(on));
+  document.getElementById('password').setAttribute('aria-invalid', String(on));
+  document.getElementById('err-toggle').textContent = on ? 'Quitar error de login' : 'Ver error de login';
+}
+document.querySelectorAll('[data-set-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.setLang)));
+document.querySelectorAll('[data-lang-select]').forEach(s => s.addEventListener('change', () => setLang(s.value)));
+document.querySelectorAll('[data-reveal]').forEach(b => b.addEventListener('click', () => {
+  const i = document.getElementById(b.dataset.reveal), show = i.type === 'password';
+  i.type = show ? 'text' : 'password';
+  b.setAttribute('aria-label', show ? (lang==='en'?'Hide password':'Ocultar contraseña') : (lang==='en'?'Show password':'Mostrar contraseña'));
+  b.setAttribute('aria-pressed', String(show));
+}));
+document.getElementById('login-form').addEventListener('submit', e => { e.preventDefault(); go('codigo'); });
+document.querySelectorAll('.otp input').forEach((inp, i, all) => inp.addEventListener('input', () => { if (inp.value && all[i+1]) all[i+1].focus(); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.body.classList.remove('menu-open'); });
+addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>

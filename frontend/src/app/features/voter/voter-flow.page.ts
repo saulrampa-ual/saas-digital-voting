@@ -1,0 +1,376 @@
+import { Component, ElementRef, OnInit, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import {
+  IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonSpinner, IonText, IonTitle, IonToolbar,
+} from '@ionic/angular';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import {
+  AccessGranted, Ballot, CodeSent, LinkStatus, ProcessStatus, Selection, VoterApiError, VoterApiService,
+} from '../../core/voter/voter-api.service';
+import { LanguageService } from '../../core/i18n/language.service';
+import { SsoOutcome, VoterSsoService } from '../../core/voter/voter-sso.service';
+import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
+import { ErrorStateComponent } from '../../shared/error-state/error-state.component';
+import { LocalizedPipe } from '../../shared/pipes/localized.pipe';
+import { LocalDatePipe } from '../../shared/pipes/local-date.pipe';
+import { verifyResult } from '../../core/results/result-verifier';
+import { Result } from '../../core/results/results.model';
+import { ResultSummaryComponent } from '../../shared/result-summary/result-summary.component';
+import { VerificationState } from '../../shared/result-verification/result-verification.component';
+import { RouterLink } from '@angular/router';
+import { StepIndicatorComponent } from './steps/step-indicator.component';
+import { AccessCodeStepComponent } from './steps/access-code-step.component';
+import { BallotChoice, BallotStepComponent } from './steps/ballot-step.component';
+import { ReviewStepComponent } from './steps/review-step.component';
+import { ReceiptStepComponent } from './steps/receipt-step.component';
+
+/** Screens of the voter flow (prototypes V1–V7, B1–B4, C2–C4; results with the personal link, D-41). */
+type Screen =
+  | 'loading' | 'welcome' | 'sso' | 'code' | 'ballot' | 'review' | 'receipt'
+  | 'notOpen' | 'closed' | 'invalidLink' | 'expiredLink' | 'locked'
+  | 'alreadyVoted' | 'sessionExpired' | 'notRecorded' | 'error'
+  | 'resultsReady' | 'results';
+
+/** What the code is for: voting while open, seeing the result once tallied (D-41). */
+type Purpose = 'vote' | 'results';
+
+/**
+ * Voter flow from the personal link /votar/:linkToken (RF-08, RF-09, RF-10). One page with an internal state
+ * machine: the link, the code and the voting token stay in memory only and never appear in the URL or in storage.
+ * Once the vote is recorded, going back cannot reach the ballot again.
+ */
+@Component({
+  selector: 'app-voter-flow',
+  imports: [
+    IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonFooter, IonText, IonButton, IonSpinner,
+    TranslatePipe, LanguageSwitcherComponent, ErrorStateComponent, LocalizedPipe, LocalDatePipe,
+    StepIndicatorComponent, AccessCodeStepComponent, BallotStepComponent, ReviewStepComponent, ReceiptStepComponent,
+    ResultSummaryComponent, RouterLink,
+  ],
+  templateUrl: './voter-flow.page.html',
+  styleUrl: './voter-flow.page.scss',
+})
+export class VoterFlowPage implements OnInit {
+  /** Bound from the route (withComponentInputBinding). Never logged or shown. */
+  readonly linkToken = input.required<string>();
+
+  private readonly api = inject(VoterApiService);
+  private readonly sso = inject(VoterSsoService);
+  private readonly translate = inject(TranslateService);
+  protected readonly language = inject(LanguageService).current;
+  private readonly main = viewChild<ElementRef<HTMLElement>>('main');
+  private readonly codeStep = viewChild(AccessCodeStepComponent);
+
+  protected readonly screen = signal<Screen>('loading');
+  protected readonly link = signal<LinkStatus | null>(null);
+  protected readonly codeSent = signal<CodeSent | null>(null);
+  protected readonly codeError = signal<string | null>(null);
+  /** RF-05b (D-48): problem with the institutional account, shown on the «sso» screen. */
+  protected readonly ssoError = signal<string | null>(null);
+  protected readonly usesAccount = computed(() => this.link()?.authentication === 'INSTITUTIONAL_SSO');
+  protected readonly busy = signal(false);
+  protected readonly ballot = signal<Ballot | null>(null);
+  protected readonly choice = signal<BallotChoice>(null);
+  protected readonly receiptCode = signal<string | null>(null);
+  protected readonly votedOn = signal<string | null>(null);
+  protected readonly lockedUntil = signal<string | null>(null);
+  protected readonly purpose = signal<Purpose>('vote');
+  protected readonly result = signal<Result | null>(null);
+  protected readonly verification = signal<VerificationState>('checking');
+  private votingToken: string | null = null;
+
+  protected readonly fallback = computed(() => this.link()?.defaultLanguage ?? 'es');
+  protected readonly step = computed(() => {
+    if (this.purpose() === 'results') {
+      return 0;
+    }
+    switch (this.screen()) {
+      case 'code': case 'sso': return 1;
+      case 'ballot': return 2;
+      case 'review': case 'notRecorded': return 3;
+      case 'receipt': return 4;
+      default: return 0;
+    }
+  });
+  protected readonly showStatusBar = computed(() => this.purpose() === 'vote'
+    && ['welcome', 'sso', 'code', 'ballot', 'review', 'notRecorded'].includes(this.screen()));
+  protected readonly choiceText = computed(() => {
+    const choice = this.choice();
+    if (choice === 'blank') {
+      return this.translate.instant('voter.ballot.blank') as string;
+    }
+    const option = this.ballot()?.options.find((candidate) => candidate.id === choice);
+    const text = option?.text as Record<string, string | undefined> | undefined;
+    return text?.[this.language()] ?? text?.[this.fallback()] ?? '';
+  });
+
+  constructor() {
+    // Each new screen moves the focus to its heading (WCAG 2.4.3), as navigation does between pages.
+    effect(() => {
+      this.screen();
+      setTimeout(() => this.main()?.nativeElement.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true }), 50);
+    });
+  }
+
+  async ngOnInit(): Promise<void> {
+    try {
+      const link = await this.api.linkStatus(this.linkToken());
+      this.link.set(link);
+      const outcome = this.sso.take();
+      if (outcome) {
+        await this.afterAccount(outcome);
+        return;
+      }
+      if (!this.showProcessState(link.status, link.closesAt)) {
+        this.screen.set('welcome');
+      }
+    } catch (error) {
+      this.handleLinkError(error);
+    }
+  }
+
+  /** V1 «Empezar»: goes to B1 and sends the first code right away, or to the institutional account (RF-05b). */
+  protected start(): void {
+    if (this.usesAccount()) {
+      this.screen.set('sso');
+      return;
+    }
+    this.screen.set('code');
+    void this.sendCode();
+  }
+
+  /** «Ver el resultado» once tallied (D-41): the same code step, then the result instead of the ballot. */
+  protected startResults(): void {
+    this.purpose.set('results');
+    if (this.usesAccount()) {
+      this.screen.set('sso');
+      return;
+    }
+    this.screen.set('code');
+    void this.sendCode();
+  }
+
+  /** RF-05b: leaves for the login page of the institutional account; the flow resumes in {@link afterAccount}. */
+  protected async signInWithAccount(): Promise<void> {
+    this.busy.set(true);
+    this.ssoError.set(null);
+    await this.sso.start(this.linkToken(), this.purpose(), this.language());
+  }
+
+  /** Back from the institutional account (VoterSsoCallbackPage) with what voter-access answered. */
+  private async afterAccount(outcome: SsoOutcome): Promise<void> {
+    this.purpose.set(outcome.purpose);
+    if (outcome.kind === 'granted') {
+      await this.granted(outcome.granted);
+      return;
+    }
+    this.screen.set('sso');
+    if (outcome.status === 403) {
+      this.ssoError.set(this.translate.instant('voter.sso.mismatch',
+        { remaining: outcome.problem['remainingAttempts'] ?? 0 }) as string);
+    } else if (outcome.status === 0) {
+      this.ssoError.set(this.translate.instant('voter.sso.cancelled') as string);
+    } else if (outcome.status === 401 || outcome.status === 409) {
+      this.ssoError.set(this.translate.instant('voter.sso.invalid') as string);
+    } else if (outcome.status === 423 || outcome.status === 422 || outcome.status === 404 || outcome.status === 410) {
+      this.handleAccessError(new VoterApiError(outcome.status, outcome.problem));
+    } else {
+      this.screen.set('error');
+    }
+  }
+
+  /** After a valid code or account: the ballot, «already voted» or the result (D-41). */
+  private async granted(granted: AccessGranted): Promise<void> {
+    if (granted.resultsToken) {
+      this.votedOn.set(granted.hasVoted ? granted.votedOn : null);
+      await this.showResult(granted.resultsToken);
+      return;
+    }
+    if (granted.hasVoted) {
+      this.votedOn.set(granted.votedOn);
+      this.screen.set('alreadyVoted');
+      return;
+    }
+    this.votingToken = granted.votingToken;
+    await this.showBallot();
+  }
+
+  protected async sendCode(): Promise<void> {
+    this.busy.set(true);
+    this.codeError.set(null);
+    try {
+      this.codeSent.set(await this.api.sendCode(this.linkToken()));
+      this.codeStep()?.clear();
+    } catch (error) {
+      if (!(error instanceof VoterApiError)) {
+        throw error;
+      }
+      if (error.status === 429) {
+        this.codeError.set(this.translate.instant('voter.code.tooSoon'));
+      } else if (error.status === 503 || error.status === 0) {
+        this.codeError.set(this.translate.instant('voter.code.mailFailed'));
+      } else {
+        this.handleAccessError(error);
+      }
+    } finally {
+      this.busy.set(false);
+    }
+  }
+
+  protected async verifyCode(code: string): Promise<void> {
+    this.busy.set(true);
+    this.codeError.set(null);
+    try {
+      await this.granted(await this.api.verifyCode(this.linkToken(), code));
+    } catch (error) {
+      if (!(error instanceof VoterApiError)) {
+        throw error;
+      }
+      this.codeStep()?.clear();
+      if (error.status === 400) {
+        const remaining = error.problem['remainingAttempts'];
+        this.codeError.set(this.translate.instant('voter.code.wrong', { remaining }));
+      } else if (error.status === 410) {
+        this.codeError.set(this.translate.instant('voter.code.expired'));
+      } else {
+        this.handleAccessError(error);
+      }
+    } finally {
+      this.busy.set(false);
+    }
+  }
+
+  /** B2 with the ballot, which ballot-box gives only for this voting token (IMP-31); its errors are not code errors. */
+  private async showBallot(): Promise<void> {
+    try {
+      this.ballot.set(await this.api.ballot(this.link()!.processId, this.votingToken!));
+      this.screen.set('ballot');
+    } catch (error) {
+      const status = error instanceof VoterApiError ? error.status : -1;
+      if (status === 409) {
+        this.votingToken = null;
+        this.screen.set('alreadyVoted');
+      } else if (status === 404 || status === 410) {
+        this.votingToken = null;
+        this.screen.set('sessionExpired');
+      } else if (status === 422) {
+        this.votingToken = null;
+        this.screen.set('closed');
+      } else {
+        this.screen.set('error');
+      }
+    }
+  }
+
+  /** The result and, in the background, its verification in the browser with the counted votes (D-37). */
+  private async showResult(resultsToken: string): Promise<void> {
+    const processId = this.link()!.processId;
+    let result: Result;
+    try {
+      result = await this.api.result(processId, resultsToken);
+    } catch (error) {
+      // 410: the results access ran out, enter again with the link; anything else: generic error with no details.
+      this.screen.set(error instanceof VoterApiError && error.status === 410 ? 'sessionExpired' : 'error');
+      return;
+    }
+    this.result.set(result);
+    this.verification.set('checking');
+    this.screen.set('results');
+    void this.api.countedVotes(processId, resultsToken)
+      .then((counted) => verifyResult(counted, result))
+      .then((verification) => this.verification.set(verification.matches ? 'ok' : 'mismatch'))
+      .catch(() => this.verification.set('error'));
+  }
+
+  protected review(): void {
+    this.screen.set('review');
+  }
+
+  protected changeSelection(): void {
+    this.screen.set('ballot');
+  }
+
+  /** B3 «Confirmar y votar» and V7 «Reintentar»: the same token and selection, so a retry never votes twice. */
+  protected async confirm(): Promise<void> {
+    const choice = this.choice();
+    if (this.busy() || choice === null || !this.votingToken) {
+      return;
+    }
+    const selection: Selection = choice === 'blank' ? { blank: true } : { optionId: choice };
+    this.busy.set(true);
+    try {
+      const result = await this.api.castVote(this.link()!.processId, this.votingToken, selection);
+      this.votingToken = null;
+      this.receiptCode.set(result.receiptCode);
+      this.screen.set('receipt');
+    } catch (error) {
+      if (!(error instanceof VoterApiError)) {
+        throw error;
+      }
+      if (error.status === 409) {
+        this.votingToken = null;
+        this.screen.set('alreadyVoted');
+      } else if (error.status === 404 || error.status === 410) {
+        this.votingToken = null;
+        this.screen.set('sessionExpired');
+      } else if (error.status === 422) {
+        this.votingToken = null;
+        this.screen.set('closed');
+      } else if (error.status === 400) {
+        this.screen.set('ballot');
+      } else {
+        this.screen.set('notRecorded');
+      }
+    } finally {
+      this.busy.set(false);
+    }
+  }
+
+  /** V6 and C4: back to the code step with the same personal link. */
+  protected enterAgain(): void {
+    this.votingToken = null;
+    this.result.set(null);
+    this.choice.set(null);
+    this.codeSent.set(null);
+    this.codeError.set(null);
+    this.ssoError.set(null);
+    this.screen.set(this.usesAccount() ? 'sso' : 'code');
+  }
+
+  private showProcessState(status: ProcessStatus, closesAt: string): Screen | null {
+    if (status === 'SCHEDULED') {
+      this.screen.set('notOpen');
+      return 'notOpen';
+    }
+    if (status === 'TALLIED' || status === 'ARCHIVED') {
+      this.screen.set('resultsReady');
+      return 'resultsReady';
+    }
+    if (status !== 'OPEN' || Date.parse(closesAt) <= Date.now()) {
+      this.screen.set('closed');
+      return 'closed';
+    }
+    return null;
+  }
+
+  private handleLinkError(error: unknown): void {
+    if (error instanceof VoterApiError && error.status === 404) {
+      this.screen.set('invalidLink');
+    } else if (error instanceof VoterApiError && error.status === 410) {
+      this.screen.set('expiredLink');
+    } else {
+      this.screen.set('error');
+    }
+  }
+
+  private handleAccessError(error: VoterApiError): void {
+    if (error.status === 423) {
+      this.lockedUntil.set((error.problem['lockedUntil'] as string | undefined) ?? null);
+      this.screen.set('locked');
+    } else if (error.status === 422) {
+      this.purpose.set('vote');
+      this.screen.set(error.processStatus === 'SCHEDULED' ? 'notOpen' : 'closed');
+    } else {
+      this.handleLinkError(error);
+    }
+  }
+}

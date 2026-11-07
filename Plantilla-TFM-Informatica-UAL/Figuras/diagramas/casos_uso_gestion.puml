@@ -1,0 +1,67 @@
+@startuml
+' PlantUML 1.2026.8. Las asociaciones actor--caso de uso no llevan punta de flecha.
+title Casos de uso: gestión y configuración
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam shadowing false
+skinparam linetype ortho
+skinparam dpi 300
+scale 0.75
+skinparam nodesep 35
+skinparam ranksep 35
+skinparam usecase {
+  BackgroundColor #F6F8FC
+  BorderColor #34495E
+}
+
+actor "Usuario de gestión" as Gestion
+actor "Superadministrador" as Super
+actor "Gestor de censo" as Censo
+actor "Usuario con auditoría" as Aud
+actor "Administrador" as Admin
+actor "Auditor" as Auditor
+
+' Generalización: el actor especializado apunta al actor padre.
+Super --|> Gestion
+Censo --|> Gestion
+Aud --|> Gestion
+Admin --|> Aud
+Auditor --|> Aud
+
+rectangle "Plataforma SaaS (Gestión)" {
+  usecase "RF-01\nGestionar organizaciones" as RF01
+  usecase "RF-02\nGestionar roles y permisos" as RF02
+  usecase "RF-03\nGestionar censo" as RF03
+  usecase "RF-04\nAutenticar usuario de gestión" as RF04
+  usecase "RF-05a\nIniciar sesión de gestión" as RF05a
+  usecase "RF-06\nCrear y configurar proceso" as RF06
+  usecase "RF-07\nGestionar ciclo de vida" as RF07
+  usecase "RF-13a\nEscrutar resultado al cierre" as RF13a
+  usecase "RF-14\nConsultar participación" as RF14
+  usecase "RF-16\nGenerar acta PDF" as RF16
+  usecase "RF-17\nEnviar notificaciones" as RF17
+  usecase "RF-18\nGestionar privacidad (RGPD)" as RF18
+  usecase "RF-19\nConsultar trazabilidad" as RF19
+}
+
+
+' Las asociaciones compartidas parten del actor genérico y se heredan por
+' los roles especializados; sólo RF-01 y RF-03 son específicas de un rol.
+Gestion -- RF04
+Gestion -- RF05a
+Gestion -- RF02
+Gestion -- RF06
+Gestion -- RF07
+Gestion -- RF14
+Gestion -- RF16
+Gestion -- RF17
+Gestion -- RF18
+Super -- RF01
+Censo -- RF03
+Aud -- RF19
+
+RF07 ..> RF13a : <<include>>
+note bottom of RF13a : Comportamiento obligatorio al cierre
+@enduml
+

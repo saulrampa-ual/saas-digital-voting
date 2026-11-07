@@ -1,0 +1,47 @@
+server:
+  port: ${IDENTITY_SERVER_PORT:8081}
+
+spring:
+  application:
+    name: identity-service
+  datasource:
+    url: ${IDENTITY_DB_URL:jdbc:postgresql://localhost:5432/identity_db}
+    username: ${IDENTITY_DB_USERNAME}
+    password: ${IDENTITY_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${IDENTITY_OIDC_ISSUER_URI:http://localhost:8080/realms/verivoto}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+verivoto:
+  # RF-19 / IMP-26: Keycloak clients allowed to deliver administrative actions (claim azp)
+  internal-clients:
+    election: election-service
+    ballot-box: ballot-box-service
+    voter-access: voter-access-service
+  keycloak:
+    base-url: ${IDENTITY_KEYCLOAK_BASE_URL:http://localhost:8080}
+    realm: verivoto
+    client-id: identity-service
+    client-secret: ${IDENTITY_SERVICE_CLIENT_SECRET}
+  swagger:
+    keycloak-realm-url: ${IDENTITY_KEYCLOAK_BASE_URL:http://localhost:8080}/realms/verivoto
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: verivoto-dev-swagger
+      use-pkce-with-authorization-code-grant: true

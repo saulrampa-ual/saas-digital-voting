@@ -1,0 +1,21 @@
+
+\thispagestyle{empty}
+%\put(0,0){
+\begin{minipage}[h]{0.9\paperwidth}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+\node (f) [rectangle]  
+at (current page.center)
+          {\parbox[b][\paperheight]{\paperwidth}{
+           \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{Figuras/logos/TFG_back}
+          }};
+\node (texto) [rectangle,text width=0.5\paperwidth,yshift=0pt]
+at (f)
+          {\parbox{0.65\paperwidth}{\justifying \large \color{white}
+         \input{resumentexto}
+         }};
+       \node[anchor=base west] at (12.87,-24.63) {\Large\curso};
+  \end{tikzpicture}
+\end{minipage}
+%}
+          

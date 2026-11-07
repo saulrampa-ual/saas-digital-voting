@@ -1,0 +1,45 @@
+% Diagrama vectorial simplificado para lectura en la memoria.
+\begin{tikzpicture}[font=\sffamily\scriptsize,
+  actor/.style={draw=blue!55!black,fill=blue!4,rounded corners=2pt,align=center,text width=2.0cm,minimum height=.62cm,inner sep=3pt},
+  uc/.style={draw=gray!65!black,fill=blue!3,ellipse,align=center,text width=3.0cm,minimum height=.72cm,inner sep=2pt},
+  rel/.style={draw=gray!70,thin},
+  gen/.style={draw=gray!70,thin,-{Triangle[open]}}]
+\node[font=\bfseries\small] at (4,5.8) {Casos de uso: gestión y configuración};
+\draw[rounded corners,draw=gray!55] (0.5,-5.5) rectangle (7.6,5.35);
+\node[fill=white,font=\bfseries] at (4,5.35) {Plataforma SaaS (Gestión)};
+
+\node[uc] (rf01) at (2.5,4.55) {RF-01\\Organizaciones};
+\node[uc] (rf02) at (2.5,3.55) {RF-02\\Roles y permisos};
+\node[uc] (rf03) at (2.5,2.55) {RF-03\\Gestionar censo};
+\node[uc] (rf04) at (2.5,1.55) {RF-04\\Autenticar gestión};
+\node[uc] (rf05) at (2.5,.55) {RF-05a\\Iniciar sesión gestión};
+\node[uc] (rf06) at (2.5,-.45) {RF-06\\Configurar proceso};
+\node[uc] (rf07) at (2.5,-1.45) {RF-07\\Ciclo de vida};
+\node[uc] (rf14) at (2.5,-2.45) {RF-14\\Consultar participación};
+\node[uc] (rf16) at (2.5,-3.45) {RF-16\\Generar acta PDF};
+\node[uc] (rf17) at (2.5,-4.45) {RF-17\\Enviar notificaciones};
+\node[uc] (rf18) at (5.8,3.55) {RF-18\\Privacidad RGPD};
+\node[uc] (rf19) at (5.8,1.55) {RF-19\\Trazabilidad};
+\node[uc] (rf13a) at (5.8,-.45) {RF-13a\\Escrutinio al cierre};
+
+\node[actor] (super) at (-2,4.55) {Superadministrador};
+\node[actor] (gestion) at (-2,1.0) {Usuario de gestión};
+\node[actor] (censo) at (-2,-1.45) {Gestor de censo};
+\node[actor] (aud) at (-2,-3.5) {Usuario con auditoría};
+\node[actor] (admin) at (-5,-4.55) {Administrador};
+\node[actor] (auditor) at (-5,-2.45) {Auditor};
+
+\begin{pgfonlayer}{background}
+\draw[rel] (super.east)--(rf01.west);
+\foreach \u in {rf02,rf04,rf05,rf06,rf07,rf14,rf16,rf17,rf18} \draw[rel] (gestion.east)--(\u.west);
+\draw[rel] (censo.east)--(rf03.west);
+\draw[rel] (aud.east)--(rf19.west);
+\draw[dashed,gray] (rf07.east)--node[above,font=\tiny]{\textless\textless include\textgreater\textgreater}(rf13a.west);
+\draw[gen] (super.south)--(gestion.north);
+\draw[gen] (censo.north)--(gestion.south);
+\draw[gen] (aud.north)--(gestion.south);
+\draw[gen] (admin.north)--(aud.south);
+\draw[gen] (auditor.south)--(aud.north);
+\end{pgfonlayer}
+\node[font=\tiny,align=left] at (4,-5.05) {Las especializaciones heredan las asociaciones de sus actores genéricos.};
+\end{tikzpicture}

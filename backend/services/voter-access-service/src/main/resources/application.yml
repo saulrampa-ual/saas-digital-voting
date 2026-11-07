@@ -1,0 +1,80 @@
+server:
+  port: ${VOTER_ACCESS_SERVER_PORT:8083}
+
+spring:
+  # D-44: one thread per scheduled task, so delivering administrative actions to identity-service never delays
+  # the emails to voters (even with identity-service slow or down)
+  task:
+    scheduling:
+      pool:
+        size: 4
+  application:
+    name: voter-access-service
+  datasource:
+    url: ${VOTER_ACCESS_DB_URL:jdbc:postgresql://localhost:5432/voter_access_db}
+    username: ${VOTER_ACCESS_DB_USERNAME}
+    password: ${VOTER_ACCESS_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        # The frozen census of a process can have tens of thousands of voters (D-27)
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+  flyway:
+    enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${VOTER_ACCESS_OIDC_ISSUER_URI:http://localhost:8080/realms/verivoto}
+  mail:
+    # Mailpit in local development (infra/compose.yaml); real SMTP with TLS and credentials in production
+    host: ${VOTER_ACCESS_SMTP_HOST:localhost}
+    port: ${VOTER_ACCESS_SMTP_PORT:1025}
+    properties:
+      "[mail.smtp.connectiontimeout]": 5000
+      "[mail.smtp.timeout]": 10000
+      "[mail.smtp.writetimeout]": 10000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+verivoto:
+  # IMP-26: Keycloak clients allowed on each internal route (claim azp)
+  internal-clients:
+    election: election-service
+    ballot-box: ballot-box-service
+  # D-22: client-credentials token of voter-access-service (role SERVICE) for the calls below
+  keycloak:
+    base-url: ${VOTER_ACCESS_KEYCLOAK_BASE_URL:http://localhost:8080}
+    realm: verivoto
+    client-id: voter-access-service
+    client-secret: ${VOTER_ACCESS_SERVICE_CLIENT_SECRET:}
+  identity:
+    # RF-19, D-44: administrative actions (reminders, retried emails) are delivered to identity-service
+    url: ${VOTER_ACCESS_IDENTITY_URL:http://localhost:8081}
+  access:
+    # D-31: voter PWA (personal links /votar/{token}), dates and voting day in this zone (D-18)
+    public-base-url: ${VOTER_ACCESS_PUBLIC_BASE_URL:http://localhost:4200}
+    zone: Europe/Madrid
+    mail-from: ${VOTER_ACCESS_MAIL_FROM:no-reply@verivoto.local}
+    invitation-interval: PT10S
+    code-validity: PT10M
+    resend-delay: PT60S
+    code-window: PT15M
+    max-codes-per-window: 5
+    max-failed-attempts: 5
+    lock-duration: PT15M
+    voting-token-validity: PT15M
+    link-validity-after-close: P30D
+    # D-41: after the tally, the code gives a token to see the result for this long
+    results-token-validity: PT30M
+    # RF-05b (D-48): ID tokens of the institutional account must be issued to this Keycloak client
+    sso-client-id: verivoto-voter

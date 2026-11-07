@@ -1,0 +1,38 @@
+\chapter{Diagrama de casos de uso}
+\label{cap:refactorizacion-diagrama}
+
+Para que los nombres y las relaciones se lean con claridad, los casos de uso
+se presentan en dos diagramas PlantUML independientes: gestión y
+configuración en la figura~\ref{fig:casos-uso-gestion}; participación y
+verificación en la figura~\ref{fig:casos-uso-votacion}. Las fuentes editables
+se guardan en \texttt{Figuras/diagramas/}.
+
+\begin{figure}[p]
+  \centering
+  \resizebox{0.94\textwidth}{!}{\input{Figuras/diagramas/casos_uso_gestion.tex}}
+  \caption{Diagrama de casos de uso (configuración y administración).}
+  \label{fig:casos-uso-gestion}
+\end{figure}
+
+\begin{figure}[p]
+  \centering
+  \resizebox{0.94\textwidth}{!}{\input{Figuras/diagramas/casos_uso_votacion.tex}}
+  \caption{Diagrama de casos de uso (participación y verificación).}
+  \label{fig:casos-uso-votacion}
+\end{figure}
+
+El modelo usa asociaciones sin punta de flecha entre actores y casos de uso.
+La generalización de actores representa especialización de roles; por ello,
+Superadministrador y Gestor de censo heredan de \emph{Usuario de gestión},
+mientras Administrador y Auditor heredan además de \emph{Usuario con auditoría}.
+Este actor intermedio mantiene RF-19 limitado a esos dos perfiles. Cada caso de uso conserva como máximo un actor asociado directamente.
+
+El requisito RF-05, «Iniciar sesión», se divide en dos casos trazables al requisito de origen: RF-05a para los perfiles de gestión y RF-05b para el votante. OIDC/SSO se conserva como decisión de diseño y mecanismo posible; no forma parte del nombre genérico del requisito. La integración del proveedor de identidad se documenta como decisión arquitectónica y no añade una segunda asociación directa a los casos de uso. RF-05b permanece separado del acceso a la papeleta (RF-08). El caso RF-13 se desglosa en RF-13a, incluido desde RF-07 para el
+escrutinio obligatorio al cierre, y RF-13b, que permite verificar el resultado
+publicado.
+
+Solo RF-10 se modela como extensión opcional de RF-09, sin asociación directa
+con el votante. RF-11 (re-votar) no figura en el diagrama porque D-03 lo
+excluye del MVP. El punto de extensión de RF-09 se sitúa tras confirmar
+la emisión. RF-19 se asocia a \emph{Usuario con auditoría}; los perfiles
+Administrador y Auditor lo heredan.

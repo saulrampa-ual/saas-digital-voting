@@ -1,0 +1,973 @@
+{
+  "language": {
+    "label": "Language",
+    "es": "Spanish",
+    "en": "English"
+  },
+  "common": {
+    "loading": "Loading…",
+    "loadError": "The data could not be loaded. Please try again.",
+    "goHome": "Go to home"
+  },
+  "admin": {
+    "menu": {
+      "label": "Management menu",
+      "open": "Open menu",
+      "close": "Close menu",
+      "home": "Home",
+      "organizations": "Organizations",
+      "censuses": "Censuses",
+      "processes": "Processes",
+      "participation": "Turnout",
+      "results": "Results",
+      "audit": "Audit",
+      "traceability": "Traceability",
+      "privacy": "Privacy (GDPR)",
+      "apiKeys": "API keys"
+    },
+    "logout": "Sign out",
+    "home": {
+      "title": "Home",
+      "panelOf": "{{org}} dashboard",
+      "platformPanel": "Platform dashboard",
+      "welcome": "Hello, {{name}}.",
+      "intro": "This is what needs your attention today.",
+      "roleLabel": "Role",
+      "can": "Can:",
+      "scope": "Only sees data from their organisation ({{org}}).",
+      "noRole": "Your account has no management role. Ask an administrator to assign you one.",
+      "retry": "Retry",
+      "chip": {
+        "warn": "Attention",
+        "info": "Notice",
+        "ok": "OK"
+      },
+      "attention": {
+        "title": "Needs your attention",
+        "failedEmails": "{{count}} emails could not be delivered",
+        "failedEmailsSub": "{{process}} · review and retry them from Participation.",
+        "emptyCensus": "The census “{{name}}” has no people",
+        "emptyCensusSub": "It cannot be used in a process until it has people.",
+        "drafts": "{{count}} draft processes not scheduled yet",
+        "draftsSub": "Complete and schedule them so the invitations are sent.",
+        "frozen": "{{count}} frozen censuses",
+        "frozenSub": "A scheduled or open process uses them: nobody can be added or removed until it ends.",
+        "allGood": "All in order",
+        "allGoodSub": "No undelivered emails and no empty censuses."
+      },
+      "chart": {
+        "title": "Cumulative votes cast per day (open processes, % of the census)",
+        "none": "Nobody has voted in the open processes yet.",
+        "day": "Day",
+        "cumulative": "People who have voted (cumulative)",
+        "pct": "% of the census",
+        "secrecy": "Aggregated turnout only, by day and never by time (it protects ballot secrecy). Counts per option are not shown until the tally."
+      },
+      "superadmin": {
+        "title": "Organisations on the platform",
+        "can": "create organisations, suspend or reactivate them and assign their administrators.",
+        "scope": "Does not see the censuses, processes, votes or results of any organisation.",
+        "manage": "Manage organisations",
+        "list": "Organisations",
+        "total": "Organisations in total",
+        "totalSub": "active and suspended",
+        "active": "Active organisations",
+        "suspendedSub": "{{count}} suspended",
+        "accounts": "Management accounts",
+        "accountsSub": "in all organisations",
+        "singleAdmin": "With a single administrator",
+        "singleAdminSub": "add another person",
+        "singleAdminNone": "all have at least two",
+        "orgAccounts": "{{count}} accounts, {{admins}} with the administrator role",
+        "onlyOne": "Single administrator",
+        "none": "There are no organisations yet."
+      },
+      "admin": {
+        "title": "Your organisation's processes",
+        "can": "create and schedule processes, follow turnout, publish results and minutes, check traceability, handle GDPR requests and manage API keys.",
+        "create": "Create process",
+        "kpiOpen": "Open processes",
+        "kpiScheduled": "{{count}} scheduled",
+        "kpiVotes": "Votes cast",
+        "kpiVotesSub": "in open processes, out of {{eligible}} people",
+        "kpiTurnout": "Turnout",
+        "kpiTurnoutSub": "people who voted over the census of the open processes",
+        "kpiWarnings": "Warnings",
+        "kpiWarningsSub": "need a review",
+        "kpiWarningsNone": "nothing pending",
+        "openNow": "Active processes",
+        "noneOpen": "No voting is open.",
+        "closes": "Closes on {{date}}",
+        "votes": "{{votes}} of {{eligible}} votes",
+        "seeParticipation": "See turnout",
+        "upcoming": "Coming up and in preparation",
+        "noneUpcoming": "No scheduled or draft processes.",
+        "opens": "Opens on {{date}}",
+        "draftHint": "Draft: not scheduled yet",
+        "tallied": "Recently tallied",
+        "noneTallied": "No process has been tallied yet.",
+        "seeResults": "See results and minutes",
+        "allProcesses": "See all processes"
+      },
+      "census": {
+        "title": "Censuses",
+        "can": "create censuses and import or edit the people who can vote.",
+        "manage": "Manage censuses",
+        "list": "Organisation censuses",
+        "none": "There are no censuses yet. Create the first one so that a process can be prepared.",
+        "total": "Censuses",
+        "people": "People in total",
+        "editable": "Editable",
+        "frozen": "Frozen (in use)",
+        "frozenSub": "used by a scheduled or open process",
+        "noEditable": "Create a new one for upcoming processes.",
+        "noEditableTitle": "No editable censuses",
+        "frozenTitle": "Frozen censuses",
+        "frozenHelp": "A census used by a scheduled or open process cannot change until the process ends.",
+        "allGoodSub": "Every editable census has people."
+      },
+      "audit": {
+        "title": "Ballot box integrity",
+        "can": "check the ballot box record of each process and the administrative traceability. Read only.",
+        "open": "Open audit",
+        "kpiClosed": "Closed processes",
+        "kpiClosedSub": "with a ballot box record to verify",
+        "lastIntact": "Intact record",
+        "lastBroken": "Record with problems",
+        "lastDetail": "{{process}} · {{events}} events checked · verified on {{date}}",
+        "neverTitle": "No record verified yet",
+        "neverDetail": "Verify the event chain of the closed processes.",
+        "verifyNow": "Verify integrity now",
+        "list": "Processes",
+        "actions": "Recent actions",
+        "noActions": "No actions recorded yet.",
+        "seeTrace": "See full traceability",
+        "hash": "fingerprint",
+        "secrecy": "Vote events have no time and are never linked to who voted (ballot secrecy).",
+        "none": "There are no closed processes to verify yet.",
+        "checkedAt": "Verified on {{date}}",
+        "verify": "Not verified yet",
+        "state": {
+          "INTACT": "Intact",
+          "BROKEN": "With problems",
+          "NEVER": "Not verified",
+          "ERROR": "Not available"
+        }
+      }
+    },
+    "organizations": {
+      "title": "Organizations",
+      "empty": "There are no organizations yet.",
+      "status": {
+        "ACTIVE": "Active",
+        "SUSPENDED": "Suspended"
+      }
+    },
+    "censuses": {
+      "title": "Censuses",
+      "empty": "There are no censuses yet.",
+      "voters": "{{count}} people",
+      "frozen": "Frozen",
+      "editable": "Editable",
+      "introManager": "Create a census and add the people who can vote, by hand or by importing a CSV.",
+      "introAdmin": "Censuses of your organisation. Only the census manager can change them.",
+      "newName": "Name of the new census",
+      "create": "Create census",
+      "nameRequired": "Enter the name of the census."
+    },
+    "forbidden": {
+      "title": "No permission",
+      "message": "Your role does not give access to this section."
+    },
+    "processes": {
+      "title": "Processes",
+      "intro": "Voting processes of your organization.",
+      "create": "Create process",
+      "opens": "Opens on {{date}}",
+      "closes": "closes on {{date}}",
+      "empty": "There are no processes yet.",
+      "status": {
+        "DRAFT": "Draft",
+        "SCHEDULED": "Scheduled",
+        "OPEN": "Open",
+        "CLOSED": "Closed",
+        "TALLIED": "Tallied",
+        "ARCHIVED": "Archived"
+      }
+    },
+    "processForm": {
+      "title": "Create voting process",
+      "editTitle": "Edit process",
+      "intro": "The process is saved as a Draft until you schedule it.",
+      "stepsLabel": "Steps to create the process",
+      "steps": {
+        "basics": "Basic data",
+        "calendar": "Calendar",
+        "census": "Census",
+        "ballot": "Ballot"
+      },
+      "defaultLanguage": "Default language",
+      "bilingualHelp": "Write every text in Spanish and English. The default language (*) is enough now; both are needed to schedule.",
+      "titleLabel": "Title",
+      "descriptionLabel": "Description",
+      "visibility": "Who will see the result?",
+      "censusOnly": "Only the people in the census",
+      "censusOnlyHelp": "They sign in with their personal link and code.",
+      "publicLink": "Anyone with the public link",
+      "publicLinkHelp": "Useful for open votes. The final hash is always public.",
+      "opensAt": "Opening",
+      "closesAt": "Closing",
+      "calendarHelp": "Opening and closing happen automatically at these times (your browser time): they cannot be done by hand.",
+      "noCensuses": "There are no censuses in your organization. Ask the census manager to create one.",
+      "emptyCensus": "empty: it cannot be scheduled",
+      "voteType": "Ballot type",
+      "singleChoice": "Single choice",
+      "singleChoiceHelp": "One list or option is chosen.",
+      "yesNo": "Yes / No / Abstain",
+      "yesNoHelp": "For consultations.",
+      "question": "Question",
+      "options": "Ballot options",
+      "option": "Option {{n}}",
+      "removeOption": "Remove option {{n}}",
+      "addOption": "Add option",
+      "yesNoFixed": "The options «Yes», «No» and «Abstain» are created automatically in both languages.",
+      "blankVote": "Allow blank vote",
+      "fixErrors": "Check the marked fields.",
+      "back": "Back",
+      "next": "Next",
+      "create": "Create process",
+      "saveChanges": "Save changes",
+      "notEditable": "This process is no longer a draft: it cannot be edited.",
+      "backToProcess": "Back to the process",
+      "created": {
+        "title": "Process created",
+        "message": "«{{title}}» was saved as a Draft. Check it and schedule it when you are ready.",
+        "view": "View process",
+        "list": "Go to processes"
+      },
+      "errors": {
+        "titleRequired": "Write the title in the default language.",
+        "titleForDescription": "If you write the description in this language, write the title too.",
+        "max": "At most {{max}} characters.",
+        "opensRequired": "Set the opening.",
+        "closesRequired": "Set the closing.",
+        "closesAfter": "Closing must be after opening.",
+        "censusRequired": "Choose the participating census.",
+        "questionRequired": "Write the question in the default language.",
+        "minOptions": "Add at least 2 options.",
+        "maxOptions": "At most 50 options.",
+        "optionRequired": "Write the option in the default language."
+      },
+      "authentication": "How voters sign in",
+      "emailCode": "Code by email",
+      "emailCodeHelp": "When they open their personal link they receive a 6-digit code at the email of the voter list.",
+      "sso": "Institutional account (SSO)",
+      "ssoHelp": "They sign in with the account of the organization; its verified email must be the one of the voter list.",
+      "titleShort": "New process",
+      "editTitleShort": "Edit process",
+      "stepOf": "Step {{n}} of {{total}}",
+      "afterStep": "Next: {{name}}",
+      "nextHint": "Next: {{name}}",
+      "textsLanguage": "Language of the texts",
+      "pending": "pending",
+      "inLang": {
+        "es": "in Spanish",
+        "en": "in English"
+      }
+    },
+    "process": {
+      "title": "Lifecycle",
+      "backToList": "Processes",
+      "voteType": {
+        "SINGLE_CHOICE": "Single choice",
+        "YES_NO_ABSTAIN": "Yes / No / Abstain"
+      },
+      "statusTitle": "Process status",
+      "done": "Done",
+      "current": "Current status",
+      "pending": "Pending",
+      "actions": "Available actions",
+      "edit": "Edit process",
+      "schedule": "Schedule",
+      "archive": "Archive process",
+      "readOnly": "Your role can view the process but not change it.",
+      "automatic": "Opening and closing are automatic at the set times: they cannot be done early by hand.",
+      "checksTitle": "Checks before scheduling",
+      "checksHelp": "Scheduling freezes the census and sends the invitations. Every status change is recorded.",
+      "checkOk": "OK",
+      "checkKo": "To complete",
+      "checks": {
+        "texts": {
+          "title": "Title and description",
+          "ok": "In Spanish and English",
+          "ko": "Translations missing (both languages are needed)"
+        },
+        "calendar": {
+          "title": "Consistent calendar",
+          "ok": "Opening is in the future and before closing",
+          "ko": "Opening must be in the future and before closing"
+        },
+        "census": {
+          "title": "Census selected",
+          "ok": "{{name}} · {{count}} people",
+          "ko": "{{name}} has no people"
+        },
+        "ballot": {
+          "title": "Ballot defined",
+          "ok": "Question and options in both languages",
+          "ko": "Translations missing in the question or options"
+        }
+      },
+      "scheduleConfirm": {
+        "title": "Schedule the process?",
+        "message": "The census will be frozen and the invitations sent. You will not be able to edit it afterwards.",
+        "cancel": "Cancel",
+        "ok": "Schedule"
+      },
+      "scheduled": "Process scheduled. It will open automatically at the set time.",
+      "archived": "Process archived.",
+      "historyTitle": "Status history",
+      "noHistory": "No status changes yet.",
+      "bySystem": "System",
+      "byUser": "Administrator",
+      "whatTitle": "What each status allows",
+      "what": {
+        "DRAFT": "Edit everything and schedule the process",
+        "SCHEDULED": "Opens by itself at the set time; census and ballot frozen",
+        "OPEN": "Voting in progress; see participation",
+        "CLOSED": "Automatic tally in progress",
+        "TALLIED": "See results; archive",
+        "ARCHIVED": "Read only"
+      },
+      "noActions": "There are no manual actions in this status: the process moves on by itself on the set dates.",
+      "summaryTitle": "Process details",
+      "summary": {
+        "opensAt": "Opens",
+        "closesAt": "Closes",
+        "census": "Census",
+        "censusValue": "{{name}} · {{count}} people",
+        "options": "Ballot options",
+        "blank": "with blank vote",
+        "visibility": "Results",
+        "visibilityValue": {
+          "CENSUS_ONLY": "Census members only",
+          "PUBLIC_LINK": "Public link"
+        },
+        "authentication": "Voter sign-in",
+        "authenticationValue": {
+          "EMAIL_CODE": "Code by email",
+          "INSTITUTIONAL_SSO": "Institutional account (SSO)"
+        }
+      },
+      "links": {
+        "label": "More about this process",
+        "participation": "See turnout",
+        "results": "See results",
+        "audit": "See the ballot box log"
+      }
+    },
+    "census": {
+      "title": "Census",
+      "backToList": "Censuses",
+      "heading": "Census · {{name}}",
+      "addManual": "Add manually",
+      "frozenHelp": "Frozen census: a scheduled or open process uses it, so it cannot change until that process ends.",
+      "readOnly": "Your role can view the census, not change it.",
+      "peopleTitle": "People in the census",
+      "search": "Search by name, email or ID",
+      "language": "Language",
+      "actions": "Actions",
+      "edit": "Edit",
+      "editPerson": "Edit {{name}}",
+      "removeShort": "Remove",
+      "removePerson": "Remove {{name}} from the census",
+      "noPeople": "The census has no people yet.",
+      "noMatches": "Nobody matches the search.",
+      "showing": "Showing {{from}}–{{to}} of {{total}} people",
+      "previous": "Previous",
+      "next": "Next",
+      "form": {
+        "newTitle": "Add manually",
+        "editTitle": "Edit person",
+        "fullName": "Full name",
+        "email": "Email",
+        "phone": "Phone",
+        "phoneHelp": "Digits only, no spaces or + prefix.",
+        "institutionalId": "Institutional ID",
+        "preferredLanguage": "Language for messages",
+        "add": "Add to census",
+        "save": "Save changes",
+        "cancel": "Cancel",
+        "added": "{{name}} has been added to the census.",
+        "updated": "{{name}}'s details have been saved.",
+        "errors": {
+          "fullName": "Enter the name (up to 60 characters).",
+          "email": "Enter a valid email, for example name@ual.es.",
+          "phone": "The phone number only accepts digits (up to 15).",
+          "institutionalId": "The ID accepts 50 characters at most."
+        }
+      },
+      "remove": {
+        "title": "Remove this person?",
+        "message": "{{name}} will no longer be in the census and will not receive invitations.",
+        "cancel": "Cancel",
+        "ok": "Remove",
+        "done": "{{name}} is no longer in the census."
+      },
+      "import": {
+        "selectTitle": "Select file",
+        "drop": "Drag a CSV file here",
+        "columns": "Columns: full_name, email (required); phone, institutional_id, preferred_language",
+        "select": "Select file",
+        "rules": "UTF-8, separated by «,» or «;», up to 5 MB and 50,000 rows. Nothing is saved until you confirm.",
+        "summaryTitle": "Import summary",
+        "pending": "{{file}} · awaiting confirmation",
+        "idle": "Choose a file: you will see how many people would be added, the duplicates and the lines with errors before anything is saved.",
+        "validating": "Validating {{file}}…",
+        "validatingHelp": "We are checking the file and looking for duplicates. Nothing has been saved yet.",
+        "applying": "Saving {{count}} people…",
+        "applyingHelp": "Do not close this page until it finishes.",
+        "done": "Import complete: {{count}} people added.",
+        "another": "Import another file",
+        "toCreate": "new people",
+        "duplicates": "duplicates (skipped)",
+        "invalid": "lines with errors",
+        "invalidList": "Lines with errors",
+        "duplicateList": "Duplicates that will be skipped",
+        "line": "Line {{line}}",
+        "more": "…and {{count}} more.",
+        "reason": {
+          "EMAIL": "the email is already in the census or repeated in the file",
+          "INSTITUTIONAL_ID": "the institutional ID is already in the census or repeated in the file"
+        },
+        "invalidHelp": "Fix the file and select it again, or discard the lines with errors to import the rest.",
+        "readyHelp": "Check the summary and confirm to save the new people. Duplicates are skipped.",
+        "nothingHelp": "There are no new people to add.",
+        "confirm": "Confirm import",
+        "discard": "Discard lines with errors and import {{count}}",
+        "cancel": "Cancel",
+        "notApplied": "The census changed since the validation; check the new summary.",
+        "errors": {
+          "extension": "The file must have a .csv extension.",
+          "empty": "The file is empty.",
+          "size": "The file is larger than {{max}} MB."
+        }
+      }
+    },
+    "picker": {
+      "label": "Process",
+      "empty": "There are no processes to show yet."
+    },
+    "participation": {
+      "title": "Turnout panel",
+      "empty": "There are no scheduled processes yet.",
+      "opens": "Opens on {{date}}",
+      "closes": "Closes on {{date}}",
+      "live": "Updates automatically · last update {{seconds}} s ago",
+      "current": "Current turnout",
+      "ringLabel": "Turnout: {{pct}} % of the census",
+      "ofCensus": "of the census",
+      "census": "People in the census",
+      "censusHelp": "frozen census",
+      "votes": "Votes cast",
+      "votesHelp": "one vote per person",
+      "pending": "Yet to vote",
+      "pendingHelp": "until closing",
+      "byDayTitle": "Cumulative turnout per day (% of the census)",
+      "notOpen": "Voting is not open yet: only the census is shown.",
+      "noVotes": "Nobody has voted yet.",
+      "dayTip": "{{day}}: {{votes}} votes that day, {{total}} in total",
+      "day": "Day",
+      "cumulative": "Cumulative",
+      "lockTitle": "Results per option are not shown until the tally.",
+      "lockText": "Here you only see how many people have voted, never what they voted. Turnout is counted per day, without hours, to protect the secrecy of the vote.",
+      "seeResults": "See the results",
+      "titleShort": "Participation"
+    },
+    "notifications": {
+      "remindersTitle": "Reminders to people who have not voted",
+      "remindersHelp": "They go only to people on the voter list who have not voted yet, with a new personal link. You will see how many people received them, never who.",
+      "sendNow": "Send reminder now",
+      "confirmNow": "Send a reminder now to the {{count}} people who have not voted?",
+      "confirmSend": "Yes, send now",
+      "keep": "No, go back",
+      "scheduleAt": "Schedule for",
+      "schedule": "Schedule reminder",
+      "limit": "You can have up to {{max}} reminders per process ({{used}} so far).",
+      "nobodyLeft": "Everybody on the voter list has already voted.",
+      "onlyOpen": "Reminders can only be sent while voting is open.",
+      "outOfPeriod": "Choose a date and time from now on and before voting closes.",
+      "sentNow": "Reminder on its way: it will be sent in a few seconds.",
+      "scheduled": "Reminder scheduled.",
+      "cancelled": "Reminder cancelled.",
+      "cancel": "Cancel",
+      "cancelLabel": "Cancel the reminder of {{date}}",
+      "people": "{{count}} people",
+      "reminderStatus": {
+        "SCHEDULED": "Scheduled",
+        "SENT": "Sent",
+        "CANCELLED": "Cancelled"
+      },
+      "emailsTitle": "Emails to voters",
+      "type": {
+        "INVITATION": "Invitations",
+        "REMINDER": "Reminders",
+        "CLOSING": "Closing notice"
+      },
+      "col": {
+        "when": "Date and time",
+        "status": "Status",
+        "recipients": "Recipients",
+        "actions": "Actions",
+        "type": "Type",
+        "delivered": "Delivered",
+        "pending": "Pending",
+        "failed": "Failed",
+        "notNeeded": "Not needed",
+        "person": "Person",
+        "attempts": "Attempts",
+        "reason": "Reason"
+      },
+      "notNeededHelp": "\"Not needed\": reminders for people who had already voted and emails that no longer made sense once voting closed.",
+      "failedTitle": "Emails that could not be delivered",
+      "failedReminders": "Also, {{count}} reminders could not be delivered. They are only counted: saying who they were for would reveal who has not voted.",
+      "retry": "Retry failed emails ({{count}})",
+      "retried": "{{count}} emails will be tried again.",
+      "loadError": "The emails of the process could not be loaded. Please try again."
+    },
+    "results": {
+      "title": "Results",
+      "empty": "There are no closed processes yet.",
+      "closedOn": "Closed on {{date}}",
+      "export": "Export results (CSV)",
+      "exportError": "The CSV could not be downloaded. Try again.",
+      "fileName": "results-process",
+      "tallyingTitle": "Tally in progress…",
+      "tallyingText": "The ballot box is counting the votes and checking its log. You do not need to wait here: the result will appear in a few seconds.",
+      "tallyingStep1": "Check of the ballot box log",
+      "tallyingStep2": "Count per option and turnout",
+      "tallyingStep3": "Result stored and its hash published",
+      "census": "Census",
+      "people": "people",
+      "votes": "Votes cast",
+      "turnout": "{{pct}} % turnout",
+      "blank": "Blank votes",
+      "ofVotes": "{{pct}} % of the votes",
+      "byOption": "Result per option",
+      "publicTitle": "Public results link",
+      "publicText": "Anyone with this link can see the result and check it.",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "censusOnlyTitle": "Result for the organisation only",
+      "censusOnlyText": "This process does not publish the result with a public link. The hashes are public.",
+      "talliedAt": "Tallied on {{date}}.",
+      "minutes": "Generate minutes (PDF)",
+      "minutesTitle": "Minutes of the process",
+      "minutesText": "They include process, calendar, census, turnout, result and hashes. Generated the first time and then the same file is always downloaded.",
+      "minutesHash": "Hash of the minutes (SHA-256):",
+      "minutesFile": "minutes-process",
+      "minutesError": "The minutes could not be generated. Try again."
+    },
+    "audit": {
+      "title": "Ballot box audit",
+      "intro": "Read only: the ballot box log cannot be edited. Votes appear without identity and without time.",
+      "empty": "There are no scheduled processes yet.",
+      "neverTitle": "Log not verified",
+      "neverText": "Verify the log to check that nobody has altered it.",
+      "okTitle": "Log intact",
+      "okText": "{{count}} events checked · no alteration found · last check on {{date}}",
+      "badTitle": "Log altered",
+      "badText": "The check of {{date}} found alterations. An incident was recorded and the tally will not be published while it stays like this.",
+      "problem": {
+        "HASH_MISMATCH": "The event was changed: its data no longer produce its hash.",
+        "BROKEN_LINK": "The event does not link to the previous one (an event was inserted, deleted or reordered).",
+        "SEQUENCE_GAP": "A number is missing in the sequence of events.",
+        "HEAD_MISMATCH": "Events are missing at the end of the log.",
+        "BALLOT_MISMATCH": "The ballot is no longer the one fixed at opening.",
+        "VOTE_COUNT_MISMATCH": "Votes, receipts and vote events do not match.",
+        "CLOSED_COUNT_MISMATCH": "The closing does not match the number of votes recorded.",
+        "FINAL_HASH_MISMATCH": "The published final hash is not the hash of the closing."
+      },
+      "finalHash": "Published final hash:",
+      "finalPending": "The final hash will be published at closing ({{date}}).",
+      "verify": "Verify integrity now",
+      "chainTitle": "Ballot box log",
+      "noEvents": "The ballot box has no events yet: the first one is the opening.",
+      "col": {
+        "seq": "No.",
+        "event": "Event",
+        "hash": "Hash",
+        "when": "Date and time"
+      },
+      "event": {
+        "OPENED": "Ballot box opened",
+        "VOTE_RECEIVED": "Vote received (no identity)",
+        "CLOSED": "Ballot box closed",
+        "FINAL_HASH_PUBLISHED": "Final hash published"
+      },
+      "noTime": "no time",
+      "showing": "Showing {{from}}–{{to}} of {{total}} events · votes are shown without identity or time",
+      "titleShort": "Audit"
+    },
+    "trace": {
+      "title": "Traceability",
+      "intro": "Administrative actions of your organization: who did what, on what and when. The record cannot be changed or deleted.",
+      "filters": "Filters",
+      "from": "From",
+      "to": "To",
+      "actor": "Person",
+      "action": "Type of action",
+      "process": "Process",
+      "all": "All",
+      "apply": "Apply filters",
+      "clear": "Clear filters",
+      "dateError": "«From» must be on or before «To».",
+      "listTitle": "Recorded actions",
+      "none": "There are no actions with these filters.",
+      "showing": "Showing {{from}}–{{to}} of {{total}}",
+      "col": {
+        "when": "Date and time",
+        "who": "Who",
+        "what": "What",
+        "object": "On what",
+        "process": "Process"
+      },
+      "actions": {
+        "ORGANIZATION_CREATED": "Organization created",
+        "ORGANIZATION_STATUS_CHANGED": "Organization status changed",
+        "USER_CREATED": "User created",
+        "USER_ROLE_CHANGED": "Role changed",
+        "CENSUS_CREATED": "Census created",
+        "VOTER_ADDED": "Person added to a census",
+        "VOTER_UPDATED": "Person changed in a census",
+        "VOTER_REMOVED": "Person removed from a census",
+        "VOTERS_IMPORTED": "Census imported",
+        "PROCESS_CREATED": "Process created",
+        "PROCESS_UPDATED": "Process edited",
+        "PROCESS_SCHEDULED": "Process scheduled",
+        "PROCESS_ARCHIVED": "Process archived",
+        "CHAIN_VERIFIED": "Ballot box log verified",
+        "RESULTS_EXPORTED": "Results exported (CSV)",
+        "MINUTES_DOWNLOADED": "Minutes downloaded (PDF)",
+        "REMINDER_SCHEDULED": "Reminder scheduled",
+        "REMINDER_CANCELLED": "Reminder cancelled",
+        "NOTIFICATIONS_RETRIED": "Failed emails retried",
+        "PERSONAL_DATA_EXPORTED": "Personal data export (GDPR)",
+        "PERSONAL_DATA_ERASED": "Personal data erasure (GDPR)",
+        "API_KEY_CREATED": "API key created",
+        "API_KEY_REVOKED": "API key revoked"
+      },
+      "objects": {
+        "ORGANIZATION": "Organization",
+        "USER": "User",
+        "CENSUS": "Census",
+        "VOTER": "Person",
+        "PROCESS": "Process",
+        "API_KEY": "API key"
+      },
+      "details": {
+        "ORGANIZATION_STATUS_CHANGED": {
+          "ACTIVE": "active",
+          "SUSPENDED": "suspended"
+        },
+        "USER_CREATED": {
+          "ADMIN": "administration",
+          "CENSUS_MANAGER": "census management",
+          "AUDITOR": "audit"
+        },
+        "USER_ROLE_CHANGED": {
+          "ADMIN": "now administration",
+          "CENSUS_MANAGER": "now census management",
+          "AUDITOR": "now audit"
+        },
+        "VOTERS_IMPORTED": {
+          "value": "{{value}} people"
+        },
+        "CHAIN_VERIFIED": {
+          "INTACT": "intact",
+          "BROKEN": "with problems"
+        },
+        "RESULTS_EXPORTED": {
+          "ES": "in Spanish",
+          "EN": "in English"
+        },
+        "MINUTES_DOWNLOADED": {
+          "ES": "in Spanish",
+          "EN": "in English"
+        },
+        "reminder": "for {{value}}",
+        "NOTIFICATIONS_RETRIED": {
+          "value": "{{value}} emails"
+        },
+        "erased": "deleted: {{deleted}}, anonymized: {{anonymized}}",
+        "PERSONAL_DATA_EXPORTED": {
+          "value": "voter list entries: {{value}}"
+        }
+      }
+    },
+    "privacy": {
+      "title": "Data privacy (GDPR)",
+      "intro": "Handle access and erasure requests of the people in the voter lists of your organization.",
+      "step1": "1 · Identify the person",
+      "queryLabel": "Email or phone",
+      "queryHelp": "It searches every voter list of your organization.",
+      "find": "Search",
+      "step2": "2 · Data found",
+      "name": "Name",
+      "censuses": "Voter lists that include them",
+      "processes": "Processes that used those lists",
+      "col": {
+        "census": "Voter list",
+        "contact": "Contact",
+        "added": "Added",
+        "processes": "Processes"
+      },
+      "institutionalId": "Identifier",
+      "noProcesses": "No process",
+      "voteNote": "The vote cannot be exported or erased per person: it is secret and not linked to their identity.",
+      "exportTitle": "Export their data",
+      "exportText": "A machine-readable file (JSON) is generated with the personal data of this person, their participation and the emails we sent them.",
+      "export": "Export personal data",
+      "exported": "File downloaded. Give it to the person through a secure channel.",
+      "fileName": "personal-data",
+      "eraseTitle": "Erase their data",
+      "blocked": "This person is on the voter list of {{processes}}, which is scheduled or open. You can erase their data when voting ends.",
+      "willAnonymize": "In the voter lists a process already used ({{count}}), their data will be anonymized: votes, participation and the ballot box log are kept.",
+      "willDelete": "In the voter lists no process used ({{count}}), their data will be deleted.",
+      "confirm": "I confirm the erasure request of this person",
+      "erase": "Erase personal data",
+      "erased": "Data erased. Entries deleted: {{deleted}}; anonymized: {{anonymized}}.",
+      "titleShort": "Privacy"
+    },
+    "apiKeys": {
+      "title": "API keys",
+      "intro": "Keys let the systems of your organization (for example, the registry office or a website) read processes, participation and results through the API. They only read: they cannot see voter lists or personal data and cannot change anything.",
+      "newTitle": "New key",
+      "name": "Name (which system it is for)",
+      "create": "Create key",
+      "limit": "You can have up to {{max}} active keys ({{used}} so far).",
+      "scopeTitle": "What can a key read?",
+      "scope": {
+        "processes": "Processes of your organization: list, details and status history.",
+        "participation": "Participation of each process (numbers only).",
+        "results": "Tallied results, counted votes and CSV export."
+      },
+      "scopeNot": "It cannot see voter lists, personal data, the ballot box log or the traceability, nor download the minutes.",
+      "createdTitle": "Key \"{{name}}\" created",
+      "onlyOnce": "Copy the secret now: it will not be shown again. If you lose it, revoke the key and create another one.",
+      "clientId": "Identifier (client_id)",
+      "secret": "Secret (client_secret)",
+      "tokenUrl": "Token URL",
+      "copyId": "Copy the identifier",
+      "copySecret": "Copy the secret",
+      "copied": {
+        "id": "Identifier copied.",
+        "secret": "Secret copied."
+      },
+      "howTo": "The system requests a token with these credentials (OAuth 2.0, client credentials) and sends it with every call. Each token lasts 5 minutes.",
+      "saved": "I have saved it",
+      "listTitle": "Keys of the organization",
+      "none": "Your organization has no API keys yet.",
+      "col": {
+        "name": "Name",
+        "clientId": "Identifier",
+        "created": "Created",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "active": "Active",
+      "revokedOn": "Revoked on {{date}}",
+      "revoke": "Revoke",
+      "revokeLabel": "Revoke the key \"{{name}}\"",
+      "confirmRevoke": "Revoke? The system will lose access within minutes.",
+      "yesRevoke": "Yes, revoke",
+      "no": "No",
+      "revoked": "Key \"{{name}}\" revoked."
+    }
+  },
+  "voter": {
+    "welcome": {
+      "eyebrow": "Vote",
+      "closes": "You can vote until {{closes}}.",
+      "step1": "We will email you a 6-digit code.",
+      "step2": "You choose your option and review it before confirming.",
+      "step3": "You get a receipt code to check that your vote is in the ballot box.",
+      "duration": "It takes about 3 minutes.",
+      "secret": "Your vote is secret: nobody can know what you voted. You can vote only once.",
+      "start": "Start",
+      "step1Sso": "You will sign in with your institutional account (the one of the email that received the invitation)."
+    },
+    "sso": {
+      "title": "Sign in with your institutional account",
+      "text": "In this vote we check who you are with the account of your organization. Use the account of the email that received the invitation.",
+      "button": "Sign in with your institutional account",
+      "note": "We will take you to the sign-in page of your organization and bring you back here. Your vote stays secret: the account only tells us it is you.",
+      "checking": "Checking your account…",
+      "failedTitle": "We could not complete the sign-in",
+      "failedText": "Open the personal link of your email again and try once more.",
+      "mismatch": "The account you signed in with is not the one of this link. Use the account of the email that received the invitation. {{remaining}} attempts left.",
+      "cancelled": "You cancelled the sign-in. Try again whenever you want.",
+      "invalid": "We could not check your account. Please sign in again."
+    },
+    "status": {
+      "open": "Voting open · Closes on {{closes}}"
+    },
+    "steps": {
+      "label": "Steps to vote",
+      "count": "Step {{current}} of {{total}}",
+      "access": "Access",
+      "selection": "Choice",
+      "confirmation": "Confirmation",
+      "receipt": "Receipt"
+    },
+    "code": {
+      "title": "Access code",
+      "intro": "To check that it is you, we will email you an access code.",
+      "send": "Send me the code",
+      "sending": "Sending…",
+      "sentTo": "We have sent a 6-digit code to {{email}}. It expires in {{minutes}} minutes.",
+      "label": "Access code",
+      "verify": "Continue",
+      "checking": "Checking…",
+      "resend": "Resend the code",
+      "resendIn": "You can ask for another code in {{time}}",
+      "wrong": "The code is not correct. You have {{remaining}} attempts left.",
+      "expired": "The code has expired or was already used. Ask for a new one.",
+      "tooSoon": "Please wait a little before asking for another code.",
+      "mailFailed": "We could not send the email. Please try again in a few minutes."
+    },
+    "ballot": {
+      "help": "Choose one option. You can review it before voting.",
+      "blank": "Blank vote",
+      "blankHelp": "It counts as participation but supports no option.",
+      "missing": "You have not chosen an option yet.",
+      "continue": "Review my vote"
+    },
+    "review": {
+      "title": "Review your vote",
+      "yourChoice": "You chose",
+      "notYet": "You have not voted yet. Once you confirm, your vote cannot be changed.",
+      "change": "Change my choice",
+      "confirm": "Confirm and vote",
+      "sending": "Recording your vote…",
+      "doNotClose": "Do not close this window."
+    },
+    "receipt": {
+      "title": "Vote recorded",
+      "message": "Thank you. Your vote is in the ballot box.",
+      "codeLabel": "Receipt code",
+      "copy": "Copy the code",
+      "copied": "Copied",
+      "keep": "Keep this code: it is shown only now. It lets you check that your vote is in the ballot box; it does not show what you voted.",
+      "verify": "Check my receipt"
+    },
+    "states": {
+      "notOpen": {
+        "title": "Voting is not open yet",
+        "message": "You can vote from {{opens}}. Open this link again then."
+      },
+      "closed": {
+        "title": "Voting is closed",
+        "message": "The period ended on {{closes}}. Votes can no longer be cast. Once the tally is complete you can see the result here with this same link."
+      },
+      "invalidLink": {
+        "title": "This link is not valid",
+        "message": "Use the link in your latest invitation email. If you are not on the voter list, contact your organization."
+      },
+      "expiredLink": {
+        "title": "The link has expired",
+        "message": "Contact your organization to receive a new link."
+      },
+      "locked": {
+        "title": "Access temporarily blocked",
+        "message": "Too many attempts. For your security, wait until {{until}} and try again."
+      },
+      "alreadyVoted": {
+        "title": "You have already voted",
+        "messageOn": "Your vote was recorded on {{day}}. You can vote only once.",
+        "message": "Your vote is already recorded. You can vote only once."
+      },
+      "sessionExpired": {
+        "title": "Your session has expired",
+        "message": "Your choice was not saved and you have not voted. Open the same link again."
+      },
+      "notRecorded": {
+        "title": "Your vote was NOT recorded",
+        "message": "The connection or the server failed. You can retry safely: two votes will never be recorded."
+      },
+      "error": {
+        "title": "Something went wrong",
+        "message": "We could not load the vote. Please try again in a few minutes."
+      },
+      "tryAgain": "Try again",
+      "enterAgain": "Open again",
+      "retry": "Retry"
+    },
+    "verify": {
+      "title": "Check my receipt",
+      "intro": "Type or paste your receipt code to check that your vote is in the ballot box.",
+      "label": "Receipt code",
+      "helper": "64 characters (0-9 and a-f)",
+      "format": "The code must have 64 characters from 0-9 and a-f.",
+      "check": "Check",
+      "present": "Your vote is in the ballot box.",
+      "absent": "We cannot find that code in this vote. Check that it is complete.",
+      "unknownProcess": "That vote does not exist.",
+      "error": "We could not check it. Please try again.",
+      "limits": "The receipt proves that your vote is in the ballot box; it does not show or prove what you voted."
+    },
+    "footer": {
+      "secure": "Secure connection · Your vote is secret"
+    },
+    "results": {
+      "eyebrow": "Result of the vote",
+      "readyText": "Voting closed on {{closes}} and the tally is complete. To see the result, confirm it is you with a code we will send to your email.",
+      "secret": "The result does not show what each person voted.",
+      "see": "See the result",
+      "tookPart": "Your vote was recorded on {{day}}."
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "Page not found",
+      "message": "This address does not exist. Check the link or go back to the start.",
+      "voterMessage": "This address does not exist. If you are going to vote, use the personal link you received by email.",
+      "consoleLink": "Do you manage elections? Sign in to the console"
+    }
+  },
+  "roles": {
+    "SUPERADMIN": "Super administrator",
+    "ADMIN": "Administrator",
+    "CENSUS_MANAGER": "Census manager",
+    "AUDITOR": "Auditor"
+  },
+  "results": {
+    "top": "Most voted",
+    "vote": "vote",
+    "votes": "votes",
+    "blank": "Blank vote",
+    "resultHash": "Result hash",
+    "finalHash": "Final hash of the ballot box",
+    "verify": {
+      "checking": "Checking the result…",
+      "okTitle": "Result verified",
+      "okText": "Your browser recomputed the count from the published votes and it matches the result.",
+      "badTitle": "The result does not match",
+      "badText": "Recomputed from the published votes it does not match. Tell the organisation.",
+      "errorTitle": "It could not be checked",
+      "errorText": "The published votes could not be obtained. Try again later.",
+      "limits": "Published votes only carry a random identifier and the option: they cannot be linked to anyone or to any receipt."
+    }
+  },
+  "publicResults": {
+    "notFoundTitle": "Results not available",
+    "notFoundText": "This link does not exist or the result has not been published yet. Results appear after the tally.",
+    "errorTitle": "The results could not be loaded",
+    "eyebrow": "Official results",
+    "published": "Published on {{date}}",
+    "votes": "votes cast",
+    "turnout": "turnout over {{census}} people",
+    "byOption": "Result per option",
+    "checkReceipt": "Check my receipt"
+  }
+}

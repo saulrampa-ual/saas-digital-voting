@@ -1,0 +1,54 @@
+# === Java / Maven ===
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.class
+*.log
+hs_err_pid*
+
+# === Node / Angular ===
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+yarn-error.log*
+.npm/
+
+# === IDEs ===
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# === Sistema operativo ===
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# === Entorno / secretos ===
+.env
+.env.*
+!.env.example
+application-local.yml
+application-local.properties
+
+# === Docker / volúmenes locales ===
+infra/.env
+infra/data/
+
+# === Informes locales ===
+environment-report.txt
+
+# === Claude Code (ajustes locales) ===
+.claude/settings.local.json
+
+# === SonarQube: carpeta de trabajo del escáner (F1, IMP-52) ===
+.scannerwork/
+
+# === Herramientas locales de IDE ===
+.github/modernize/
+
+# Local-only files of the demo scripts (access summaries and personal voting links)
+.local/

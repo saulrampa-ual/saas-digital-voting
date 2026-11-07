@@ -1,0 +1,32 @@
+% Diagrama vectorial simplificado para lectura en la memoria.
+\begin{tikzpicture}[font=\sffamily\scriptsize,
+  actor/.style={draw=blue!55!black,fill=blue!4,rounded corners=2pt,align=center,text width=2.0cm,minimum height=.62cm,inner sep=3pt},
+  uc/.style={draw=gray!65!black,fill=blue!3,ellipse,align=center,text width=3.5cm,minimum height=.74cm,inner sep=2pt},
+  rel/.style={draw=gray!70,thin}]
+\node[font=\bfseries\small] at (3.5,8.65) {Casos de uso: participación y verificación};
+\draw[rounded corners,draw=gray!55] (0,.2) rectangle (7.1,7.35);
+\node[fill=white,font=\bfseries] at (3.55,7.35) {Plataforma SaaS (Votación)};
+
+\node[uc] (rf05) at (3.55,6.8) {RF-05b\\Iniciar sesión de votante};
+\node[uc] (rf08) at (3.55,5.85) {RF-08\\Acceder como votante};
+\node[uc] (rf09) at (3.55,4.9) {RF-09\\Emitir voto};
+\node[uc] (rf10) at (3.55,3.95) {RF-10\\Obtener y verificar recibo};
+\node[uc] (rf12) at (3.55,3.0) {RF-12\\Auditoría hash-chain};
+\node[uc] (rf13b) at (3.55,2.05) {RF-13b\\Verificar resultado};
+\node[uc] (rf15) at (3.55,.92) {RF-15\\Consultar/exportar resultados};
+
+\node[actor] (votante) at (-2,5.7) {Votante};
+\node[actor] (auditor) at (-2,3.0) {Auditor};
+\node[actor] (admin) at (-2,.92) {Administrador};
+
+\begin{pgfonlayer}{background}
+\draw[rel] (votante.east)--(rf05.west);
+\draw[rel] (votante.east)--(rf08.west);
+\draw[rel] (votante.east)--(rf09.west);
+\draw[rel] (votante.east)--(rf13b.west);
+\draw[rel] (auditor.east)--(rf12.west);
+\draw[rel] (admin.east)--(rf15.west);
+\draw[dashed,-{Triangle[open]}] (rf10.east) -- ++(.65,0) |- node[pos=.25,right,font=\tiny]{\textless\textless extend\textgreater\textgreater} (rf09.east);
+\end{pgfonlayer}
+\node[draw=orange!65!black,fill=orange!7,rounded corners=2pt,align=center,text width=6.2cm,inner sep=4pt] at (3.55,-.55) {Punto de extensión RF-09: tras confirmar la emisión. RF-10 es opcional y no tiene asociación directa con Votante.};
+\end{tikzpicture}

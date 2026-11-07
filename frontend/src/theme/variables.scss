@@ -1,0 +1,64 @@
+// VeriVoto palette (prototiposPantallas, "Revisión UI UX y flujo definitivo"). All pairs pass WCAG 2.2 AA.
+// -shade/-tint are approximations; regenerate with the Ionic color generator if a color changes.
+:root {
+  --ion-font-family: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ion-text-color: #1b2733;
+  --ion-text-color-rgb: 27, 39, 51;
+  --ion-background-color: #f3f5f8;
+  --ion-background-color-rgb: 243, 245, 248;
+
+  // Brand logo accent ("Voto" and the check mark) on dark backgrounds; 7.6:1 on the tertiary navy.
+  --vv-brand-accent: #5fd3a1;
+
+  // Selection and secondary actions
+  --ion-color-primary: #14365c;
+  --ion-color-primary-rgb: 20, 54, 92;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #123051;
+  --ion-color-primary-tint: #2c4a6c;
+
+  // Main action of each screen (Vote, Create, Confirm)
+  --ion-color-secondary: #1f7a5a;
+  --ion-color-secondary-rgb: 31, 122, 90;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #1b6b4f;
+  --ion-color-secondary-tint: #35876b;
+
+  // Header and menu
+  --ion-color-tertiary: #0f2a47;
+  --ion-color-tertiary-rgb: 15, 42, 71;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #0d253e;
+  --ion-color-tertiary-tint: #273f59;
+
+  --ion-color-success: #14573f;
+  --ion-color-success-rgb: 20, 87, 63;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #124d37;
+  --ion-color-success-tint: #2c6852;
+
+  --ion-color-warning: #7a4b00;
+  --ion-color-warning-rgb: 122, 75, 0;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #6b4200;
+  --ion-color-warning-tint: #875d1a;
+
+  --ion-color-danger: #8f1f14;
+  --ion-color-danger-rgb: 143, 31, 20;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #7e1b12;
+  --ion-color-danger-tint: #9a352c;
+
+  --ion-color-medium: #4a5868;
+  --ion-color-medium-rgb: 74, 88, 104;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #414d5c;
+  --ion-color-medium-tint: #5c6977;
+}

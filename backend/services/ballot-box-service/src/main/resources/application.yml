@@ -1,0 +1,58 @@
+server:
+  port: ${BALLOT_BOX_SERVER_PORT:8084}
+
+spring:
+  # D-44: one thread per scheduled task, so delivering administrative actions to identity-service never delays
+  # the lifecycle, the synchronization or the tally (even with identity-service slow or down)
+  task:
+    scheduling:
+      pool:
+        size: 4
+  application:
+    name: ballot-box-service
+  datasource:
+    url: ${BALLOT_BOX_DB_URL:jdbc:postgresql://localhost:5433/ballot_box_db}
+    username: ${BALLOT_BOX_DB_USERNAME}
+    password: ${BALLOT_BOX_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${BALLOT_BOX_OIDC_ISSUER_URI:http://localhost:8080/realms/verivoto}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+verivoto:
+  # Day of the incidents (D-18)
+  zone: Europe/Madrid
+  # IMP-26: the only Keycloak client allowed on /internal/** (claim azp)
+  internal-clients:
+    election: election-service
+  # D-22: client-credentials token of ballot-box-service (role SERVICE) for the calls below
+  keycloak:
+    base-url: ${BALLOT_BOX_KEYCLOAK_BASE_URL:http://localhost:8080}
+    realm: verivoto
+    client-id: ballot-box-service
+    client-secret: ${BALLOT_BOX_SERVICE_CLIENT_SECRET:}
+  voter-access:
+    # D-20: consumption of the voting token
+    url: ${BALLOT_BOX_VOTER_ACCESS_URL:http://localhost:8083}
+  identity:
+    # RF-19, D-44: administrative actions (verification, export, minutes) are delivered to identity-service
+    url: ${BALLOT_BOX_IDENTITY_URL:http://localhost:8081}
+  election:
+    # RF-13, D-37: the tally is done (the process becomes TALLIED)
+    url: ${BALLOT_BOX_ELECTION_URL:http://localhost:8082}
+  tally:
+    # Automatic tally of CLOSED processes and retries of the notice to election-service
+    interval: PT10S

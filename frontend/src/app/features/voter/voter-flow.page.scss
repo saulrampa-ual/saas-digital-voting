@@ -1,0 +1,23 @@
+// Voter screens (prototypes V1–V7, B1–B4): one column, 560 px at most, actions of 52 px (section 7 of the guide).
+.voter { max-width: 35rem; margin: 0 auto; }
+.status-bar {
+  display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 0.875rem;
+  background: #e6f4ee; color: var(--ion-color-success);
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ion-color-success); flex: none; }
+.loading { text-align: center; margin-top: 3rem; }
+.eyebrow { font-size: 0.875rem; color: var(--ion-color-medium); margin: 0; text-transform: none; }
+.welcome h1 { margin-top: 0.25rem; }
+.how { padding-left: 1.25rem; line-height: 1.6; }
+.secret { font-weight: 600; }
+ion-button { --min-height: 52px; }
+.secure { text-align: center; margin: 0; font-size: 0.875rem; }
+// Result with the personal link (D-41), same summary as the public link (V8).
+.results .meta { color: var(--ion-color-medium); margin: 0 0 1rem; }
+.took-part { background: #e6f4ee; color: #0d5c3f; border-radius: var(--vv-radius-card, 12px); padding: 10px 14px; margin: 0 0 1rem; }
+.receipt { margin-top: 1.25rem; }
+.receipt a { display: inline-block; min-height: 44px; line-height: 44px; color: var(--ion-color-primary); font-weight: 600; }
+
+/* RF-05b (D-48): access with the institutional account */
+.sso h1 { margin-top: 0.25rem; }
+.sso .note { font-size: 0.875rem; }

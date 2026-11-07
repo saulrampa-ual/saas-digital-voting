@@ -1,0 +1,65 @@
+\chapter{Base documental y trazabilidad}
+\label{ap:base-documental}
+
+La base funcional de esta memoria es el documento
+\emph{Proyecto plataforma SaaS de votación digital: Especificación de
+Requisitos}, versión 1.0, de 7 de octubre de 2026. Los identificadores OBJ,
+ACT, RF, RI y RNF se conservan para facilitar la trazabilidad con esa fuente.
+
+La especificación completa contiene los flujos normales, precondiciones,
+excepciones y criterios de verificación de cada requisito. En esta memoria se
+incluyen el catálogo funcional resumido y los elementos necesarios para
+entender el análisis, junto con el mapeo de RNF y el cronograma. Las decisiones
+D-03 y D-05 fueron confirmadas por el tutor el 30/10/2026 mediante correo
+electrónico. Los umbrales
+cuantitativos se conservan como criterios del protocolo, con resultados
+pendientes cuando no existe medición.
+
+\section{Guía de despliegue local}
+La infraestructura de desarrollo se describe en
+\texttt{docs/architecture/local-infrastructure.md}. Se requiere Docker
+Desktop y las versiones de Java y Node documentadas por el proyecto. Deben
+configurarse variables locales a partir de \texttt{infra/.env.example}, sin
+incluir credenciales en este documento. Después se inicia el entorno Compose,
+se ejecutan las migraciones Flyway de los servicios y se levantan backend y
+frontend según las instrucciones del repositorio. Un despliegue de producción
+requiere TLS, secretos fuera del repositorio y Keycloak en modo de producción.
+
+\section{Resumen de decisiones}
+Las decisiones D-01--D-48 y sus alternativas se mantienen en
+\texttt{docs/ai/DECISIONS.md}, fuente de referencia para evitar divergencias.
+D-03 excluye RF-11 del MVP, D-05 consolida cinco servicios y D-48 define la
+autenticación del votante por proceso. D-03 y D-05 fueron confirmadas por el
+tutor el 30/10/2026 mediante correo electrónico.
+
+\section{Guías por perfil}
+\textbf{Administrador:} inicia sesión en la consola, configura organización,
+censo y proceso, revisa el resumen de configuración y gestiona cierre,
+resultados y exportaciones conforme a su rol.
+
+\textbf{Votante:} accede desde el enlace personal, completa el método
+configurado para el proceso, selecciona una opción o voto en blanco, confirma
+la emisión y conserva el recibo para consultar su presencia.
+
+\textbf{Auditor:} consulta el historial y la cadena de auditoría, revisa la
+huella final y verifica su integridad sin acceder a datos personales del censo
+ni conocer la selección individual.
+
+\textbf{Integración:} obtiene una clave desde la consola; el secreto se muestra
+una sola vez. El cliente usa credenciales de servicio y el rol
+\texttt{INTEGRATION}, limitado a consultas de solo lectura.
+
+\section{Fuentes PlantUML de los diagramas}
+\label{ap:fuentes-plantuml}
+
+Los diagramas de las figuras~\ref{fig:casos-uso-gestion} y
+\ref{fig:casos-uso-votacion} se mantienen en los siguientes ficheros
+PlantUML, que permiten revisar y regenerar sus imágenes PDF. La arquitectura y la secuencia se mantienen como fuentes TikZ vectoriales; el flujo de secuencia también cuenta con una fuente PlantUML equivalente en el listado A.3.
+
+\lstinputlisting[inputpath=./,caption={Fuente PlantUML de gestión y configuración.},label={lst:casos-uso-gestion}]{Figuras/diagramas/casos_uso_gestion.puml}
+
+\lstinputlisting[inputpath=./,caption={Fuente PlantUML de participación y verificación.},label={lst:casos-uso-votacion}]{Figuras/diagramas/casos_uso_votacion.puml}
+
+\lstinputlisting[inputpath=./,caption={Fuente PlantUML equivalente del flujo de emisión y verificación del recibo.},label={lst:secuencia-voto-plantuml}]{Figuras/diagramas/secuencia_emitir_voto_recibo.puml}
+
+\lstinputlisting[inputpath=./,caption={Fuente PlantUML de actividad para el escrutinio y la verificación.},label={lst:actividad-escrutinio-plantuml}]{Figuras/diagramas/escrutinio_verificacion_actividad.puml}

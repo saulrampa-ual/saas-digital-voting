@@ -1,0 +1,973 @@
+{
+  "language": {
+    "label": "Idioma",
+    "es": "Español",
+    "en": "Inglés"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "loadError": "No se han podido cargar los datos. Inténtalo de nuevo.",
+    "goHome": "Ir al inicio"
+  },
+  "admin": {
+    "menu": {
+      "label": "Menú de gestión",
+      "open": "Abrir menú",
+      "close": "Cerrar menú",
+      "home": "Inicio",
+      "organizations": "Organizaciones",
+      "censuses": "Censos",
+      "processes": "Procesos",
+      "participation": "Participación",
+      "results": "Resultados",
+      "audit": "Auditoría",
+      "traceability": "Trazabilidad",
+      "privacy": "Privacidad (RGPD)",
+      "apiKeys": "Claves de API"
+    },
+    "logout": "Cerrar sesión",
+    "home": {
+      "title": "Inicio",
+      "panelOf": "Panel de {{org}}",
+      "platformPanel": "Panel de la plataforma",
+      "welcome": "Hola, {{name}}.",
+      "intro": "Esto es lo que necesita tu atención hoy.",
+      "roleLabel": "Rol",
+      "can": "Puede:",
+      "scope": "Solo ve datos de su organización ({{org}}).",
+      "noRole": "Tu cuenta no tiene ningún rol de gestión. Pide a la persona administradora que te asigne uno.",
+      "retry": "Reintentar",
+      "chip": {
+        "warn": "Atención",
+        "info": "Aviso",
+        "ok": "Correcto"
+      },
+      "attention": {
+        "title": "Necesita tu atención",
+        "failedEmails": "{{count}} correos no se han podido entregar",
+        "failedEmailsSub": "{{process}} · revísalos y reinténtalos desde Participación.",
+        "emptyCensus": "El censo «{{name}}» no tiene personas",
+        "emptyCensusSub": "No se podrá usar en un proceso hasta que tenga personas.",
+        "drafts": "{{count}} procesos en borrador sin programar",
+        "draftsSub": "Complétalos y prográmalos para que se envíen las invitaciones.",
+        "frozen": "{{count}} censos congelados",
+        "frozenSub": "Los usa un proceso programado o abierto: no admiten altas ni bajas hasta que termine.",
+        "allGood": "Todo en orden",
+        "allGoodSub": "No hay correos sin entregar ni censos vacíos."
+      },
+      "chart": {
+        "title": "Votos emitidos acumulados por día (procesos abiertos, % del censo)",
+        "none": "Todavía no ha votado nadie en los procesos abiertos.",
+        "day": "Día",
+        "cumulative": "Personas que han votado (acumulado)",
+        "pct": "% del censo",
+        "secrecy": "Solo datos agregados de participación y por día, nunca la hora (protege el secreto del voto). El recuento por opción no se muestra hasta el escrutinio."
+      },
+      "superadmin": {
+        "title": "Organizaciones de la plataforma",
+        "can": "crear organizaciones, suspenderlas o reactivarlas y asignar sus personas administradoras.",
+        "scope": "No ve censos, procesos, votos ni resultados de ninguna organización.",
+        "manage": "Gestionar organizaciones",
+        "list": "Organizaciones",
+        "total": "Organizaciones en total",
+        "totalSub": "activas y suspendidas",
+        "active": "Organizaciones activas",
+        "suspendedSub": "{{count}} suspendidas",
+        "accounts": "Cuentas de gestión",
+        "accountsSub": "en todas las organizaciones",
+        "singleAdmin": "Con un solo administrador",
+        "singleAdminSub": "conviene añadir otra persona",
+        "singleAdminNone": "todas tienen al menos dos",
+        "orgAccounts": "{{count}} cuentas, {{admins}} con rol de administración",
+        "onlyOne": "Un solo administrador",
+        "none": "Todavía no hay organizaciones."
+      },
+      "admin": {
+        "title": "Procesos de tu organización",
+        "can": "crear y programar procesos, seguir la participación, publicar resultados y actas, consultar la trazabilidad, atender peticiones RGPD y gestionar las claves de API.",
+        "create": "Crear proceso",
+        "kpiOpen": "Procesos abiertos",
+        "kpiScheduled": "{{count}} programados",
+        "kpiVotes": "Votos emitidos",
+        "kpiVotesSub": "en procesos abiertos, de {{eligible}} personas",
+        "kpiTurnout": "Participación",
+        "kpiTurnoutSub": "personas que han votado sobre el censo de los procesos abiertos",
+        "kpiWarnings": "Avisos",
+        "kpiWarningsSub": "requieren revisión",
+        "kpiWarningsNone": "nada pendiente",
+        "openNow": "Procesos activos",
+        "noneOpen": "No hay ninguna votación abierta.",
+        "closes": "Cierra el {{date}}",
+        "votes": "{{votes}} de {{eligible}} votos",
+        "seeParticipation": "Ver participación",
+        "upcoming": "Próximos y en preparación",
+        "noneUpcoming": "No hay procesos programados ni en borrador.",
+        "opens": "Abre el {{date}}",
+        "draftHint": "Borrador: falta programarlo",
+        "tallied": "Escrutados recientemente",
+        "noneTallied": "Todavía no hay procesos escrutados.",
+        "seeResults": "Ver resultados y acta",
+        "allProcesses": "Ver todos los procesos"
+      },
+      "census": {
+        "title": "Censos",
+        "can": "crear censos e importar o editar las personas que pueden votar.",
+        "manage": "Gestionar censos",
+        "list": "Censos de la organización",
+        "none": "Todavía no hay censos. Crea el primero para que se pueda preparar un proceso.",
+        "total": "Censos",
+        "people": "Personas en total",
+        "editable": "Editables",
+        "frozen": "Congelados (en uso)",
+        "frozenSub": "los usa un proceso programado o abierto",
+        "noEditable": "Crea uno nuevo para los próximos procesos.",
+        "noEditableTitle": "No hay censos editables",
+        "frozenTitle": "Censos congelados",
+        "frozenHelp": "Un censo que usa un proceso programado o abierto no se puede cambiar hasta que el proceso termine.",
+        "allGoodSub": "Todos los censos editables tienen personas."
+      },
+      "audit": {
+        "title": "Integridad de la urna",
+        "can": "comprobar el registro de la urna de cada proceso y la trazabilidad administrativa. Solo lectura.",
+        "open": "Abrir auditoría",
+        "kpiClosed": "Procesos cerrados",
+        "kpiClosedSub": "con registro de urna que verificar",
+        "lastIntact": "Registro íntegro",
+        "lastBroken": "Registro con problemas",
+        "lastDetail": "{{process}} · {{events}} eventos comprobados · verificado el {{date}}",
+        "neverTitle": "Ningún registro verificado todavía",
+        "neverDetail": "Verifica la cadena de eventos de los procesos cerrados.",
+        "verifyNow": "Verificar integridad ahora",
+        "list": "Procesos",
+        "actions": "Acciones recientes",
+        "noActions": "Todavía no hay acciones registradas.",
+        "seeTrace": "Ver la trazabilidad completa",
+        "hash": "huella",
+        "secrecy": "Los eventos de voto no tienen hora y nunca se enlazan con quien votó (secreto del voto).",
+        "none": "Todavía no hay procesos cerrados que verificar.",
+        "checkedAt": "Verificado el {{date}}",
+        "verify": "Pendiente de verificar",
+        "state": {
+          "INTACT": "Íntegro",
+          "BROKEN": "Con problemas",
+          "NEVER": "Sin verificar",
+          "ERROR": "No disponible"
+        }
+      }
+    },
+    "organizations": {
+      "title": "Organizaciones",
+      "empty": "Todavía no hay organizaciones.",
+      "status": {
+        "ACTIVE": "Activa",
+        "SUSPENDED": "Suspendida"
+      }
+    },
+    "censuses": {
+      "title": "Censos",
+      "empty": "Todavía no hay censos.",
+      "voters": "{{count}} personas",
+      "frozen": "Congelado",
+      "editable": "Editable",
+      "introManager": "Crea un censo y añade a las personas que pueden votar, a mano o importando un CSV.",
+      "introAdmin": "Censos de tu organización. Solo la persona gestora del censo puede cambiarlos.",
+      "newName": "Nombre del nuevo censo",
+      "create": "Crear censo",
+      "nameRequired": "Escribe el nombre del censo."
+    },
+    "forbidden": {
+      "title": "Sin permiso",
+      "message": "Tu rol no permite acceder a esta sección."
+    },
+    "processes": {
+      "title": "Procesos",
+      "intro": "Procesos de votación de tu organización.",
+      "create": "Crear proceso",
+      "opens": "Abre el {{date}}",
+      "closes": "cierra el {{date}}",
+      "empty": "Todavía no hay procesos.",
+      "status": {
+        "DRAFT": "Borrador",
+        "SCHEDULED": "Programado",
+        "OPEN": "Abierto",
+        "CLOSED": "Cerrado",
+        "TALLIED": "Escrutado",
+        "ARCHIVED": "Archivado"
+      }
+    },
+    "processForm": {
+      "title": "Crear proceso de votación",
+      "editTitle": "Editar proceso",
+      "intro": "El proceso se guarda como Borrador hasta que lo programes.",
+      "stepsLabel": "Pasos para crear el proceso",
+      "steps": {
+        "basics": "Datos básicos",
+        "calendar": "Calendario",
+        "census": "Censo",
+        "ballot": "Papeleta"
+      },
+      "defaultLanguage": "Idioma por defecto",
+      "bilingualHelp": "Escribe cada texto en español e inglés. Ahora basta el idioma por defecto (*); para programar hacen falta los dos.",
+      "titleLabel": "Título",
+      "descriptionLabel": "Descripción",
+      "visibility": "¿Quién podrá ver el resultado?",
+      "censusOnly": "Solo las personas del censo",
+      "censusOnlyHelp": "Entran con su enlace personal y su código.",
+      "publicLink": "Cualquiera con el enlace público",
+      "publicLinkHelp": "Útil para votaciones abiertas. La huella final siempre es pública.",
+      "opensAt": "Apertura",
+      "closesAt": "Cierre",
+      "calendarHelp": "La apertura y el cierre son automáticos en estas fechas (hora de tu navegador): no se pueden abrir ni cerrar a mano.",
+      "noCensuses": "No hay censos en tu organización. Pide a la persona gestora del censo que cree uno.",
+      "emptyCensus": "vacío: no se podrá programar",
+      "voteType": "Tipo de papeleta",
+      "singleChoice": "Opción única",
+      "singleChoiceHelp": "Se elige una candidatura u opción.",
+      "yesNo": "Sí / No / Abstención",
+      "yesNoHelp": "Para consultas.",
+      "question": "Pregunta",
+      "options": "Opciones de la papeleta",
+      "option": "Opción {{n}}",
+      "removeOption": "Quitar la opción {{n}}",
+      "addOption": "Añadir opción",
+      "yesNoFixed": "Las opciones «Sí», «No» y «Abstención» se crean automáticamente en los dos idiomas.",
+      "blankVote": "Habilitar voto en blanco",
+      "fixErrors": "Revisa los campos marcados.",
+      "back": "Atrás",
+      "next": "Siguiente",
+      "create": "Crear proceso",
+      "saveChanges": "Guardar cambios",
+      "notEditable": "Este proceso ya no está en borrador: no se puede editar.",
+      "backToProcess": "Volver al proceso",
+      "created": {
+        "title": "Proceso creado correctamente",
+        "message": "«{{title}}» se ha guardado como Borrador. Revisa los datos y prográmalo cuando estés listo.",
+        "view": "Ver proceso",
+        "list": "Ir a procesos"
+      },
+      "errors": {
+        "titleRequired": "Escribe el título en el idioma por defecto.",
+        "titleForDescription": "Si escribes la descripción en este idioma, escribe también el título.",
+        "max": "Máximo {{max}} caracteres.",
+        "opensRequired": "Indica la apertura.",
+        "closesRequired": "Indica el cierre.",
+        "closesAfter": "El cierre debe ser posterior a la apertura.",
+        "censusRequired": "Elige el censo que participa.",
+        "questionRequired": "Escribe la pregunta en el idioma por defecto.",
+        "minOptions": "Añade al menos 2 opciones.",
+        "maxOptions": "Máximo 50 opciones.",
+        "optionRequired": "Escribe la opción en el idioma por defecto."
+      },
+      "authentication": "Cómo entran los votantes",
+      "emailCode": "Código por correo",
+      "emailCodeHelp": "Al abrir su enlace personal reciben un código de 6 cifras en el correo del censo.",
+      "sso": "Cuenta institucional (SSO)",
+      "ssoHelp": "Entran con la cuenta de la organización; su correo verificado debe ser el del censo.",
+      "titleShort": "Nuevo proceso",
+      "editTitleShort": "Editar proceso",
+      "stepOf": "Paso {{n}} de {{total}}",
+      "afterStep": "Después: {{name}}",
+      "nextHint": "Siguiente: {{name}}",
+      "textsLanguage": "Idioma de los textos",
+      "pending": "pendiente",
+      "inLang": {
+        "es": "en español",
+        "en": "en inglés"
+      }
+    },
+    "process": {
+      "title": "Ciclo de vida",
+      "backToList": "Procesos",
+      "voteType": {
+        "SINGLE_CHOICE": "Opción única",
+        "YES_NO_ABSTAIN": "Sí / No / Abstención"
+      },
+      "statusTitle": "Estado del proceso",
+      "done": "Completado",
+      "current": "Estado actual",
+      "pending": "Pendiente",
+      "actions": "Acciones disponibles",
+      "edit": "Editar proceso",
+      "schedule": "Programar",
+      "archive": "Archivar proceso",
+      "readOnly": "Tu rol permite consultar el proceso, no cambiarlo.",
+      "automatic": "Apertura y cierre son automáticos en las fechas fijadas: no se pueden abrir ni cerrar a mano antes de tiempo.",
+      "checksTitle": "Validación previa a programar",
+      "checksHelp": "Al programar se congela el censo y se envían las invitaciones. Cada cambio de estado queda registrado.",
+      "checkOk": "Correcto",
+      "checkKo": "Falta completar",
+      "checks": {
+        "texts": {
+          "title": "Título y descripción",
+          "ok": "En español e inglés",
+          "ko": "Faltan traducciones (hacen falta los dos idiomas)"
+        },
+        "calendar": {
+          "title": "Calendario coherente",
+          "ok": "La apertura es futura y anterior al cierre",
+          "ko": "La apertura debe ser futura y anterior al cierre"
+        },
+        "census": {
+          "title": "Censo seleccionado",
+          "ok": "{{name}} · {{count}} personas",
+          "ko": "{{name}} no tiene personas"
+        },
+        "ballot": {
+          "title": "Papeleta definida",
+          "ok": "Pregunta y opciones en los dos idiomas",
+          "ko": "Faltan traducciones en la pregunta u opciones"
+        }
+      },
+      "scheduleConfirm": {
+        "title": "¿Programar el proceso?",
+        "message": "Se congelará el censo y se enviarán las invitaciones. Después ya no podrás editarlo.",
+        "cancel": "Cancelar",
+        "ok": "Programar"
+      },
+      "scheduled": "Proceso programado. Se abrirá automáticamente en la fecha fijada.",
+      "archived": "Proceso archivado.",
+      "historyTitle": "Historial de estados",
+      "noHistory": "Todavía no hay cambios de estado.",
+      "bySystem": "Sistema",
+      "byUser": "Persona administradora",
+      "whatTitle": "Qué se puede hacer en cada estado",
+      "what": {
+        "DRAFT": "Editar todo y programar el proceso",
+        "SCHEDULED": "Se abre solo en la fecha; censo y papeleta congelados",
+        "OPEN": "Votación en curso; consultar participación",
+        "CLOSED": "Escrutinio automático en curso",
+        "TALLIED": "Ver resultados; archivar",
+        "ARCHIVED": "Solo consulta"
+      },
+      "noActions": "En este estado no hay acciones manuales: el proceso avanza solo en las fechas fijadas.",
+      "summaryTitle": "Datos del proceso",
+      "summary": {
+        "opensAt": "Apertura",
+        "closesAt": "Cierre",
+        "census": "Censo",
+        "censusValue": "{{name}} · {{count}} personas",
+        "options": "Opciones de la papeleta",
+        "blank": "con voto en blanco",
+        "visibility": "Resultados",
+        "visibilityValue": {
+          "CENSUS_ONLY": "Solo personas del censo",
+          "PUBLIC_LINK": "Enlace público"
+        },
+        "authentication": "Acceso de los votantes",
+        "authenticationValue": {
+          "EMAIL_CODE": "Código por correo",
+          "INSTITUTIONAL_SSO": "Cuenta institucional (SSO)"
+        }
+      },
+      "links": {
+        "label": "Más sobre este proceso",
+        "participation": "Ver participación",
+        "results": "Ver resultados",
+        "audit": "Ver el registro de la urna"
+      }
+    },
+    "census": {
+      "title": "Censo",
+      "backToList": "Censos",
+      "heading": "Censo · {{name}}",
+      "addManual": "Alta manual",
+      "frozenHelp": "Censo congelado: lo usa un proceso programado o abierto, así que no se puede cambiar hasta que termine.",
+      "readOnly": "Tu rol permite consultar el censo, no cambiarlo.",
+      "peopleTitle": "Personas del censo",
+      "search": "Buscar por nombre, correo o ID",
+      "language": "Idioma",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "editPerson": "Editar a {{name}}",
+      "removeShort": "Quitar",
+      "removePerson": "Quitar a {{name}} del censo",
+      "noPeople": "El censo todavía no tiene personas.",
+      "noMatches": "Ninguna persona coincide con la búsqueda.",
+      "showing": "Mostrando {{from}}–{{to}} de {{total}} personas",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "form": {
+        "newTitle": "Alta manual",
+        "editTitle": "Editar persona",
+        "fullName": "Nombre completo",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "phoneHelp": "Solo cifras, sin espacios ni prefijo +.",
+        "institutionalId": "Identificador institucional",
+        "preferredLanguage": "Idioma de las comunicaciones",
+        "add": "Añadir al censo",
+        "save": "Guardar cambios",
+        "cancel": "Cancelar",
+        "added": "{{name}} se ha añadido al censo.",
+        "updated": "Se han guardado los datos de {{name}}.",
+        "errors": {
+          "fullName": "Escribe el nombre (hasta 60 caracteres).",
+          "email": "Escribe un correo válido, por ejemplo nombre@ual.es.",
+          "phone": "El teléfono solo admite cifras (hasta 15).",
+          "institutionalId": "El identificador admite 50 caracteres como máximo."
+        }
+      },
+      "remove": {
+        "title": "¿Quitar a esta persona?",
+        "message": "{{name}} dejará de estar en el censo y no recibirá invitaciones.",
+        "cancel": "Cancelar",
+        "ok": "Quitar",
+        "done": "{{name}} ya no está en el censo."
+      },
+      "import": {
+        "selectTitle": "Seleccionar fichero",
+        "drop": "Arrastra aquí un fichero CSV",
+        "columns": "Columnas: full_name, email (obligatorias); phone, institutional_id, preferred_language",
+        "select": "Seleccionar fichero",
+        "rules": "UTF-8, separado por «,» o «;», hasta 5 MB y 50 000 filas. Nada se guarda hasta que confirmes.",
+        "summaryTitle": "Resumen de la importación",
+        "pending": "{{file}} · pendiente de confirmar",
+        "idle": "Elige un fichero: verás cuántas personas se añadirían, los duplicados y las líneas con errores antes de guardar nada.",
+        "validating": "Validando {{file}}…",
+        "validatingHelp": "Estamos comprobando el fichero y buscando duplicados. Todavía no se ha guardado nada.",
+        "applying": "Guardando {{count}} personas…",
+        "applyingHelp": "No cierres esta página hasta que termine.",
+        "done": "Importación completada: {{count}} personas añadidas.",
+        "another": "Importar otro fichero",
+        "toCreate": "altas nuevas",
+        "duplicates": "duplicados (se omitirán)",
+        "invalid": "líneas con error",
+        "invalidList": "Líneas con error",
+        "duplicateList": "Duplicados que se omitirán",
+        "line": "Línea {{line}}",
+        "more": "…y {{count}} más.",
+        "reason": {
+          "EMAIL": "el correo ya está en el censo o repetido en el fichero",
+          "INSTITUTIONAL_ID": "el identificador institucional ya está en el censo o repetido en el fichero"
+        },
+        "invalidHelp": "Corrige el fichero y vuelve a seleccionarlo, o descarta las líneas con error para importar el resto.",
+        "readyHelp": "Revisa el resumen y confirma para guardar a las personas nuevas. Los duplicados se omiten.",
+        "nothingHelp": "No hay personas nuevas que añadir.",
+        "confirm": "Confirmar importación",
+        "discard": "Descartar líneas con error e importar {{count}}",
+        "cancel": "Cancelar",
+        "notApplied": "El censo ha cambiado desde la validación; revisa el nuevo resumen.",
+        "errors": {
+          "extension": "El fichero debe tener extensión .csv.",
+          "empty": "El fichero está vacío.",
+          "size": "El fichero supera los {{max}} MB."
+        }
+      }
+    },
+    "picker": {
+      "label": "Proceso",
+      "empty": "No hay procesos que mostrar todavía."
+    },
+    "participation": {
+      "title": "Panel de participación",
+      "empty": "Todavía no hay procesos programados.",
+      "opens": "Se abre el {{date}}",
+      "closes": "Cierra el {{date}}",
+      "live": "Se actualiza automáticamente · última actualización hace {{seconds}} s",
+      "current": "Participación actual",
+      "ringLabel": "Participación: {{pct}} % del censo",
+      "ofCensus": "del censo",
+      "census": "Personas en el censo",
+      "censusHelp": "censo congelado",
+      "votes": "Votos emitidos",
+      "votesHelp": "un voto por persona",
+      "pending": "Pendientes de votar",
+      "pendingHelp": "hasta el cierre",
+      "byDayTitle": "Participación acumulada por día (% del censo)",
+      "notOpen": "La votación todavía no está abierta: solo se muestra el censo.",
+      "noVotes": "Todavía no ha votado nadie.",
+      "dayTip": "{{day}}: {{votes}} votos ese día, {{total}} en total",
+      "day": "Día",
+      "cumulative": "Acumulado",
+      "lockTitle": "Los resultados por opción no se muestran hasta el escrutinio.",
+      "lockText": "Aquí solo ves cuántas personas han votado, nunca qué han votado. La participación se cuenta por día, sin horas, para proteger el secreto del voto.",
+      "seeResults": "Ver los resultados",
+      "titleShort": "Participación"
+    },
+    "notifications": {
+      "remindersTitle": "Recordatorios a quien no ha votado",
+      "remindersHelp": "Se envían solo a las personas del censo que todavía no han votado, con un enlace personal nuevo. Verás a cuántas personas les llegó, nunca quiénes son.",
+      "sendNow": "Enviar recordatorio ahora",
+      "confirmNow": "¿Enviar ahora un recordatorio a las {{count}} personas que no han votado?",
+      "confirmSend": "Sí, enviar ahora",
+      "keep": "No, volver",
+      "scheduleAt": "Programar para",
+      "schedule": "Programar recordatorio",
+      "limit": "Puedes tener hasta {{max}} recordatorios por proceso (llevas {{used}}).",
+      "nobodyLeft": "Ya han votado todas las personas del censo.",
+      "onlyOpen": "Los recordatorios solo se pueden enviar mientras la votación está abierta.",
+      "outOfPeriod": "Elige una fecha y hora a partir de ahora y antes del cierre de la votación.",
+      "sentNow": "Recordatorio en marcha: se enviará en unos segundos.",
+      "scheduled": "Recordatorio programado.",
+      "cancelled": "Recordatorio cancelado.",
+      "cancel": "Cancelar",
+      "cancelLabel": "Cancelar el recordatorio del {{date}}",
+      "people": "{{count}} personas",
+      "reminderStatus": {
+        "SCHEDULED": "Programado",
+        "SENT": "Enviado",
+        "CANCELLED": "Cancelado"
+      },
+      "emailsTitle": "Correos a las personas votantes",
+      "type": {
+        "INVITATION": "Invitaciones",
+        "REMINDER": "Recordatorios",
+        "CLOSING": "Aviso de cierre"
+      },
+      "col": {
+        "when": "Fecha y hora",
+        "status": "Estado",
+        "recipients": "Destinatarios",
+        "actions": "Acciones",
+        "type": "Tipo",
+        "delivered": "Entregados",
+        "pending": "Pendientes",
+        "failed": "Fallidos",
+        "notNeeded": "No necesarios",
+        "person": "Persona",
+        "attempts": "Intentos",
+        "reason": "Motivo"
+      },
+      "notNeededHelp": "«No necesarios»: recordatorios para quien ya había votado y correos que dejaron de tener sentido al cerrarse la votación.",
+      "failedTitle": "Correos que no se han podido entregar",
+      "failedReminders": "Además, {{count}} recordatorios no se han podido entregar. Solo se cuentan: decir a quién iban revelaría quién no ha votado.",
+      "retry": "Reintentar envíos fallidos ({{count}})",
+      "retried": "Se volverán a intentar {{count}} correos.",
+      "loadError": "No se han podido cargar los correos del proceso. Inténtalo de nuevo."
+    },
+    "results": {
+      "title": "Resultados",
+      "empty": "Todavía no hay procesos cerrados.",
+      "closedOn": "Cerró el {{date}}",
+      "export": "Exportar resultados (CSV)",
+      "exportError": "No se ha podido descargar el CSV. Inténtalo de nuevo.",
+      "fileName": "resultados-proceso",
+      "tallyingTitle": "Escrutinio en curso…",
+      "tallyingText": "La urna está contando los votos y comprobando su registro. No hace falta que esperes aquí: el resultado aparecerá en unos segundos.",
+      "tallyingStep1": "Comprobación del registro de la urna",
+      "tallyingStep2": "Recuento por opción y participación",
+      "tallyingStep3": "Guardado del resultado y publicación de su huella",
+      "census": "Censo",
+      "people": "personas",
+      "votes": "Votos emitidos",
+      "turnout": "{{pct}} % de participación",
+      "blank": "Votos en blanco",
+      "ofVotes": "{{pct}} % de los votos",
+      "byOption": "Resultado por opción",
+      "publicTitle": "Enlace público de resultados",
+      "publicText": "Cualquiera con este enlace puede ver el resultado y comprobarlo.",
+      "copy": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "censusOnlyTitle": "Resultado solo para la organización",
+      "censusOnlyText": "Este proceso no publica el resultado con un enlace público. Las huellas sí son públicas.",
+      "talliedAt": "Escrutado el {{date}}.",
+      "minutes": "Generar acta (PDF)",
+      "minutesTitle": "Acta del proceso",
+      "minutesText": "Incluye proceso, calendario, censo, participación, resultado y huellas. Se genera la primera vez y después se descarga siempre el mismo fichero.",
+      "minutesHash": "Huella del acta (SHA-256):",
+      "minutesFile": "acta-proceso",
+      "minutesError": "No se ha podido generar el acta. Inténtalo de nuevo."
+    },
+    "audit": {
+      "title": "Auditoría de la urna",
+      "intro": "Solo lectura: el registro de la urna no se puede editar. Los votos aparecen sin identidad y sin hora.",
+      "empty": "Todavía no hay procesos programados.",
+      "neverTitle": "Registro sin verificar",
+      "neverText": "Verifica el registro para comprobar que nadie lo ha alterado.",
+      "okTitle": "Registro íntegro",
+      "okText": "{{count}} eventos comprobados · ninguna alteración detectada · última verificación el {{date}}",
+      "badTitle": "Registro alterado",
+      "badText": "La verificación del {{date}} ha encontrado alteraciones. Se ha registrado una incidencia y el escrutinio no se publicará mientras siga así.",
+      "problem": {
+        "HASH_MISMATCH": "El evento se ha modificado: sus datos ya no producen su huella.",
+        "BROKEN_LINK": "El evento no enlaza con el anterior (se ha insertado, borrado o reordenado alguno).",
+        "SEQUENCE_GAP": "Falta un número en la secuencia de eventos.",
+        "HEAD_MISMATCH": "Faltan eventos al final del registro.",
+        "BALLOT_MISMATCH": "La papeleta ya no es la que se fijó al abrir.",
+        "VOTE_COUNT_MISMATCH": "No coinciden los votos, los recibos y los eventos de voto.",
+        "CLOSED_COUNT_MISMATCH": "El cierre no corresponde al número de votos registrado.",
+        "FINAL_HASH_MISMATCH": "La huella final publicada no es la del cierre."
+      },
+      "finalHash": "Huella final publicada:",
+      "finalPending": "La huella final se publicará al cierre ({{date}}).",
+      "verify": "Verificar integridad ahora",
+      "chainTitle": "Registro de la urna",
+      "noEvents": "La urna todavía no tiene eventos: el primero es la apertura.",
+      "col": {
+        "seq": "Nº",
+        "event": "Evento",
+        "hash": "Huella",
+        "when": "Fecha y hora"
+      },
+      "event": {
+        "OPENED": "Apertura de la urna",
+        "VOTE_RECEIVED": "Voto recibido (sin identidad)",
+        "CLOSED": "Cierre de la urna",
+        "FINAL_HASH_PUBLISHED": "Publicación de la huella final"
+      },
+      "noTime": "sin hora",
+      "showing": "Mostrando {{from}}–{{to}} de {{total}} eventos · los votos se muestran sin identidad ni hora",
+      "titleShort": "Auditoría"
+    },
+    "trace": {
+      "title": "Trazabilidad",
+      "intro": "Acciones administrativas de tu organización: quién hizo qué, sobre qué y cuándo. El registro no se puede modificar ni borrar.",
+      "filters": "Filtros",
+      "from": "Desde",
+      "to": "Hasta",
+      "actor": "Persona",
+      "action": "Tipo de acción",
+      "process": "Proceso",
+      "all": "Todos",
+      "apply": "Aplicar filtros",
+      "clear": "Quitar filtros",
+      "dateError": "La fecha «Desde» debe ser anterior o igual a «Hasta».",
+      "listTitle": "Acciones registradas",
+      "none": "No hay acciones con estos filtros.",
+      "showing": "Mostrando {{from}}–{{to}} de {{total}}",
+      "col": {
+        "when": "Fecha y hora",
+        "who": "Quién",
+        "what": "Qué",
+        "object": "Sobre qué",
+        "process": "Proceso"
+      },
+      "actions": {
+        "ORGANIZATION_CREATED": "Alta de la organización",
+        "ORGANIZATION_STATUS_CHANGED": "Cambio de estado de la organización",
+        "USER_CREATED": "Alta de usuario",
+        "USER_ROLE_CHANGED": "Cambio de rol",
+        "CENSUS_CREATED": "Creación de censo",
+        "VOTER_ADDED": "Alta en el censo",
+        "VOTER_UPDATED": "Cambio en el censo",
+        "VOTER_REMOVED": "Baja del censo",
+        "VOTERS_IMPORTED": "Importación de censo",
+        "PROCESS_CREATED": "Creación de proceso",
+        "PROCESS_UPDATED": "Edición de proceso",
+        "PROCESS_SCHEDULED": "Programación de proceso",
+        "PROCESS_ARCHIVED": "Archivo de proceso",
+        "CHAIN_VERIFIED": "Verificación del registro de la urna",
+        "RESULTS_EXPORTED": "Exportación de resultados (CSV)",
+        "MINUTES_DOWNLOADED": "Descarga del acta (PDF)",
+        "REMINDER_SCHEDULED": "Recordatorio programado",
+        "REMINDER_CANCELLED": "Recordatorio cancelado",
+        "NOTIFICATIONS_RETRIED": "Reintento de correos fallidos",
+        "PERSONAL_DATA_EXPORTED": "Exportación de datos personales (RGPD)",
+        "PERSONAL_DATA_ERASED": "Borrado de datos personales (RGPD)",
+        "API_KEY_CREATED": "Creación de clave de API",
+        "API_KEY_REVOKED": "Revocación de clave de API"
+      },
+      "objects": {
+        "ORGANIZATION": "Organización",
+        "USER": "Usuario",
+        "CENSUS": "Censo",
+        "VOTER": "Persona",
+        "PROCESS": "Proceso",
+        "API_KEY": "Clave de API"
+      },
+      "details": {
+        "ORGANIZATION_STATUS_CHANGED": {
+          "ACTIVE": "activa",
+          "SUSPENDED": "suspendida"
+        },
+        "USER_CREATED": {
+          "ADMIN": "administración",
+          "CENSUS_MANAGER": "gestión de censo",
+          "AUDITOR": "auditoría"
+        },
+        "USER_ROLE_CHANGED": {
+          "ADMIN": "ahora administración",
+          "CENSUS_MANAGER": "ahora gestión de censo",
+          "AUDITOR": "ahora auditoría"
+        },
+        "VOTERS_IMPORTED": {
+          "value": "{{value}} personas"
+        },
+        "CHAIN_VERIFIED": {
+          "INTACT": "íntegro",
+          "BROKEN": "con problemas"
+        },
+        "RESULTS_EXPORTED": {
+          "ES": "en español",
+          "EN": "en inglés"
+        },
+        "MINUTES_DOWNLOADED": {
+          "ES": "en español",
+          "EN": "en inglés"
+        },
+        "reminder": "para el {{value}}",
+        "NOTIFICATIONS_RETRIED": {
+          "value": "{{value}} correos"
+        },
+        "erased": "borrados: {{deleted}}, anonimizados: {{anonymized}}",
+        "PERSONAL_DATA_EXPORTED": {
+          "value": "registros del censo: {{value}}"
+        }
+      }
+    },
+    "privacy": {
+      "title": "Privacidad de datos (RGPD)",
+      "intro": "Atiende las peticiones de acceso y borrado de las personas de los censos de tu organización.",
+      "step1": "1 · Identifica a la persona",
+      "queryLabel": "Correo electrónico o teléfono",
+      "queryHelp": "Se busca en todos los censos de tu organización.",
+      "find": "Buscar",
+      "step2": "2 · Datos encontrados",
+      "name": "Nombre",
+      "censuses": "Censos en los que figura",
+      "processes": "Procesos que usaron esos censos",
+      "col": {
+        "census": "Censo",
+        "contact": "Contacto",
+        "added": "Alta",
+        "processes": "Procesos"
+      },
+      "institutionalId": "Identificador",
+      "noProcesses": "Ningún proceso",
+      "voteNote": "El voto no se puede exportar ni borrar por persona: es secreto y no está vinculado a su identidad.",
+      "exportTitle": "Exportar sus datos",
+      "exportText": "Se genera un fichero en formato legible por máquina (JSON) con los datos personales de esta persona, su participación y los correos que le enviamos.",
+      "export": "Exportar datos personales",
+      "exported": "Fichero descargado. Entrégaselo a la persona por un canal seguro.",
+      "fileName": "datos-personales",
+      "eraseTitle": "Borrar sus datos",
+      "blocked": "Esta persona está en el censo de {{processes}}, que está programado o abierto. Podrás borrar sus datos cuando termine la votación.",
+      "willAnonymize": "En los censos que ya usó un proceso ({{count}}), sus datos se anonimizarán: los votos, la participación y el registro de la urna se conservan.",
+      "willDelete": "En los censos que no ha usado ningún proceso ({{count}}), sus datos se borrarán.",
+      "confirm": "Confirmo la solicitud de borrado de esta persona",
+      "erase": "Borrar datos personales",
+      "erased": "Datos borrados. Registros borrados: {{deleted}}; anonimizados: {{anonymized}}.",
+      "titleShort": "Privacidad"
+    },
+    "apiKeys": {
+      "title": "Claves de API",
+      "intro": "Las claves permiten que los sistemas de tu organización (por ejemplo, la secretaría o una web) consulten por la API los procesos, la participación y los resultados. Solo leen: no ven censos ni datos personales y no pueden cambiar nada.",
+      "newTitle": "Nueva clave",
+      "name": "Nombre (para qué sistema es)",
+      "create": "Crear clave",
+      "limit": "Puedes tener hasta {{max}} claves activas (llevas {{used}}).",
+      "scopeTitle": "¿Qué puede consultar una clave?",
+      "scope": {
+        "processes": "Procesos de tu organización: lista, detalle e historial de estados.",
+        "participation": "Participación de cada proceso (solo números).",
+        "results": "Resultados escrutados, votos contados y exportación CSV."
+      },
+      "scopeNot": "No puede ver censos, datos personales, el registro de la urna ni la trazabilidad, ni descargar el acta.",
+      "createdTitle": "Clave «{{name}}» creada",
+      "onlyOnce": "Copia el secreto ahora: no se volverá a mostrar. Si lo pierdes, revoca la clave y crea otra.",
+      "clientId": "Identificador (client_id)",
+      "secret": "Secreto (client_secret)",
+      "tokenUrl": "URL del token",
+      "copyId": "Copiar el identificador",
+      "copySecret": "Copiar el secreto",
+      "copied": {
+        "id": "Identificador copiado.",
+        "secret": "Secreto copiado."
+      },
+      "howTo": "El sistema pide un token con estas credenciales (OAuth 2.0, client credentials) y lo envía en cada llamada. Cada token dura 5 minutos.",
+      "saved": "Ya lo he guardado",
+      "listTitle": "Claves de la organización",
+      "none": "Tu organización todavía no tiene claves de API.",
+      "col": {
+        "name": "Nombre",
+        "clientId": "Identificador",
+        "created": "Creada",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "active": "Activa",
+      "revokedOn": "Revocada el {{date}}",
+      "revoke": "Revocar",
+      "revokeLabel": "Revocar la clave «{{name}}»",
+      "confirmRevoke": "¿Revocar? El sistema dejará de tener acceso en unos minutos.",
+      "yesRevoke": "Sí, revocar",
+      "no": "No",
+      "revoked": "Clave «{{name}}» revocada."
+    }
+  },
+  "voter": {
+    "welcome": {
+      "eyebrow": "Votación",
+      "closes": "Puedes votar hasta el {{closes}}.",
+      "step1": "Te enviaremos un código de 6 cifras a tu correo.",
+      "step2": "Eliges tu opción y la revisas antes de confirmar.",
+      "step3": "Recibes un código de recibo para comprobar que tu voto está en la urna.",
+      "duration": "Tardarás unos 3 minutos.",
+      "secret": "Tu voto es secreto: nadie puede saber qué has votado. Solo puedes votar una vez.",
+      "start": "Empezar",
+      "step1Sso": "Entrarás con tu cuenta institucional (la del correo al que te llegó la invitación)."
+    },
+    "sso": {
+      "title": "Entra con tu cuenta institucional",
+      "text": "En esta votación se comprueba quién eres con la cuenta de tu organización. Usa la cuenta del correo al que te llegó la invitación.",
+      "button": "Entrar con tu cuenta institucional",
+      "note": "Te llevaremos a la página de acceso de tu organización y volverás aquí. Tu voto sigue siendo secreto: la cuenta solo sirve para saber que eres tú.",
+      "checking": "Comprobando tu cuenta…",
+      "failedTitle": "No hemos podido completar la entrada",
+      "failedText": "Vuelve a abrir el enlace personal de tu correo e inténtalo de nuevo.",
+      "mismatch": "La cuenta con la que has entrado no es la de este enlace. Entra con la cuenta del correo al que te llegó la invitación. Te quedan {{remaining}} intentos.",
+      "cancelled": "Has cancelado la entrada con tu cuenta. Cuando quieras, vuelve a intentarlo.",
+      "invalid": "No hemos podido comprobar tu cuenta. Vuelve a entrar con ella."
+    },
+    "status": {
+      "open": "Votación abierta · Cierra el {{closes}}"
+    },
+    "steps": {
+      "label": "Pasos para votar",
+      "count": "Paso {{current}} de {{total}}",
+      "access": "Acceso",
+      "selection": "Selección",
+      "confirmation": "Confirmación",
+      "receipt": "Recibo"
+    },
+    "code": {
+      "title": "Código de acceso",
+      "intro": "Para comprobar que eres tú, te enviaremos un código de acceso a tu correo.",
+      "send": "Enviarme el código",
+      "sending": "Enviando…",
+      "sentTo": "Hemos enviado un código de 6 cifras a {{email}}. Caduca en {{minutes}} minutos.",
+      "label": "Código de acceso",
+      "verify": "Continuar",
+      "checking": "Verificando…",
+      "resend": "Reenviar el código",
+      "resendIn": "Podrás pedir otro código en {{time}}",
+      "wrong": "El código no es correcto. Te quedan {{remaining}} intentos.",
+      "expired": "El código ha caducado o ya se ha usado. Pide uno nuevo.",
+      "tooSoon": "Espera un poco antes de pedir otro código.",
+      "mailFailed": "No hemos podido enviar el correo. Inténtalo de nuevo en unos minutos."
+    },
+    "ballot": {
+      "help": "Elige una opción. Podrás revisarla antes de votar.",
+      "blank": "Voto en blanco",
+      "blankHelp": "Cuenta como participación, pero no apoya a ninguna opción.",
+      "missing": "Todavía no has elegido una opción.",
+      "continue": "Revisar mi voto"
+    },
+    "review": {
+      "title": "Revisa tu voto",
+      "yourChoice": "Has elegido",
+      "notYet": "Aún no has votado. Cuando confirmes, tu voto no se podrá cambiar.",
+      "change": "Cambiar mi selección",
+      "confirm": "Confirmar y votar",
+      "sending": "Registrando tu voto…",
+      "doNotClose": "No cierres esta ventana."
+    },
+    "receipt": {
+      "title": "Voto registrado",
+      "message": "Gracias. Tu voto está en la urna.",
+      "codeLabel": "Código de recibo",
+      "copy": "Copiar el código",
+      "copied": "Copiado",
+      "keep": "Guarda este código: solo se muestra ahora. Sirve para comprobar que tu voto está en la urna, no muestra qué votaste.",
+      "verify": "Comprobar mi recibo"
+    },
+    "states": {
+      "notOpen": {
+        "title": "La votación todavía no está abierta",
+        "message": "Podrás votar a partir del {{opens}}. Vuelve a abrir este enlace entonces."
+      },
+      "closed": {
+        "title": "La votación está cerrada",
+        "message": "El plazo terminó el {{closes}}. Ya no se pueden emitir votos. Cuando termine el escrutinio podrás ver aquí el resultado con este mismo enlace."
+      },
+      "invalidLink": {
+        "title": "Este enlace no es válido",
+        "message": "Usa el enlace de tu último correo de invitación. Si no consta tu participación, contacta con tu organización."
+      },
+      "expiredLink": {
+        "title": "El enlace ha caducado",
+        "message": "Contacta con tu organización para recibir un enlace nuevo."
+      },
+      "locked": {
+        "title": "Acceso bloqueado temporalmente",
+        "message": "Has superado el número de intentos. Por seguridad, espera hasta las {{until}} y vuelve a intentarlo."
+      },
+      "alreadyVoted": {
+        "title": "Ya has votado",
+        "messageOn": "Tu voto se registró el {{day}}. Solo se puede votar una vez.",
+        "message": "Tu voto ya está registrado. Solo se puede votar una vez."
+      },
+      "sessionExpired": {
+        "title": "Tu sesión ha caducado",
+        "message": "Tu selección no se ha guardado y no has votado. Vuelve a entrar con el mismo enlace."
+      },
+      "notRecorded": {
+        "title": "Tu voto NO se ha registrado",
+        "message": "Ha fallado la conexión o el servidor. Puedes reintentarlo sin riesgo: nunca se registrarán dos votos."
+      },
+      "error": {
+        "title": "Algo ha fallado",
+        "message": "No hemos podido cargar la votación. Inténtalo de nuevo en unos minutos."
+      },
+      "tryAgain": "Volver a intentarlo",
+      "enterAgain": "Volver a entrar",
+      "retry": "Reintentar"
+    },
+    "verify": {
+      "title": "Comprobar mi recibo",
+      "intro": "Escribe o pega tu código de recibo para comprobar que tu voto está en la urna.",
+      "label": "Código de recibo",
+      "helper": "64 caracteres (0-9 y a-f)",
+      "format": "El código debe tener 64 caracteres entre 0-9 y a-f.",
+      "check": "Comprobar",
+      "present": "Tu voto está en la urna.",
+      "absent": "No encontramos ese código en esta votación. Revisa que esté completo.",
+      "unknownProcess": "No existe esa votación.",
+      "error": "No hemos podido comprobarlo. Inténtalo de nuevo.",
+      "limits": "El recibo demuestra que tu voto está en la urna; no muestra qué votaste ni prueba el contenido del voto."
+    },
+    "footer": {
+      "secure": "Conexión segura · Tu voto es secreto"
+    },
+    "results": {
+      "eyebrow": "Resultado de la votación",
+      "readyText": "La votación cerró el {{closes}} y el escrutinio ha terminado. Para ver el resultado, confirma que eres tú con un código que te enviaremos por correo.",
+      "secret": "El resultado no muestra qué ha votado cada persona.",
+      "see": "Ver el resultado",
+      "tookPart": "Tu voto quedó registrado el {{day}}."
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "Página no encontrada",
+      "message": "La dirección no existe. Revisa el enlace o vuelve al inicio.",
+      "voterMessage": "La dirección no existe. Si vas a votar, usa el enlace personal que recibiste por correo.",
+      "consoleLink": "¿Gestionas votaciones? Entrar en la consola"
+    }
+  },
+  "roles": {
+    "SUPERADMIN": "Superadministrador/a",
+    "ADMIN": "Administrador/a",
+    "CENSUS_MANAGER": "Gestor/a de censo",
+    "AUDITOR": "Auditor/a"
+  },
+  "results": {
+    "top": "Más votada",
+    "vote": "voto",
+    "votes": "votos",
+    "blank": "Voto en blanco",
+    "resultHash": "Huella del resultado",
+    "finalHash": "Huella final de la urna",
+    "verify": {
+      "checking": "Comprobando el resultado…",
+      "okTitle": "Resultado verificado",
+      "okText": "Tu navegador ha recalculado el recuento con los votos publicados y coincide con el resultado.",
+      "badTitle": "El resultado no coincide",
+      "badText": "Al recalcularlo con los votos publicados no coincide. Avisa a la organización.",
+      "errorTitle": "No se ha podido comprobar",
+      "errorText": "No se han podido obtener los votos publicados. Inténtalo más tarde.",
+      "limits": "Los votos publicados solo llevan un identificador aleatorio y la opción: no se pueden relacionar con nadie ni con ningún recibo."
+    }
+  },
+  "publicResults": {
+    "notFoundTitle": "Resultados no disponibles",
+    "notFoundText": "Este enlace no existe o el resultado todavía no se ha publicado. Los resultados aparecen después del escrutinio.",
+    "errorTitle": "No se han podido cargar los resultados",
+    "eyebrow": "Resultados oficiales",
+    "published": "Publicados el {{date}}",
+    "votes": "votos emitidos",
+    "turnout": "de participación sobre {{census}} personas",
+    "byOption": "Resultado por opción",
+    "checkReceipt": "Comprobar mi recibo"
+  }
+}

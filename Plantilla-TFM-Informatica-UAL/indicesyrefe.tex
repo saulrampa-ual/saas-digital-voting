@@ -1,0 +1,43 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%% ESTO ES PARA LA TABLA DE CONTENIDOS (INDICE)%%%%%%%%%%%%%%%%
+
+
+\setcounter{secnumdepth}{3} %niveles en capitulos hasta (1.1.1)
+\setcounter{tocdepth}{3} %niveles en indice hasta (1.1)
+
+
+\addtocontents{toc}{~\hfill\small{Página}\par} %añade "pagina" a tabla de contanidos
+\addtocontents{toc}{\vspace{2pt} \hrule \vspace{5mm} \par}
+
+%\renewcommand\contentsname{Índice de contenidos}
+\tableofcontents
+\listoffigures % indice de figuras
+\listoftables % indice de tablas
+\lstlistoflistings % indice de listados
+
+
+
+%---------------------------------------------------------------------------
+% comienzo de relacion abreviaturas y/o acrónimos
+%---------------------------------------------------------------------------
+
+
+%\addcontentsline{toc}{section}{ABREVIATURAS}
+\clearpage
+\vspace{0.2cm}
+\section*{ABREVIATURAS}
+% La tabla conserva el tamaño de letra y ajusta las descripciones largas
+% al ancho disponible, sin escalar el contenido.
+\noindent
+\begin{tabularx}{\textwidth}{|Y{0.4600}|Y{1.5400}|Y{0.4600}|Y{1.5400}|}
+\hline
+API & \textit{Application Programming Interface} & TFG & Trabajo Fin de Grado \\
+ESI & Escuela Superior de Ingeniería & TFM & Trabajo Fin de Máster \\
+IDE & \textit{Integrated Development Environment} & UAL & Universidad de Almería \\
+IEEE & \textit{Institute of Electrical and Electronics Engineers} & UML & \textit{Unified Modeling Language} \\
+PDF & \textit{Portable Document Format} & URL & \textit{Uniform Resource Locator} \\
+\hline
+\end{tabularx}
+%\addcontentsline{toc}{section}{ABREVIATURAS}
+

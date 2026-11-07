@@ -1,0 +1,235 @@
+<app-admin-page titleKey="admin.census.title">
+  @if (loading()) {
+    <ion-spinner role="status" [attr.aria-label]="'common.loading' | translate" />
+  } @else if (loadError() || !census()) {
+    <ion-text color="danger"><p role="alert">{{ 'common.loadError' | translate }}</p></ion-text>
+  } @else {
+    @let c = census()!;
+    <a class="back" routerLink="/admin/censos"><ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon>{{ 'admin.census.backToList' | translate }}</a>
+    <div class="head">
+      <div>
+        <h2 class="name">{{ 'admin.census.heading' | translate: { name: c.name } }}</h2>
+        <p class="meta">
+          {{ 'admin.censuses.voters' | translate: { count: c.voterCount } }} ·
+          <span class="badge" [class.frozen]="c.frozen">{{ (c.frozen ? 'admin.censuses.frozen' : 'admin.censuses.editable') | translate }}</span>
+        </p>
+      </div>
+      @if (canEdit()) {
+        <ion-button fill="outline" (click)="openNew()" [disabled]="!!form()">
+          <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
+          {{ 'admin.census.addManual' | translate }}</ion-button>
+      }
+    </div>
+
+    @if (c.frozen) {
+      <p class="info-box" role="note">{{ 'admin.census.frozenHelp' | translate }}</p>
+    } @else if (!isManagerRole) {
+      <p class="info-box" role="note">{{ 'admin.census.readOnly' | translate }}</p>
+    }
+    @if (notice()) { <p class="notice" role="status">{{ notice() }}</p> }
+    @if (pageError()) { <p class="server-error" role="alert">{{ pageError() }}</p> }
+
+    @if (form(); as f) {
+      <section class="card" aria-labelledby="voter-form-title">
+        <h3 id="voter-form-title" tabindex="-1">{{ (f.id === null ? 'admin.census.form.newTitle' : 'admin.census.form.editTitle') | translate }}</h3>
+        @if (formServerError()) { <p class="server-error" role="alert">{{ formServerError() }}</p> }
+        <form (submit)="$event.preventDefault(); save()" novalidate>
+          <div class="form-grid">
+            @for (field of fields; track field) {
+              @let message = formErrors()[field];
+              <div class="field">
+                <ion-input fill="outline" labelPlacement="stacked"
+                           [label]="('admin.census.form.' + field | translate) + (field === 'fullName' || field === 'email' ? ' *' : '')"
+                           [type]="field === 'email' ? 'email' : field === 'phone' ? 'tel' : 'text'"
+                           [inputmode]="field === 'phone' ? 'numeric' : field === 'email' ? 'email' : 'text'"
+                           [autocomplete]="field === 'fullName' ? 'name' : field === 'email' ? 'email' : 'off'"
+                           [maxlength]="maxLength[field]"
+                           [value]="f[field]" (ionInput)="setField(field, $event.detail.value)"
+                           [class.invalid]="!!message" [attr.aria-invalid]="!!message" />
+                @if (field === 'phone' && !message) { <p class="help">{{ 'admin.census.form.phoneHelp' | translate }}</p> }
+                @if (message) { <p class="field-error" role="alert">{{ message }}</p> }
+              </div>
+            }
+          </div>
+          <p class="label" id="voter-lang">{{ 'admin.census.form.preferredLanguage' | translate }}</p>
+          <ion-segment class="lang" aria-labelledby="voter-lang" [value]="f.preferredLanguage"
+                       (ionChange)="setField('preferredLanguage', $any($event.detail.value))">
+            <ion-segment-button value="es"><ion-label>{{ 'language.es' | translate }}</ion-label></ion-segment-button>
+            <ion-segment-button value="en"><ion-label>{{ 'language.en' | translate }}</ion-label></ion-segment-button>
+          </ion-segment>
+          <div class="actions">
+            <ion-button type="submit" color="secondary" [disabled]="saving()">
+              @if (saving()) { <ion-spinner name="crescent" aria-hidden="true"></ion-spinner> }
+              {{ (f.id === null ? 'admin.census.form.add' : 'admin.census.form.save') | translate }}</ion-button>
+            <ion-button fill="clear" (click)="closeForm()">{{ 'admin.census.form.cancel' | translate }}</ion-button>
+          </div>
+        </form>
+      </section>
+    }
+
+    @if (canEdit()) {
+      <div class="import">
+        <section class="card">
+          <h3>1 · {{ 'admin.census.import.selectTitle' | translate }}</h3>
+          <div class="drop" [class.dragging]="dragging()" (dragover)="onDragOver($event)" (dragleave)="dragging.set(false)"
+               (drop)="onDrop($event)">
+            <ion-icon name="cloud-upload-outline" aria-hidden="true"></ion-icon>
+            <p class="drop-title">{{ 'admin.census.import.drop' | translate }}</p>
+            <p class="help">{{ 'admin.census.import.columns' | translate }}</p>
+            <input #fileInput id="csv-file" type="file" accept=".csv,text/csv" class="sr-only" (change)="onFileInput($event)"
+                   [disabled]="busy()" />
+            <ion-button fill="outline" (click)="fileInput.click()" [disabled]="busy()">
+              {{ 'admin.census.import.select' | translate }}</ion-button>
+          </div>
+          <p class="help">{{ 'admin.census.import.rules' | translate }}</p>
+        </section>
+
+        <section class="card summary" aria-live="polite">
+          <div class="summary-head">
+            <h3>2 · {{ 'admin.census.import.summaryTitle' | translate }}</h3>
+            @if (file() && phase() === 'summary') {
+              <span class="chip">{{ 'admin.census.import.pending' | translate: { file: file()!.name } }}</span>
+            }
+          </div>
+          @if (importError()) { <p class="server-error" role="alert">{{ importError() }}</p> }
+
+          @switch (phase()) {
+            @case ('idle') {
+              <p class="help">{{ 'admin.census.import.idle' | translate }}</p>
+            }
+            @case ('validating') {
+              <!-- G1 -->
+              <div class="progress" role="status">
+                <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+                <p class="progress-title">{{ 'admin.census.import.validating' | translate: { file: file()?.name } }}</p>
+                <p class="help">{{ 'admin.census.import.validatingHelp' | translate }}</p>
+                <ion-button fill="outline" (click)="cancelValidation()">{{ 'admin.census.import.cancel' | translate }}</ion-button>
+              </div>
+            }
+            @case ('applying') {
+              <div class="progress" role="status">
+                <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+                <p class="progress-title">{{ 'admin.census.import.applying' | translate: { count: summary()?.toCreate ?? 0 } }}</p>
+                <p class="help">{{ 'admin.census.import.applyingHelp' | translate }}</p>
+              </div>
+            }
+            @case ('done') {
+              <div class="done" role="status">
+                <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+                <p>{{ 'admin.census.import.done' | translate: { count: imported() } }}</p>
+                <ion-button fill="outline" (click)="resetImport()">{{ 'admin.census.import.another' | translate }}</ion-button>
+              </div>
+            }
+            @case ('summary') {
+              @let s = summary()!;
+              <div class="tiles">
+                <div class="tile ok"><strong>{{ s.toCreate }}</strong><span>{{ 'admin.census.import.toCreate' | translate }}</span></div>
+                <div class="tile warn"><strong>{{ s.duplicates.length }}</strong><span>{{ 'admin.census.import.duplicates' | translate }}</span></div>
+                <div class="tile bad"><strong>{{ s.invalidLines.length }}</strong><span>{{ 'admin.census.import.invalid' | translate }}</span></div>
+              </div>
+              @if (s.invalidLines.length) {
+                <details open>
+                  <summary>{{ 'admin.census.import.invalidList' | translate }}</summary>
+                  <ul class="lines">
+                    @for (l of s.invalidLines.slice(0, shownLines); track l.line) {
+                      <li>{{ 'admin.census.import.line' | translate: { line: l.line } }}: {{ l.message }}</li>
+                    }
+                  </ul>
+                  @if (s.invalidLines.length > shownLines) {
+                    <p class="help">{{ 'admin.census.import.more' | translate: { count: s.invalidLines.length - shownLines } }}</p>
+                  }
+                </details>
+              }
+              @if (s.duplicates.length) {
+                <details>
+                  <summary>{{ 'admin.census.import.duplicateList' | translate }}</summary>
+                  <ul class="lines">
+                    @for (d of s.duplicates.slice(0, shownLines); track d.line) {
+                      <li>{{ 'admin.census.import.line' | translate: { line: d.line } }}: {{ reasonKey(d.reason) | translate }}</li>
+                    }
+                  </ul>
+                  @if (s.duplicates.length > shownLines) {
+                    <p class="help">{{ 'admin.census.import.more' | translate: { count: s.duplicates.length - shownLines } }}</p>
+                  }
+                </details>
+              }
+              <p class="help">{{ (s.invalidLines.length ? 'admin.census.import.invalidHelp' : s.toCreate ? 'admin.census.import.readyHelp' : 'admin.census.import.nothingHelp') | translate }}</p>
+              <div class="actions">
+                @if (!s.invalidLines.length) {
+                  <ion-button color="secondary" [disabled]="s.toCreate === 0" (click)="apply(false)">
+                    {{ 'admin.census.import.confirm' | translate }}</ion-button>
+                } @else if (s.toCreate > 0) {
+                  <ion-button color="secondary" (click)="apply(true)">
+                    {{ 'admin.census.import.discard' | translate: { count: s.toCreate } }}</ion-button>
+                }
+                <ion-button fill="clear" (click)="resetImport()">{{ 'admin.census.import.cancel' | translate }}</ion-button>
+              </div>
+            }
+          }
+        </section>
+      </div>
+    }
+
+    <section class="card people">
+      <div class="people-head">
+        <h3 id="people-title">{{ 'admin.census.peopleTitle' | translate }}</h3>
+        <ion-searchbar class="search" [value]="search()" (ionInput)="onSearch($event.detail.value)" [debounce]="0"
+                       [placeholder]="'admin.census.search' | translate" [attr.aria-label]="'admin.census.search' | translate" />
+      </div>
+      @if (votersError()) {
+        <ion-text color="danger"><p role="alert">{{ 'common.loadError' | translate }}</p></ion-text>
+      } @else if (!votersLoading() && voters().length === 0) {
+        <p class="help">{{ (search() ? 'admin.census.noMatches' : 'admin.census.noPeople') | translate }}</p>
+      } @else {
+        <div class="table-wrap">
+        <table aria-labelledby="people-title" [class.loading]="votersLoading()">
+          <thead>
+            <tr>
+              <th scope="col">{{ 'admin.census.form.fullName' | translate }}</th>
+              <th scope="col">{{ 'admin.census.form.email' | translate }}</th>
+              <th scope="col">{{ 'admin.census.form.phone' | translate }}</th>
+              <th scope="col">{{ 'admin.census.form.institutionalId' | translate }}</th>
+              <th scope="col">{{ 'admin.census.language' | translate }}</th>
+              @if (canEdit()) { <th scope="col" class="end">{{ 'admin.census.actions' | translate }}</th> }
+            </tr>
+          </thead>
+          <tbody>
+            @for (v of voters(); track v.id) {
+              <tr>
+                <td [attr.data-label]="'admin.census.form.fullName' | translate"><strong>{{ v.fullName }}</strong></td>
+                <td class="email" [attr.data-label]="'admin.census.form.email' | translate">{{ v.email }}</td>
+                <td class="nowrap" [attr.data-label]="'admin.census.form.phone' | translate">{{ v.phone ?? '—' }}</td>
+                <td class="nowrap" [attr.data-label]="'admin.census.form.institutionalId' | translate">{{ v.institutionalId ?? '—' }}</td>
+                <td class="nowrap" [attr.data-label]="'admin.census.language' | translate">{{ 'language.' + v.preferredLanguage | translate }}</td>
+                @if (canEdit()) {
+                  <td class="end row-actions">
+                    <ion-button size="small" fill="outline" (click)="openEdit(v)"
+                                [attr.aria-label]="'admin.census.editPerson' | translate: { name: v.fullName }">
+                      <ion-icon slot="start" name="create-outline" aria-hidden="true"></ion-icon>{{ 'admin.census.edit' | translate }}</ion-button>
+                    <ion-button size="small" fill="clear" color="danger" (click)="removing.set(v)"
+                                [attr.aria-label]="'admin.census.removePerson' | translate: { name: v.fullName }">
+                      {{ 'admin.census.removeShort' | translate }}</ion-button>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+        </div>
+        <div class="pager">
+          <p class="help" role="status">{{ 'admin.census.showing' | translate: { from: firstShown(), to: lastShown(), total: total() } }}</p>
+          <div>
+            <ion-button fill="outline" size="small" [disabled]="page() === 0 || votersLoading()" (click)="goToPage(-1)">
+              {{ 'admin.census.previous' | translate }}</ion-button>
+            <ion-button fill="outline" size="small" [disabled]="!hasNext() || votersLoading()" (click)="goToPage(1)">
+              {{ 'admin.census.next' | translate }}</ion-button>
+          </div>
+        </div>
+      }
+    </section>
+
+    <ion-alert [isOpen]="!!removing()" [header]="'admin.census.remove.title' | translate"
+               [message]="'admin.census.remove.message' | translate: { name: removing()?.fullName }" [buttons]="removeButtons()"
+               (didDismiss)="onRemoveDismiss($event.detail.role)"></ion-alert>
+  }
+</app-admin-page>

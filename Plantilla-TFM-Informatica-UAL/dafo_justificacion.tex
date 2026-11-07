@@ -1,0 +1,142 @@
+% Análisis estratégico y encaje formativo derivados del informe complementario.
+\chapter{Análisis DAFO y justificación}
+\label{cap:dafo}
+
+\section{Análisis DAFO}
+\label{sec:dafo}
+
+El análisis se refiere al proyecto académico y a su contexto, no a un producto
+ya desplegado. Los factores de mercado proceden de la revisión documental del
+capítulo~\ref{cap:estado-arte}; las capacidades internas son hipótesis de
+diseño que deberán contrastarse durante el desarrollo \citep{votedirect2026comparativa,specter2020voatz,haines2020swisspost}.
+
+\small
+\begin{longtable}{|p{0.46\textwidth}|p{0.46\textwidth}|}
+\caption{Matriz DAFO de la propuesta de plataforma.}\label{tab:dafo}\\
+\hline
+\textbf{Debilidades (internas)} & \textbf{Fortalezas (internas)} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Debilidades (internas)} & \textbf{Fortalezas (internas)} \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+Equipo unipersonal y tiempo limitado por el TFM; ausencia inicial de certificaciones, historial electoral y auditoría independiente; coste de operar infraestructura disponible y segura; riesgo de defectos si se implementa criptografía propia. & Arquitectura cloud multi-tenant y API-first como objetivo; posibilidad de código abierto y transparencia; libertad para diseñar una UX actual; acceso potencial a asociaciones y grupos universitarios para validar necesidades. \\
+\hline
+\textbf{Amenazas (externas)} & \textbf{Oportunidades (externas)} \\
+\hline
+Competidores con ofertas gratuitas o de bajo coste; desconfianza hacia el voto remoto por fallos públicos documentados; obligaciones del RGPD y estatutos internos; phishing, malware, DDoS y ciclos de compra institucional prolongados. & Integración SSO, API y webhooks poco uniformes según la revisión; necesidad de PWA accesible; oportunidad de recibos y auditoría explicables; oportunidad de precios claros, actas exportables y localización al mercado hispanohablante. \\
+\hline
+\end{longtable}
+\normalsize
+
+\section{Estrategias que se desprenden}
+\label{sec:estrategias-dafo}
+
+\begin{itemize}
+  \item \textbf{Fortalezas y oportunidades:} orientar el diseño a API REST
+  documentada, autenticación federada opcional y PWA accesible, publicando decisiones y
+  evidencias de auditoría.
+  \item \textbf{Debilidades y oportunidades:} evitar criptografía propia y
+  concentrar el trabajo en integración, aislamiento, experiencia de uso y
+  pruebas reproducibles; incorporar componentes criptográficos revisados solo
+  si el alcance y la revisión especializada lo permiten.
+  \item \textbf{Fortalezas y amenazas:} responder a la desconfianza mediante
+  transparencia de requisitos, código y límites conocidos, además de pruebas
+  documentadas.
+  \item \textbf{Debilidades y amenazas:} limitar la primera versión a
+  consultas y votaciones internas de asociaciones u organizaciones, sin
+  presentarla como apta para elecciones oficiales vinculantes.
+\end{itemize}
+
+\section{Encaje con el máster}
+\label{sec:encaje-master}
+
+La propuesta integra contenidos de varias asignaturas del máster, como resume
+la tabla~\ref{tab:encaje-master}.
+
+\small
+\begin{longtable}{|p{0.30\textwidth}|p{0.64\textwidth}|}
+\caption{Relación entre asignaturas del máster y aportaciones al proyecto.}\label{tab:encaje-master}\\
+\hline
+\textbf{Asignatura} & \textbf{Aportación al proyecto} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Asignatura} & \textbf{Aportación al proyecto} \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+Cloud Computing & Diseño del despliegue SaaS multi-tenant, aislamiento, escalabilidad y operación en nube. \\
+\hline
+Desarrollo Web/Móvil & Interfaz adaptable, PWA y API REST. \\
+\hline
+Seguridad Informática & Autenticación, modelado de amenazas, privacidad, pruebas y auditoría. \\
+\hline
+Integración de Tecnologías y Servicios & Proveedor de identidad opcional, API, webhooks y servicios de notificación. \\
+\hline
+Bases de Datos a Gran Escala & Modelo multi-tenant, separación de datos y registro de auditoría. \\
+\hline
+Visualización de Datos & Paneles de participación y presentación de resultados agregados. \\
+\hline
+Planificación de las TIC & Planificación, estimación de costes y análisis de alternativas de servicio. \\
+\hline
+Inteligencia Artificial / Sistemas Inteligentes & Extensión opcional futura para estudiar anomalías en patrones de participación, sin inferir opciones de voto. \\
+\hline
+\end{longtable}
+\normalsize
+
+\section{Delimitación del MVP y trabajo futuro}
+\label{sec:alcance-mvp}
+
+El catálogo detallado de la memoria conserva los códigos RF-01 a RF-19 ya
+usados por los casos de uso. El informe complementario propone otra numeración
+(RF-01 a RF-30); la columna «Origen / hueco» identifica esos códigos de origen
+sin reasignar los existentes. La tabla~\ref{tab:alcance-mvp} explicita la
+selección de alcance y permite revisar cada decisión con el tutor.
+
+\small
+\begin{longtable}{|p{0.23\textwidth}|p{0.27\textwidth}|p{0.39\textwidth}|}
+\caption{Decisión provisional del alcance de requisitos funcionales.}\label{tab:alcance-mvp}\\
+\hline
+\textbf{Decisión} & \textbf{IDs locales / origen} & \textbf{Criterio de alcance} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Decisión} & \textbf{IDs locales / origen} & \textbf{Criterio de alcance} \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+MVP propuesto & RF-01--10, RF-12--19 y RF-21 & Se cubren mediante requisitos funcionales y no funcionales del catálogo local; el detalle de implementación y validación queda sujeto a planificación y aceptación del tutor. \\
+\hline
+MVP acotado & RF-20 (informe RF-11); RF-21 (informe RF-26) & Multiidioma básico; API REST documentada con claves por organización. Los webhooks quedan fuera de la primera entrega. \\
+\hline
+Trabajo futuro & RF-22 (informe RF-10); RF-23 (informe RF-20); otros elementos aún sin ID local: RF-06, RF-12, RF-13, RF-17, RF-26 (webhooks) y RF-27 del informe & Facturación, voto preferencial/ponderado, quórum, modo híbrido, revoto, criptografía de extremo a extremo con custodios, webhooks y widget embebible requieren alcance y evaluación adicionales. \\
+\hline
+\end{longtable}
+\normalsize
+
+En esta tabla se usan primero los identificadores locales de la memoria. Los
+identificadores entre paréntesis remiten al informe complementario: RF-20
+corresponde a RF-11 (multidioma), RF-21 a RF-26 (API), RF-22 a RF-10 (voto
+preferencial) y RF-23 a RF-20 (cifrado en cliente y custodia umbral). Los
+requisitos del informe que aún no tienen un requisito local independiente se
+identifican expresamente como tales.
+
+La clasificación MoSCoW del informe es una propuesta y no equivale a una
+decisión aprobada de implementación. En particular, el voto preferencial y el
+cifrado cliente con claves umbral se mantienen como trabajo futuro. En el MVP,
+una huella encadenada y un recibo podrán documentar integridad y presencia del
+registro, pero no se denominarán verificabilidad criptográfica completa.
+También queda pendiente decidir si el canal SMS se incluye o se deja como
+adaptador posterior; el correo es el canal mínimo previsto.

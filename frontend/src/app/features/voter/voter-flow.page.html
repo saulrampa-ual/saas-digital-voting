@@ -1,0 +1,160 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
+    <ion-title>VeriVoto</ion-title>
+    <ion-buttons slot="end"><app-language-switcher /></ion-buttons>
+  </ion-toolbar>
+  @if (showStatusBar() && link(); as process) {
+    <div class="status-bar" role="status">
+      <span class="dot" aria-hidden="true"></span>
+      {{ 'voter.status.open' | translate: { closes: (process.closesAt | localDate: language()) } }}
+    </div>
+  }
+</ion-header>
+
+<ion-content class="ion-padding">
+  <main #main class="voter">
+    @if (step() > 0) {
+      <app-step-indicator [step]="step()" />
+    }
+
+    @switch (screen()) {
+      @case ('loading') {
+        <div class="loading" role="status">
+          <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+          <p>{{ 'common.loading' | translate }}</p>
+        </div>
+      }
+
+      @case ('welcome') {
+        @if (link(); as process) {
+          <section class="welcome">
+            <p class="eyebrow">{{ 'voter.welcome.eyebrow' | translate }}</p>
+            <h1 tabindex="-1">{{ process.title | localized: language() : fallback() }}</h1>
+            <p>{{ 'voter.welcome.closes' | translate: { closes: (process.closesAt | localDate: language()) } }}</p>
+            <ol class="how">
+              <li>{{ (process.authentication === 'INSTITUTIONAL_SSO' ? 'voter.welcome.step1Sso' : 'voter.welcome.step1') | translate }}</li>
+              <li>{{ 'voter.welcome.step2' | translate }}</li>
+              <li>{{ 'voter.welcome.step3' | translate }}</li>
+            </ol>
+            <ion-text color="medium"><p>{{ 'voter.welcome.duration' | translate }}</p></ion-text>
+            <p class="secret">{{ 'voter.welcome.secret' | translate }}</p>
+            <ion-button expand="block" color="secondary" (click)="start()">{{ 'voter.welcome.start' | translate }}</ion-button>
+          </section>
+        }
+      }
+
+      @case ('resultsReady') {
+        @if (link(); as process) {
+          <section class="welcome">
+            <p class="eyebrow">{{ 'voter.results.eyebrow' | translate }}</p>
+            <h1 tabindex="-1">{{ process.title | localized: language() : fallback() }}</h1>
+            <p>{{ 'voter.results.readyText' | translate: { closes: (process.closesAt | localDate: language()) } }}</p>
+            <p class="secret">{{ 'voter.results.secret' | translate }}</p>
+            <ion-button expand="block" color="secondary" (click)="startResults()">{{ 'voter.results.see' | translate }}</ion-button>
+          </section>
+        }
+      }
+
+      @case ('results') {
+        @if (result(); as r) {
+          <section class="results">
+            <p class="eyebrow">{{ 'publicResults.eyebrow' | translate }}</p>
+            <h1 tabindex="-1">{{ link()!.title | localized: language() : fallback() }}</h1>
+            <p class="meta">{{ 'publicResults.published' | translate: { date: (r.talliedAt | localDate: language()) } }}</p>
+            @if (votedOn()) {
+              <p class="took-part">{{ 'voter.results.tookPart' | translate: { day: (votedOn() | localDate: language() : false) } }}</p>
+            }
+            <app-result-summary [result]="r" [language]="language()" [verification]="verification()" />
+            <p class="receipt"><a [routerLink]="['/recibo', r.processId]">{{ 'publicResults.checkReceipt' | translate }}</a></p>
+          </section>
+        }
+      }
+
+      @case ('sso') {
+        <section class="sso" aria-labelledby="sso-title">
+          <h1 id="sso-title" tabindex="-1">{{ 'voter.sso.title' | translate }}</h1>
+          <p>{{ 'voter.sso.text' | translate }}</p>
+          @if (ssoError(); as e) { <ion-text color="danger"><p role="alert">{{ e }}</p></ion-text> }
+          <ion-button expand="block" color="secondary" (click)="signInWithAccount()" [disabled]="busy()">
+            {{ 'voter.sso.button' | translate }}</ion-button>
+          <ion-text color="medium"><p class="note">{{ 'voter.sso.note' | translate }}</p></ion-text>
+        </section>
+      }
+
+      @case ('code') {
+        <app-access-code-step [sent]="codeSent()" [busy]="busy()" [error]="codeError()"
+                              (resend)="sendCode()" (verify)="verifyCode($event)" />
+      }
+
+      @case ('ballot') {
+        @if (ballot(); as current) {
+          <app-ballot-step [ballot]="current" [language]="language()" [fallback]="fallback()"
+                           [(choice)]="choice" (continue)="review()" />
+        }
+      }
+
+      @case ('review') {
+        <app-review-step [choiceText]="choiceText()" [blank]="choice() === 'blank'" [busy]="busy()"
+                         (change)="changeSelection()" (confirm)="confirm()" />
+      }
+
+      @case ('receipt') {
+        <app-receipt-step [receiptCode]="receiptCode()!" [processId]="link()!.processId" />
+      }
+
+      @case ('notOpen') {
+        <app-error-state titleKey="voter.states.notOpen.title" messageKey="voter.states.notOpen.message"
+                         [messageParams]="{ opens: (link()?.opensAt | localDate: language()) }" icon="time-outline" />
+      }
+      @case ('closed') {
+        <app-error-state titleKey="voter.states.closed.title" messageKey="voter.states.closed.message"
+                         [messageParams]="{ closes: (link()?.closesAt | localDate: language()) }" icon="lock-closed-outline" />
+      }
+      @case ('invalidLink') {
+        <app-error-state titleKey="voter.states.invalidLink.title" messageKey="voter.states.invalidLink.message"
+                         icon="link-outline" />
+      }
+      @case ('expiredLink') {
+        <app-error-state titleKey="voter.states.expiredLink.title" messageKey="voter.states.expiredLink.message"
+                         icon="time-outline" />
+      }
+      @case ('locked') {
+        <app-error-state titleKey="voter.states.locked.title" messageKey="voter.states.locked.message"
+                         [messageParams]="{ until: (lockedUntil() | localDate: language()) }" icon="lock-closed-outline">
+          <ion-button expand="block" fill="outline" (click)="enterAgain()">{{ 'voter.states.tryAgain' | translate }}</ion-button>
+        </app-error-state>
+      }
+      @case ('alreadyVoted') {
+        <app-error-state titleKey="voter.states.alreadyVoted.title"
+                         [messageKey]="votedOn() ? 'voter.states.alreadyVoted.messageOn' : 'voter.states.alreadyVoted.message'"
+                         [messageParams]="{ day: (votedOn() | localDate: language() : false) }"
+                         icon="checkmark-circle-outline" />
+      }
+      @case ('sessionExpired') {
+        <app-error-state titleKey="voter.states.sessionExpired.title" messageKey="voter.states.sessionExpired.message"
+                         icon="time-outline">
+          <ion-button expand="block" color="secondary" (click)="enterAgain()">{{ 'voter.states.enterAgain' | translate }}</ion-button>
+        </app-error-state>
+      }
+      @case ('notRecorded') {
+        <app-error-state titleKey="voter.states.notRecorded.title" messageKey="voter.states.notRecorded.message"
+                         icon="cloud-offline-outline">
+          <ion-button expand="block" color="secondary" [disabled]="busy()" (click)="confirm()">
+            @if (busy()) {
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>&nbsp;{{ 'voter.review.sending' | translate }}
+            } @else {
+              {{ 'voter.states.retry' | translate }}
+            }
+          </ion-button>
+        </app-error-state>
+      }
+      @default {
+        <app-error-state titleKey="voter.states.error.title" messageKey="voter.states.error.message" />
+      }
+    }
+  </main>
+</ion-content>
+
+<ion-footer class="ion-padding">
+  <ion-text color="medium"><p class="secure">{{ 'voter.footer.secure' | translate }}</p></ion-text>
+</ion-footer>

@@ -1,0 +1,47 @@
+@startuml
+' PlantUML 1.2026.8. Las asociaciones actor--caso de uso no llevan punta de flecha.
+title Casos de uso: participación y verificación
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam shadowing false
+skinparam linetype ortho
+skinparam dpi 300
+skinparam nodesep 70
+skinparam ranksep 35
+skinparam noteFontSize 8
+skinparam ArrowFontSize 8
+skinparam usecase {
+  BackgroundColor #F6F8FC
+  BorderColor #34495E
+}
+
+actor Votante
+actor Auditor
+actor Administrador as Admin
+
+rectangle "Plataforma SaaS (Votación)" {
+  usecase "RF-05b\nIniciar sesión de votante" as RF05b
+  usecase "RF-08\nAcceder como votante" as RF08
+  usecase "RF-09\nEmitir voto" as RF09
+  usecase "RF-10\nObtener y verificar recibo" as RF10
+  usecase "RF-12\nPublicar y verificar auditoría" as RF12
+  usecase "RF-13b\nVerificar resultado publicado" as RF13b
+  usecase "RF-15\nConsultar y exportar resultados" as RF15
+}
+
+
+Votante -- RF05b
+Votante -- RF08
+Votante -- RF09
+Votante -- RF13b
+Auditor -- RF12
+Admin -- RF15
+
+' RF-05b es un caso independiente, separado del acceso RF-08.
+RF10 ..> RF09 : <<extend>>
+note right of RF09
+  Punto de extensión: tras confirmar la emisión
+end note
+@enduml
+

@@ -1,0 +1,56 @@
+\chapter{Conclusiones y trabajo futuro}
+\label{cap:conclusiones}
+
+\section{Respuesta a las preguntas de investigación}
+\textbf{RQ1.} El prototipo ofrece al votante un recibo y publica evidencias de
+presencia e integridad que pueden explicarse sin revelar la opción escogida.
+La comprensibilidad efectiva no queda demostrada hasta realizar la evaluación
+con usuarios; tampoco se ofrece verificabilidad extremo a extremo.
+
+\textbf{RQ2.} La separación entre voter-access y ballot-box, la ausencia de
+identificadores y marcas temporales por voto y el token de un solo uso
+constituyen los mecanismos implementados para controlar unicidad y reducir la
+vinculación directa. La protección tiene límites ante un operador que controle
+ambas bases o los dispositivos.
+
+\textbf{RQ3.} ISO/IEC 25010:2023 proporciona el marco para organizar los RNF y
+la evaluación. La suite automatizada aporta evidencia inicial de reglas
+seleccionadas y cuatro integraciones de migraciones y esquema en PostgreSQL.
+La integración de repositorios y flujos, la accesibilidad, la carga y la
+usabilidad siguen pendientes, lo que impide una valoración completa de calidad.
+
+\section{Cumplimiento de objetivos}
+OBJ-1 y OE1 cuentan con arquitectura multi-tenant, organizaciones, roles y
+aislamiento por organización implementados. OBJ-2 y OE2 cuentan con censos,
+procesos, ciclo de vida y API documentada. OBJ-3 y OE3 cuentan con flujo de
+participación, secreto por separación de datos y recibo; la accesibilidad y
+comprensión requieren validación pendiente. OBJ-4 y OE4 cuentan con auditoría,
+escrutinio, huellas y resultados; su evaluación de calidad sigue incompleta.
+Por tanto, el cumplimiento funcional implementado no equivale a aceptación
+experimental de todos los objetivos. Las limitaciones y el trabajo futuro de
+la sección~\ref{sec:limitaciones-trabajo-futuro} recogen los protocolos
+pendientes.
+
+\section{Limitaciones y trabajo futuro}
+\label{sec:limitaciones-trabajo-futuro}
+Quedan por ejecutar la integración de repositorios y flujos con PostgreSQL,
+las pruebas E2E del stack completo, la revisión manual de accesibilidad con
+teclado y lector de pantalla (H1a: parte automática favorable; parte manual pendiente; la parte
+automática se midió en el flujo del votante tras corregir las incidencias de
+la papeleta y del recibo), tres ejecuciones medidas de
+carga con k6 (H1c) y la
+sesión con cinco participantes votantes (H1b), que es la evaluación
+prioritaria; el consentimiento, el guion y la hoja de registro se conservan en
+\texttt{docs/evaluation/usabilidad/}. La sesión de RNF-4 con cinco
+administradores se realizó el 03/11/2026: los cinco completaron la tarea sin
+ayuda de otras personas, pero solo dos no tenían formación previa y los
+tiempos se estimaron después de la sesión, por lo que RNF-4 queda como no
+demostrado y su resultado solo es indicativo. Cerrarlo requiere repetir la
+sesión con administradores sin formación previa y tiempos cronometrados. Si alguna de estas
+evaluaciones no se completa antes de la entrega, su resultado figura como
+PENDIENTE en la tabla~\ref{tab:estado-hipotesis} y constituye una limitación
+de este trabajo. También se debe ampliar la cobertura de código.
+Las propuestas registradas en \texttt{docs/ai/IMPROVEMENTS.md} orientan
+mejoras posteriores. P9 contempla RF-11, RF-22 y RF-23 fuera del MVP actual.
+D-03 y D-05 fueron confirmadas por el tutor el 30/10/2026 mediante correo
+electrónico.

@@ -1,0 +1,703 @@
+openapi: 3.1.0
+info:
+  title: VeriVoto ballot-box-service API
+  version: v1
+  description: |
+    Ballot (RF-09), vote casting with receipt (RF-09, RF-10), receipt verification (RF-10), audit
+    chain and its verification (RF-12), minutes in PDF (RF-16),
+    automatic tally when the process closes and its publication (RF-13, RF-15, D-37).
+    The ballot box stores no identity, no voting token and no time of votes (RNF-11, D-18).
+    The receipt proves that a vote is present in the ballot box; it does not prove that the stored
+    vote is the one the voter intended (not cast-as-intended).
+    Error `detail` texts are written in plain Spanish (RNF-8).
+servers:
+  - url: http://localhost:8000
+    description: Local API gateway (voter, public and management endpoints)
+tags:
+  - name: voter
+    description: RF-09, RF-10 (public, used by the voter PWA)
+  - name: audit
+    description: RF-12 (auditor of the organization)
+  - name: results
+    description: RF-13, RF-15 (management with a Keycloak token; public fingerprints and public link)
+  - name: internal
+    description: Service-to-service endpoints (not exposed by the gateway)
+paths:
+  /api/v1/ballot-box/processes/{processId}/ballot:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [voter]
+      operationId: getBallot
+      summary: Ballot of a process, in every available language
+      description: |
+        RF-09 step 1, RF-20. All translations are returned so that changing language does not lose the selection.
+        Only with a valid voting token of the process in `X-Voting-Token` (IMP-31): ballot-box checks it in
+        voter-access without consuming it, so nobody can read the ballots of other processes or organizations.
+      security: []
+      parameters:
+        - name: X-Voting-Token
+          in: header
+          required: true
+          description: Voting token from voter-access (`/links/{linkToken}/otp/verify`). In a header, never in the URL.
+          schema: { type: string, maxLength: 200 }
+      responses:
+        '200':
+          description: Ballot
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Ballot' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+  /api/v1/ballot-box/processes/{processId}/votes:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    post:
+      tags: [voter]
+      operationId: castVote
+      summary: Cast a vote with a voting token and get the receipt
+      description: |
+        RF-09 steps 5–9, RF-10 step 1-2. The voting token is consumed in voter-access first; then the
+        vote, the receipt hash and the audit event are stored in one transaction. If storing fails, the
+        token consumption is reverted and 503 is returned: retrying with the same token is safe and
+        never creates a second vote (RNF-12). The receipt code is shown only in this response.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CastVoteRequest' }
+      responses:
+        '201':
+          description: Vote recorded
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VoteReceipt' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+  /api/v1/ballot-box/processes/{processId}/receipts/{receiptCode}:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+      - name: receiptCode
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/ReceiptCode' }
+    get:
+      tags: [voter]
+      operationId: verifyReceipt
+      summary: Check whether a receipt is present in the ballot box
+      description: RF-10 steps 3–5. Never reveals the content of the vote.
+      security: []
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [present]
+                properties:
+                  present: { type: boolean }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/ballot-box/processes/{processId}/fingerprints:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [results]
+      operationId: getFingerprints
+      summary: Public fingerprints of the ballot box
+      description: |
+        RF-12 step 6, RF-13 step 5. Public (ADR-0007): the final hash once the process is CLOSED and the
+        result hash once it is TALLIED. They reveal neither identities nor individual votes.
+      security: []
+      responses:
+        '200':
+          description: Fingerprints (null while not available yet)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Fingerprints' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/ballot-box/processes/{processId}/audit-events:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [audit]
+      operationId: listAuditEvents
+      summary: Events of the hash chain of the ballot box
+      description: |
+        Role: AUDITOR of the organization of the process. RF-12 steps 1–2. In order of sequence. Vote events carry
+        no time and no data of the voter (D-18, RNF-11).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: size
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        '200':
+          description: Page of events
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuditEventPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/ballot-box/processes/{processId}/audit-events/verification:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [audit]
+      operationId: getLastChainCheck
+      summary: Result of the last verification of the chain
+      description: "Role: AUDITOR. RF-12 step 5. 404 if the chain was never verified."
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Last verification
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ChainCheck' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [audit]
+      operationId: verifyChain
+      summary: Verify the integrity of the chain now
+      description: |
+        Role: AUDITOR. RF-12 steps 3–5. Recomputes every event hash and link, and checks that the head stored with the
+        ballot, the number of vote events, votes and receipts and the CLOSED event agree. A broken chain records a
+        `CHAIN_BROKEN` incident (once per process, day only) and stops the tally (RF-12 exception 5, D-38).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Verification done (also when the chain is broken)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ChainCheck' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/ballot-box/processes/{processId}/results:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [results]
+      operationId: getResult
+      summary: Result of a tallied process
+      description: |
+        Roles: ADMIN, AUDITOR or INTEGRATION (API key, RF-21) of the organization of the process. RF-13, RF-15. 409 while the process
+        is not tallied: no view shows counts per option before the tally (RF-14).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Result' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/ballot-box/processes/{processId}/results/counted-votes:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [results]
+      operationId: getCountedVotes
+      summary: Counted votes, to recompute the tally and its hash
+      description: |
+        Roles: ADMIN, AUDITOR, INTEGRATION (API key, RF-21). RF-13 steps 6–8. Each vote has only its random identifier and the option
+        (null = blank), sorted by identifier, so the order of casting is not visible. No receipts, so a
+        voter cannot prove to someone else what they voted.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Counted votes
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CountedVotes' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/ballot-box/processes/{processId}/results/export:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [results]
+      operationId: exportResult
+      summary: Export the result as CSV
+      description: |
+        Roles: ADMIN, INTEGRATION (API key, RF-21). RF-15 step 5. UTF-8 with BOM, separator `;`, decimal comma, one row per option plus
+        blank votes, followed by participation and both hashes.
+      parameters:
+        - name: lang
+          in: query
+          description: Language of the labels and texts (the default language of the ballot if a text is missing)
+          schema: { type: string, enum: [es, en], default: es }
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: CSV file
+          content:
+            text/csv:
+              schema: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/v1/ballot-box/processes/{processId}/results/minutes:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [results]
+      operationId: getMinutes
+      summary: Minutes of the result as PDF
+      description: |
+        Role: ADMIN. RF-16. Process, calendar, census, participation, result per option and both hashes. Generated the
+        first time it is asked for in each language and stored (RI-10); later requests return the same file, whose
+        SHA-256 goes in the `X-Content-SHA256` header. 409 while there is no result; 503 if it could not be generated
+        (it can be asked again).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: lang
+          in: query
+          schema: { type: string, enum: [es, en], default: es }
+      responses:
+        '200':
+          description: PDF file
+          headers:
+            X-Content-SHA256:
+              description: SHA-256 of the file (lower-case hexadecimal)
+              schema: { type: string, pattern: '^[0-9a-f]{64}$' }
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+  /api/v1/ballot-box/public/results/{publicId}:
+    parameters:
+      - $ref: '#/components/parameters/PublicId'
+    get:
+      tags: [results]
+      operationId: getPublicResult
+      summary: Result through the public link
+      description: |
+        Public. Only for processes with `PUBLIC_LINK` once tallied (D-16); otherwise 404 without saying why.
+      security: []
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Result' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/ballot-box/public/results/{publicId}/counted-votes:
+    parameters:
+      - $ref: '#/components/parameters/PublicId'
+    get:
+      tags: [results]
+      operationId: getPublicCountedVotes
+      summary: Counted votes through the public link
+      description: Public, same rules as the public result. RF-13 steps 6–8.
+      security: []
+      responses:
+        '200':
+          description: Counted votes
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CountedVotes' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/ballot-box/voter/processes/{processId}/results:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+      - $ref: '#/components/parameters/ResultsToken'
+    get:
+      tags: [results]
+      operationId: getVoterResult
+      summary: Result for a person of the roll (personal link + code)
+      description: |
+        RF-15 with `CENSUS_ONLY` (D-41), also valid with `PUBLIC_LINK`. The results token comes from voter-access
+        (`/links/{linkToken}/otp/verify` once the process is TALLIED) and is checked there on every request;
+        ballot-box never learns who the voter is. 404 without a valid token, 410 when it expired.
+      security: []
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Result' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+  /api/v1/ballot-box/voter/processes/{processId}/results/counted-votes:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+      - $ref: '#/components/parameters/ResultsToken'
+    get:
+      tags: [results]
+      operationId: getVoterCountedVotes
+      summary: Counted votes for a person of the roll, to verify the result in the browser
+      description: Same rules as the voter result (D-41). RF-13 steps 6–8.
+      security: []
+      responses:
+        '200':
+          description: Counted votes
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CountedVotes' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+  /internal/v1/processes/{processId}:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    put:
+      tags: [internal]
+      operationId: upsertBallotSnapshot
+      summary: Receive the ballot when the process is scheduled
+      description: Called by election-service. Idempotent. Rejected once the process is OPEN.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BallotSnapshot' }
+      responses:
+        '204':
+          description: Ballot stored
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /internal/v1/processes/{processId}/status:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    put:
+      tags: [internal]
+      operationId: updateProcessStatus
+      summary: Receive a lifecycle change
+      description: |
+        Called by election-service. Idempotent. OPEN appends the OPENED audit event; CLOSED appends
+        CLOSED and fixes the final hash (RF-12). The tally runs afterwards on its own and tells
+        election-service when it is done (RF-13, D-37). Votes are also rejected after `closesAt`
+        even if this call has not arrived yet.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/StatusUpdate' }
+      responses:
+        '204':
+          description: Status stored
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Keycloak token of a management user (`roles` and `organization_id` claims).
+    serviceAuth:
+      type: oauth2
+      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE). Internal endpoints are never routed by the gateway. Each route accepts only the Keycloak client that uses it (claim `azp`, IMP-26), here only `election-service`.
+      flows:
+        clientCredentials:
+          tokenUrl: http://localhost:8080/realms/verivoto/protocol/openid-connect/token
+          scopes: {}
+  parameters:
+    ProcessId:
+      name: processId
+      in: path
+      required: true
+      schema: { type: integer, format: int64, minimum: 1 }
+    ResultsToken:
+      name: X-Results-Token
+      in: header
+      required: true
+      description: Results token from voter-access (D-41). In a header so it never appears in URLs or access logs.
+      schema: { type: string, maxLength: 200 }
+    PublicId:
+      name: publicId
+      in: path
+      required: true
+      description: Random identifier of the public results link (`results_public_id`)
+      schema: { type: string, format: uuid }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Not found (also returned for invalid personal links, without saying why)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: The operation conflicts with the current state
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Gone:
+      description: Expired link, code or token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unprocessable:
+      description: The process is not in a state that allows this operation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unavailable:
+      description: The vote could not be recorded; nothing was stored and the token can be used again
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: The role of the user does not allow this operation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Language:
+      type: string
+      enum: [es, en]
+    LocalizedText:
+      type: object
+      minProperties: 1
+      propertyNames: { $ref: '#/components/schemas/Language' }
+      additionalProperties: { type: string, minLength: 1 }
+    ProcessStatus:
+      type: string
+      enum: [SCHEDULED, OPEN, CLOSED, TALLIED, ARCHIVED]
+    ResultsVisibility:
+      type: string
+      enum: [CENSUS_ONLY, PUBLIC_LINK]
+    StatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+    VoteType:
+      type: string
+      enum: [SINGLE_CHOICE, YES_NO_ABSTAIN]
+    BallotOption:
+      type: object
+      required: [id, position, text]
+      properties:
+        id: { type: integer, format: int64 }
+        position: { type: integer, minimum: 1 }
+        text: { $ref: '#/components/schemas/LocalizedText' }
+    Ballot:
+      type: object
+      required: [processId, voteType, question, options, blankVoteEnabled, closesAt]
+      properties:
+        processId: { type: integer, format: int64 }
+        voteType: { $ref: '#/components/schemas/VoteType' }
+        question: { $ref: '#/components/schemas/LocalizedText' }
+        options:
+          type: array
+          items: { $ref: '#/components/schemas/BallotOption' }
+        blankVoteEnabled: { type: boolean }
+        closesAt: { type: string, format: date-time }
+    CastVoteRequest:
+      type: object
+      required: [votingToken, selection]
+      properties:
+        votingToken: { type: string, description: Single-use token from voter-access. Never stored or logged. }
+        selection:
+          oneOf:
+            - type: object
+              required: [optionId]
+              properties:
+                optionId: { type: integer, format: int64 }
+              additionalProperties: false
+            - type: object
+              required: [blank]
+              properties:
+                blank: { const: true }
+              additionalProperties: false
+    ReceiptCode:
+      type: string
+      pattern: '^[0-9a-f]{64}$'
+    VoteReceipt:
+      type: object
+      required: [receiptCode]
+      properties:
+        receiptCode: { $ref: '#/components/schemas/ReceiptCode' }
+    BallotSnapshot:
+      type: object
+      required: [organizationId, status, opensAt, closesAt, voteType, question, options, blankVoteEnabled, eligibleVoters, resultsVisibility]
+      properties:
+        organizationId: { type: string, pattern: '^[A-Za-z0-9]{1,20}$' }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+        voteType: { $ref: '#/components/schemas/VoteType' }
+        question: { $ref: '#/components/schemas/LocalizedText' }
+        options:
+          type: array
+          items: { $ref: '#/components/schemas/BallotOption' }
+        blankVoteEnabled: { type: boolean }
+        eligibleVoters: { type: integer, minimum: 1, description: Census size, used for participation (RF-13) }
+        resultsVisibility: { $ref: '#/components/schemas/ResultsVisibility' }
+        resultsPublicId: { type: [string, 'null'], format: uuid }
+        title:
+          description: Title of the process, for the minutes (RF-16). Optional; without it the question is used.
+          $ref: '#/components/schemas/LocalizedText'
+    AuditEventType:
+      type: string
+      enum: [OPENED, VOTE_RECEIVED, CLOSED, FINAL_HASH_PUBLISHED]
+    AuditEvent:
+      type: object
+      required: [sequence, type, occurredAt, payloadHash, previousHash, eventHash]
+      properties:
+        sequence: { type: integer, format: int64, minimum: 1 }
+        type: { $ref: '#/components/schemas/AuditEventType' }
+        occurredAt: { type: [string, 'null'], format: date-time, description: Null for vote events (D-18) }
+        payloadHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+        previousHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+        eventHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+    AuditEventPage:
+      type: object
+      required: [items, page, size, totalItems, status]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/AuditEvent' }
+        page: { type: integer }
+        size: { type: integer }
+        totalItems: { type: integer }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        closesAt: { type: string, format: date-time }
+        finalHash: { type: [string, 'null'], pattern: '^[0-9a-f]{64}$' }
+    ChainProblem:
+      type: object
+      required: [code]
+      properties:
+        sequence: { type: [integer, 'null'], format: int64, description: Event where the problem was found, if any }
+        code:
+          type: string
+          enum: [HASH_MISMATCH, BROKEN_LINK, SEQUENCE_GAP, HEAD_MISMATCH, BALLOT_MISMATCH, VOTE_COUNT_MISMATCH, CLOSED_COUNT_MISMATCH, FINAL_HASH_MISMATCH]
+    ChainCheck:
+      type: object
+      required: [processId, intact, eventsChecked, checkedAt, problems]
+      properties:
+        processId: { type: integer, format: int64 }
+        intact: { type: boolean }
+        eventsChecked: { type: integer, minimum: 0 }
+        checkedAt: { type: string, format: date-time }
+        finalHash: { type: [string, 'null'], pattern: '^[0-9a-f]{64}$' }
+        problems:
+          type: array
+          items: { $ref: '#/components/schemas/ChainProblem' }
+    Fingerprints:
+      type: object
+      required: [processId, status]
+      properties:
+        processId: { type: integer, format: int64 }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        finalHash: { type: [string, 'null'], pattern: '^[0-9a-f]{64}$', description: Hash of the CLOSED event (ADR-0006) }
+        resultHash: { type: [string, 'null'], pattern: '^[0-9a-f]{64}$', description: Hash of the canonical result (D-37) }
+    OptionResult:
+      type: object
+      required: [optionId, position, text, votes, percentage]
+      properties:
+        optionId: { type: integer, format: int64 }
+        position: { type: integer, minimum: 1 }
+        text: { $ref: '#/components/schemas/LocalizedText' }
+        votes: { type: integer, minimum: 0 }
+        percentage: { type: number, description: Share of all votes cast (blank included), 2 decimals }
+    Result:
+      type: object
+      required: [processId, status, talliedAt, voteType, question, options, blankVoteEnabled, blankVotes, blankPercentage, totalVotes, eligibleVoters, participation, finalHash, resultHash]
+      properties:
+        processId: { type: integer, format: int64 }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        talliedAt: { type: string, format: date-time }
+        voteType: { $ref: '#/components/schemas/VoteType' }
+        question: { $ref: '#/components/schemas/LocalizedText' }
+        options:
+          type: array
+          items: { $ref: '#/components/schemas/OptionResult' }
+        blankVoteEnabled: { type: boolean }
+        blankVotes: { type: integer, minimum: 0 }
+        blankPercentage: { type: number }
+        totalVotes: { type: integer, minimum: 0 }
+        eligibleVoters: { type: integer, minimum: 1 }
+        participation: { type: number, description: Votes cast over census size, in percent with 2 decimals }
+        finalHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+        resultHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+    CountedVotes:
+      type: object
+      description: |
+        Recompute (D-37): votesHash = SHA-256 of the lines `voteId:optionId` (or `voteId:blank`) in this
+        order (by the lower-case text of `voteId`) joined by `\n`; resultHash = SHA-256 of
+        `result|processId|finalHash|eligibleVoters|totalVotes|blankVotes|optionId:votes|…|votesHash`,
+        with the options by position. SHA-256 in lower-case hexadecimal over UTF-8.
+      required: [processId, finalHash, resultHash, eligibleVoters, optionIds, votes]
+      properties:
+        processId: { type: integer, format: int64 }
+        finalHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+        resultHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+        eligibleVoters: { type: integer, minimum: 1 }
+        optionIds:
+          type: array
+          description: Options of the ballot by position
+          items: { type: integer, format: int64 }
+        votes:
+          type: array
+          items:
+            type: object
+            required: [voteId, optionId]
+            properties:
+              voteId: { type: string, format: uuid }
+              optionId: { type: [integer, 'null'], format: int64, description: null = blank vote }
+    Problem:
+      type: object
+      description: RFC 9457 problem details. `detail` is plain Spanish for the end user (RNF-8).
+      required: [title, status]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }

@@ -1,0 +1,88 @@
+# Realm `verivoto` de Keycloak (P3.2)
+
+El realm está versionado en `infra/keycloak/realm/verivoto-realm.json` y Keycloak lo importa al arrancar
+(`start-dev --import-realm`). Resuelve RF-04 y RF-05a por configuración (D-02); no hay código de autenticación propio.
+
+## Contenido
+
+| Elemento | Valor | Requisito |
+| --- | --- | --- |
+| Roles de realm | `SUPERADMIN`, `ADMIN`, `AUDITOR`, `CENSUS_MANAGER`, `SERVICE` | RF-02, D-22 |
+| Flujo de navegador | `verivoto browser`: cookie, o redirección a IdP, o contraseña + Email OTP (ambos obligatorios) | RF-04, RF-05a |
+| Email OTP | 6 dígitos (`0123456789`), caduca en 600 s, reenvío cada 60 s, máximo 5 códigos en 900 s; confianza por IP y por dispositivo desactivada | RF-04, RNF-14 |
+| Bloqueo por fuerza bruta | 5 fallos; bloqueo temporal que crece de 60 s hasta 900 s; no permanente | RNF-14 |
+| Política de contraseñas | 12 caracteres mínimo, distinta del usuario y del correo, sin repetir las 3 últimas. Keycloak guarda solo el hash con sal | RNF-14 |
+| Sesiones | Access token 5 min; inactividad 30 min; máximo 8 h | RNF-14 |
+| Idiomas | `es` (por defecto) y `en` | RNF-5 |
+| SMTP | `mailpit:1025` sin TLS (solo desarrollo) | RF-04 |
+| Perfil de usuario | `username`, `email` (obligatorio), `firstName` (nombre completo), `lastName` (opcional) y `organization_id` (solo lo edita un administrador, máx. 20) | D-17, D-25 |
+
+## Clientes
+
+| Cliente | Tipo | Uso |
+| --- | --- | --- |
+| `verivoto-admin` | Público, Authorization Code + PKCE (S256) | Consola de gestión (`http://localhost:4200`) |
+| `identity-service` | Confidencial, *service account* con `manage-users`, `view-users`, `query-users`, `manage-clients`, `view-clients` y `view-realm` de `realm-management` y rol `SERVICE` | Crear usuarios de gestión y asignar roles por la Admin API (RF-02; `view-realm` hace falta para leer el rol de realm que se asigna, DEF-04); crear y borrar los clientes de las claves de API (RF-21). En un realm ya importado, añadir `view-realm` a mano: *Clients* → `identity-service` → *Service accounts roles* → *Assign role* → `realm-management` → `view-realm` |
+| `election-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access y ballot-box |
+| `ballot-box-service` | Confidencial, *service account* con rol `SERVICE` | Llamar a `/internal/**` de voter-access |
+| `voter-access-service` | Confidencial, *service account* con rol `SERVICE` | Entregar sus acciones administrativas a `/internal/v1/admin-actions` de identity (RF-19, D-45) |
+| `verivoto-voter` | Público, Authorization Code + PKCE (S256), solo vuelta a `/votar/sso` | Votantes de procesos con cuenta institucional (RF-05b, D-48); solo se usa el correo verificado del ID token |
+| `verivoto-dev-swagger` | Público, Authorization Code + PKCE. **Solo desarrollo** | Swagger UI de los servicios (puertos 8081–8084). Ver `api-testing.md` |
+
+Todos los clientes llevan dos mappers propios que añaden al token:
+
+- `roles`: lista de roles de realm (el claim que ya lee `SecurityConfiguration`).
+- `organization_id`: atributo de usuario con el identificador de RI-1 (vacío para el Superadministrador).
+
+**Claves de API (RF-21, D-47).** No están en el JSON: identity crea un cliente `api-{organización}-{8 hex}` por
+cada clave (confidencial, solo *client credentials*, tokens de 5 min) con un *claim* fijo `organization_id` y el
+rol de realm `INTEGRATION` en su cuenta de servicio, y lo borra al revocarla.
+
+## Secretos
+
+El fichero no contiene secretos. Usa marcadores `${VAR}` que Keycloak resuelve con variables de entorno al
+importar: `VERIVOTO_SUPERADMIN_EMAIL`, `VERIVOTO_SUPERADMIN_INITIAL_PASSWORD`,
+`IDENTITY_SERVICE_CLIENT_SECRET`, `ELECTION_SERVICE_CLIENT_SECRET`, `BALLOT_BOX_SERVICE_CLIENT_SECRET` y
+`VOTER_ACCESS_SERVICE_CLIENT_SECRET` (definidas en `infra/.env`).
+
+## Superadministrador inicial
+
+Usuario `superadmin` con rol `SUPERADMIN` y contraseña temporal: al primer acceso pide la contraseña, el
+código por correo (llega a Mailpit, `http://localhost:8025`) y una contraseña nueva que cumpla la política.
+
+## Cambiar el realm
+
+Keycloak **no** reimporta un realm que ya existe. Tras modificar el JSON, en desarrollo:
+
+1. Borrar el realm `verivoto` desde la consola de administración (`http://localhost:8080`, usuario `local-admin`).
+2. Reiniciar Keycloak: `docker compose -f infra/compose.yaml --env-file infra/.env restart keycloak`.
+
+Se pierden los usuarios creados en ese realm. Alternativa: `docker compose ... down -v` (borra todas las BD locales).
+
+## Cuenta institucional de los votantes (RF-05b, D-48)
+
+Un proceso con `INSTITUTIONAL_SSO` envía al votante a Keycloak con el cliente `verivoto-voter`. Para que entre con
+la cuenta de su universidad hay que dar de alta el proveedor de identidad de la organización en el realm
+(*Identity providers*: SAML o OIDC) y, si se quiere, ocultar el formulario de usuario y contraseña del realm para ese
+cliente. El ID token debe llevar `email` y `email_verified`; voter-access solo compara ese correo con el del censo.
+Hoy esa configuración es manual (IMP-42).
+
+## SSO institucional (RF-05a)
+
+El flujo ya incluye `identity-provider-redirector`. Para probar SSO hace falta un proveedor OIDC externo
+(otra instancia o realm de Keycloak, o el IdP de una universidad). Se configura en la consola como
+*Identity Provider* de tipo OpenID Connect. No se versiona porque cada organización tendrá el suyo.
+
+## Comprobación manual
+
+1. Consola: `http://localhost:8080/admin/master/console/#/verivoto` muestra el realm, sus roles y clientes.
+2. Login del superadministrador: `http://localhost:8080/realms/verivoto/account`.
+3. Token de una cuenta de servicio (PowerShell):
+
+```powershell
+$body = @{ grant_type = "client_credentials"; client_id = "election-service"; client_secret = "<ELECTION_SERVICE_CLIENT_SECRET>" }
+$t = Invoke-RestMethod -Method Post -Uri http://localhost:8080/realms/verivoto/protocol/openid-connect/token -Body $body
+$t.access_token.Split('.')[1]
+```
+
+Al decodificar el segundo fragmento (Base64URL) debe aparecer `"roles": [..., "SERVICE", ...]`.

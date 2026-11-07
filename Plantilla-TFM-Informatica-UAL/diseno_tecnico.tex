@@ -1,0 +1,56 @@
+\chapter{Diseño técnico y arquitectura implementada}
+\label{cap:diseno-tecnico}
+
+\section{Vista de arquitectura}
+VeriVoto implementa una aplicación web Angular/Ionic y cinco servicios
+Spring: \texttt{api-gateway}, \texttt{identity-service},
+\texttt{election-service}, \texttt{voter-access-service} y
+\texttt{ballot-box-service}. Keycloak presta la autenticación y PostgreSQL
+almacena los datos. La elección de cinco servicios y la exclusión del revoto
+corresponden a D-05 y D-03; ambas fueron confirmadas por el tutor el
+30/10/2026 mediante correo electrónico.
+
+La separación lógica de responsabilidades es la siguiente:
+\begin{description}
+ \item[Gateway.] Punto de entrada de la API y encaminamiento a los servicios.
+ \item[Identity.] Organizaciones, roles, claves de API y agregación de
+ trazabilidad administrativa.
+ \item[Election.] Censos, procesos, papeletas, ciclo de vida y propagación de
+ instantáneas y estados.
+ \item[Voter access.] Credenciales del votante, participación, tokens de
+ emisión y resultados, notificaciones y recordatorios.
+ \item[Ballot box.] Recepción de votos, recibos, cadena de auditoría,
+ escrutinio, resultados y actas.
+\end{description}
+
+\section{Persistencia y separación de información}
+\texttt{pg-main} contiene bases lógicas de identity, election, voter-access y
+Keycloak. \texttt{pg-ballot} es una instancia separada para la urna. En
+voter-access se registra la participación por día, mientras que la urna
+almacena votos y eventos sin identidad ni marca temporal por voto. Esta
+separación reduce la relación directa entre persona y selección; no protege
+frente a un operador que controle y correlacione toda la infraestructura.
+
+\section{Comunicación y patrón outbox}
+Las llamadas entre servicios usan REST y credenciales de servicio. Las rutas
+internas autorizan el cliente esperado mediante el claim \texttt{azp} (D-43).
+Election persiste eventos de propagación en una tabla \emph{outbox}; un
+despachador aplica reintentos e idempotencia en los receptores. El MVP no
+incorpora un broker de mensajes (D-06).
+
+\section{Autenticación y aislamiento multi-tenant}
+Keycloak autentica a los usuarios de gestión. Para votantes, cada proceso
+selecciona \texttt{EMAIL\_CODE} o \texttt{INSTITUTIONAL\_SSO} (D-48). En el
+segundo flujo se usa Authorization Code con PKCE, \texttt{state} y
+\texttt{nonce}; el correo verificado debe coincidir con la entrada del censo.
+El enlace personal sigue siendo necesario. Las consultas de negocio se
+restringen por \texttt{organization\_id}. El rol \texttt{INTEGRATION} ofrece
+acceso de solo lectura.
+
+\section{Decisiones arquitectónicas}
+Los ADR-0001--0009 documentan, entre otros aspectos, la arquitectura
+hexagonal, REST y outbox, la separación física de la urna, la generación de
+recibos y la cadena de auditoría. La consolidación en cinco servicios (D-05)
+y la exclusión del revoto del MVP (D-03), que queda como trabajo futuro (P9),
+fueron confirmadas por el tutor el 30/10/2026 mediante correo
+electrónico.

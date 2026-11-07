@@ -1,0 +1,156 @@
+% Estado del arte basado en la revisión documental entregada como informe complementario.
+\chapter{Estado del arte y justificación}
+\label{cap:estado-arte}
+
+\section{Criterios y método de revisión}
+\label{sec:criterios-revision}
+
+La revisión compara modelo de prestación, identidad y elegibilidad, secreto,
+verificabilidad, integraciones, experiencia móvil y transparencia económica.
+La revisión del informe complementario se cerró el 30 de septiembre de 2026 y
+se basó en páginas de proveedores, documentación, literatura y fuentes
+secundarias. No se realizaron pruebas directas de las plataformas. Por ello,
+las funciones comerciales y los precios de la tabla~\ref{tab:comparativa-plataformas}
+son una fotografía documental que debe contrastarse antes de tomar decisiones
+de compra o afirmar una superioridad técnica.
+
+En votación remota son relevantes la elegibilidad y unicidad, el secreto, la
+verificabilidad individual y universal, la resistencia a la coacción, la
+disponibilidad y la accesibilidad. La verificación extremo a extremo no debe
+confundirse con una bitácora de eventos o una huella: estas últimas aportan
+integridad y trazabilidad, pero por sí solas no demuestran que la selección
+del votante se cifró y contó correctamente.
+
+\section{Sistemas desplegados y lecciones de seguridad}
+\label{sec:casos-reales-voto}
+
+El análisis independiente del sistema estonio describió limitaciones
+arquitectónicas y procedimentales, así como riesgos para la integridad y la
+transparencia operacional \citep{springall2014estonia}. Estonia combina el
+voto remoto con una identidad electrónica nacional y controles institucionales;
+esa infraestructura no puede darse por supuesta en una asociación o universidad.
+La lección para este proyecto es admitir mecanismos de autenticación robustos
+que se adapten a cada organización y mantener controles propios de elegibilidad.
+La federación con un proveedor de identidad, por ejemplo mediante OIDC, puede
+considerarse como una integración opcional.
+
+En el sistema Swiss Post/Scytl, Haines y colaboradores documentaron errores de
+implementación criptográfica que permitían aceptar pruebas de resultado aunque
+los votos hubieran sido manipulados \citep{haines2020swisspost}. El trabajo de
+Voatz analizó vulnerabilidades que podían alterar, bloquear o exponer votos;
+el uso de blockchain no eliminaba los riesgos de la aplicación y de su
+infraestructura \citep{specter2020voatz}. Estos estudios justifican no
+implementar criptografía propia, reutilizar protocolos y bibliotecas revisados,
+publicar las decisiones de diseño y distinguir las garantías demostradas de
+las aspiraciones del sistema.
+
+Helios y Belenios son referentes académicos de voto web verificable
+\citep{adida2008helios,cortier2019belenios}. La Recomendación CM/Rec(2017)5
+del Consejo de Europa proporciona criterios institucionales para sistemas de
+voto electrónico \citep{coe2017evoting}. La literatura y las auditorías no
+resuelven por sí solas la experiencia de verificación para personas no
+técnicas ni la resistencia a la coacción en un entorno remoto; ambas cuestiones
+permanecen como límites explícitos del proyecto.
+
+El análisis del sistema iVote de Nueva Gales del Sur aporta otro caso de
+fallos de seguridad y verificación en una elección en directo
+\citep{halderman2015ivote}. La revisión de Trail of Bits sobre Voatz fue
+encargada por la propia empresa y tuvo un alcance distinto del estudio
+académico; se cita como evaluación complementaria, no como confirmación
+independiente de todos sus resultados \citep{trailofbits2020voatz,mitnews2020voatz,vice2020voatz}.
+Para el contexto histórico e institucional de Estonia se consultan también
+Madise y Vinkel, las estadísticas oficiales y la información institucional
+\citep{madise2014estonia,estoniaelections2026,eestonia2026}.
+
+\section{Comparativa de plataformas}
+\label{sec:comparativa-plataformas}
+
+La tabla~\ref{tab:comparativa-plataformas} sintetiza la información pública
+reunida en el informe. Las menciones de API, precios, certificación y
+funciones son afirmaciones documentales atribuibles a sus páginas o a la
+comparativa secundaria indicada; no son resultados de ensayos propios
+\citep{votedirect2026comparativa,capterra2026voting}.
+
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|p{0.15\textwidth}|p{0.13\textwidth}|p{0.20\textwidth}|p{0.20\textwidth}|p{0.21\textwidth}|}
+\caption{Comparativa documental de plataformas de votación (consulta del informe: septiembre de 2026).}\label{tab:comparativa-plataformas}\\
+\hline
+\textbf{Plataforma} & \textbf{Modelo} & \textbf{Verificación / identidad} & \textbf{API e integración} & \textbf{Móvil y precio público} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Plataforma} & \textbf{Modelo} & \textbf{Verificación / identidad} & \textbf{API e integración} & \textbf{Móvil y precio público} \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+ElectionBuddy \citep{electionbuddy2026} & SaaS & Registro y códigos; el informe no identifica E2E criptográfica & API pública no identificada por la comparativa consultada & Web; tramos publicados según la comparativa \\
+\hline
+Simply Voting \citep{simplyvoting2026} & SaaS & Códigos de acceso e informes de auditoría & API pública no identificada en el informe & Web; presupuesto \\
+\hline
+OpaVote \citep{opavote2026} & SaaS & Enlace único por correo; voto preferencial & API pública no identificada en el informe & Web; tramo gratuito y pago por electores según la fuente \\
+\hline
+vote.direct \citep{votedirect2026comparativa} & SaaS & Verificación por correo/SMS; funciones adicionales declaradas por el proveedor & API declarada por el proveedor & Web y widgets; precio por elección según la fuente \\
+\hline
+Helios \citep{adida2008helios,helios2026} & Código abierto & Verificabilidad criptográfica; identificación simple en despliegues públicos & Integración limitada según el informe & Web; software abierto \\
+\hline
+Belenios \citep{cortier2019belenios,belenios2026,inria2018pesto} & Código abierto (AGPLv3) & Privacidad y verificabilidad; autoridades de descifrado umbral & CAS y proveedores externos; API no confirmada por el informe & Web; instancia pública sin coste \\
+\hline
+Vocdoni \citep{vocdoni2026docs,vocdoni2026sdk,vocdoniintegratorsdk2026} & Protocolo abierto y servicio & Pruebas criptográficas según arquitectura publicada & SDK y componentes de integración publicados & Web; modalidad gratuita y condiciones comerciales sujetas al proveedor \\
+\hline
+Decidim + Bulletin Board \citep{decidim2026,vocdonidecidim2026} & Código abierto / autoalojado & Integración de herramientas de participación y voto & API de Decidim; integración depende del despliegue & Web; coste de operación propio \\
+\hline
+POLYAS \citep{polyas2026pricing,polyas2026security} & SaaS certificado & Certificación y funciones de verificabilidad según producto y versión & Detalle de API no confirmado en el informe & Web; precios por producto y presupuesto \\
+\hline
+Scytl \citep{uabscytl2026,scytl2019espanol,scytl2024liquidacion,scytl2024elnacional,haines2020swisspost} & Servicio comercial & Historial de uso institucional; la implementación suiza fue objeto de auditoría independiente & Integración contractual & Web; presupuesto \\
+\hline
+NemoVote \citep{nemovote2026} & SaaS & Cifrado declarado; detalles no comparables en las fuentes examinadas & No confirmado en el informe & Web; precio no confirmado \\
+\hline
+Eligo \citep{eligo2026} & Servicio comercial & Detalles dependen de la oferta contratada & No confirmado en el informe & Web; presupuesto \\
+\hline
+Voatz \citep{specter2020voatz} & Aplicación móvil propietaria & Análisis académico documentó vulnerabilidades de seguridad y privacidad & Integración propietaria & Aplicación móvil; no se usa como referencia de seguridad \\
+\hline
+Google Forms \citep{googleforms2026} & Formularios generalistas & No ofrece por sí mismo garantías de secreto ni verificación electoral E2E & Integración de formularios disponible & Web; servicio generalista \\
+\hline
+\end{longtable}
+\setlength{\tabcolsep}{6pt}
+\normalsize
+
+\section{Hallazgos y huecos detectados}
+\label{sec:huecos-mercado}
+
+La revisión sugiere tres grupos: servicios comerciales fáciles de desplegar,
+proyectos abiertos con capacidades criptográficas pero mayor exigencia técnica,
+y soluciones certificadas o de contratación institucional. La evidencia
+disponible no permite afirmar que todas las plataformas de cada grupo tengan
+las mismas limitaciones.
+\begin{itemize}
+  \item \textbf{Identidad:} la autenticación por enlace o correo es frecuente;
+  el SSO institucional (SAML, OIDC o CAS) no aparece como capacidad uniforme
+  en los servicios generalistas. La identidad electrónica de Estonia no es
+  replicable sin más en organizaciones ordinarias \citep{springall2014estonia,belenios2026}.
+  \item \textbf{Integración:} la API pública y los webhooks aparecen de forma
+  desigual en la comparación. Una API REST documentada con claves aisladas por
+  organización constituye una oportunidad de diseño, no una ventaja ya
+  demostrada frente a todos los proveedores.
+  \item \textbf{Verificación usable:} hay una distancia entre confiar en el
+  proveedor y revisar pruebas criptográficas. Recibos explicados en lenguaje
+  claro pueden facilitar la comprensión, pero no deben presentarse como prueba
+  E2E sin una construcción criptográfica adecuada.
+  \item \textbf{Accesibilidad móvil y transparencia económica:} una PWA
+  accesible y precios comprensibles responden a necesidades observadas; la
+  información de precios de proveedores certificados y de contratación suele
+  depender de una oferta particular.
+  \item \textbf{Riesgos aún abiertos:} la coacción, el malware del dispositivo,
+  los ataques de disponibilidad y la verificación de que la papeleta elegida
+  coincide con la emitida requieren controles adicionales y evaluación
+  especializada \citep{coe2017evoting,specter2020voatz}.
+\end{itemize}
+
+La propuesta se justifica como artefacto académico acotado: combinar gestión
+multi-organización, autenticación segura, API, accesibilidad y
+trazabilidad comprensible para consultas internas, sin atribuir al prototipo
+garantías propias de una elección política vinculante.

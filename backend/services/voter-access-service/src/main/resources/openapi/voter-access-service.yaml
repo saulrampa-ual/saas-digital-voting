@@ -1,0 +1,789 @@
+openapi: 3.1.0
+info:
+  title: VeriVoto voter-access-service API
+  version: v1
+  description: |
+    Voter access with personal link + email one-time code (RF-08, RNF-14) and single-use voting
+    tokens. Voter endpoints need no account: the personal link and the code identify the voter.
+    This service never receives the chosen option nor the receipt (RNF-11). It also gives the
+    participation of a process to its administrator (RF-14), counted by day only (D-18), and lets
+    them follow the emails to voters and send reminders to the people who have not voted (RF-17, D-45).
+    Error `detail` texts are written in plain Spanish (RNF-8).
+servers:
+  - url: http://localhost:8000
+    description: Local API gateway (voter and management endpoints)
+tags:
+  - name: voter
+    description: RF-08 (public, used by the voter PWA)
+  - name: participation
+    description: RF-14 (administrator of the organization, Keycloak token)
+  - name: notifications
+    description: RF-17 (administrator of the organization, Keycloak token)
+  - name: internal
+    description: Service-to-service endpoints (not exposed by the gateway)
+paths:
+  /api/v1/voter-access/links/{linkToken}:
+    parameters:
+      - $ref: '#/components/parameters/LinkToken'
+    get:
+      tags: [voter]
+      operationId: getLinkStatus
+      summary: Process information for a personal link
+      description: |
+        RF-08 step 2. Returns the process title, status and calendar (screens V1, C3, V4).
+        Whether the voter has already voted is only revealed after the code is verified.
+      security: []
+      responses:
+        '200':
+          description: Link is valid
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LinkStatus' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '410': { $ref: '#/components/responses/Gone' }
+  /api/v1/voter-access/links/{linkToken}/otp:
+    parameters:
+      - $ref: '#/components/parameters/LinkToken'
+    post:
+      tags: [voter]
+      operationId: sendAccessCode
+      summary: Send (or resend) the 6-digit access code by email
+      description: |
+        RF-08 step 3.1. While the process is OPEN (to vote) and, once TALLIED or ARCHIVED, to see the
+        result (RF-15, D-41). Between the close and the tally it answers 422.
+      security: []
+      responses:
+        '202':
+          description: Code sent
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CodeSent' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '423': { $ref: '#/components/responses/Locked' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+  /api/v1/voter-access/links/{linkToken}/otp/verify:
+    parameters:
+      - $ref: '#/components/parameters/LinkToken'
+    post:
+      tags: [voter]
+      operationId: verifyAccessCode
+      summary: Verify the access code and obtain a voting token
+      description: |
+        RF-08 steps 3.2–4 (409 if the process uses the institutional account, RF-05b). If the voter has not voted yet, returns a single-use, short-lived voting
+        token that only proves eligibility. If the voter already voted, returns `hasVoted = true` and
+        the date (screen V3), without a token. A wrong code returns 400 with the remaining attempts;
+        after 5 failures access is locked temporarily (423).
+        Once the process is TALLIED or ARCHIVED (D-41) it returns a short-lived `resultsToken` (never a
+        voting token) and whether the voter took part, to see the result in ballot-box.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code: { type: string, pattern: '^[0-9]{6}$' }
+      responses:
+        '200':
+          description: Code accepted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AccessGranted' }
+        '400':
+          description: Wrong code
+          content:
+            application/problem+json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Problem'
+                  - type: object
+                    properties:
+                      remainingAttempts: { type: integer, minimum: 0 }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '423': { $ref: '#/components/responses/Locked' }
+  /api/v1/voter-access/links/{linkToken}/sso:
+    parameters:
+      - $ref: '#/components/parameters/LinkToken'
+    post:
+      tags: [voter]
+      operationId: verifyInstitutionalAccount
+      summary: Sign in with the institutional account and obtain a voting token (RF-05b)
+      description: |
+        D-48. Only for a process whose `authentication` is `INSTITUTIONAL_SSO` (otherwise 409, and the code
+        endpoints answer 409 for such a process). The PWA signs the voter in with Keycloak (Authorization Code + PKCE,
+        client `verivoto-voter`, which brokers the identity provider of the organization) and sends the ID token here,
+        in the body. It must be signed by the realm, issued to `verivoto-voter` (`aud`) and not expired (401
+        otherwise). Its email must be verified and equal (any case) to the email of the roll entry of the link;
+        another account answers 403 and counts as a failed attempt (5 lock the link, 423). Same answers as
+        `/otp/verify`. The token is not stored.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [idToken]
+              properties:
+                idToken: { type: string, maxLength: 8192 }
+      responses:
+        '200':
+          description: Account accepted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AccessGranted' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401':
+          description: Not a valid ID token of the voter client
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '403':
+          description: The account is not the person of the link
+          content:
+            application/problem+json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Problem'
+                  - type: object
+                    properties:
+                      remainingAttempts: { type: integer, minimum: 0 }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '423': { $ref: '#/components/responses/Locked' }
+  /api/v1/voter-access/processes/{processId}/participation:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [participation]
+      operationId: getParticipation
+      summary: Participation of a process
+      description: |
+        Roles: ADMIN or INTEGRATION (API key, RF-21) of the organization of the process. RF-14. How many people of the frozen census have voted,
+        never what they voted. Before opening, only the census; while open, refreshed by the client; once closed,
+        the final participation. Counted by day only (D-18), in the time zone of the service.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Participation
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Participation' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/voter-access/processes/{processId}/notifications:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [notifications]
+      operationId: getNotifications
+      summary: Emails of a process and its reminders
+      description: |
+        Role: ADMIN of the organization of the process. RF-17, D-45. Counts of invitations, reminders and closing
+        notices by status; one line per failed invitation or closing notice (sent to everybody, so listing them reveals
+        nothing). Failed reminders are only counted: listing them would tell who had not voted.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Emails and reminders
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationSummary' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/voter-access/processes/{processId}/notifications/retry:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    post:
+      tags: [notifications]
+      operationId: retryFailedNotifications
+      summary: Send the failed emails again
+      description: |
+        Role: ADMIN. Every FAILED email of the process becomes pending again, with no attempts. Before sending, each
+        one is checked again (an invitation once voting is over, or a reminder to someone who has voted, is not sent).
+        Recorded for the traceability (`NOTIFICATIONS_RETRIED`, RF-19).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Number of emails to try again
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [retried]
+                properties:
+                  retried: { type: integer, minimum: 0 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/voter-access/processes/{processId}/reminders:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    post:
+      tags: [notifications]
+      operationId: scheduleReminder
+      summary: Send a reminder now or schedule it
+      description: |
+        Role: ADMIN. Only while voting is open, at a time from now on and before the closing, at most 5 per process
+        (scheduled or sent). At that time each person who has not voted yet receives an email with a new personal link
+        (the previous one stops working); the reminder keeps only how many people it went to. Pending reminders are
+        cancelled when voting closes. Recorded for the traceability (`REMINDER_SCHEDULED`, RF-19).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sendAt: { type: [string, 'null'], format: date-time, description: Empty or missing means now }
+      responses:
+        '201':
+          description: Reminder scheduled
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Reminder' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/ReminderNotAllowed' }
+  /api/v1/voter-access/processes/{processId}/reminders/{reminderId}:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+      - name: reminderId
+        in: path
+        required: true
+        schema: { type: integer, format: int64, minimum: 1 }
+    delete:
+      tags: [notifications]
+      operationId: cancelReminder
+      summary: Cancel a scheduled reminder
+      description: Role ADMIN. Only a SCHEDULED reminder. Recorded for the traceability (`REMINDER_CANCELLED`, RF-19).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Reminder cancelled
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Reminder' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/ReminderNotAllowed' }
+  /internal/v1/privacy/records:
+    post:
+      tags: [internal]
+      operationId: personalDataRecords
+      summary: What this service keeps about a person in each roll (RF-18, D-46)
+      description: |
+        Only the client `election-service`, which owns the census and builds the export of a person. For each
+        (process, voterRef) that exists: whether the person voted and the day (D-18) and the emails sent to them
+        (type, status, dates). Never what they voted (RNF-11). Missing pairs are left out.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entries]
+              properties:
+                entries:
+                  type: array
+                  minItems: 1
+                  maxItems: 500
+                  items:
+                    type: object
+                    required: [processId, voterRef]
+                    properties:
+                      processId: { type: integer, format: int64 }
+                      voterRef: { type: integer, format: int64 }
+      responses:
+        '200':
+          description: Records
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [entries]
+                properties:
+                  entries:
+                    type: array
+                    items:
+                      type: object
+                      required: [processId, voterRef, hasVoted, emails]
+                      properties:
+                        processId: { type: integer, format: int64 }
+                        voterRef: { type: integer, format: int64 }
+                        hasVoted: { type: boolean }
+                        votedOn: { type: [string, 'null'], format: date }
+                        emails:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              type: { type: string, enum: [INVITATION, REMINDER, CLOSING] }
+                              status: { type: string, enum: [PENDING, DELIVERED, FAILED, CANCELLED] }
+                              createdAt: { type: string, format: date-time }
+                              sentAt: { type: [string, 'null'], format: date-time }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /internal/v1/processes/{processId}/roll/anonymization:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    put:
+      tags: [internal]
+      operationId: anonymizeRollEntries
+      summary: Anonymize people of the roll after an erasure (RF-18, D-46)
+      description: |
+        Only the client `election-service`, from its outbox. Name and email are replaced, link and code hashes
+        removed, live voting tokens revoked and pending emails cancelled. Participation stays (it is only counted).
+        Idempotent.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [voterRefs]
+              properties:
+                voterRefs: { type: array, minItems: 1, maxItems: 500, items: { type: integer, format: int64 } }
+      responses:
+        '204': { description: Done }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /internal/v1/processes/{processId}:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    put:
+      tags: [internal]
+      operationId: upsertProcessSnapshot
+      summary: Receive the process snapshot and frozen census when the process is scheduled
+      description: Called by election-service. Idempotent. The roll can only be replaced before the process opens.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProcessSnapshot' }
+      responses:
+        '204':
+          description: Snapshot stored
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /internal/v1/processes/{processId}/status:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    put:
+      tags: [internal]
+      operationId: updateProcessStatus
+      summary: Receive a lifecycle change (open, close, tallied, archived)
+      description: Called by election-service. Idempotent.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/StatusUpdate' }
+      responses:
+        '204':
+          description: Status stored
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /internal/v1/voting-tokens/consume:
+    post:
+      tags: [internal]
+      operationId: consumeVotingToken
+      summary: Atomically consume a voting token and mark the voter as having voted
+      description: |
+        Called by ballot-box-service before storing a vote (RF-09, RNF-12). Only the token and the
+        process are sent; nothing about the vote. A second call with the same token returns 409.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TokenOperation' }
+      responses:
+        '204':
+          description: Token consumed; voter marked as having voted today
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+  /internal/v1/results-tokens/check:
+    post:
+      tags: [internal]
+      operationId: checkResultsToken
+      summary: Check a results token before ballot-box shows the result (D-41)
+      description: Only the token and the process are sent; the answer says nothing about the voter.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resultsToken, processId]
+              properties:
+                resultsToken: { type: string }
+                processId: { type: integer, format: int64 }
+      responses:
+        '204':
+          description: Valid for the process, whose result is available
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '410': { $ref: '#/components/responses/Gone' }
+  /internal/v1/voting-tokens/check:
+    post:
+      tags: [internal]
+      operationId: checkVotingToken
+      summary: Check a voting token without consuming it (IMP-31)
+      description: Called by ballot-box before handing out the ballot. Same answers as `consume`; nothing changes.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TokenOperation' }
+      responses:
+        '204':
+          description: Valid to vote in the process right now
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '410': { $ref: '#/components/responses/Gone' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+  /internal/v1/processes/{processId}/voted-count:
+    parameters:
+      - $ref: '#/components/parameters/ProcessId'
+    get:
+      tags: [internal]
+      operationId: getVotedCount
+      summary: Number of people of the roll who voted (IMP-28)
+      description: |
+        Called by ballot-box at the tally to compare with the urn. Only the number, never who; only once voting is
+        over (422 while open or scheduled).
+      security:
+        - serviceAuth: []
+      responses:
+        '200':
+          description: Number of people who voted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [processId, voted]
+                properties:
+                  processId: { type: integer, format: int64 }
+                  voted: { type: integer, minimum: 0 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+  /internal/v1/voting-tokens/revert:
+    post:
+      tags: [internal]
+      operationId: revertVotingToken
+      summary: Undo a consumption when the vote could not be stored
+      description: Compensation step of RF-09. Idempotent. Marks the token REVERTED and the voter as not having voted.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TokenOperation' }
+      responses:
+        '204':
+          description: Consumption reverted
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Keycloak token of a management user (`roles` and `organization_id` claims).
+    serviceAuth:
+      type: oauth2
+      description: Keycloak client-credentials token of another VeriVoto service (role SERVICE). Internal endpoints are never routed by the gateway. Each route accepts only the Keycloak client that uses it (claim `azp`, IMP-26), election-service for `/internal/v1/processes/**` and `/internal/v1/privacy/**` and ballot-box-service for the tokens and `voted-count`.
+      flows:
+        clientCredentials:
+          tokenUrl: http://localhost:8080/realms/verivoto/protocol/openid-connect/token
+          scopes: {}
+  parameters:
+    LinkToken:
+      name: linkToken
+      in: path
+      required: true
+      description: Personal link token (RI-12). Never logged.
+      schema: { type: string, pattern: '^[A-Za-z0-9_-]{64}$' }
+    ProcessId:
+      name: processId
+      in: path
+      required: true
+      schema: { type: integer, format: int64, minimum: 1 }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Not found (also returned for invalid personal links, without saying why)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: The operation conflicts with the current state
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Gone:
+      description: Expired link, code or token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Locked:
+      description: Access temporarily blocked after too many failed attempts (RNF-14)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unprocessable:
+      description: The process is not in a state that allows this operation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    TooManyRequests:
+      description: Wait before requesting a new code
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    ReminderNotAllowed:
+      description: |
+        The reminder cannot be scheduled or cancelled now. Property `reason`: NOT_OPEN, OUT_OF_PERIOD, TOO_MANY or
+        ALREADY_SENT.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: The role of the user does not allow this operation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid service token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Language:
+      type: string
+      enum: [es, en]
+    LocalizedText:
+      type: object
+      minProperties: 1
+      propertyNames: { $ref: '#/components/schemas/Language' }
+      additionalProperties: { type: string, minLength: 1 }
+    ProcessStatus:
+      type: string
+      enum: [SCHEDULED, OPEN, CLOSED, TALLIED, ARCHIVED]
+    ResultsVisibility:
+      type: string
+      enum: [CENSUS_ONLY, PUBLIC_LINK]
+    StatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+    LinkStatus:
+      type: object
+      required: [processId, title, status, opensAt, closesAt, defaultLanguage]
+      properties:
+        processId: { type: integer, format: int64 }
+        title: { $ref: '#/components/schemas/LocalizedText' }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+        defaultLanguage: { $ref: '#/components/schemas/Language' }
+        authentication:
+          type: string
+          enum: [EMAIL_CODE, INSTITUTIONAL_SSO]
+          description: RF-05b (D-48). Code by email (`/otp`) or institutional account (`/sso`)
+    CodeSent:
+      type: object
+      required: [maskedEmail, expiresAt, resendAvailableAt]
+      properties:
+        maskedEmail: { type: string, examples: ['l•••@universidad.edu'] }
+        expiresAt: { type: string, format: date-time }
+        resendAvailableAt: { type: string, format: date-time }
+    AccessGranted:
+      type: object
+      required: [hasVoted]
+      properties:
+        hasVoted: { type: boolean }
+        votedOn:
+          type: [string, 'null']
+          format: date
+          description: Day of the vote, without time (D-18). Only when hasVoted is true.
+        votingToken:
+          type: [string, 'null']
+          description: Single-use voting token. Only when hasVoted is false.
+        votingTokenExpiresAt:
+          type: [string, 'null']
+          format: date-time
+        resultsToken:
+          type: [string, 'null']
+          description: |
+            Only once tallied (D-41). Sent to ballot-box in `X-Results-Token` to see the result. Valid 30 min and
+            reusable while valid; not linked to the voter.
+        resultsTokenExpiresAt:
+          type: [string, 'null']
+          format: date-time
+    ProcessSnapshot:
+      type: object
+      required: [organizationId, title, status, opensAt, closesAt, defaultLanguage, resultsVisibility, roll]
+      properties:
+        organizationId: { type: string, pattern: '^[A-Za-z0-9]{1,20}$' }
+        title: { $ref: '#/components/schemas/LocalizedText' }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+        defaultLanguage: { $ref: '#/components/schemas/Language' }
+        resultsVisibility: { $ref: '#/components/schemas/ResultsVisibility' }
+        roll:
+          type: array
+          description: Frozen census. Only the data needed to contact the voter (RNF-16).
+          items:
+            type: object
+            required: [voterRef, displayName, email, language]
+            properties:
+              voterRef: { type: integer, format: int64 }
+              displayName: { type: string, maxLength: 60 }
+              email: { type: string, format: email, maxLength: 100 }
+              language: { $ref: '#/components/schemas/Language' }
+    TokenOperation:
+      type: object
+      required: [votingToken, processId]
+      properties:
+        votingToken: { type: string }
+        processId: { type: integer, format: int64 }
+    Participation:
+      type: object
+      required: [processId, status, opensAt, closesAt, eligibleVoters, votesCast, pending, participation, byDay]
+      properties:
+        processId: { type: integer, format: int64 }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+        eligibleVoters: { type: integer, minimum: 0, description: People in the frozen census }
+        votesCast: { type: integer, minimum: 0 }
+        pending: { type: integer, minimum: 0 }
+        participation: { type: number, description: Votes cast over the census, in percent with 2 decimals }
+        byDay:
+          type: array
+          description: Votes per day and running total (D-18, no hours)
+          items:
+            type: object
+            required: [day, votes, cumulative]
+            properties:
+              day: { type: string, format: date }
+              votes: { type: integer, minimum: 0 }
+              cumulative: { type: integer, minimum: 0 }
+    NotificationCounts:
+      type: object
+      required: [pending, delivered, failed, cancelled]
+      properties:
+        pending: { type: integer, minimum: 0 }
+        delivered: { type: integer, minimum: 0 }
+        failed: { type: integer, minimum: 0, description: After 9 attempts (RI-11) }
+        cancelled: { type: integer, minimum: 0, description: 'Not needed: the person had voted or voting was over' }
+    Reminder:
+      type: object
+      required: [id, sendAt, status, createdAt]
+      properties:
+        id: { type: integer, format: int64 }
+        sendAt: { type: string, format: date-time }
+        status: { type: string, enum: [SCHEDULED, SENT, CANCELLED] }
+        recipients: { type: [integer, 'null'], minimum: 0, description: How many people it went to; never who }
+        createdAt: { type: string, format: date-time }
+    NotificationSummary:
+      type: object
+      required: [processId, status, opensAt, closesAt, counts, failed, reminders, maxReminders]
+      properties:
+        processId: { type: integer, format: int64 }
+        status: { $ref: '#/components/schemas/ProcessStatus' }
+        opensAt: { type: string, format: date-time }
+        closesAt: { type: string, format: date-time }
+        counts:
+          type: object
+          required: [INVITATION, REMINDER, CLOSING]
+          properties:
+            INVITATION: { $ref: '#/components/schemas/NotificationCounts' }
+            REMINDER: { $ref: '#/components/schemas/NotificationCounts' }
+            CLOSING: { $ref: '#/components/schemas/NotificationCounts' }
+        failed:
+          type: array
+          description: Failed invitations and closing notices; never reminders (D-45)
+          items:
+            type: object
+            required: [type, displayName, email, attempts, createdAt]
+            properties:
+              type: { type: string, enum: [INVITATION, CLOSING] }
+              displayName: { type: string }
+              email: { type: string, format: email }
+              attempts: { type: integer }
+              reason: { type: [string, 'null'] }
+              createdAt: { type: string, format: date-time }
+        reminders:
+          type: array
+          items: { $ref: '#/components/schemas/Reminder' }
+        maxReminders: { type: integer, const: 5 }
+    Problem:
+      type: object
+      description: RFC 9457 problem details. `detail` is plain Spanish for the end user (RNF-8).
+      required: [title, status]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }

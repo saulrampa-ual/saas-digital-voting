@@ -1,0 +1,38 @@
+@startuml
+' Generado con PlantUML 1.2026.8.
+title Escrutinio y verificación del resultado (RF-13)
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #F7F9FC
+  BorderColor #234A88
+  DiamondBackgroundColor #FFF2CC
+  DiamondBorderColor #8A6D1D
+  ArrowColor #4A5568
+  FontSize 15
+}
+
+start
+:Confirmar que el proceso está cerrado;
+:Bloquear nuevas emisiones;
+:Obtener la urna y su huella final;
+:Verificar la cadena de auditoría;
+if (La cadena es íntegra?) then (Sí)
+  :Seleccionar votos válidos y contabilizables;
+  :Calcular el resultado del escrutinio;
+  :Generar acta y evidencias de verificación;
+  :Publicar resultado, huella y evidencias autorizadas;
+  :Permitir la consulta del resultado (RF-13b);
+  :Contrastar resultado y evidencias;
+  if (La verificación coincide?) then (Sí)
+    :Marcar resultado como verificado;
+  else (No)
+    :Registrar discrepancia y notificar para revisión;
+  endif
+else (No)
+  :Detener la publicación del resultado;
+  :Registrar incidencia de integridad;
+  :Solicitar revisión de auditoría;
+endif
+stop
+@enduml

@@ -1,0 +1,412 @@
+<app-admin-page titleKey="admin.home.title">
+  <header class="page-head">
+    <h2>
+      @if (isSuperadmin() && !auth.organizationId()) { {{ 'admin.home.platformPanel' | translate }} }
+      @else if (orgLabel()) { {{ 'admin.home.panelOf' | translate: { org: orgLabel() } }} }
+      @else { {{ 'admin.home.title' | translate }} }
+    </h2>
+    <p>{{ 'admin.home.welcome' | translate: { name: auth.displayName() } }} {{ 'admin.home.intro' | translate }}</p>
+  </header>
+
+  <!-- ===================== SUPERADMIN ===================== -->
+  @if (isSuperadmin()) {
+    <section class="block" aria-labelledby="home-orgs">
+      <ng-container *ngTemplateOutlet="roleLine; context: { role: 'SUPERADMIN', can: 'admin.home.superadmin.can', scope: 'admin.home.superadmin.scope' }" />
+      <div class="block-head">
+        <h3 id="home-orgs">{{ 'admin.home.superadmin.title' | translate }}</h3>
+        <a class="btn btn-primary" routerLink="/admin/organizaciones">
+          <ion-icon name="business-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.superadmin.manage' | translate }}</a>
+      </div>
+      @if (organizationsError()) {
+        <ng-container *ngTemplateOutlet="failed; context: { retry: loadOrganizations.bind(this) }" />
+      } @else if (organizations() === null) {
+        <ion-spinner role="status" [attr.aria-label]="'common.loading' | translate" />
+      } @else {
+        <dl class="kpis">
+          <div class="kpi"><dt><ion-icon name="business-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.superadmin.active' | translate }}</dt>
+            <dd class="kpi-value">{{ n(activeOrganizations()) }}</dd>
+            <dd class="kpi-sub">{{ 'admin.home.superadmin.suspendedSub' | translate: { count: n(suspendedOrganizations()) } }}</dd></div>
+          <div class="kpi"><dt><ion-icon name="people-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.superadmin.accounts' | translate }}</dt>
+            <dd class="kpi-value">{{ n(accountsTotal()) }}</dd>
+            <dd class="kpi-sub">{{ 'admin.home.superadmin.accountsSub' | translate }}</dd></div>
+          <div class="kpi" [class.kpi-warn]="singleAdminOrgs() > 0"><dt><ion-icon name="warning-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.superadmin.singleAdmin' | translate }}</dt>
+            <dd class="kpi-value">{{ n(singleAdminOrgs()) }}</dd>
+            <dd class="kpi-sub">{{ (singleAdminOrgs() > 0 ? 'admin.home.superadmin.singleAdminSub' : 'admin.home.superadmin.singleAdminNone') | translate }}</dd></div>
+          <div class="kpi"><dt><ion-icon name="list-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.superadmin.total' | translate }}</dt>
+            <dd class="kpi-value">{{ n(organizationsTotal()) }}</dd>
+            <dd class="kpi-sub">{{ 'admin.home.superadmin.totalSub' | translate }}</dd></div>
+        </dl>
+        @if (organizations()!.length === 0) {
+          <p class="empty">{{ 'admin.home.superadmin.none' | translate }}</p>
+        } @else {
+          <article class="card flush">
+            <h4 class="card-title">{{ 'admin.home.superadmin.list' | translate }}</h4>
+            <ul class="rows">
+              @for (org of organizations()!; track org.id) {
+                <li>
+                  <span class="row-text">
+                    <span class="row-main">{{ org.name }}</span>
+                    <span class="muted">{{ org.id }}
+                      @if (org.accounts !== null) { · {{ 'admin.home.superadmin.orgAccounts' | translate: { count: n(org.accounts), admins: n(org.admins ?? 0) } }} }
+                    </span>
+                  </span>
+                  @if (org.admins === 1) { <span class="chip chip-warn"><ion-icon name="warning-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.superadmin.onlyOne' | translate }}</span> }
+                  <span class="chip" [class.chip-ok]="org.status === 'ACTIVE'" [class.chip-bad]="org.status === 'SUSPENDED'">{{ 'admin.organizations.status.' + org.status | translate }}</span>
+                </li>
+              }
+            </ul>
+          </article>
+        }
+      }
+    </section>
+  }
+
+  <!-- ===================== ADMIN ===================== -->
+  @if (isAdmin()) {
+    <section class="block" aria-labelledby="home-processes">
+      <ng-container *ngTemplateOutlet="roleLine; context: { role: 'ADMIN', can: 'admin.home.admin.can', scope: 'admin.home.scope' }" />
+      <div class="block-head">
+        <h3 id="home-processes">{{ 'admin.home.admin.title' | translate }}</h3>
+        <a class="btn btn-primary" routerLink="/admin/procesos/nuevo">
+          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.admin.create' | translate }}</a>
+      </div>
+      @if (processesError()) {
+        <ng-container *ngTemplateOutlet="failed; context: { retry: loadProcesses.bind(this) }" />
+      } @else if (processes() === null) {
+        <ion-spinner role="status" [attr.aria-label]="'common.loading' | translate" />
+      } @else {
+        <dl class="kpis">
+          <div class="kpi"><dt><ion-icon name="checkbox-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.admin.kpiOpen' | translate }}</dt>
+            <dd class="kpi-value">{{ n(counts().OPEN) }}</dd>
+            <dd class="kpi-sub">{{ 'admin.home.admin.kpiScheduled' | translate: { count: n(counts().SCHEDULED) } }}</dd></div>
+          <div class="kpi"><dt><ion-icon name="people-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.admin.kpiVotes' | translate }}</dt>
+            <dd class="kpi-value">{{ openCards() ? n(openTotals().votes) : '…' }}</dd>
+            <dd class="kpi-sub">{{ 'admin.home.admin.kpiVotesSub' | translate: { eligible: n(openTotals().eligible) } }}</dd></div>
+          <div class="kpi"><dt><ion-icon name="bar-chart-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.admin.kpiTurnout' | translate }}</dt>
+            <dd class="kpi-value">{{ openCards() ? pct(openTotals().pct) + (openTotals().pct === null ? '' : ' %') : '…' }}</dd>
+            <dd class="kpi-sub">{{ 'admin.home.admin.kpiTurnoutSub' | translate }}</dd></div>
+          <div class="kpi" [class.kpi-warn]="warnings() > 0"><dt><ion-icon name="warning-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.admin.kpiWarnings' | translate }}</dt>
+            <dd class="kpi-value">{{ n(warnings()) }}</dd>
+            <dd class="kpi-sub">{{ (warnings() > 0 ? 'admin.home.admin.kpiWarningsSub' : 'admin.home.admin.kpiWarningsNone') | translate }}</dd></div>
+        </dl>
+
+        <div class="grid grid-main">
+          <article class="card" aria-labelledby="home-open">
+            <h4 class="card-title" id="home-open">{{ 'admin.home.admin.openNow' | translate }}</h4>
+            @if (openCards() === null) {
+              <ion-spinner role="status" [attr.aria-label]="'common.loading' | translate" />
+            } @else if (openCards()!.length === 0) {
+              <p class="empty">{{ 'admin.home.admin.noneOpen' | translate }}</p>
+            } @else {
+              <ul class="procs">
+                @for (card of openCards()!; track card.process.id) {
+                  <li class="proc">
+                    <div class="proc-top">
+                      <a class="proc-title" routerLink="/admin/participacion" [queryParams]="{ proceso: card.process.id }">{{ card.process.title | localized: language() }}</a>
+                      <app-status-badge [status]="card.process.status" />
+                    </div>
+                    <p class="muted">
+                      {{ 'admin.home.admin.closes' | translate: { date: (card.process.closesAt | localDate: language()) } }}
+                      @if (card.participation; as p) { · {{ 'admin.home.admin.votes' | translate: { votes: n(p.votesCast), eligible: n(p.eligibleVoters) } }} }
+                    </p>
+                    <div class="bar-row">
+                      <div class="bar" aria-hidden="true"><i [style.width.%]="participationPct(card.participation)"></i></div>
+                      <span class="bar-pct">{{ card.participation ? pct(participationPct(card.participation)) + ' %' : '…' }}</span>
+                    </div>
+                  </li>
+                }
+              </ul>
+              <a class="btn btn-secondary" routerLink="/admin/participacion">{{ 'admin.home.admin.seeParticipation' | translate }}</a>
+            }
+          </article>
+
+          <article class="card" aria-labelledby="home-attention">
+            <h4 class="card-title" id="home-attention">{{ 'admin.home.attention.title' | translate }}</h4>
+            <ng-container *ngTemplateOutlet="attentionList; context: { items: attention() }" />
+          </article>
+        </div>
+
+        @if (openCards() && openCards()!.length > 0) {
+          <article class="card chart-card" aria-labelledby="home-chart">
+            <h4 class="card-title" id="home-chart">{{ 'admin.home.chart.title' | translate }}</h4>
+            @if (days().length === 0) {
+              <p class="empty">{{ 'admin.home.chart.none' | translate }}</p>
+            } @else {
+              <app-day-chart [points]="days()" [from]="period().from" [to]="period().to" [language]="language()" />
+              <table class="sr-only">
+                <caption>{{ 'admin.home.chart.title' | translate }}</caption>
+                <thead><tr><th scope="col">{{ 'admin.home.chart.day' | translate }}</th><th scope="col">{{ 'admin.home.chart.cumulative' | translate }}</th><th scope="col">{{ 'admin.home.chart.pct' | translate }}</th></tr></thead>
+                <tbody>
+                  @for (d of days(); track d.day) {
+                    <tr><th scope="row">{{ d.day | localDate: language() : false }}</th><td>{{ n(d.cumulative) }}</td><td>{{ pct(d.pct) }} %</td></tr>
+                  }
+                </tbody>
+              </table>
+            }
+            <p class="note"><ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.chart.secrecy' | translate }}</p>
+          </article>
+        }
+
+        <div class="grid grid-two">
+          <article class="card" aria-labelledby="home-upcoming">
+            <h4 class="card-title" id="home-upcoming">{{ 'admin.home.admin.upcoming' | translate }}</h4>
+            @if (upcoming().length === 0) {
+              <p class="empty">{{ 'admin.home.admin.noneUpcoming' | translate }}</p>
+            } @else {
+              <ul class="rows">
+                @for (p of upcoming(); track p.id) {
+                  <li>
+                    <a class="row-link" [routerLink]="['/admin/procesos', p.id]">
+                      <span class="row-main">{{ p.title | localized: language() }}</span>
+                      <span class="muted">
+                        @if (p.status === 'DRAFT') { {{ 'admin.home.admin.draftHint' | translate }} }
+                        @else { {{ 'admin.home.admin.opens' | translate: { date: (p.opensAt | localDate: language()) } }} }
+                      </span>
+                    </a>
+                    <app-status-badge [status]="p.status" />
+                  </li>
+                }
+              </ul>
+            }
+          </article>
+          <article class="card" aria-labelledby="home-tallied">
+            <h4 class="card-title" id="home-tallied">{{ 'admin.home.admin.tallied' | translate }}</h4>
+            @if (tallied().length === 0) {
+              <p class="empty">{{ 'admin.home.admin.noneTallied' | translate }}</p>
+            } @else {
+              <ul class="rows">
+                @for (p of tallied(); track p.id) {
+                  <li>
+                    <a class="row-link" routerLink="/admin/resultados" [queryParams]="{ proceso: p.id }">
+                      <span class="row-main">{{ p.title | localized: language() }}</span>
+                      <span class="muted">{{ 'admin.home.admin.seeResults' | translate }}</span>
+                    </a>
+                    <app-status-badge [status]="p.status" />
+                  </li>
+                }
+              </ul>
+            }
+          </article>
+        </div>
+        <a class="link" routerLink="/admin/procesos">{{ 'admin.home.admin.allProcesses' | translate }}</a>
+      }
+    </section>
+  }
+
+  <!-- ===================== CENSUS MANAGER ===================== -->
+  @if (isCensusManager()) {
+    <section class="block" aria-labelledby="home-census">
+      <ng-container *ngTemplateOutlet="roleLine; context: { role: 'CENSUS_MANAGER', can: 'admin.home.census.can', scope: 'admin.home.scope' }" />
+      <div class="block-head">
+        <h3 id="home-census">{{ 'admin.home.census.title' | translate }}</h3>
+        <a class="btn btn-primary" routerLink="/admin/censos">
+          <ion-icon name="people-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.census.manage' | translate }}</a>
+      </div>
+      @if (censusesError()) {
+        <ng-container *ngTemplateOutlet="failed; context: { retry: loadCensuses.bind(this) }" />
+      } @else if (censuses() === null) {
+        <ion-spinner role="status" [attr.aria-label]="'common.loading' | translate" />
+      } @else if (census().total === 0) {
+        <p class="empty">{{ 'admin.home.census.none' | translate }}</p>
+      } @else {
+        <dl class="kpis">
+          <div class="kpi"><dt><ion-icon name="list-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.census.total' | translate }}</dt>
+            <dd class="kpi-value">{{ n(census().total) }}</dd></div>
+          <div class="kpi"><dt><ion-icon name="people-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.census.people' | translate }}</dt>
+            <dd class="kpi-value">{{ n(census().people) }}</dd></div>
+          <div class="kpi"><dt><ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.census.frozen' | translate }}</dt>
+            <dd class="kpi-value">{{ n(census().frozen) }}</dd>
+            <dd class="kpi-sub">{{ 'admin.home.census.frozenSub' | translate }}</dd></div>
+          <div class="kpi" [class.kpi-warn]="census().editable === 0"><dt><ion-icon name="create-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.census.editable' | translate }}</dt>
+            <dd class="kpi-value">{{ n(census().editable) }}</dd>
+            @if (census().editable === 0) { <dd class="kpi-sub">{{ 'admin.home.census.noEditable' | translate }}</dd> }</div>
+        </dl>
+        <div class="grid grid-main">
+          <article class="card flush" aria-labelledby="home-census-list">
+            <h4 class="card-title" id="home-census-list">{{ 'admin.home.census.list' | translate }}</h4>
+            <ul class="rows">
+              @for (c of censuses()!; track c.id) {
+                <li>
+                  <a class="row-link" [routerLink]="['/admin/censos', c.id]">
+                    <span class="row-main">{{ c.name }}</span>
+                    <span class="muted">{{ 'admin.censuses.voters' | translate: { count: n(c.voterCount) } }}</span>
+                  </a>
+                  <span class="chip" [class.chip-info]="c.frozen" [class.chip-ok]="!c.frozen">
+                    <ion-icon [name]="c.frozen ? 'lock-closed-outline' : 'create-outline'" aria-hidden="true"></ion-icon>
+                    {{ (c.frozen ? 'admin.censuses.frozen' : 'admin.censuses.editable') | translate }}</span>
+                </li>
+              }
+            </ul>
+          </article>
+          <article class="card" aria-labelledby="home-census-attention">
+            <h4 class="card-title" id="home-census-attention">{{ 'admin.home.attention.title' | translate }}</h4>
+            <ul class="attention">
+              @for (c of census().empty; track c.id) {
+                <li>
+                  <ion-icon class="att-icon tone-warn" name="warning-outline" aria-hidden="true"></ion-icon>
+                  <div><p class="att-title"><a [routerLink]="['/admin/censos', c.id]">{{ 'admin.home.attention.emptyCensus' | translate: { name: c.name } }}</a>
+                    <span class="chip chip-warn">{{ 'admin.home.chip.warn' | translate }}</span></p>
+                    <p class="muted">{{ 'admin.home.attention.emptyCensusSub' | translate }}</p></div>
+                </li>
+              }
+              @if (census().editable === 0) {
+                <li>
+                  <ion-icon class="att-icon tone-info" name="information-circle-outline" aria-hidden="true"></ion-icon>
+                  <div><p class="att-title">{{ 'admin.home.census.noEditableTitle' | translate }} <span class="chip chip-info">{{ 'admin.home.chip.info' | translate }}</span></p>
+                    <p class="muted">{{ 'admin.home.census.noEditable' | translate }}</p></div>
+                </li>
+              }
+              @if (census().empty.length === 0 && census().editable > 0) {
+                <li>
+                  <ion-icon class="att-icon tone-ok" name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+                  <div><p class="att-title">{{ 'admin.home.attention.allGood' | translate }} <span class="chip chip-ok">{{ 'admin.home.chip.ok' | translate }}</span></p>
+                    <p class="muted">{{ 'admin.home.census.allGoodSub' | translate }}</p></div>
+                </li>
+              }
+              <li>
+                <ion-icon class="att-icon tone-info" name="lock-closed-outline" aria-hidden="true"></ion-icon>
+                <div><p class="att-title">{{ 'admin.home.census.frozenTitle' | translate }} <span class="chip chip-info">{{ 'admin.home.chip.info' | translate }}</span></p>
+                  <p class="muted">{{ 'admin.home.census.frozenHelp' | translate }}</p></div>
+              </li>
+            </ul>
+          </article>
+        </div>
+      }
+    </section>
+  }
+
+  <!-- ===================== AUDITOR ===================== -->
+  @if (isAuditor()) {
+    <section class="block" aria-labelledby="home-audit">
+      <ng-container *ngTemplateOutlet="roleLine; context: { role: 'AUDITOR', can: 'admin.home.audit.can', scope: 'admin.home.scope' }" />
+      <div class="block-head">
+        <h3 id="home-audit">{{ 'admin.home.audit.title' | translate }}</h3>
+        <a class="btn btn-primary" routerLink="/admin/auditoria">
+          <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.audit.open' | translate }}</a>
+      </div>
+      @if (processesError()) {
+        <ng-container *ngTemplateOutlet="failed; context: { retry: loadProcesses.bind(this) }" />
+      } @else if (auditRows() === null) {
+        <ion-spinner role="status" [attr.aria-label]="'common.loading' | translate" />
+      } @else {
+        <dl class="kpis">
+          <div class="kpi"><dt><ion-icon name="checkbox-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.audit.kpiClosed' | translate }}</dt>
+            <dd class="kpi-value">{{ n(auditCounts().total) }}</dd>
+            <dd class="kpi-sub">{{ 'admin.home.audit.kpiClosedSub' | translate }}</dd></div>
+          <div class="kpi"><dt><ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.audit.state.INTACT' | translate }}</dt>
+            <dd class="kpi-value">{{ n(auditCounts().intact) }}</dd></div>
+          <div class="kpi" [class.kpi-bad]="auditCounts().broken > 0"><dt><ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.audit.state.BROKEN' | translate }}</dt>
+            <dd class="kpi-value">{{ n(auditCounts().broken) }}</dd></div>
+          <div class="kpi" [class.kpi-warn]="auditCounts().never > 0"><dt><ion-icon name="help-circle-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.audit.state.NEVER' | translate }}</dt>
+            <dd class="kpi-value">{{ n(auditCounts().never) }}</dd></div>
+        </dl>
+
+        @if (auditRows()!.length === 0) {
+          <p class="empty">{{ 'admin.home.audit.none' | translate }}</p>
+        } @else {
+          <article class="card integrity" [class.integrity-bad]="lastAudit()?.state === 'BROKEN'" aria-labelledby="home-integrity">
+            <span class="seal-big" aria-hidden="true"><ion-icon [name]="lastAudit()?.state === 'BROKEN' ? 'alert-circle-outline' : 'shield-checkmark-outline'"></ion-icon></span>
+            <div class="integrity-text">
+              @if (lastAudit(); as row) {
+                <h4 id="home-integrity">{{ (row.state === 'BROKEN' ? 'admin.home.audit.lastBroken' : 'admin.home.audit.lastIntact') | translate }}</h4>
+                <p>{{ 'admin.home.audit.lastDetail' | translate: { process: title(row.process), events: n(row.check!.eventsChecked),
+                    date: (row.check!.checkedAt | localDate: language()) } }}</p>
+              } @else {
+                <h4 id="home-integrity">{{ 'admin.home.audit.neverTitle' | translate }}</h4>
+                <p>{{ 'admin.home.audit.neverDetail' | translate }}</p>
+              }
+            </div>
+            <a class="btn btn-navy" routerLink="/admin/auditoria" [queryParams]="lastAudit() ? { proceso: lastAudit()!.process.id } : {}">
+              {{ 'admin.home.audit.verifyNow' | translate }}</a>
+          </article>
+        }
+
+        <div class="grid grid-two">
+          <article class="card flush" aria-labelledby="home-audit-list">
+            <h4 class="card-title" id="home-audit-list">{{ 'admin.home.audit.list' | translate }}</h4>
+            @if (auditRows()!.length === 0) {
+              <p class="empty pad">{{ 'admin.home.audit.none' | translate }}</p>
+            } @else {
+              <ul class="rows">
+                @for (row of auditRows()!.slice(0, 6); track row.process.id) {
+                  <li>
+                    <a class="row-link" routerLink="/admin/auditoria" [queryParams]="{ proceso: row.process.id }">
+                      <span class="row-main">{{ row.process.title | localized: language() }}</span>
+                      <span class="muted">
+                        @if (row.check; as check) { {{ 'admin.home.audit.checkedAt' | translate: { date: (check.checkedAt | localDate: language()) } }}
+                          · {{ 'admin.home.audit.hash' | translate }} <span class="hash">{{ shortHash(check.finalHash) }}</span> }
+                        @else { {{ 'admin.home.audit.verify' | translate }} }
+                      </span>
+                    </a>
+                    <span [class]="'chip ' + (row.state === 'INTACT' ? 'chip-ok' : row.state === 'NEVER' ? 'chip-neutral' : 'chip-bad')">
+                      <ion-icon [name]="row.state === 'INTACT' ? 'shield-checkmark-outline' : row.state === 'NEVER' ? 'help-circle-outline' : 'alert-circle-outline'" aria-hidden="true"></ion-icon>
+                      {{ 'admin.home.audit.state.' + row.state | translate }}
+                    </span>
+                  </li>
+                }
+              </ul>
+            }
+          </article>
+          <article class="card flush" aria-labelledby="home-actions">
+            <h4 class="card-title" id="home-actions">{{ 'admin.home.audit.actions' | translate }}</h4>
+            @if (actions() === null) {
+              <ion-spinner class="pad" role="status" [attr.aria-label]="'common.loading' | translate" />
+            } @else if (actions()!.length === 0) {
+              <p class="empty pad">{{ 'admin.home.audit.noActions' | translate }}</p>
+            } @else {
+              <ul class="rows">
+                @for (a of actions(); track $index) {
+                  <li>
+                    <span class="row-text">
+                      <span class="row-main">{{ 'admin.trace.actions.' + a.action | translate }}</span>
+                      <span class="muted">{{ a.actorName }}@if (a.objectLabel) { · {{ a.objectLabel }} }</span>
+                    </span>
+                    <span class="muted when">{{ a.occurredAt | localDate: language() }}</span>
+                  </li>
+                }
+              </ul>
+              <a class="link pad" routerLink="/admin/trazabilidad">{{ 'admin.home.audit.seeTrace' | translate }}</a>
+            }
+          </article>
+        </div>
+        <p class="note"><ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>{{ 'admin.home.audit.secrecy' | translate }}</p>
+      }
+    </section>
+  }
+
+  @if (auth.roles().length === 0) {
+    <p class="empty">{{ 'admin.home.noRole' | translate }}</p>
+  }
+
+  <ng-template #roleLine let-role="role" let-can="can" let-scope="scope">
+    <div class="role-line">
+      <p><span class="role-chip">{{ 'admin.home.roleLabel' | translate }}: {{ 'roles.' + role | translate }}</span></p>
+      <p><strong>{{ 'admin.home.can' | translate }}</strong> {{ can | translate }}</p>
+      <p class="muted">{{ scope | translate: { org: orgLabel() } }}</p>
+    </div>
+  </ng-template>
+
+  <ng-template #attentionList let-items="items">
+    <ul class="attention">
+      @for (item of items; track $index) {
+        <li>
+          <ion-icon [class]="'att-icon tone-' + item.tone" [name]="item.icon" aria-hidden="true"></ion-icon>
+          <div>
+            <p class="att-title">
+              @if (item.link) {
+                <a [routerLink]="item.link" [queryParams]="item.query ?? null">{{ item.textKey | translate: item.params }}</a>
+              } @else { {{ item.textKey | translate: item.params }} }
+              <span [class]="'chip chip-' + item.tone">{{ item.chipKey | translate }}</span>
+            </p>
+            @if (item.subKey) { <p class="muted">{{ item.subKey | translate: item.params }}</p> }
+          </div>
+        </li>
+      }
+    </ul>
+  </ng-template>
+
+  <ng-template #failed let-retry="retry">
+    <ion-text color="danger"><p role="alert">{{ 'common.loadError' | translate }}</p></ion-text>
+    <button type="button" class="btn btn-secondary" (click)="retry()">{{ 'admin.home.retry' | translate }}</button>
+  </ng-template>
+</app-admin-page>

@@ -1,0 +1,37 @@
+% Secuencia vectorial en TikZ. Emisión (1--8) y verificación (9--11).
+\begin{tikzpicture}[x=1.1cm,y=0.75cm,font=\sffamily\scriptsize,
+  life/.style={draw=gray!65,dashed},
+  msg/.style={-{Stealth},draw=gray!70,thick},
+  ret/.style={-{Stealth},draw=gray!70,dashed,thick},
+  participant/.style={draw=teal!55!black,fill=teal!6,rounded corners=2pt,align=center,
+    text width=1.55cm,minimum height=.74cm,inner sep=2pt}]
+\node[participant] (pwa) at (0,0) {PWA\\votante};
+\node[participant] (access) at (2,0) {Acceso\\votante};
+\node[participant] (receipt) at (4,0) {Ballot-box\\API};
+\node[participant] (census) at (6,0) {Voter-access\\DB};
+\node[participant] (ballot) at (8,0) {pg-ballot\\votos};
+\node[participant] (audit) at (10,0) {pg-ballot\\eventos};
+\foreach \x in {0,2,4,6,8,10} \draw[life] (\x,-0.55)--(\x,-10.15);
+
+\draw[rounded corners,draw=gray!55] (-0.7,-0.9) rectangle (10.7,-7.05);
+\node[anchor=west,fill=white] at (-0.6,-0.82) {Emisión (1--8)};
+\draw[rounded corners,draw=gray!55] (-0.7,-7.35) rectangle (10.7,-10.4);
+\node[anchor=west,fill=white] at (-0.6,-7.27) {Verificación del recibo (9--11)};
+
+\draw[msg] (0,-1.4)--node[above]{1 enlace + método}(2,-1.4);
+\draw[ret] (2,-2.1)--node[above]{2 token de un uso}(0,-2.1);
+\draw[msg] (0,-2.9)--node[above]{3 voto + token}(4,-2.9);
+\draw[msg] (4,-3.7)--node[above]{4 valida y consume}(2,-3.7);
+\draw[ret] (2,-4.4)--node[above]{5 resultado}(4,-4.4);
+\draw[msg] (2,-5.1)--node[above]{participación: día}(6,-5.1);
+\draw[msg] (4,-5.8)--node[above]{6 voto + hash recibo}(8,-5.8);
+\draw[msg] (8,-6.4)--node[above]{7 evento encadenado}(10,-6.4);
+\draw[ret] (4,-6.8)--node[above]{8 recibo}(0,-6.8);
+
+\draw[msg] (0,-7.95)--node[above]{9 verificar}(4,-7.95);
+\draw[msg] (4,-8.75)--node[above]{10 buscar recibo}(8,-8.75);
+\draw[ret] (4,-9.55)--node[above]{11 consta}(0,-9.55);
+
+\node[draw=gray!55,rounded corners=2pt,align=left,text width=10.4cm,inner sep=4pt]
+  at (5,-11.55) {El método configurado es código por correo o cuenta institucional. Ballot-box valida y consume el token mediante voter-access; el registro de participación conserva solo el día. Voto, hash del recibo y evento se guardan en una transacción en pg-ballot. No se cifra el voto en cliente. RF-10 comprueba presencia del recibo; RF-12 verifica la cadena por separado. Flecha continua: llamada; discontinua: respuesta.};
+\end{tikzpicture}

@@ -1,0 +1,44 @@
+@startuml
+' Fuente PlantUML equivalente de la figura vectorial 5.2.
+title Emisión del voto y verificación del recibo (RF-09, RF-10 y RF-12)
+hide footbox
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam BoxPadding 12
+
+participant "PWA votante" as PWA
+participant "Acceso votante\n(voter-access)" as Acceso
+participant "Ballot-box API" as Urna
+database "Voter-access DB" as VADB
+database "pg-ballot\nvotos" as Votos
+database "pg-ballot\neventos" as Eventos
+
+== Emisión (pasos 1--8) ==
+PWA -> Acceso : 1. Enlace + método configurado
+Acceso --> PWA : 2. Token de un uso
+PWA -> Urna : 3. Voto + token
+Urna -> Acceso : 4. Valida y consume el token
+Acceso --> Urna : 5. Resultado
+Acceso -> VADB : Participación: solo el día
+Urna -> Votos : 6. Voto + hash del recibo
+Votos -> Eventos : 7. Evento encadenado
+Urna --> PWA : 8. Recibo
+
+== Verificación del recibo (pasos 9--11, RF-10) ==
+PWA -> Urna : 9. Verificar
+Urna -> Votos : 10. Buscar recibo
+Urna --> PWA : 11. Consta
+
+note over PWA,Eventos
+El método configurado es código por correo o cuenta institucional. Ballot-box
+valida y consume el token mediante voter-access; el registro de participación
+conserva solo el día. Voto, hash del recibo y evento se guardan en una
+transacción en pg-ballot. No se cifra el voto en cliente. RF-10 comprueba la
+presencia del recibo; RF-12 verifica la cadena por separado.
+end note
+legend bottom
+  -> llamada
+  --> respuesta
+endlegend
+@enduml
