@@ -35,7 +35,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Q-08 | ¿Qué mejoras de `IMPROVEMENTS.md` se aprueban antes de la entrega? Propuesta en la sección 4 | D1–D5 | **Respondida (04/11, D-52):** se aprueban D1, D2 y D5 ya, D3 con el despliegue y D4 si queda tiempo |
 | Q-09 | ¿Cuándo se fusiona `dev` en `main` (al cerrar P7, o antes para tener una versión estable)? | E2 | **Respondida (03/11):** en fin de semana (sábado), después de implantar SonarQube y un análisis de seguridad gratuito similar a Fortify (sección 2c) |
 | Q-10 | ¿Qué fecha tiene la próxima revisión con el tutor y qué quiere ver? (marca el orden de C1–C4) | C | **En espera (03/11):** se le envió la memoria actualizada y aún no ha respondido. Las indicaciones de la reunión del 21/10/2026 ya están aplicadas (sección 7) |
-| Q-11 | Resultados de la sesión RNF-4: para cada administrador (A1–A5), ¿terminó crear, configurar y programar un proceso de opción única?, ¿cuánto tardó?, ¿necesitó ayuda (y de qué tipo)? Fecha de la sesión y si firmaron consentimiento | C1 | **Respondida (05/11):** sesión el 03/11/2026, 5 participantes, consentimiento firmado, 5 de 5 sin ayuda de personas (D-55). Tiempos **estimados** por el autor después de la sesión, no medidos: 5, 5, 6, 3,4 y 3,4 min, sin asignar a nadie. **Alguno de los participantes tenía formación previa** (falta saber cuántos). RNF-4 no se puede declarar aceptado: resultado indicativo favorable (ver `docs/evaluation/usabilidad/resultados-rnf4-administradores.md`) |
+| Q-11 | Resultados de la sesión RNF-4: para cada administrador (A1–A5), ¿terminó crear, configurar y programar un proceso de opción única?, ¿cuánto tardó?, ¿necesitó ayuda (y de qué tipo)? Fecha de la sesión y si firmaron consentimiento | C1 | **Respondida (05/11):** sesión el 03/11/2026, 5 participantes (P01–P05, anónimos), consentimiento firmado, 5 de 5 sin ayuda de personas (D-55). Tiempos **estimados** tras la sesión, no medidos: 5, 5, 11, 3,4 y 3,4 min (uno corregido de 6 a 11 min), sin asignar a nadie. **Solo 2 de 5 sin formación previa.** RNF-4 **no demostrado**; evidencia indicativa (`docs/evaluation/usabilidad/resultados-rnf4-administradores.md`) |
 | Q-12 | SSO con cuentas de la UAL: ¿los 4 compañeros aceptan por escrito que se usen sus correos solo para la prueba, en local y borrándolos después? ¿Tienes una cuenta de Google personal para crear el proyecto de Google Cloud? | A9 | **Respondida (05/11, D-54):** cuenta de Google Cloud creada. Los 4 compañeros dieron su aceptación **verbal** (uso de sus correos solo en la prueba, en local y borrado después). **No hay constancia escrita** y el autor no la pedirá por ahora: se registra como limitación, no como consentimiento documentado |
 
 ---
@@ -54,7 +54,13 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
 - [ ] **A4 · axe en todas las pantallas** (`Ambos`, parte automática de H1a): login, inicio de cada rol, censos,
   procesos (A3/A4), participación, resultados, auditoría, trazabilidad, privacidad, claves de API, flujo del votante
   (V1–V8, B1–B5) en 1280 y 360 px, ES y EN. Criterio: cero incumplimientos críticos ni serios. El selector de idioma
-  con banderas es nuevo (sustituye al que dio DEF-01): repetir también `/recibo/:id`.
+  con banderas es nuevo (sustituye al que dio DEF-01): repetir también `/recibo/:id`. **En curso (05/11):** flujo del
+  votante medido (`voter-flow.accessibility.spec.ts`, 88 auditorías): 8 críticos de DEF-05 en la papeleta; DEF-05
+  corregido (aprobado por el autor) y nuevo barrido con 0 críticos y 0 serios
+  (`docs/evaluation/accesibilidad-axe-2026-11-05.md`). DEF-06 (error de formato del recibo no visible) corregido y
+  tercer barrido con 0 críticos y 0 serios; su prueba pasa en verde. La prueba
+  `receipt-check.accessibility.spec.ts` se ha adaptado al selector de idioma con banderas y pasa. Faltan la consola de
+  gestión y la página pública de resultados.
 - [ ] **A5 · Pruebas unitarias P7.1** (`IA`): censo/CSV, claims institucionales (RF-05b), privacidad (RF-18),
   recordatorios (RF-17), errores y reglas de dominio sin prueba; frontend: gráfica por día (`app-day-chart`),
   agregados del inicio y flujo visual del votante.
@@ -63,6 +69,9 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   esquema y de los logs para el secreto del voto (RNF-11), todas las manipulaciones de la cadena.
 - [ ] **A7 · Carga H1c** (`Ambos`): instalar k6, completar escenarios de acceso y escrutinio, credenciales sintéticas
   fuera del repo, tres ejecuciones de 500 VU con p95, errores y recursos; comprobar la cadena y la participación después.
+  **En curso (05/11):** `scripts/load/prepare-voting-tokens.mjs` prepara cada ejecución (sin probar con el stack real).
+  Solo después de las sesiones H1b (Mailpit guarda 500 mensajes). Falta instalar k6 y ejecutar. Variables y
+  definición de ejecución válida en `docs/evaluation/carga.md`. El autor ejecuta; la IA analiza y cierra H1c.
 - [ ] **A8 · Gantt de la memoria** (`IA`, IMP-02): la iteración 3 aún dice «re-voto».
 - [ ] **A9 · RF-05a** (`IA`, según Q-07): IdP externo de prueba y prueba de inicio de sesión de gestión federado.
 - [ ] **A10 · Job E2E en CI** (`IA`): Playwright + axe en GitHub Actions (al menos con servicios simulados).
@@ -80,9 +89,9 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   a las 12:04, 9 invitaciones y `.local/sesion-usab.md` generado. **Escenario `USAB` preparado.**
 - [ ] **A12 · Registrar la sesión RNF-4** (`IA`, tras Q-11): hoja de resultados de administradores en
   `docs/evaluation/usabilidad/`, resultado como cantidades (x de 5) y su paso a la memoria (C1). **En curso (05/11):**
-  `resultados-rnf4-administradores.md`: 5 de 5 sin ayuda de personas; tiempos estimados ≤ 10 min en 5 de 5; alguno con
-  formación previa. RNF-4 **no demostrado** (indicativo favorable): falta saber cuántos tenían formación previa; con
-  tiempos estimados no se puede verificar el umbral de 10 min.
+  `resultados-rnf4-administradores.md`: 5 de 5 sin ayuda de personas, 4 de 5 con tiempo estimado ≤ 10 min y solo 2 de 5
+  sin formación previa. RNF-4 **no demostrado**, evidencia indicativa; ya pasado a la memoria (parte RNF-4 de C1). Solo
+  se cerraría con una nueva sesión con administradores sin formación previa y tiempos cronometrados.
 
 ## 2b. SSO con cuentas de la universidad (A9, RF-05a y RF-05b)
 
@@ -134,7 +143,8 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
 - [ ] **B1 · Responder las preguntas Q-01 a Q-10** (`Autor`).
 - [ ] **B2 · Sesión H1b con cinco votantes** (`Autor`, prioritaria): montar el escenario `USAB`
   (`docs/evaluation/usabilidad/preparacion-sesion.md`, `censo-sesion.csv`), hacer un ensayo y las cinco sesiones;
-  anotar T0/T1/T2 y resultados como cantidades (x de 5) en la hoja de registro. Criterio: 5 de 5 en ≤ 3 min y al
+  anotar T0/T1/T2 y resultados como cantidades (x de 5) en la hoja de registro (preparadas el 05/11:
+  `hoja-registro-h1b.csv` y `scripts/evaluation/h1b-summary.mjs` para el resumen y la decisión del mismo día 09). Criterio: 5 de 5 en ≤ 3 min y al
   menos 4 de 5 interpretan la verificación.
 - [ ] **B3 · Revisión manual de accesibilidad** (`Autor`, parte manual de H1a): teclado y lector de pantalla
   (NVDA o Narrador) en acceso, voto y recibo siguiendo `docs/evaluation/accesibilidad-manual.md`.
@@ -162,7 +172,9 @@ El resto de `IMPROVEMENTS.md` queda para P9 salvo que se decida otra cosa.
 
 - [ ] **C1 · Resultados de la evaluación** (`IA`, tras A4, A7, B2, B3): completar `docs/evaluation/informe.md`, la tabla
   13.1 (`evaluacion_resultados.tex`), la lista `[PENDIENTE]` de `contenido1.tex` y las conclusiones. Lo que no se
-  mida se deja como PENDIENTE y limitación, sin inventar resultados.
+  mida se deja como PENDIENTE y limitación, sin inventar resultados. **En curso (05/11):** parte de RNF-4 hecha (no
+  demostrado); H1a: parte automática favorable tras corregir DEF-05 y DEF-06, parte manual pendiente (autor, NVDA); H1b y H1c sin
+  datos. C2 y C3 no se adelantan hasta tener H1a, H1b y H1c medidas o declaradas limitación.
 - [ ] **C2 · Alinear con lo implementado** (`IA`): figuras de arquitectura (objetivo frente a implementado),
   diagramas conceptuales y texto heredado; capturas seguras de las pantallas (datos sintéticos de la demo UAL).
 - [ ] **C3 · Aplicar las decisiones Q-01 a Q-04** (`IA`) en la especificación y las tablas 1.1 y 4.3.
@@ -215,3 +227,8 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 05/11/2026 | Q-11, A11 | Tercera tanda: RNF-4 con 3 tiempos confirmados (5, 5 y 6 min; PENDIENTE, 3 de 5); `seed-usab.mjs` falla por el historial de contraseñas (IMP-54); F5 en la rama `docs/f5-sonarqube-ci` |
 | 05/11/2026 | A11, Q-06, Q-11, F5, D2, D5 | `seed-usab.mjs` termina con el stack real (escenario `USAB` preparado); RNF-4 con los 5 tiempos del autor (5 de 5 ≤ 10 min); F5 fusionada en `dev`; D2 y D5 con commit en su rama, sin fusionar |
 | 05/11/2026 | Q-02, Q-11, IMP-52, B2 | D-55 («sin ayuda» admite documentación); tiempos RNF-4 estimados y alguno con formación previa: RNF-4 no demostrado; consentimiento completado con los datos institucionales; IMP-52 hecha |
+| 05/11/2026 | Q-11 | Los 5 participantes de RNF-4 tenían formación previa: RNF-4 no demostrado (0 de 5 cumplen la condición), evidencia indicativa |
+| 05/11/2026 | Q-11, C1 (RNF-4) | Corrección del autor: 2 de 5 sin formación previa y un tiempo de 6 a 11 min. RNF-4 no demostrado, pasado a `evaluacion_resultados.tex`, `contenido1.tex`, `conclusiones.tex` y `especificacion_detallada.tex` |
+| 05/11/2026 | A4, A7, C1 (H1a) | Barrido axe del flujo del votante: 8 críticos (DEF-05), 0 serios; H1a rechazada en la versión medida. Script de preparación de la carga (H1c) |
+| 05/11/2026 | A4, C1 (H1a), B2, A7 | DEF-05 corregido y nuevo barrido axe: 0 críticos, 0 serios (H1a: parte automática cumple; manual pendiente). DEF-06 abierto. Prueba del recibo adaptada. Hoja CSV y resumen de H1b. Definición de ejecución válida de k6 |
+| 05/11/2026 | A4, C1 (H1a) | DEF-05 cerrado por el autor. DEF-06 corregido (aprobado): mensaje propio en región `role="alert"`; quitado `test.fail`, la prueba pasa. Tercer barrido axe con las mismas versiones: 88 auditorías, 0 críticos, 0 serios. H1a: parte automática favorable, parte manual pendiente |

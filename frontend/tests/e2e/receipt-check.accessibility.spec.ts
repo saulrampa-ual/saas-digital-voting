@@ -26,7 +26,8 @@ for (const viewport of viewportCases) {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await page.goto('/recibo/7');
 
-      await page.locator(`ion-segment-button[value="${language.code}"]`).click();
+      // Flag language buttons (aria-pressed); the accessible name starts with the visible code ES/EN
+      await page.getByRole('button', { name: new RegExp(`^${language.code.toUpperCase()}\\b`) }).first().click();
 
       await expect(page.getByRole('heading', { name: language.heading })).toBeVisible();
 

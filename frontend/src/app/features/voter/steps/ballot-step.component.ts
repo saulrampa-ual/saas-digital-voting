@@ -1,5 +1,5 @@
 import { Component, input, model, output, signal } from '@angular/core';
-import { IonButton, IonItem, IonLabel, IonList, IonRadio, IonRadioGroup, IonText } from '@ionic/angular';
+import { IonButton, IonItem, IonLabel, IonRadio, IonRadioGroup, IonText } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Ballot } from '../../../core/voter/voter-api.service';
 import { LocalizedPipe } from '../../../shared/pipes/localized.pipe';
@@ -13,22 +13,23 @@ export type BallotChoice = number | 'blank' | null;
  */
 @Component({
   selector: 'app-ballot-step',
-  imports: [IonButton, IonItem, IonLabel, IonList, IonRadio, IonRadioGroup, IonText, TranslatePipe, LocalizedPipe],
+  imports: [IonButton, IonItem, IonLabel, IonRadio, IonRadioGroup, IonText, TranslatePipe, LocalizedPipe],
   template: `
     <h1 tabindex="-1">{{ ballot().question | localized: language() : fallback() }}</h1>
     <p class="help">{{ 'voter.ballot.help' | translate }}</p>
     <ion-radio-group [value]="choice()" (ionChange)="choice.set($event.detail.value); missing.set(false)"
                      [attr.aria-describedby]="missing() ? 'ballot-error' : null">
-      <ion-list lines="none">
+      <!-- A plain container, not ion-list: inside the radiogroup a list role would need listitem children (DEF-05) -->
+      <div class="options">
         @for (option of ballot().options; track option.id) {
-          <ion-item class="option" [class.selected]="choice() === option.id">
+          <ion-item lines="none" class="option" [class.selected]="choice() === option.id">
             <ion-radio [value]="option.id" justify="space-between">
               {{ option.text | localized: language() : fallback() }}
             </ion-radio>
           </ion-item>
         }
         @if (ballot().blankVoteEnabled) {
-          <ion-item class="option blank" [class.selected]="choice() === 'blank'">
+          <ion-item lines="none" class="option blank" [class.selected]="choice() === 'blank'">
             <ion-radio value="blank" justify="space-between">
               <ion-label>
                 {{ 'voter.ballot.blank' | translate }}
@@ -37,7 +38,7 @@ export type BallotChoice = number | 'blank' | null;
             </ion-radio>
           </ion-item>
         }
-      </ion-list>
+      </div>
     </ion-radio-group>
     @if (missing()) {
       <ion-text color="danger"><p id="ballot-error" class="error" role="alert">{{ 'voter.ballot.missing' | translate }}</p></ion-text>
@@ -46,7 +47,7 @@ export type BallotChoice = number | 'blank' | null;
   `,
   styles: `
     .help { color: var(--ion-color-medium); }
-    ion-list { background: transparent; padding: 0; }
+    .options { padding: 0; }
     .option {
       --min-height: 64px; --border-radius: var(--vv-radius-card); --background: var(--ion-color-light, #fff);
       border: 1px solid var(--vv-border-color); border-radius: var(--vv-radius-card); margin-bottom: 12px;

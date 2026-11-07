@@ -33,13 +33,13 @@ limitaciones en \texttt{docs/evaluation/informe.md}.
 \endfirsthead
 \hline\textbf{Hipótesis} & \textbf{Criterio del protocolo} & \textbf{Estado del criterio} & \textbf{Resultado medido} \\
 \hline\endhead
-H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo. La auditoría automática no certifica conformidad WCAG. & Validado por el tutor & PENDIENTE: axe y revisión manual no ejecutados; sin decisión. \\
+H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo. La auditoría automática no certifica conformidad WCAG. & Validado por el tutor & parte automática favorable; parte manual pendiente. Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de una misma incidencia en la papeleta (\texttt{aria-required-children}); corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Sin decisión final hasta la revisión manual con teclado y lector de pantalla. \\
 \hline
 H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan acceso, emisión y obtención del recibo en $\leq$ 3 minutos, y al menos 4 de 5 interpretan correctamente el resultado de la verificación. H0b: no se alcanza alguno de esos criterios. & Validado por el tutor & PENDIENTE: no se han realizado sesiones con participantes; sin decisión. \\
 \hline
 H1c & Con 500 usuarios simultáneos, p95 de emisión inferior a dos segundos en tres ejecuciones. & Propuesto & PENDIENTE: el escenario k6 está preparado, pero faltan tres ejecuciones medidas; sin decisión. \\
 \hline
-RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin formación previa crean, configuran y programan un proceso de opción única en $\leq$ 10 minutos y sin ayuda. & Validado por el tutor; 10 minutos como valor propuesto & PENDIENTE: no se ha realizado sesión con administradores; RNF-4 no está evaluado. \\
+RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin formación previa crean, configuran y programan un proceso de opción única en $\leq$ 10 minutos y sin ayuda. & Validado por el tutor; 10 minutos como valor propuesto & NO DEMOSTRADO: sesión del 03/11/2026 con cinco participantes y consentimiento. Los 5 completan la tarea sin ayuda de personas (se permite consultar la documentación). Tiempos estimados tras la sesión, no cronometrados: entre 3,4 y 11 minutos, 4 de 5 por debajo de 10 minutos. Solo 2 de 5 no tenían formación previa, así que la muestra no alcanza la población del criterio. Evidencia indicativa; sin decisión. \\
 \hline
 \end{longtable}
 \normalsize
