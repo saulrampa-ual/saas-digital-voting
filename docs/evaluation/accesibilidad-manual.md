@@ -1,6 +1,8 @@
 # Lista de comprobación manual de accesibilidad
 
-Estado: **pendiente de ejecución por el autor**. Esta lista complementa axe; no declara conformidad WCAG.
+Revisión manual no realizada antes del cierre; las hojas CSV se conservan sin rellenar como instrumento del protocolo.
+
+Estado: **no realizada** (08/11/2026). H1a: parte automática favorable; parte manual no realizada; sin decisión. Esta lista complementa axe; no declara conformidad WCAG.
 Usar solo cuentas y datos sintéticos. Registrar versión, navegador, tamaño de pantalla, idioma, incidencias y
 capturas sin datos personales.
 
@@ -40,10 +42,10 @@ capturas sin datos personales.
 
 | ID | Pantalla / tarea | Criterio | Resultado observado | Severidad | Evidencia anonimizada |
 | --- | --- | --- | --- | --- | --- |
-| — | PENDIENTE | PENDIENTE | PENDIENTE | PENDIENTE | PENDIENTE |
+| — | No realizada | — | — | — | — |
 
 ## Resultado
 
-- Fecha y responsable: PENDIENTE
-- Incidencias críticas o serias: PENDIENTE
-- Decisión de H1a: PENDIENTE
+- Fecha y responsable: no realizada (autor)
+- Incidencias críticas o serias: no aplica; no hay observaciones manuales
+- Decisión de H1a: sin decisión (parte automática favorable; parte manual no realizada)

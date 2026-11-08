@@ -49,7 +49,8 @@ import { AdminPageComponent } from '../admin-page.component';
             <div><dt>{{ 'admin.privacy.censuses' | translate }}</dt><dd>{{ s.entries.length }}</dd></div>
             <div><dt>{{ 'admin.privacy.processes' | translate }}</dt><dd>{{ processCount() }}</dd></div>
           </dl>
-          <div class="table-wrap">
+          <!-- DEF-07 (WCAG 2.1.1): scrollable table as a focusable region with a name -->
+          <div class="table-wrap" tabindex="0" role="region" aria-labelledby="step2">
             <table>
               <caption class="sr-only">{{ 'admin.privacy.step2' | translate }}</caption>
               <thead><tr>

@@ -15,7 +15,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Bloque | Estado |
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
-| Pruebas y medición (P7) | En curso: 60 pruebas backend, 19 frontend, cobertura 7–14 %; H1a, H1b y H1c sin medir |
+| Pruebas y medición (P7) | En curso: 60 pruebas backend, 19 frontend, cobertura 7–14 %; H1a sin decisión (parte automática favorable; parte manual no realizada); H1b y H1c sin medir |
 | Memoria (P8) | En curso: borrador de 82 páginas; tabla de hipótesis en «PENDIENTE» |
 | Publicación | `dev` va por delante de `origin/dev`: falta `git push origin dev` (lo hace el autor) |
 
@@ -25,10 +25,10 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 
 | ID | Pregunta | Desbloquea | Respuesta |
 | --- | --- | --- | --- |
-| Q-01 | ¿RF-11 (revoto) queda como «Could» o pasa a «Won't» en la tabla 4.3? | C3 | ¿? |
+| Q-01 | ¿RF-11 (revoto) queda como «Could» o pasa a «Won't» en la tabla 4.3? | C3 | **Respondida (08/11, D-56):** pasa a *Won't* (fuera de esta versión), con nota de que el identificador se conserva por trazabilidad con la especificación v1.0. Aplicado en la tabla 4.3 y en RF-11 de la especificación |
 | Q-02 | ¿«Sin ayuda» en RNF-4 excluye también consultar la documentación? (marcador `[PENDIENTE DEL AUTOR]` en `especificacion_detallada.tex`) | C3, B4 | **Respondida (05/11, D-55):** «sin ayuda» = sin intervención de personas; consultar la documentación sí está permitido. Marcador de `especificacion_detallada.tex` resuelto |
-| Q-03 | ¿Se anotan RF-22 y RF-23 como fuera del MVP en la tabla 1.1? | C3 | ¿? |
-| Q-04 | ¿En P9 se depura el modelo de datos de sustitución del voto (`votes.status` `SUBSTITUTED`, RI-6/RI-8/RI-9) o se deja descrito? | C3 | ¿? |
+| Q-03 | ¿Se anotan RF-22 y RF-23 como fuera del MVP en la tabla 1.1? | C3 | **Respondida (08/11, D-56):** sí; anotados en sus filas (OE3 y OE4) y con una nota bajo la tabla: fuera del MVP, trabajo futuro (P9), sin evaluar en esta entrega |
+| Q-04 | ¿En P9 se depura el modelo de datos de sustitución del voto (`votes.status` `SUBSTITUTED`, RI-6/RI-8/RI-9) o se deja descrito? | C3 | **Respondida (08/11, D-56):** se deja descrito, no se depura; se marca como no operativo en el MVP (la urna registra un único voto por token y nunca genera «Sustituido»). Aplicado en la especificación (nota de alcance y RI-6) y en las conclusiones |
 | Q-05 | ¿Se hace la sesión RNF-4 con cinco administradores o se declara pendiente en la memoria? | B4 | **Respondida (03/11):** la sesión con administradores ya se hizo. Falta pasar los datos: ver Q-11 |
 | Q-06 | ¿Fecha para el ensayo y para las cinco sesiones con votantes (H1b)? ¿Quiénes participan (sin datos reales)? | B2 | **Respondida (05/11):** ensayo el domingo 08/11/2026 y cinco sesiones el lunes 09/11/2026, con el escenario sintético `USAB`, solo si el sábado 07/11 se cumplen tres condiciones: `seed-usab.mjs` ha funcionado con el stack real y existe `.local/sesion-usab.md`; el consentimiento tiene los datos institucionales y el contacto; hay cinco participantes y dos reservas confirmados. Si falla alguna, el autor propone ensayo el 15/11 y sesiones el 16/11/2026 (fechas propuestas, no definitivas). Estado el 05/11: **primera condición cumplida** (A11); faltan las otras dos. Los procesos #4 y #5 cierran el 12/11/2026 a las 12:04, así que con las fechas alternativas haría falta preparar un escenario nuevo |
 | Q-07 | ¿Se prueba RF-05a con un IdP externo (p. ej. un segundo realm de Keycloak como «universidad») o se deja como limitación? | A9 | **Respondida (03/11):** sí, con las cuentas `@inlumine.ual.es` de 4 compañeros (Google Workspace). Plan en la sección 2b; falta Q-12 |
@@ -44,10 +44,10 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 
 Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
 
-- [ ] **A1 · Publicar lo que hay** (`Autor`): `git push origin dev`. Opcional: borrar ramas locales ya fusionadas
+- [x] **A1 · Publicar lo que hay** (`Autor`): `git push origin dev`. **Hecho:** `origin/dev` coincide con `dev` (`06f39be`, 08/11/2026). Opcional: borrar ramas locales ya fusionadas
   (`feat/login-and-home-polish`, `feat/login-language-flags`, `feat/login-responsive-redesign`,
   `fix/login-mobile-spacing`, `feat/console-rail-navigation`) y la remota `origin/feat/role-home-dashboards`.
-- [ ] **A2 · Poner al día `PROGRESS.md`** (`IA`): entrada de la consola del 03/11 (barra de iconos, logo, banderas,
+- [x] **A2 · Poner al día `PROGRESS.md`** (`IA`, 08/11/2026): entrada de la consola del 03/11 (barra de iconos, logo, banderas,
   gráfica por periodo) y quitar la marca suelta `PENDIENTE_PANEL`.
 - [ ] **A3 · Demo UAL y E2E** (`Ambos`): arrancar el stack, `node scripts/demo/seed-ual.mjs` (corregido, sin repetir)
   y `npm run test:e2e` contra el frontend de la rama actual (no otro servidor en el puerto 4200, ver DEF-03).
@@ -60,7 +60,12 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   (`docs/evaluation/accesibilidad-axe-2026-11-05.md`). DEF-06 (error de formato del recibo no visible) corregido y
   tercer barrido con 0 críticos y 0 serios; su prueba pasa en verde. La prueba
   `receipt-check.accessibility.spec.ts` se ha adaptado al selector de idioma con banderas y pasa. Faltan la consola de
-  gestión y la página pública de resultados.
+  gestión y la página pública de resultados. **08/11/2026:** consola de gestión (todas las páginas y roles) y
+  resultados públicos medidos con `admin-console.accessibility.spec.ts` (sin commit), con Keycloak y API simulados:
+  27 pantallas o estados, 108 auditorías, 0 críticos y 3 serios, todos de **DEF-07** (tablas que desbordan a 360 px
+  sin acceso con teclado; sin corregir, necesita aprobación). Resultados públicos (V8) y 404: 0. Informe:
+  `docs/evaluation/accesibilidad-axe-consola-2026-11-08.md`. **DEF-07 corregido el mismo día** (opción A, aprobada por
+  el autor): barrido 2 con 0 críticos y 0 serios, 108 de 108 sin marcas. A4 completa; no cambia H1a (flujo del votante).
 - [ ] **A5 · Pruebas unitarias P7.1** (`IA`): censo/CSV, claims institucionales (RF-05b), privacidad (RF-18),
   recordatorios (RF-17), errores y reglas de dominio sin prueba; frontend: gráfica por día (`app-day-chart`),
   agregados del inicio y flujo visual del votante.
@@ -72,7 +77,7 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   **En curso (05/11):** `scripts/load/prepare-voting-tokens.mjs` prepara cada ejecución (sin probar con el stack real).
   Solo después de las sesiones H1b (Mailpit guarda 500 mensajes). Falta instalar k6 y ejecutar. Variables y
   definición de ejecución válida en `docs/evaluation/carga.md`. El autor ejecuta; la IA analiza y cierra H1c.
-- [ ] **A8 · Gantt de la memoria** (`IA`, IMP-02): la iteración 3 aún dice «re-voto».
+- [x] **A8 · Gantt de la memoria** (`IA`, IMP-02): la iteración 3 aún dice «re-voto». **Hecho:** `plan_gantt.tex` ya dice «Iteración 3. Emisión y recibo (RF-09--RF-10)» (comprobado el 08/11/2026).
 - [ ] **A9 · RF-05a** (`IA`, según Q-07): IdP externo de prueba y prueba de inicio de sesión de gestión federado.
 - [ ] **A10 · Job E2E en CI** (`IA`): Playwright + axe en GitHub Actions (al menos con servicios simulados).
 - [x] **A11 · Elección y votantes para la sesión H1b** (`IA` prepara, `Autor` ejecuta): hecho el 04/11/2026
@@ -146,8 +151,10 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
   anotar T0/T1/T2 y resultados como cantidades (x de 5) en la hoja de registro (preparadas el 05/11:
   `hoja-registro-h1b.csv` y `scripts/evaluation/h1b-summary.mjs` para el resumen y la decisión del mismo día 09). Criterio: 5 de 5 en ≤ 3 min y al
   menos 4 de 5 interpretan la verificación.
-- [ ] **B3 · Revisión manual de accesibilidad** (`Autor`, parte manual de H1a): teclado y lector de pantalla
+- [x] **B3 · Revisión manual de accesibilidad** (`Autor`, parte manual de H1a): teclado y lector de pantalla
   (NVDA o Narrador) en acceso, voto y recibo siguiendo `docs/evaluation/accesibilidad-manual.md`.
+  **Cerrada sin ejecutar (08/11/2026):** NVDA no leía la página en el equipo del autor; se aplica el anexo del guion.
+  H1a queda sin decisión y las hojas CSV se conservan sin rellenar.
 - [x] **B4 · RNF-4 con administradores** (`Autor`): sesión realizada (comunicado el 03/11/2026). Falta registrar
   los datos (Q-11 → A12; hecho el 05/11) y fijar la definición de «sin ayuda» (Q-02; hecho, D-55).
 
@@ -173,11 +180,11 @@ El resto de `IMPROVEMENTS.md` queda para P9 salvo que se decida otra cosa.
 - [ ] **C1 · Resultados de la evaluación** (`IA`, tras A4, A7, B2, B3): completar `docs/evaluation/informe.md`, la tabla
   13.1 (`evaluacion_resultados.tex`), la lista `[PENDIENTE]` de `contenido1.tex` y las conclusiones. Lo que no se
   mida se deja como PENDIENTE y limitación, sin inventar resultados. **En curso (05/11):** parte de RNF-4 hecha (no
-  demostrado); H1a: parte automática favorable tras corregir DEF-05 y DEF-06, parte manual pendiente (autor, NVDA); H1b y H1c sin
+  demostrado); H1a: parte automática favorable tras corregir DEF-05 y DEF-06, parte manual no realizada y H1a sin decisión (08/11, aplicado en la memoria); H1b y H1c sin
   datos. C2 y C3 no se adelantan hasta tener H1a, H1b y H1c medidas o declaradas limitación.
 - [ ] **C2 · Alinear con lo implementado** (`IA`): figuras de arquitectura (objetivo frente a implementado),
   diagramas conceptuales y texto heredado; capturas seguras de las pantallas (datos sintéticos de la demo UAL).
-- [ ] **C3 · Aplicar las decisiones Q-01 a Q-04** (`IA`) en la especificación y las tablas 1.1 y 4.3.
+- [x] **C3 · Aplicar las decisiones Q-01 a Q-04** (`IA`) en la especificación y las tablas 1.1 y 4.3. **Hecho (08/11/2026, D-56)**, adelantado a petición del autor (el plan decía esperar a H1a, H1b y H1c): `contenido1.tex` (tablas 1.1 y 4.3), `especificacion_detallada.tex` (nota de alcance, RF-11 y RI-6) y `conclusiones.tex` (P9).
 - [ ] **C4 · Revisión editorial y visual final** (`Ambos`, P8.4): compilar el PDF, revisar página a página,
   avisos de maquetación de portada y contraportada; el autor da el visto bueno.
 
@@ -232,3 +239,7 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 05/11/2026 | A4, A7, C1 (H1a) | Barrido axe del flujo del votante: 8 críticos (DEF-05), 0 serios; H1a rechazada en la versión medida. Script de preparación de la carga (H1c) |
 | 05/11/2026 | A4, C1 (H1a), B2, A7 | DEF-05 corregido y nuevo barrido axe: 0 críticos, 0 serios (H1a: parte automática cumple; manual pendiente). DEF-06 abierto. Prueba del recibo adaptada. Hoja CSV y resumen de H1b. Definición de ejecución válida de k6 |
 | 05/11/2026 | A4, C1 (H1a) | DEF-05 cerrado por el autor. DEF-06 corregido (aprobado): mensaje propio en región `role="alert"`; quitado `test.fail`, la prueba pasa. Tercer barrido axe con las mismas versiones: 88 auditorías, 0 críticos, 0 serios. H1a: parte automática favorable, parte manual pendiente |
+| 08/11/2026 | A4, C3 | DEF-07 corregido (opción A, aprobada): tablas de la consola como regiones enfocables con nombre; barrido 2 con 0 críticos y 0 serios, 108 de 108 sin `test.fail`; Vitest 19 de 19 y build. Tabla de alcance (`dafo_justificacion.tex`) alineada: RF-11 en «Trabajo futuro». Sin commit |
+| 08/11/2026 | A4 | Barrido axe de la consola de gestión y de los resultados públicos (108 auditorías): 0 críticos, 3 serios de DEF-07 (registrado, sin corregir). Prueba nueva `admin-console.accessibility.spec.ts`, sin commit |
+| 08/11/2026 | A1, A2, A8, Q-01, Q-03, Q-04, C3 | A1 y A8 ya estaban hechas (comprobado). A2: entrada de la consola del 03/11 y quitada `PENDIENTE_PANEL`. Respuestas Q-01, Q-03 y Q-04 (D-56) aplicadas en la memoria (C3). Sin commit |
+| 08/11/2026 | B3, C1 (H1a) | Revisión manual de H1a no realizada (NVDA no leía la página en el equipo del autor). Anexo del guion aplicado a la tabla 13.1, la sección de validez, `conclusiones.tex` y `contenido1.tex`, con el barrido 4 (`06f39be`): parte automática favorable; parte manual no realizada; sin decisión. CSV sin rellenar. Sin commit |

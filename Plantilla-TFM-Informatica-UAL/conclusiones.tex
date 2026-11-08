@@ -35,7 +35,7 @@ pendientes.
 \label{sec:limitaciones-trabajo-futuro}
 Quedan por ejecutar la integración de repositorios y flujos con PostgreSQL,
 las pruebas E2E del stack completo, la revisión manual de accesibilidad con
-teclado y lector de pantalla (H1a: parte automática favorable; parte manual pendiente; la parte
+teclado y lector de pantalla (H1a: parte automática favorable; parte manual no realizada; la parte
 automática se midió en el flujo del votante tras corregir las incidencias de
 la papeleta y del recibo), tres ejecuciones medidas de
 carga con k6 (H1c) y la
@@ -52,5 +52,11 @@ PENDIENTE en la tabla~\ref{tab:estado-hipotesis} y constituye una limitación
 de este trabajo. También se debe ampliar la cobertura de código.
 Las propuestas registradas en \texttt{docs/ai/IMPROVEMENTS.md} orientan
 mejoras posteriores. P9 contempla RF-11, RF-22 y RF-23 fuera del MVP actual.
+El modelo de sustitución del voto de la especificación v1.0 (estado
+«Sustituido» del voto y del recibo, RI-6) se conserva descrito como referencia
+de diseño para RF-11, pero no es operativo en esta versión: la urna registra un
+único voto aceptado por token de emisión y nunca genera ese estado. Activarlo
+requiere implementar la lógica de sustitución y validarla con pruebas de
+concurrencia y unicidad.
 D-03 y D-05 fueron confirmadas por el tutor el 30/10/2026 mediante correo
 electrónico.

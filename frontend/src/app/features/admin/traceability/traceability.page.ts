@@ -66,7 +66,8 @@ const PAGE_SIZE = 50;
           @if (page.totalItems === 0) {
             <p class="help" role="status">{{ 'admin.trace.none' | translate }}</p>
           } @else {
-            <div class="table-wrap">
+            <!-- DEF-07 (WCAG 2.1.1): scrollable table as a focusable region with a name -->
+            <div class="table-wrap" tabindex="0" role="region" aria-labelledby="trace-title">
               <table aria-labelledby="trace-title">
                 <thead><tr>
                   <th scope="col">{{ 'admin.trace.col.when' | translate }}</th>

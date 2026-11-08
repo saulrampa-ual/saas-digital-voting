@@ -181,7 +181,8 @@
       } @else if (!votersLoading() && voters().length === 0) {
         <p class="help">{{ (search() ? 'admin.census.noMatches' : 'admin.census.noPeople') | translate }}</p>
       } @else {
-        <div class="table-wrap">
+        <!-- DEF-07 (WCAG 2.1.1): the table can scroll sideways on phones; the region takes the keyboard focus -->
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="people-title">
         <table aria-labelledby="people-title" [class.loading]="votersLoading()">
           <thead>
             <tr>

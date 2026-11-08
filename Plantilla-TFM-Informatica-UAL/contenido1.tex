@@ -114,13 +114,16 @@ OE1 (OBJ-1) & RQ2, RQ3 & RF-01, RF-02, RF-04, RF-05a, RF-19 & RNF-14, RNF-15 & P
 \hline
 OE2 (OBJ-2) & RQ2, RQ3 & RF-03, RF-06, RF-07, RF-17, RF-21 & RNF-8, RNF-10, RNF-17 & Configuración válida y transiciones de estado correctas; revisión de mensajes, contrato OpenAPI y medición de respuesta bajo carga. \\
 \hline
-OE3 (OBJ-3) & RQ1, RQ2, RQ3 & RF-05b, RF-08, RF-09, RF-10, RF-20, RF-23; RF-11 fuera del MVP \mbox{(D-03)}, sin evidencia de evaluación & RNF-1, RNF-3, RNF-6, RNF-7, RNF-11, RNF-12 & Auditoría WCAG 2.2 AA y revisión manual; éxito de tareas y comprensión del recibo; unicidad, idiomas y separación de identidad y urna. \\
+OE3 (OBJ-3) & RQ1, RQ2, RQ3 & RF-05b, RF-08, RF-09, RF-10, RF-20; RF-11 \mbox{(D-03)} y RF-23 fuera del MVP, sin evidencia de evaluación & RNF-1, RNF-3, RNF-6, RNF-7, RNF-11, RNF-12 & Auditoría WCAG 2.2 AA y revisión manual; éxito de tareas y comprensión del recibo; unicidad, idiomas y separación de identidad y urna. \\
 \hline
-OE4 (OBJ-4) & RQ2, RQ3 & RF-12, RF-13, RF-14, RF-15, RF-16, RF-19, RF-22 & RNF-11, RNF-13, RNF-17 & Recalcular el resultado desde votos contabilizables; verificar huellas y registro; medir respuesta del escrutinio. \\
+OE4 (OBJ-4) & RQ2, RQ3 & RF-12, RF-13, RF-14, RF-15, RF-16, RF-19; RF-22 fuera del MVP, sin evidencia de evaluación & RNF-11, RNF-13, RNF-17 & Recalcular el resultado desde votos contabilizables; verificar huellas y registro; medir respuesta del escrutinio. \\
 \hline
 \end{longtable}
 \setlength{\tabcolsep}{6pt}
 \normalsize
+\noindent\footnotesize RF-11, RF-22 y RF-23 se conservan por trazabilidad con la especificación v1.0:
+quedan fuera del alcance del MVP y se trasladan a trabajo futuro (P9), por lo que no se evalúan en esta
+entrega.\normalsize
 
 El prototipo implementa una experiencia web adaptable, autenticación de
 gestión y del votante, una API REST documentada y evidencias de presencia e
@@ -219,7 +222,7 @@ descriptiva limitada al prototipo, la configuración y la población evaluados.
 
 El procedimiento y su estado son los siguientes:
 \begin{enumerate}
-  \item [parte automática favorable; parte manual pendiente] Ejecutar una auditoría automática de accesibilidad (por ejemplo,
+  \item [parte automática favorable; parte manual no realizada] Ejecutar una auditoría automática de accesibilidad (por ejemplo,
   axe) en las pantallas evaluadas, con cero incumplimientos críticos ni
   serios, y una revisión manual con teclado y lector de pantalla sin bloqueos
   en el flujo de acceso, voto y recibo. La auditoría automática por sí sola no
@@ -228,7 +231,9 @@ El procedimiento y su estado son los siguientes:
   la papeleta; corregida, el nuevo barrido da 0 críticos y 0 serios. También
   se corrigió el error de formato del recibo, que no se mostraba (axe no lo
   detecta); un tercer barrido con las dos correcciones da 0 críticos y 0
-  serios. La revisión manual está pendiente.
+  serios. La revisión manual con teclado y lector de pantalla no se realizó
+  antes del cierre: es una parte del protocolo sin ejecutar, no un
+  incumplimiento, y H1a queda sin decisión.
   \item [PENDIENTE] Realizar pruebas moderadas con cinco personas no técnicas.
   Pedirles que accedan a una votación de prueba, emitan un voto y comprueben
   el recibo. Registrar éxito sin ayuda, duración, errores y comprensión del
@@ -266,7 +271,9 @@ limitarán al prototipo, configuración y población evaluados; no se
 generalizarán a elecciones oficiales ni a despliegues de producción.
 
 \textbf{Validez de constructo.} Una puntuación de axe no equivale a una
-certificación WCAG; completar una tarea no demuestra por sí solo que la
+certificación WCAG; además, la revisión manual de H1a no se realizó, así que la
+conclusión sobre accesibilidad se limita a lo que axe puede decidir;
+completar una tarea no demuestra por sí solo que la
 verificación sea comprensible o confiable; y un test de carga no demuestra
 disponibilidad ni resistencia a ataques. Para reducir estas amenazas se
 combinarán métricas observables, revisión manual y evidencias de diseño, y se
@@ -431,7 +438,7 @@ RF-09 & Emitir voto & Registrar una selección válida y evitar que la identidad
 \hline
 RF-10 & Verificar recibo & Comprobar que el voto consta en la urna usando el recibo emitido. & Must & Informe RF-16: recibo verificable; Helios y Belenios. \\
 \hline
-RF-11 & Sustituir voto & Permitir cambiar el voto antes del cierre, conservando el anterior como no contabilizable. & Could & Informe RF-17: revoto; queda fuera del MVP por alcance. \\
+RF-11 & Sustituir voto & Permitir cambiar el voto antes del cierre, conservando el anterior como no contabilizable. & Won't & Informe RF-17: revoto; fuera del MVP (D-03) y trabajo futuro (P9). Se conserva el identificador por trazabilidad con la especificación v1.0; no se implementa en esta entrega. \\
 \hline
 RF-12 & Consultar registro de urna & Verificar el registro encadenado y la huella publicada del proceso. & Should & Informe RF-21: auditoría e integridad. \\
 \hline

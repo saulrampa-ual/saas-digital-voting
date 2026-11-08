@@ -7,7 +7,10 @@ conservan los códigos para mantener la trazabilidad entre documentos.
 
 \textbf{Nota de alcance.} Las referencias a re-votación o sustitución (RF-11,
 estados “Sustituido” y “re-votación permitida”) proceden de la especificación
-v1.0 y no están implementadas en el MVP (D-03).
+v1.0 y no están implementadas en el MVP (D-03). El estado “Sustituido” se
+conserva en el modelo como referencia de diseño para RF-11 (P9), pero no es
+operativo: la urna registra un único voto aceptado por token de emisión y no
+genera ese estado.
 
 \section{Casos de uso}
 \label{sec:casos-uso-detallados}
@@ -283,7 +286,7 @@ v1.0 y no están implementadas en el MVP (D-03).
 \item 3: Si la votante cancela, su voto anterior sigue siendo válido
 \item 5: Si el proceso se cierra antes de registrar el nuevo voto, el anterior sigue siendo válido
 \end{itemize}
-\textbf{Comentarios:} Prioridad C. Amplía RF-15. La re-votación mitiga la coacción: el votante puede cambiar su voto hasta el cierre.\par
+\textbf{Comentarios:} Prioridad W (fuera de esta versión; era C en la especificación v1.0). Amplía RF-15. La re-votación mitiga la coacción: el votante puede cambiar su voto hasta el cierre.\par
 
 \subsection{RF-12: Publicar y verificar registro de auditoría}
 
@@ -513,7 +516,7 @@ v1.0 y no están implementadas en el MVP (D-03).
 \textbf{Requisitos asociados:} RF-09, RF-10, RF-11, RF-13\par
 \textbf{Descripción:} El sistema deberá almacenar los votos emitidos en cada proceso, sin ninguna relación con la identidad del votante.\par
 \textbf{Datos específicos:} Identificador del voto: 36 caracteres (identificador aleatorio) Proceso: identificador del proceso (RI-4) Contenido del voto: opción elegida Fecha y hora de recepción: dd/mm/aaaa hh:mm:ss Canal: En línea Estado: Contabilizable o Sustituido\par
-\textbf{Comentarios:} El voto no contiene ningún identificador ni dato de contacto del votante. Cuando un votante vuelve a votar (RF-11), el voto anterior pasa a Sustituido, sin borrarse. Solo se escrutan los votos Contabilizables.\par
+\textbf{Comentarios:} El voto no contiene ningún identificador ni dato de contacto del votante. Cuando un votante vuelve a votar (RF-11), el voto anterior pasa a Sustituido, sin borrarse. Solo se escrutan los votos Contabilizables. En el MVP el estado Sustituido no se genera (D-03): se conserva como referencia de diseño para RF-11 (P9), y activarlo requiere implementar la sustitución y validarla con pruebas de concurrencia y unicidad.\par
 
 \subsection{RI-7: Información sobre participación}
 

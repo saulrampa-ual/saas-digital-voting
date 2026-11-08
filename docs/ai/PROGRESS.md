@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-05 · Rama: `dev` (F5 fusionada en `2fb5f02` más las respuestas del autor) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar · sin push
+Última actualización: 2026-11-08 · Rama: `dev` (F5 fusionada en `2fb5f02` más las respuestas del autor) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar · sin push
 
 ## Hitos
 
@@ -13,7 +13,7 @@
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
-| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 60 pruebas backend (0 fallos), 10 Vitest; cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a y H1c pendientes |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 60 pruebas backend (0 fallos), 10 Vitest; cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a sin decisión (parte manual no realizada); H1c pendiente |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: P8.1 y borradores P8.2–P8.3 incorporados; criterios del tutor (H1a/H1b/RNF-4) y confirmación de D-03/D-05 (correo del 30/10/2026) aplicados (P8.5); PDF de 82 páginas; falta la revisión editorial y visual completa |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
@@ -203,15 +203,15 @@
   concurrencia de tokens y reintentos/idempotencia de outbox.
 - P7.3: inspección del esquema y logs para secreto del voto; pruebas de todas las manipulaciones de cadena y límites
   de datos temporales.
-- P7.4: Playwright con Keycloak y Mailpit reales, flujos de votación y gestión en 1280/360 px y ES/EN, axe y
-  ejecución de `docs/evaluation/accesibilidad-manual.md`; añadir job E2E a CI. El runner unitario está configurado;
+- P7.4: Playwright con Keycloak y Mailpit reales, flujos de votación y gestión en 1280/360 px y ES/EN, axe
+  (la revisión manual de `docs/evaluation/accesibilidad-manual.md` no se realizó; H1a sin decisión); añadir job E2E a CI. El runner unitario está configurado;
   el navegador real y E2E siguen sin ejecutarse.
 - P7.5: completar escenarios k6 de acceso y escrutinio; preparar en entorno local las credenciales sintéticas
   fuera del repo; ejecutar tres mediciones de voto con percentiles, errores y recursos y comprobar la cadena/participación.
 - P7.6: materiales listos (`preparacion-sesion.md`, `censo-sesion.csv`, guion, hoja y protocolo alineados con D-49).
   El autor debe montar el escenario `USAB`, hacer un ensayo y realizar las cinco sesiones con votantes; resultados en
   la hoja como cantidades (x de 5).
-- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a/H1b/H1c siguen pendientes.
+- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a sin decisión (parte manual no realizada); H1b/H1c siguen pendientes.
 - P8: enfoque aprobado por el autor. P8.1 corrige el alcance de RF-11 y añade la comparación de planificación;
   los capítulos de diseño técnico, implementación, amenazas, evaluación y conclusiones son borradores basados en
   las evidencias actuales. Se recompiló el PDF de 79 páginas y se inspeccionaron la introducción, el flujo de voto,
@@ -266,6 +266,32 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
   resultados) y las hojas vacías `accesibilidad-manual-obligatorias.csv` (39 filas) y `accesibilidad-manual-recomendadas.csv`
   (10). Datos: demo UAL (`seed-ual.mjs`), no `USAB`. La revisión la hace el autor; sin datos todavía. El anexo del
   guion tiene la redacción por si no se realiza («parte automática favorable; parte manual no realizada»), sin aplicar.
+- **Versión de H1a (08/11/2026)**: `dev` está en `06f39be` (merge de `fix/auditoria-visual`); las correcciones de DEF-05
+  y DEF-06 entraron en `9c948cf`. Los ficheros del votante son idénticos a los medidos el 05/11 salvo por los saltos de
+  línea (CRLF en Windows), por eso cambiaron dos SHA-256. Barrido 4 sobre `06f39be`: 88 auditorías, 0 críticos, 0 serios.
+  Guion actualizado con el commit y los SHA-256 completos de `06f39be`. Copia temporal en `.local/claude-tmp/` (ignorada).
+- **H1a, parte manual no realizada (08/11/2026)**: el autor no pudo hacer la revisión (NVDA no leía la página en su
+  equipo) y decidió cerrarla sin ejecutar. Aplicado el anexo del guion en la tabla 13.1 y la sección de validez
+  (`evaluacion_resultados.tex`), `conclusiones.tex` y `contenido1.tex` (lista de hipótesis y validez de constructo),
+  con el barrido 4 sobre `06f39be`. **H1a: parte automática favorable; parte manual no realizada; sin decisión**
+  (no rechazada; mismo tratamiento que RNF-4). Las hojas CSV se conservan sin rellenar. Sin commit.
+- **A4, consola de gestión (08/11/2026)**: `frontend/tests/e2e/admin-console.accessibility.spec.ts` (nuevo, sin commit)
+  simula Keycloak (código de autorización y token sintético por rol) y la API, y pasa axe por 27 pantallas o estados de
+  la consola y los resultados públicos, a 1280 y 360 px y en ES y EN: 108 auditorías, 0 críticos, 3 serios, todos de
+  **DEF-07** (`.table-wrap` desborda a 360 px y no recibe el foco: detalle de censo en ES y correos no entregados de
+  Participación en ES y EN). DEF-07 registrado en `defectos.md` con dos opciones de corrección, **sin aplicar**; las
+  3 combinaciones van como `test.fail`. 108 de 108 pruebas en verde. No cambia H1a. Informe:
+  `docs/evaluation/accesibilidad-axe-consola-2026-11-08.md`.
+- **DEF-07 corregido (08/11/2026)**, opción A aprobada por el autor: cada `.table-wrap` de la consola (detalle de
+  censo, panel de correos, claves de API, privacidad, auditoría y trazabilidad) tiene `tabindex="0"`, `role="region"` y
+  nombre. Barrido 2: 108 auditorías, 0 críticos, 0 serios; `test.fail` quitado, 108 de 108; Vitest 19 de 19 y build
+  correctos. Avisos de axe sin decidir listados en el informe como «pendientes de decisión». Sin commit.
+- **Tabla de alcance (08/11/2026)**: `dafo_justificacion.tex`, fila «Trabajo futuro» con RF-11 (informe RF-17, revoto,
+  D-03); RF-17 del informe sale de la lista «sin ID local» y la correspondencia RF-11 → RF-17 se añade al párrafo de
+  la tabla. Sin commit.
+- **C3 y Q-01, Q-03, Q-04 (08/11/2026)**: respuestas del autor registradas (D-56) y aplicadas en `contenido1.tex`
+  (tablas 1.1 y 4.3), `especificacion_detallada.tex` (nota de alcance, RF-11 prioridad W, RI-6) y `conclusiones.tex`
+  (P9: modelo de sustitución descrito y no operativo). Sin commit.
 - **H1b**: sin datos; sesiones el 09/11 (escenario `USAB` listo; hoja `hoja-registro-h1b.csv` y
   `scripts/evaluation/h1b-summary.mjs` preparados, probados solo con datos inventados fuera del repositorio). Con 5 participantes, el criterio de 90 % y 80 % que
   cita el autor equivale al validado por el tutor (5 de 5 en ≤ 3 min; 4 de 5 interpretan el recibo).
@@ -362,6 +388,21 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
   IA), las vulnerabilidades Maven de Trivy y los paquetes `p/…` de Semgrep (sin acceso a sus registros). Registradas
   IMP-46–IMP-49.
 
+## Consola de gestión: barra de iconos, logo, banderas y gráfica por periodo (03/11/2026)
+
+Rama `feat/console-rail-navigation` (`8f1bbf5`), fusionada en `dev` en `c571021`.
+
+- Barra de iconos siempre visible para todos los roles; la hamburguesa de su parte superior la despliega con los
+  nombres de las secciones y solo ese botón la vuelve a plegar (el contenido se desplaza desde 992 px; por debajo se
+  superpone). Se quita el nombre del usuario del pie de la barra (ya está en la cabecera); cerrar sesión queda como icono.
+- Cabecera: logo de VeriVoto (escudo del prototipo) centrado; la hamburguesa pasa a la barra.
+- Selector de idioma: botones ES/EN con las banderas de España y Reino Unido, con el mismo aspecto que el login de
+  Keycloak (`aria-pressed`, objetivos de 44 px).
+- Participación por día (inicio y página de participación): componente compartido `app-day-chart` con escala fija de
+  0 a 100 %, todos los días del periodo de votación (los futuros, vacíos) y los meses bajo el eje. Solo días, nunca
+  horas (D-18).
+- La medición axe de la consola de gestión con este diseño es parte de A4 (ver `docs/ai/PLAN.md`).
+
 ## Login y panel de inicio (02/11/2026)
 
 Rama `feat/login-and-home-polish` creada desde `feat/role-home-dashboards` (sin fusionar entonces) y fusionada en `dev` con autorización del autor.
@@ -373,7 +414,7 @@ Rama `feat/login-and-home-polish` creada desde `feat/role-home-dashboards` (sin 
 - Ajuste del 03/11/2026 (rama `feat/login-language-flags`): logo del panel más grande (32 px de texto, escudo de 46 px); en móvil la banda azul solo lleva el logo y la tarjeta queda justo debajo; se quita el hueco antes del botón (campo oculto de Keycloak que sumaba dos huecos de 24 px); el selector de idioma pasa a dos botones pequeños con bandera (España y Reino Unido) y código ES/EN, enlazados a las mismas URL de Keycloak (el `select` queda como alternativa sin JS); aviso «¿Vas a votar? Usa el enlace personal…» bajo la tarjeta. axe sin incumplimientos a 1280 y 360 px en ES y EN. `feat/role-home-dashboards` borrada en local tras comprobar que está en `dev` (la remota `origin/feat/role-home-dashboards` sigue: borrarla requiere push).
 - Rediseño responsive del 03/11/2026 (rama `feat/login-responsive-redesign`, a partir de «VeriVoto – Logo y prototipos»): logo del prototipo (escudo con ranura de urna, check menta; «Veri» blanco y «Voto» `#5FD3A1`), paleta `#16365C`/`#4B5563`. Escritorio (≥ 768 px, 50/50): logo, mensaje y puntos de confianza en un único bloque centrado (antes el logo quedaba separado del mensaje y el pie se montaba sobre el tercer punto), pie abajo, marca de agua al 6 % en la esquina; escalones para poca altura (≤ 760 px), 768–1023 px y ≥ 1600 px. Móvil (< 768 px, `100dvh`): banda con logo y eslogan que crece con la altura, tarjeta superpuesta 24 px, aviso al votante y franja inferior con los tres puntos en versión corta (mismo `<ul>` reordenado con `display: contents`, sin duplicar texto); safe areas con `env()`. Se anulan dos huecos de keycloak.v2 (pie vacío dentro de la tarjeta, 28 px). Revisado en el navegador con Keycloak real: sin scroll en 360×640, 375×667, 390×844, 430×932, 768×1024, 1280×650, 1366×768, 1440×900 y 1920×1080; en 844×390 (horizontal) el formulario completo cabe y solo el aviso queda bajo el pliegue. axe 4.10.2 sin incumplimientos en ES (360) y EN (1440).
 - Presupuesto de estilos por componente de Angular: aviso a 8 kB y error a 12 kB (el SCSS del inicio ocupa 7,8 kB).
-- Comprobaciones: `npm run test:ci` 19/19 (3 pruebas nuevas de agregados) y `npm run build` sin avisos, ejecutados en una copia Linux del frontend con Node 22.23. Login real en Keycloak a 1280 y 360 px y pantalla de contraseña nueva en ES y EN (flujo «He olvidado mi contraseña» con la cuenta de auditoría, sin guardar la contraseña): axe 4.10.2 sin incumplimientos. PENDIENTE_PANEL
+- Comprobaciones: `npm run test:ci` 19/19 (3 pruebas nuevas de agregados) y `npm run build` sin avisos, ejecutados en una copia Linux del frontend con Node 22.23. Login real en Keycloak a 1280 y 360 px y pantalla de contraseña nueva en ES y EN (flujo «He olvidado mi contraseña» con la cuenta de auditoría, sin guardar la contraseña): axe 4.10.2 sin incumplimientos.
 
 ## Consolidación de ramas (01/11/2026)
 

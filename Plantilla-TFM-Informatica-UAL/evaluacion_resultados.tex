@@ -33,7 +33,7 @@ limitaciones en \texttt{docs/evaluation/informe.md}.
 \endfirsthead
 \hline\textbf{Hipótesis} & \textbf{Criterio del protocolo} & \textbf{Estado del criterio} & \textbf{Resultado medido} \\
 \hline\endhead
-H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo. La auditoría automática no certifica conformidad WCAG. & Validado por el tutor & parte automática favorable; parte manual pendiente. Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de una misma incidencia en la papeleta (\texttt{aria-required-children}); corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Sin decisión final hasta la revisión manual con teclado y lector de pantalla. \\
+H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo. La auditoría automática no certifica conformidad WCAG. & Validado por el tutor & parte automática favorable; parte manual no realizada. Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de una misma incidencia en la papeleta (\texttt{aria-required-children}); corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Repetido el 08/11/2026 sobre la versión vigente (\texttt{06f39be}), con el mismo resultado. La revisión manual con teclado y lector de pantalla que exige el criterio no se realizó antes del cierre: no es un incumplimiento, sino una parte del protocolo sin ejecutar. Evidencia parcial; sin decisión. \\
 \hline
 H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan acceso, emisión y obtención del recibo en $\leq$ 3 minutos, y al menos 4 de 5 interpretan correctamente el resultado de la verificación. H0b: no se alcanza alguno de esos criterios. & Validado por el tutor & PENDIENTE: no se han realizado sesiones con participantes; sin decisión. \\
 \hline
@@ -66,3 +66,9 @@ de base de datos de todos los repositorios ni la autorización completa entre
 organizaciones o la concurrencia real. Sin participantes ni carga reproducible no cabe generalizar
 sobre la experiencia o el rendimiento. Los resultados aquí consignados se
 limitan a las ejecuciones disponibles y no se extrapolan a producción.
+La parte manual de H1a (teclado y lector de pantalla) no se ejecutó: el
+barrido automático solo cubre las reglas que axe puede decidir y dejó
+avisos sin resolver (contraste sobre fondos que no puede calcular y un
+atributo ARIA del recibo), y no comprueba cómo se anuncian los errores ni el
+orden del foco. Por eso H1a no se declara aceptada ni rechazada; igual que
+RNF-4, queda como evidencia parcial y sin decisión.

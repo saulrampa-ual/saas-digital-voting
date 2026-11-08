@@ -12,21 +12,27 @@ marca «no revisado», nunca «cumple».
 
 ### 1.1 Versión
 
-Trabajar sobre `dev` en `4a5e593` con DEF-05 y DEF-06 sin commit. En PowerShell, desde la raíz del repositorio:
+Trabajar sobre `dev` en `06f39be`, sin cambios en `frontend/` (`git status --short frontend` no debe mostrar nada; los
+cambios en `docs/` no afectan a la aplicación). Las correcciones de DEF-05 y DEF-06
+entraron en el commit `9c948cf`, que forma parte de `06f39be`. En PowerShell, desde la raíz del repositorio:
 
 ```powershell
 git rev-parse --short HEAD
+git status --short frontend
 Get-FileHash frontend\src\app\features\voter\steps\ballot-step.component.ts -Algorithm SHA256
 Get-FileHash frontend\src\app\features\voter\receipt-check.page.ts -Algorithm SHA256
 Get-FileHash frontend\tests\e2e\voter-flow.accessibility.spec.ts -Algorithm SHA256
 ```
 
-| Fichero | Los 12 primeros caracteres deben ser (PowerShell los muestra en mayúsculas) |
+| Fichero | Valor esperado (PowerShell muestra el SHA-256 en mayúsculas) |
 | --- | --- |
-| `git rev-parse --short HEAD` | `4a5e593` |
-| `ballot-step.component.ts` | `353213FB93E6` |
-| `receipt-check.page.ts` | `402C9EF12240` |
-| `voter-flow.accessibility.spec.ts` | `747D65CBEC86` |
+| `git rev-parse --short HEAD` | `06f39be` |
+| `ballot-step.component.ts` | `353213FB93E633515A271366AAE8B90A5BB1427FC9071DBBDA759CED92FC4F02` |
+| `receipt-check.page.ts` | `0448F477BBA3E5E8D610560CB717A83B5EA22F64229628D7CD75A9E8937211E9` |
+| `voter-flow.accessibility.spec.ts` | `E4D440E2C4DFFDE27435E4B79AA6F09F7743F4AFA9BE2C3BE7ECFE4EF0397F59` |
+
+Son los ficheros tal como Git los deja en Windows (saltos de línea CRLF). Su contenido es el mismo que se midió el
+05/11 (`402C9EF12240…` y `747D65CBEC86…` eran las huellas de esos ficheros con saltos LF).
 
 Si alguno no coincide, **no se sigue**.
 
@@ -185,12 +191,12 @@ Herramienta de contraste y versión:
 ## Anexo · Redacción si la parte manual no se llega a hacer
 
 Solo se usa si la revisión no se realiza antes del cierre. No es un incumplimiento: es una parte del protocolo que no
-se ejecutó, igual que en RNF-4. No se aplica a la memoria hasta que el autor lo decida.
+se ejecutó, igual que en RNF-4. No se aplica a la memoria hasta que el autor lo decida. Aplicado el 08/11/2026; H1a queda como parte automática favorable y parte manual no realizada, sin decisión.
 
 **Tabla 13.1 (`evaluacion_resultados.tex`), columna «Resultado medido» de H1a**, en lugar del texto actual:
 
 ```latex
-parte automática favorable; parte manual no realizada. Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de una misma incidencia en la papeleta (\texttt{aria-required-children}); corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. La revisión manual con teclado y lector de pantalla que exige el criterio no se realizó antes del cierre: no es un incumplimiento, sino una parte del protocolo sin ejecutar. Evidencia parcial; sin decisión. \\
+parte automática favorable; parte manual no realizada. Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de una misma incidencia en la papeleta (\texttt{aria-required-children}); corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Repetido el 08/11/2026 sobre la versión vigente (\texttt{06f39be}), con el mismo resultado. La revisión manual con teclado y lector de pantalla que exige el criterio no se realizó antes del cierre: no es un incumplimiento, sino una parte del protocolo sin ejecutar. Evidencia parcial; sin decisión. \\
 ```
 
 **`conclusiones.tex`**: sustituir el paréntesis de H1a por:

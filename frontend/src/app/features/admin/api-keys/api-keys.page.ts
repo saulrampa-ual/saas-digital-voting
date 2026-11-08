@@ -72,7 +72,8 @@ import { AdminPageComponent } from '../admin-page.component';
         } @else if ((list()?.items ?? []).length === 0) {
           <p class="help">{{ 'admin.apiKeys.none' | translate }}</p>
         } @else {
-          <div class="table-wrap">
+          <!-- DEF-07 (WCAG 2.1.1): scrollable table as a focusable region with a name -->
+          <div class="table-wrap" tabindex="0" role="region" [attr.aria-label]="'admin.apiKeys.listTitle' | translate">
             <table>
               <caption class="sr-only">{{ 'admin.apiKeys.listTitle' | translate }}</caption>
               <thead><tr>
