@@ -68,8 +68,11 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   el autor): barrido 2 con 0 críticos y 0 serios, 108 de 108 sin marcas. A4 completa; no cambia H1a (flujo del votante).
 - [ ] **A5 · Pruebas unitarias P7.1** (`IA`): censo/CSV, claims institucionales (RF-05b), privacidad (RF-18),
   recordatorios (RF-17), errores y reglas de dominio sin prueba; frontend: gráfica por día (`app-day-chart`),
-  agregados del inicio y flujo visual del votante.
-- [ ] **A6 · Integración P7.2/P7.3** (`IA`): matriz completa de autorización HTTP entre organizaciones y roles,
+  agregados del inicio y flujo visual del votante. **Parcial (08/11/2026, sin commit):** frontend, gráfica por día
+  (`day-chart.component.spec.ts`, 9 pruebas; Vitest 28 de 28). Backend escrito (08/11/2026, sin commit): `CensusServiceTest`,
+  `PrivacyServiceTest` (election) y `JwtVoterIdentityVerifierTest`, `VoterAccessServiceSsoTest`, `NotificationAdminServiceTest`,
+  `PersonalDataServiceTest` (voter-access), 38 pruebas que pasan. **Verificadas por el autor (08/11/2026):** `./mvnw verify` en Windows con Java 25.0.5 y Testcontainers (PostgreSQL 18.6): BUILD SUCCESS en 5:27 min; election 36, voter-access 38 y ballot-box 22 pruebas, 0 fallos.
+- [ ] **A6 · Integración P7.2/P7.3** (`IA`; **escrita 08/11/2026, sin commit**: `ElectionOrganizationIsolationIntegrationTest`, `ProcessSyncOutboxIntegrationTest`, `VoterAccessScenariosIntegrationTest`, `BallotBoxScenariosIntegrationTest`, 13 pruebas que pasan; alcance acordado: solo el cruce entre organizaciones, no la matriz de roles; se añaden `spring-boot-starter-webmvc-test` y `spring-security-test` como dependencias de prueba en voter-access y ballot-box. **Verificadas por el autor (08/11/2026):** `./mvnw verify` en Windows con Java 25.0.5 y Testcontainers (PostgreSQL 18.6): BUILD SUCCESS en 5:27 min; election 36, voter-access 38 y ballot-box 22 pruebas, 0 fallos.): matriz completa de autorización HTTP entre organizaciones y roles,
   concurrencia del token de voto (un solo voto con N envíos), reintentos e idempotencia del *outbox*, inspección del
   esquema y de los logs para el secreto del voto (RNF-11), todas las manipulaciones de la cadena.
 - [ ] **A7 · Carga H1c** (`Ambos`): instalar k6, completar escenarios de acceso y escrutinio, credenciales sintéticas
@@ -80,6 +83,9 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
 - [x] **A8 · Gantt de la memoria** (`IA`, IMP-02): la iteración 3 aún dice «re-voto». **Hecho:** `plan_gantt.tex` ya dice «Iteración 3. Emisión y recibo (RF-09--RF-10)» (comprobado el 08/11/2026).
 - [ ] **A9 · RF-05a** (`IA`, según Q-07): IdP externo de prueba y prueba de inicio de sesión de gestión federado.
 - [ ] **A10 · Job E2E en CI** (`IA`): Playwright + axe en GitHub Actions (al menos con servicios simulados).
+  **Borrador (08/11/2026, sin commit, pendiente de revisión del autor):** job `e2e-a11y` en `build.yml` (`ubuntu-latest`,
+  Node 24, `npx playwright install --with-deps chromium`, `npm run test:e2e`, artefacto `e2e-a11y-results`). Sin
+  secretos. Probado en el entorno de la IA con `CI=1`: 200 de 200 en 10,3 min; falta verlo en GitHub tras el push.
 - [x] **A11 · Elección y votantes para la sesión H1b** (`IA` prepara, `Autor` ejecuta): hecho el 04/11/2026
   (`d5608f9`): `node scripts/demo/seed-usab.mjs` monta el escenario `USAB` de `preparacion-sesion.md` (censo de 7
   entradas `p01…p05@verivoto.test` + `r1`, `r2`, papeleta neutra, proceso abierto 7 días) y un proceso de ensayo
@@ -239,6 +245,8 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 05/11/2026 | A4, A7, C1 (H1a) | Barrido axe del flujo del votante: 8 críticos (DEF-05), 0 serios; H1a rechazada en la versión medida. Script de preparación de la carga (H1c) |
 | 05/11/2026 | A4, C1 (H1a), B2, A7 | DEF-05 corregido y nuevo barrido axe: 0 críticos, 0 serios (H1a: parte automática cumple; manual pendiente). DEF-06 abierto. Prueba del recibo adaptada. Hoja CSV y resumen de H1b. Definición de ejecución válida de k6 |
 | 05/11/2026 | A4, C1 (H1a) | DEF-05 cerrado por el autor. DEF-06 corregido (aprobado): mensaje propio en región `role="alert"`; quitado `test.fail`, la prueba pasa. Tercer barrido axe con las mismas versiones: 88 auditorías, 0 críticos, 0 serios. H1a: parte automática favorable, parte manual pendiente |
+| 08/11/2026 | A5, A6 | A5 backend (6 clases, 38 pruebas) y A6 (4 clases, 13 pruebas) escritas; pasan en el entorno de la IA y en el `./mvnw verify` del autor (Java 25, PostgreSQL 18.6; BUILD SUCCESS). Dos `pom.xml` con dependencias de prueba. Sin commit |
+| 08/11/2026 | A10, A5, RNF-4 | A10: job `e2e-a11y` en `build.yml` (borrador, 200 de 200 con `CI=1`). A5: pruebas de la gráfica por día (Vitest 28 de 28); backend y A6 bloqueados por falta de Maven Central y Java 25. RNF-4: protocolo y hoja de cronometraje para repetir la sesión (`rnf4-protocolo-administradores.md`, `hoja-registro-rnf4.csv`), sin ejecutar. Sin commit |
 | 08/11/2026 | A4, C3 | DEF-07 corregido (opción A, aprobada): tablas de la consola como regiones enfocables con nombre; barrido 2 con 0 críticos y 0 serios, 108 de 108 sin `test.fail`; Vitest 19 de 19 y build. Tabla de alcance (`dafo_justificacion.tex`) alineada: RF-11 en «Trabajo futuro». Sin commit |
 | 08/11/2026 | A4 | Barrido axe de la consola de gestión y de los resultados públicos (108 auditorías): 0 críticos, 3 serios de DEF-07 (registrado, sin corregir). Prueba nueva `admin-console.accessibility.spec.ts`, sin commit |
 | 08/11/2026 | A1, A2, A8, Q-01, Q-03, Q-04, C3 | A1 y A8 ya estaban hechas (comprobado). A2: entrada de la consola del 03/11 y quitada `PENDIENTE_PANEL`. Respuestas Q-01, Q-03 y Q-04 (D-56) aplicadas en la memoria (C3). Sin commit |

@@ -286,6 +286,24 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
   censo, panel de correos, claves de API, privacidad, auditoría y trazabilidad) tiene `tabindex="0"`, `role="region"` y
   nombre. Barrido 2: 108 auditorías, 0 críticos, 0 serios; `test.fail` quitado, 108 de 108; Vitest 19 de 19 y build
   correctos. Avisos de axe sin decidir listados en el informe como «pendientes de decisión». Sin commit.
+- **A10, A5 y RNF-4 (08/11/2026, noche; sin commit, pendiente de revisión)**: job `e2e-a11y` en `build.yml` con las
+  tres pruebas axe (votante, recibo y consola), sin secretos; con `CI=1` en el entorno de la IA, 200 de 200 en 10,3 min.
+  A5: `day-chart.component.spec.ts` (9 pruebas; Vitest 28 de 28). A5 backend y A6 bloqueados: el entorno de la IA no
+  accede a Maven Central ni a Docker Hub y no tiene Java 25. RNF-4: `rnf4-protocolo-administradores.md` y
+  `hoja-registro-rnf4.csv` para repetir la sesión con 5 administradores sin formación previa y tiempos cronometrados;
+  no ejecutado. `scripts/evaluation/rnf4-summary.mjs` calcula la decisión desde la hoja (probado solo con datos
+  inventados fuera del repositorio, igual que `h1b-summary.mjs`, que se volvió a comprobar el 08/11).
+- **A5 backend y A6 (08/11/2026, noche; sin commit)**: pruebas unitarias nuevas en election (`CensusServiceTest`,
+  `PrivacyServiceTest`) y voter-access (`JwtVoterIdentityVerifierTest`, `VoterAccessServiceSsoTest`,
+  `NotificationAdminServiceTest`, `PersonalDataServiceTest`): 38. Integración con Testcontainers (A6, alcance acordado):
+  aislamiento entre organizaciones por HTTP en los tres servicios (404 según OpenAPI), outbox (reintento, entrega única,
+  rechazo permanente que bloquea), receptores idempotentes, 20 envíos simultáneos del mismo token = 1 voto, y secreto
+  del voto en esquema y logs: 13 pruebas en 4 clases. `voter-access` y `ballot-box` ganan `spring-boot-starter-webmvc-test`
+  y `spring-security-test` (scope test). Ejecutadas por la IA con las librerías de `~/.m2` del autor, Java 21 y, las de
+  integración, contra PostgreSQL 16 local (sin Docker): todo en verde. **Verificado por el autor** el 08/11/2026:
+  `./mvnw verify` en Windows (Java 25.0.5, Testcontainers con PostgreSQL 18.6): BUILD SUCCESS en 5:27 min; election
+  36, voter-access 38 y ballot-box 22 pruebas, 0 fallos ni errores. En election aparecen errores de conexión en el log
+  (no fallos) y Surefire espera 30 s al cerrar: ver IMP-55.
 - **Tabla de alcance (08/11/2026)**: `dafo_justificacion.tex`, fila «Trabajo futuro» con RF-11 (informe RF-17, revoto,
   D-03); RF-17 del informe sale de la lista «sin ID local» y la correspondencia RF-11 → RF-17 se añade al párrafo de
   la tabla. Sin commit.
