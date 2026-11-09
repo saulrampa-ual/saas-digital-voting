@@ -67,3 +67,40 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+  e2e-a11y:
+    # A10: Playwright + axe on the voter flow, receipt check and management console. The API and Keycloak are
+    # replaced by synthetic responses inside the tests, so no backend, secret or special runner is needed.
+    name: Accessibility E2E (Playwright + axe)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run accessibility E2E tests
+        run: npm run test:e2e
+        env:
+          # the runner context is not available in job-level env
+          E2E_ARTIFACTS_DIR: ${{ runner.temp }}/verivoto-e2e
+
+      - name: Upload axe results and Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: e2e-a11y-results
+          path: ${{ runner.temp }}/verivoto-e2e
+          retention-days: 14
