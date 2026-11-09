@@ -6,21 +6,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
  * Splits a voters CSV into {@link ImportRow}s (RF-03). Header required; columns
- * {@code full_name,email,phone,institutional_id,preferred_language} in any order (the last three optional).
+ * {@code full_name,email,phone,institutional_id,preferred_language} in any order (the last three optional), or
+ * the titles of the downloadable template (matched as described in {@link VoterImportColumns}).
  * Separator: comma, or semicolon if the header uses it (Spanish Excel). Double quotes escape separators.
  * Only the format is checked here; field rules are applied by the use case.
  */
 final class VoterCsvReader {
 
     static final int MAX_ROWS = 50_000;
-    private static final List<String> REQUIRED = List.of("full_name", "email");
 
     private VoterCsvReader() {
     }
@@ -35,16 +33,7 @@ final class VoterCsvReader {
             header = header.substring(1);
         }
         char separator = header.indexOf(';') >= 0 && header.indexOf(',') < 0 ? ';' : ',';
-        Map<String, Integer> columns = new HashMap<>();
-        List<String> names = split(header, separator);
-        for (int i = 0; i < names.size(); i++) {
-            columns.put(names.get(i).strip().toLowerCase(Locale.ROOT), i);
-        }
-        for (String required : REQUIRED) {
-            if (!columns.containsKey(required)) {
-                throw new InvalidCsvException("Falta la columna «" + required + "» en la cabecera.");
-            }
-        }
+        Map<String, Integer> columns = VoterImportColumns.columns(split(header, separator));
 
         List<ImportRow> rows = new ArrayList<>();
         String line;
@@ -60,11 +49,11 @@ final class VoterCsvReader {
             List<String> fields = split(line, separator);
             rows.add(new ImportRow(
                     lineNumber,
-                    field(fields, columns, "full_name"),
-                    field(fields, columns, "email"),
-                    field(fields, columns, "phone"),
-                    field(fields, columns, "institutional_id"),
-                    field(fields, columns, "preferred_language")));
+                    field(fields, columns, VoterImportColumns.FULL_NAME),
+                    field(fields, columns, VoterImportColumns.EMAIL),
+                    field(fields, columns, VoterImportColumns.PHONE),
+                    field(fields, columns, VoterImportColumns.INSTITUTIONAL_ID),
+                    VoterImportColumns.language(field(fields, columns, VoterImportColumns.LANGUAGE))));
         }
         return rows;
     }
@@ -103,7 +92,7 @@ final class VoterCsvReader {
         return fields;
     }
 
-    /** The file cannot be read as a voters CSV. */
+    /** The file cannot be read as a voters list (CSV or Excel, see {@link VoterXlsxReader}). */
     static final class InvalidCsvException extends RuntimeException {
 
         InvalidCsvException(String message) {

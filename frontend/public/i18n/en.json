@@ -169,7 +169,7 @@
       "voters": "{{count}} people",
       "frozen": "Frozen",
       "editable": "Editable",
-      "introManager": "Create a census and add the people who can vote, by hand or by importing a CSV.",
+      "introManager": "Create a census and add the people who can vote, by hand or by importing an Excel file (.xlsx).",
       "introAdmin": "Censuses of your organisation. Only the census manager can change them.",
       "newName": "Name of the new census",
       "create": "Create census",
@@ -405,6 +405,12 @@
           "email": "Enter a valid email, for example name@ual.es.",
           "phone": "The phone number only accepts digits (up to 15).",
           "institutionalId": "The ID accepts 50 characters at most."
+        },
+        "placeholders": {
+          "fullName": "e.g. Jane Smith",
+          "email": "e.g. jane.smith@example.com",
+          "phone": "e.g. 600123456",
+          "institutionalId": "e.g. 12345678A"
         }
       },
       "remove": {
@@ -416,10 +422,10 @@
       },
       "import": {
         "selectTitle": "Select file",
-        "drop": "Drag a CSV file here",
-        "columns": "Columns: full_name, email (required); phone, institutional_id, preferred_language",
+        "drop": "Drag an Excel file (.xlsx) here",
+        "columns": "Your file must include at least the full name and the email of each person. Phone, institutional ID and language are optional.",
         "select": "Select file",
-        "rules": "UTF-8, separated by «,» or «;», up to 5 MB and 50,000 rows. Nothing is saved until you confirm.",
+        "rules": "Use an Excel file (.xlsx), for example the template. Up to 5 MB and 50,000 people. Nothing is saved until you confirm.",
         "summaryTitle": "Import summary",
         "pending": "{{file}} · awaiting confirmation",
         "idle": "Choose a file: you will see how many people would be added, the duplicates and the lines with errors before anything is saved.",
@@ -448,10 +454,25 @@
         "cancel": "Cancel",
         "notApplied": "The census changed since the validation; check the new summary.",
         "errors": {
-          "extension": "The file must have a .csv extension.",
-          "empty": "The file is empty.",
-          "size": "The file is larger than {{max}} MB."
-        }
+          "extension": "That file is not an Excel file (.xlsx). Save it as «Excel Workbook (.xlsx)» or start from the example template.",
+          "empty": "The file is empty. Add at least the header row and one person.",
+          "size": "The file is larger than {{max}} MB. Split it into several files and import them one by one.",
+          "generic": "We could not check the file. Check your connection and try again."
+        },
+        "template": {
+          "open": "Download example template",
+          "title": "Example template (Excel)",
+          "explain": "It is an Excel file with one column per field, in this order: Full name, Email, Phone, Institutional ID and Language for messages. It includes an «Instructions» sheet.",
+          "languages": "The phone number has digits only, no spaces or + prefix. In Language, choose Spanish or English from the list; if it is left empty, Spanish is used.",
+          "required": "Columns marked with * are required. Delete the two example rows (grey and italic) before uploading the file.",
+          "preview": "Template preview",
+          "download": "Download template (.xlsx)",
+          "upload": "Upload file",
+          "close": "Close the example template",
+          "closeText": "Close",
+          "file": "census-template.xlsx"
+        },
+        "exampleWarning": "Lines {{lines}} have the example data of the template (such as maria.garcia@example.com). If they are not real people, delete them from the file and select it again; if you confirm, they will be added to the census."
       }
     },
     "picker": {

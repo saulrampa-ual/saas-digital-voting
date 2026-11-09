@@ -169,7 +169,7 @@
       "voters": "{{count}} personas",
       "frozen": "Congelado",
       "editable": "Editable",
-      "introManager": "Crea un censo y añade a las personas que pueden votar, a mano o importando un CSV.",
+      "introManager": "Crea un censo y añade a las personas que pueden votar, a mano o importando un fichero Excel (.xlsx).",
       "introAdmin": "Censos de tu organización. Solo la persona gestora del censo puede cambiarlos.",
       "newName": "Nombre del nuevo censo",
       "create": "Crear censo",
@@ -405,6 +405,12 @@
           "email": "Escribe un correo válido, por ejemplo nombre@ual.es.",
           "phone": "El teléfono solo admite cifras (hasta 15).",
           "institutionalId": "El identificador admite 50 caracteres como máximo."
+        },
+        "placeholders": {
+          "fullName": "Ej. María García López",
+          "email": "Ej. maria.garcia@example.com",
+          "phone": "Ej. 600123456",
+          "institutionalId": "Ej. 12345678A"
         }
       },
       "remove": {
@@ -416,10 +422,10 @@
       },
       "import": {
         "selectTitle": "Seleccionar fichero",
-        "drop": "Arrastra aquí un fichero CSV",
-        "columns": "Columnas: full_name, email (obligatorias); phone, institutional_id, preferred_language",
+        "drop": "Arrastra aquí un fichero Excel (.xlsx)",
+        "columns": "Tu fichero debe incluir al menos el nombre completo y el correo electrónico de cada persona. Teléfono, identificador institucional e idioma son opcionales.",
         "select": "Seleccionar fichero",
-        "rules": "UTF-8, separado por «,» o «;», hasta 5 MB y 50 000 filas. Nada se guarda hasta que confirmes.",
+        "rules": "Usa un fichero Excel (.xlsx), por ejemplo la plantilla. Hasta 5 MB y 50 000 personas. No se guarda nada hasta que lo confirmes.",
         "summaryTitle": "Resumen de la importación",
         "pending": "{{file}} · pendiente de confirmar",
         "idle": "Elige un fichero: verás cuántas personas se añadirían, los duplicados y las líneas con errores antes de guardar nada.",
@@ -448,10 +454,25 @@
         "cancel": "Cancelar",
         "notApplied": "El censo ha cambiado desde la validación; revisa el nuevo resumen.",
         "errors": {
-          "extension": "El fichero debe tener extensión .csv.",
-          "empty": "El fichero está vacío.",
-          "size": "El fichero supera los {{max}} MB."
-        }
+          "extension": "Ese fichero no es un Excel (.xlsx). Guárdalo como «Libro de Excel (.xlsx)» o parte de la plantilla de ejemplo.",
+          "empty": "El fichero está vacío. Añade al menos la fila de títulos y una persona.",
+          "size": "El fichero ocupa más de {{max}} MB. Divídelo en varios ficheros e impórtalos por separado.",
+          "generic": "No hemos podido comprobar el fichero. Revisa tu conexión e inténtalo de nuevo."
+        },
+        "template": {
+          "open": "Descargar plantilla de ejemplo",
+          "title": "Plantilla de ejemplo (Excel)",
+          "explain": "Es un fichero Excel con una columna por dato, en este orden: Nombre completo, Correo electrónico, Teléfono, Identificador institucional e Idioma de las comunicaciones. Incluye una hoja «Instrucciones».",
+          "languages": "El teléfono va solo con cifras, sin espacios ni prefijo +. En Idioma elige Español o Inglés en la lista; si lo dejas vacío, se usa español.",
+          "required": "Las columnas marcadas con * son obligatorias. Las dos filas de ejemplo (en gris y cursiva) debes borrarlas antes de subir el fichero.",
+          "preview": "Vista previa de la plantilla",
+          "download": "Descargar plantilla (.xlsx)",
+          "upload": "Subir fichero",
+          "close": "Cerrar la plantilla de ejemplo",
+          "closeText": "Cerrar",
+          "file": "plantilla-censo.xlsx"
+        },
+        "exampleWarning": "Las líneas {{lines}} tienen los datos de ejemplo de la plantilla (como maria.garcia@example.com). Si no son personas reales, bórralas del fichero y vuelve a seleccionarlo; si confirmas, se añadirán al censo."
       }
     },
     "picker": {
