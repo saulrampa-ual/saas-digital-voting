@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-08 · Rama: `dev` (F5 fusionada en `2fb5f02` más las respuestas del autor) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar · sin push
+Última actualización: 2026-11-10 · Rama: `dev` (H1b en `docs/h1b-resultados`, fusionada; `feature/censo-importacion-ux` fusionada) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar · sin push
 
 ## Hitos
 
@@ -13,7 +13,7 @@
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
-| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 60 pruebas backend (0 fallos), 10 Vitest; cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a sin decisión (parte manual no realizada); H1c pendiente |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 60 pruebas backend (0 fallos), 10 Vitest; cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c pendiente |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: P8.1 y borradores P8.2–P8.3 incorporados; criterios del tutor (H1a/H1b/RNF-4) y confirmación de D-03/D-05 (correo del 30/10/2026) aplicados (P8.5); PDF de 82 páginas; falta la revisión editorial y visual completa |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
@@ -211,7 +211,7 @@
 - P7.6: materiales listos (`preparacion-sesion.md`, `censo-sesion.csv`, guion, hoja y protocolo alineados con D-49).
   El autor debe montar el escenario `USAB`, hacer un ensayo y realizar las cinco sesiones con votantes; resultados en
   la hoja como cantidades (x de 5).
-- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a sin decisión (parte manual no realizada); H1b/H1c siguen pendientes.
+- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c pendiente.
 - P8: enfoque aprobado por el autor. P8.1 corrige el alcance de RF-11 y añade la comparación de planificación;
   los capítulos de diseño técnico, implementación, amenazas, evaluación y conclusiones son borradores basados en
   las evidencias actuales. Se recompiló el PDF de 79 páginas y se inspeccionaron la introducción, el flujo de voto,
@@ -220,7 +220,7 @@
 - Decisiones del autor: si en P9 se depura el modelo de datos de sustitución (`votes.status` `SUBSTITUTED`, RI-6/RI-8/RI-9);
   si RF-11 sigue como «Could» o pasa a «Won't» en la tabla 4.3; si «sin ayuda» (RNF-4) excluye consultar documentación
   (marcador `[PENDIENTE DEL AUTOR]` en RNF-4); si se anota RF-23/RF-22 como fuera del MVP en la tabla 1.1.
-- P7.6: sesión con cinco votantes (prioritaria) y, si se hace, sesión RNF-4 con cinco administradores (requiere protocolo propio).
+- P7.6: sesión con votantes hecha (H1b aceptada, 09/11). Queda repetir RNF-4 con administradores sin formación previa (`rnf4-protocolo-administradores.md`).
 
 ## Bloqueos / preguntas abiertas
 
@@ -237,10 +237,29 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
    corregido, pendiente de repetir) y repetir `npm run test:e2e` contra el frontend de la rama (DEF-03 descartado).
 2. Entregar el segundo encargo (`docs/evaluation/encargo-pruebas-p7-fase2.md`) a la IA de pruebas: k6, E2E con stack real
    y axe en todas las pantallas, logs, matriz de autorización completa, concurrencia y outbox.
-3. Realizar la sesión de usabilidad con cinco votantes (autor, prioritaria) y registrar resultados como cantidades (x de 5);
-   RNF-4 solo si se prepara un protocolo para administradores.
+3. H1b hecha (10/11). Siguiente evaluación: H1c (instalar k6, `scripts/load/prepare-voting-tokens.mjs`, tres ejecuciones según
+   `carga.md`) y repetir RNF-4 con administradores sin formación previa.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
+
+## H1b: resultado de las sesiones con votantes (10/11/2026)
+
+- Sesiones del 09/11/2026 (escenario `USAB`). Hoja `docs/evaluation/usabilidad/hoja-registro-h1b.csv` corregida: valores
+  `si`/`no`, segundos enteros (cronómetro min:s,cc redondeado; P02 «1,08,97» = 69 s) y sin los códigos de recibo que se
+  habían anotado (la hoja no debe contenerlos).
+- `node scripts/evaluation/h1b-summary.mjs`: 5 válidas de 5 (reservas usadas: 1; invalidadas por el entorno: 1);
+  éxito sin ayuda en ≤ 180 s 5 de 5; comprensión 5 de 5; mediana 51 s, mínimo 36 s, máximo 79 s; 0 errores.
+  **H1b ACEPTADA** (evidencia descriptiva, n = 5).
+- P01 inválida (su entrada del censo ya tenía voto del 06/11; incidencia de entorno) y sustituida por R1. R2 se realizó
+  pero no era necesaria: fuera del cómputo, mismo resultado.
+- Aplicado en la memoria: tabla 13.1 (`evaluacion_resultados.tex`), procedimiento de `contenido1.tex`, `conclusiones.tex`,
+  resumen y abstract (`resumentexto.tex`) y comentarios de RNF-3/RNF-6 (`especificacion_detallada.tex`); `informe.md` y
+  `hoja-registro.md`. La frase del bloque G de `conclusiones.tex` (cambio del autor aún sin commit) también se ajustó en el
+  árbol de trabajo. IMP-56: logo y margen de la pantalla del votante (P05, R2).
+- Ramas: `feature/censo-importacion-ux` fusionada en `dev` (`1078a48`; Vitest 28/28 y build sin errores en copia Linux;
+  backend sin ejecutar aquí por falta de Maven Central y Java 25) y borrada en local. Sin fusionar:
+  `feat/voter-access-limit-jwt-audience` (exige actualizar el realm y pruebas Maven del autor) y
+  `test/p7-phase2-role-captures` (conflicto en `scripts/demo/seed-ual.mjs` con la refactorización a `lib/common.mjs`).
 
 ## Evaluación H1a, H1b y H1c (05/11/2026, tarde)
 

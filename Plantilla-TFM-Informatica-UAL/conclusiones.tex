@@ -16,15 +16,20 @@ ambas bases o los dispositivos.
 \textbf{RQ3.} ISO/IEC 25010:2023 proporciona el marco para organizar los RNF y
 la evaluación. La suite automatizada aporta evidencia inicial de reglas
 seleccionadas y cuatro integraciones de migraciones y esquema en PostgreSQL.
-La integración de repositorios y flujos, la accesibilidad, la carga y la
-usabilidad siguen pendientes, lo que impide una valoración completa de calidad.
+La sesión con cinco votantes aceptó H1b: los cinco completaron el voto y
+obtuvieron el recibo sin ayuda en menos de tres minutos, e interpretaron
+correctamente la verificación. La integración de repositorios y flujos, la
+revisión manual de accesibilidad y la carga siguen pendientes, lo que impide
+una valoración completa de calidad.
 
 \section{Cumplimiento de objetivos}
 OBJ-1 y OE1 cuentan con arquitectura multi-tenant, organizaciones, roles y
 aislamiento por organización implementados. OBJ-2 y OE2 cuentan con censos,
 procesos, ciclo de vida y API documentada. OBJ-3 y OE3 cuentan con flujo de
-participación, secreto por separación de datos y recibo; la accesibilidad y
-comprensión requieren validación pendiente. OBJ-4 y OE4 cuentan con auditoría,
+participación, secreto por separación de datos y recibo; la facilidad de uso del flujo
+y la comprensión del recibo se comprobaron con cinco votantes (H1b aceptada,
+evidencia descriptiva), y la accesibilidad requiere completar la revisión
+manual. OBJ-4 y OE4 cuentan con auditoría,
 escrutinio, huellas y resultados; su evaluación de calidad sigue incompleta.
 Por tanto, el cumplimiento funcional implementado no equivale a aceptación
 experimental de todos los objetivos. Las limitaciones y el trabajo futuro de
@@ -37,11 +42,15 @@ Quedan por ejecutar la integración de repositorios y flujos con PostgreSQL,
 las pruebas E2E del stack completo, la revisión manual de accesibilidad con
 teclado y lector de pantalla (H1a: parte automática favorable; parte manual no realizada; la parte
 automática se midió en el flujo del votante tras corregir las incidencias de
-la papeleta y del recibo), tres ejecuciones medidas de
-carga con k6 (H1c) y la
-sesión con cinco participantes votantes (H1b), que es la evaluación
-prioritaria; el consentimiento, el guion y la hoja de registro se conservan en
-\texttt{docs/evaluation/usabilidad/}. La sesión de RNF-4 con cinco
+la papeleta y del recibo) y tres ejecuciones medidas
+de carga con k6 (H1c). La sesión con cinco votantes (H1b) se realizó el
+09/11/2026 y aceptó la hipótesis; su alcance se limita a cinco participantes
+autoseleccionados y al prototipo y la configuración local evaluados. El
+consentimiento, el guion y la hoja de registro se conservan en
+\texttt{docs/evaluation/usabilidad/}. Dos participantes señalaron que la
+pantalla del votante no muestra el escudo de VeriVoto en la cabecera y que
+queda un margen vacío amplio tras «Empezar»; se registra como mejora de la
+interfaz, sin efecto en el resultado. La sesión de RNF-4 con cinco
 administradores se realizó el 03/11/2026: los cinco completaron la tarea sin
 ayuda de otras personas, pero solo dos no tenían formación previa y los
 tiempos se estimaron después de la sesión, por lo que RNF-4 queda como no

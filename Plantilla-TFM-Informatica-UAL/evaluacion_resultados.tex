@@ -35,7 +35,7 @@ limitaciones en \texttt{docs/evaluation/informe.md}.
 \hline\endhead
 H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo. La auditoría automática no certifica conformidad WCAG. & Validado por el tutor & parte automática favorable; parte manual no realizada. Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de una misma incidencia en la papeleta (\texttt{aria-required-children}); corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Repetido el 08/11/2026 sobre la versión vigente (\texttt{06f39be}), con el mismo resultado. La revisión manual con teclado y lector de pantalla que exige el criterio no se realizó antes del cierre: no es un incumplimiento, sino una parte del protocolo sin ejecutar. Evidencia parcial; sin decisión. \\
 \hline
-H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan acceso, emisión y obtención del recibo en $\leq$ 3 minutos, y al menos 4 de 5 interpretan correctamente el resultado de la verificación. H0b: no se alcanza alguno de esos criterios. & Validado por el tutor & PENDIENTE: no se han realizado sesiones con participantes; sin decisión. \\
+H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan acceso, emisión y obtención del recibo en $\leq$ 3 minutos, y al menos 4 de 5 interpretan correctamente el resultado de la verificación. H0b: no se alcanza alguno de esos criterios. & Validado por el tutor & ACEPTADA: sesiones del 09/11/2026 con consentimiento y escenario sintético. Cinco sesiones válidas (P02--P05 y la reserva R1; P01 se invalidó por una incidencia de entorno, porque su entrada del censo ya tenía un voto). 5 de 5 completan acceso, emisión y recibo sin ayuda en $\leq$ 3 minutos (T0--T1: mediana 51~s, mínimo 36~s, máximo 79~s; 0 errores) y 5 de 5 interpretan correctamente el recibo. Una sesión adicional con la segunda reserva (R2) queda fuera del cómputo y tuvo el mismo resultado. Evidencia descriptiva limitada al prototipo, la configuración y la población evaluados. \\
 \hline
 H1c & Con 500 usuarios simultáneos, p95 de emisión inferior a dos segundos en tres ejecuciones. & Propuesto & PENDIENTE: el escenario k6 está preparado, pero faltan tres ejecuciones medidas; sin decisión. \\
 \hline
@@ -45,16 +45,17 @@ RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin fo
 \normalsize
 
 Con $n = 5$ no hay inferencia estadística: los resultados de H1b y de RNF-4
-serán evidencia descriptiva limitada al prototipo, la configuración y la
+son evidencia descriptiva limitada al prototipo, la configuración y la
 población evaluados. La columna «Resultado medido» solo se completa con
 ejecuciones reales.
 
 \section{Integración y requisitos de calidad}
 La integración PostgreSQL de otros repositorios, los flujos HTTP/outbox y
 la concurrencia; las pruebas E2E completas del stack, la accesibilidad manual,
-las mediciones de carga y las sesiones de usabilidad continúan pendientes. En consecuencia, la evidencia disponible no
-permite declarar aceptados RNF-1, RNF-3, RNF-4, RNF-6, RNF-11--RNF-15 ni
-RNF-17 en su conjunto.
+y las mediciones de carga continúan pendientes; la sesión con votantes (H1b) se realizó el 09/11/2026. En consecuencia, la evidencia disponible no
+permite declarar aceptados RNF-1, RNF-4, RNF-11--RNF-15 ni
+RNF-17 en su conjunto; para RNF-3 y RNF-6 se dispone de la evidencia
+descriptiva de H1b, con cinco participantes.
 La correspondencia con características de ISO/IEC 25010:2023 está definida
 en el capítulo de requisitos no funcionales; la cobertura experimental por
 característica debe completarse cuando se ejecuten esos protocolos.
@@ -63,8 +64,10 @@ característica debe completarse cuando se ejecuten esos protocolos.
 La cobertura baja limita la confianza que puede atribuirse a la suite. Las
 pruebas unitarias y las comprobaciones de esquema no sustituyen el aislamiento
 de base de datos de todos los repositorios ni la autorización completa entre
-organizaciones o la concurrencia real. Sin participantes ni carga reproducible no cabe generalizar
-sobre la experiencia o el rendimiento. Los resultados aquí consignados se
+organizaciones o la concurrencia real. Sin carga reproducible no cabe generalizar
+sobre el rendimiento, y el resultado de H1b, obtenido con cinco participantes
+autoseleccionados en un entorno local, no se extiende a otros votantes,
+dispositivos ni configuraciones. Los resultados aquí consignados se
 limitan a las ejecuciones disponibles y no se extrapolan a producción.
 La parte manual de H1a (teclado y lector de pantalla) no se ejecutó: el
 barrido automático solo cubre las reglas que axe puede decidir y dejó
