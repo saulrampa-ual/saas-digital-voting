@@ -44,6 +44,7 @@
                            [inputmode]="field === 'phone' ? 'numeric' : field === 'email' ? 'email' : 'text'"
                            [autocomplete]="field === 'fullName' ? 'name' : field === 'email' ? 'email' : 'off'"
                            [maxlength]="maxLength[field]"
+                           [placeholder]="('admin.census.form.placeholders.' + field) | translate"
                            [value]="f[field]" (ionInput)="setField(field, $event.detail.value)"
                            [class.invalid]="!!message" [attr.aria-invalid]="!!message" />
                 @if (field === 'phone' && !message) { <p class="help">{{ 'admin.census.form.phoneHelp' | translate }}</p> }
@@ -76,12 +77,63 @@
             <ion-icon name="cloud-upload-outline" aria-hidden="true"></ion-icon>
             <p class="drop-title">{{ 'admin.census.import.drop' | translate }}</p>
             <p class="help">{{ 'admin.census.import.columns' | translate }}</p>
-            <input #fileInput id="csv-file" type="file" accept=".csv,text/csv" class="sr-only" (change)="onFileInput($event)"
+            <input #fileInput id="csv-file" type="file" class="sr-only" (change)="onFileInput($event)"
+                   accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                    [disabled]="busy()" />
             <ion-button fill="outline" (click)="fileInput.click()" [disabled]="busy()">
               {{ 'admin.census.import.select' | translate }}</ion-button>
           </div>
           <p class="help">{{ 'admin.census.import.rules' | translate }}</p>
+          <ion-button id="csv-template-toggle" class="template-toggle" fill="clear" size="small" (click)="toggleTemplate()"
+                      [attr.aria-expanded]="templateOpen()" aria-controls="csv-template">
+            <ion-icon slot="start" name="document-text-outline" aria-hidden="true"></ion-icon>
+            {{ 'admin.census.import.template.open' | translate }}</ion-button>
+
+          @if (templateOpen()) {
+            <section id="csv-template" class="template-panel" aria-labelledby="csv-template-title"
+                     (keydown.escape)="closeTemplate()">
+              <div class="template-head">
+                <h4 id="csv-template-title" tabindex="-1">{{ 'admin.census.import.template.title' | translate }}</h4>
+                <ion-button fill="clear" size="small" (click)="closeTemplate()"
+                            [attr.aria-label]="'admin.census.import.template.close' | translate">
+                  <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon></ion-button>
+              </div>
+              <p class="help">{{ 'admin.census.import.template.explain' | translate }}</p>
+              <p class="help">{{ 'admin.census.import.template.languages' | translate }}</p>
+              <div class="table-wrap" tabindex="0" role="region" [attr.aria-label]="'admin.census.import.template.preview' | translate">
+                <table class="template-table">
+                  <caption class="sr-only">{{ 'admin.census.import.template.preview' | translate }}</caption>
+                  <thead>
+                    <tr>
+                      @for (column of templateColumns; track column) {
+                        <th scope="col">{{ 'admin.census.form.' + column | translate }}@if (requiredColumns.includes(column)) {<span aria-hidden="true"> *</span>}</th>
+                      }
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of templateRows; track $index) {
+                      <tr>
+                        @for (value of row.values; track $index) {
+                          <td [attr.data-label]="'admin.census.form.' + templateColumns[$index] | translate">{{ value }}</td>
+                        }
+                        <td [attr.data-label]="'admin.census.form.preferredLanguage' | translate">{{ 'language.' + row.language | translate }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <p class="help">{{ 'admin.census.import.template.required' | translate }}</p>
+              <div class="actions">
+                <ion-button color="secondary" (click)="downloadTemplate()">
+                  <ion-icon slot="start" name="download-outline" aria-hidden="true"></ion-icon>
+                  {{ 'admin.census.import.template.download' | translate }}</ion-button>
+                <ion-button fill="outline" (click)="fileInput.click()" [disabled]="busy()">
+                  <ion-icon slot="start" name="cloud-upload-outline" aria-hidden="true"></ion-icon>
+                  {{ 'admin.census.import.template.upload' | translate }}</ion-button>
+                <ion-button fill="clear" (click)="closeTemplate()">{{ 'admin.census.import.template.closeText' | translate }}</ion-button>
+              </div>
+            </section>
+          }
         </section>
 
         <section class="card summary" aria-live="polite">
@@ -127,6 +179,12 @@
                 <div class="tile warn"><strong>{{ s.duplicates.length }}</strong><span>{{ 'admin.census.import.duplicates' | translate }}</span></div>
                 <div class="tile bad"><strong>{{ s.invalidLines.length }}</strong><span>{{ 'admin.census.import.invalid' | translate }}</span></div>
               </div>
+              @if (s.exampleLines?.length) {
+                <p class="warn-box" role="note">
+                  <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+                  <span>{{ 'admin.census.import.exampleWarning' | translate: { lines: exampleLines(s), count: s.exampleLines?.length } }}</span>
+                </p>
+              }
               @if (s.invalidLines.length) {
                 <details open>
                   <summary>{{ 'admin.census.import.invalidList' | translate }}</summary>

@@ -35,6 +35,22 @@ const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const PHONE = /^[0-9]{1,15}$/;
 
 /**
+ * The screen only offers Excel (.xlsx), the format of the template, so that the user sees a single format. The
+ * service still accepts the CSV of D-27 (API compatibility).
+ */
+const IMPORT_EXTENSION = /\.xlsx$/i;
+
+/**
+ * Preview of the downloadable Excel template (`public/templates`, one per interface language). Same titles as the
+ * form; the example rows are the ones of the file (fictitious, example.com) and pass the `VoterData` rules.
+ */
+const TEMPLATE_COLUMNS = ['fullName', 'email', 'phone', 'institutionalId', 'preferredLanguage'] as const;
+const TEMPLATE_ROWS: readonly { values: readonly string[]; language: Lang }[] = [
+  { values: ['María García López', 'maria.garcia@example.com', '600123456', '12345678A'], language: 'es' },
+  { values: ['John Smith', 'john.smith@example.com', '600654321', '87654321B'], language: 'en' },
+];
+
+/**
  * A2 (RF-03): one census. The census manager imports a CSV (summary before storing anything; G1 while it is being
  * validated), adds, edits and removes people while the census is not frozen; the administrator only reads it.
  */
@@ -83,6 +99,12 @@ export class CensusDetailPage implements OnDestroy {
   protected readonly dragging = signal(false);
   protected readonly shownLines = SHOWN_LINES;
   private importSub: Subscription | undefined;
+
+  // CSV template
+  protected readonly templateOpen = signal(false);
+  protected readonly templateColumns = TEMPLATE_COLUMNS;
+  protected readonly requiredColumns: readonly string[] = ['fullName', 'email'];
+  protected readonly templateRows = TEMPLATE_ROWS;
 
   // Manual add / edit
   protected readonly form = signal<VoterForm | null>(null);
@@ -185,10 +207,11 @@ export class CensusDetailPage implements OnDestroy {
 
   /** Client checks of D-27 (extension, size, not empty) and then the dry run of the service. */
   private validate(file: File): void {
+    this.templateOpen.set(false); // a file chosen from the template panel continues the normal flow
     this.notice.set(null);
     this.summary.set(null);
     this.file.set(file);
-    if (!/\.csv$/i.test(file.name)) return this.failImport('admin.census.import.errors.extension');
+    if (!IMPORT_EXTENSION.test(file.name)) return this.failImport('admin.census.import.errors.extension');
     if (file.size === 0) return this.failImport('admin.census.import.errors.empty');
     if (file.size > CSV_MAX_BYTES) return this.failImport('admin.census.import.errors.size');
     this.importError.set(null);
@@ -252,7 +275,8 @@ export class CensusDetailPage implements OnDestroy {
     if (apiError instanceof ApiError && apiError.status === 413) {
       this.failImport('admin.census.import.errors.size');
     } else {
-      this.importError.set(apiError instanceof ApiError && apiError.detail ? apiError.detail : this.translate.instant('common.loadError'));
+      this.importError.set(apiError instanceof ApiError && apiError.detail
+        ? apiError.detail : this.translate.instant('admin.census.import.errors.generic'));
       this.phase.set(this.summary() ? 'summary' : 'idle');
     }
     if (apiError instanceof ApiError && apiError.status === 409) void this.refreshCensus(); // frozen meanwhile
@@ -260,6 +284,37 @@ export class CensusDetailPage implements OnDestroy {
 
   protected reasonKey(reason: string): string {
     return 'admin.census.import.reason.' + reason;
+  }
+
+  // ---- CSV template ------------------------------------------------------------------------------------------
+
+  protected toggleTemplate(): void {
+    if (this.templateOpen()) {
+      this.closeTemplate();
+      return;
+    }
+    this.templateOpen.set(true);
+    setTimeout(() => document.getElementById('csv-template-title')?.focus());
+  }
+
+  /** Closes the panel (button or Escape) and gives the focus back to the button that opened it. */
+  protected closeTemplate(): void {
+    this.templateOpen.set(false);
+    setTimeout(() => document.getElementById('csv-template-toggle')?.focus());
+  }
+
+  /** Static file in the language of the interface (`public/templates`); the import reads both. */
+  protected downloadTemplate(): void {
+    const fileName: string = this.translate.instant('admin.census.import.template.file');
+    const a = document.createElement('a');
+    a.href = `templates/${fileName}`;
+    a.download = fileName;
+    a.click();
+  }
+
+  /** Lines of the summary that use the example rows of the template (reported, not filtered). */
+  protected exampleLines(summary: ImportSummary): string {
+    return (summary.exampleLines ?? []).slice(0, SHOWN_LINES).join(', ');
   }
 
   // ---- Manual add / edit -------------------------------------------------------------------------------------
