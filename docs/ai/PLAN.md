@@ -15,7 +15,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Bloque | Estado |
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
-| Pruebas y medición (P7) | En curso: 60 pruebas backend, 19 frontend, cobertura 7–14 %; H1a sin decisión (parte automática favorable; parte manual no realizada); H1b y H1c sin medir |
+| Pruebas y medición (P7) | En curso: 60 pruebas backend, 19 frontend, cobertura 7–14 %; H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c sin medir |
 | Memoria (P8) | En curso: borrador de 82 páginas; tabla de hipótesis en «PENDIENTE» |
 | Publicación | `dev` va por delante de `origin/dev`: falta `git push origin dev` (lo hace el autor) |
 
@@ -152,7 +152,7 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
 ## 3. Necesitan al autor
 
 - [ ] **B1 · Responder las preguntas Q-01 a Q-10** (`Autor`).
-- [ ] **B2 · Sesión H1b con cinco votantes** (`Autor`, prioritaria): montar el escenario `USAB`
+- [x] **B2 · Sesión H1b con cinco votantes** (`Autor`, prioritaria): **Hecho (09/11/2026): H1b aceptada**, véase `hoja-registro.md`. montar el escenario `USAB`
   (`docs/evaluation/usabilidad/preparacion-sesion.md`, `censo-sesion.csv`), hacer un ensayo y las cinco sesiones;
   anotar T0/T1/T2 y resultados como cantidades (x de 5) en la hoja de registro (preparadas el 05/11:
   `hoja-registro-h1b.csv` y `scripts/evaluation/h1b-summary.mjs` para el resumen y la decisión del mismo día 09). Criterio: 5 de 5 en ≤ 3 min y al
@@ -186,7 +186,7 @@ El resto de `IMPROVEMENTS.md` queda para P9 salvo que se decida otra cosa.
 - [ ] **C1 · Resultados de la evaluación** (`IA`, tras A4, A7, B2, B3): completar `docs/evaluation/informe.md`, la tabla
   13.1 (`evaluacion_resultados.tex`), la lista `[PENDIENTE]` de `contenido1.tex` y las conclusiones. Lo que no se
   mida se deja como PENDIENTE y limitación, sin inventar resultados. **En curso (05/11):** parte de RNF-4 hecha (no
-  demostrado); H1a: parte automática favorable tras corregir DEF-05 y DEF-06, parte manual no realizada y H1a sin decisión (08/11, aplicado en la memoria); H1b y H1c sin
+  demostrado); H1a: parte automática favorable tras corregir DEF-05 y DEF-06, parte manual no realizada y H1a sin decisión (08/11, aplicado en la memoria); H1b aceptada y aplicada en la memoria (10/11); H1c sin
   datos. C2 y C3 no se adelantan hasta tener H1a, H1b y H1c medidas o declaradas limitación.
 - [ ] **C2 · Alinear con lo implementado** (`IA`): figuras de arquitectura (objetivo frente a implementado),
   diagramas conceptuales y texto heredado; capturas seguras de las pantallas (datos sintéticos de la demo UAL).
@@ -251,3 +251,4 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 08/11/2026 | A4 | Barrido axe de la consola de gestión y de los resultados públicos (108 auditorías): 0 críticos, 3 serios de DEF-07 (registrado, sin corregir). Prueba nueva `admin-console.accessibility.spec.ts`, sin commit |
 | 08/11/2026 | A1, A2, A8, Q-01, Q-03, Q-04, C3 | A1 y A8 ya estaban hechas (comprobado). A2: entrada de la consola del 03/11 y quitada `PENDIENTE_PANEL`. Respuestas Q-01, Q-03 y Q-04 (D-56) aplicadas en la memoria (C3). Sin commit |
 | 08/11/2026 | B3, C1 (H1a) | Revisión manual de H1a no realizada (NVDA no leía la página en el equipo del autor). Anexo del guion aplicado a la tabla 13.1, la sección de validez, `conclusiones.tex` y `contenido1.tex`, con el barrido 4 (`06f39be`): parte automática favorable; parte manual no realizada; sin decisión. CSV sin rellenar. Sin commit |
+| 10/11/2026 | B2, C1 (H1b) | Sesiones H1b del 09/11: 5 válidas (P01 invalidada por el entorno, R1 la sustituye, R2 fuera del cómputo); 5 de 5 sin ayuda en ≤ 180 s, 5 de 5 comprensión; mediana 51 s. H1b aceptada y aplicada en `evaluacion_resultados.tex`, `contenido1.tex`, `conclusiones.tex`, `resumentexto.tex`, `especificacion_detallada.tex` e `informe.md`. IMP-56 (logo y margen). `feature/censo-importacion-ux` fusionada en `dev` y borrada. Rama `docs/h1b-resultados` |

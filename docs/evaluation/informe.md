@@ -19,7 +19,7 @@
 | Hipótesis | Método y criterio | Resultado real | Decisión |
 | --- | --- | --- | --- |
 | H1a: accesibilidad del flujo | Playwright + axe en las pantallas evaluadas: cero incumplimientos críticos ni serios, más revisión manual con teclado y lector de pantalla sin bloqueos en acceso, voto y recibo. axe no certifica WCAG; un incumplimiento serio puntual se documenta como incidencia y se decide si se corrige antes del cierre (criterio validado por el tutor). | Barrido axe del flujo del votante (05/11/2026): 88 auditorías (22 pantallas o estados × 1280/360 px × ES/EN). Con `dev` `4a5e593`, 8 críticos de DEF-05 (papeleta); tras corregirlo, 0 críticos y 0 serios. DEF-06 (error de formato del recibo no visible, WCAG 3.3.1; axe no lo detecta) corregido; tercer barrido con DEF-05 y DEF-06 corregidos y las mismas versiones: 0 críticos y 0 serios, y la prueba de DEF-06 pasa. Barrido 4 (08/11/2026) sobre `06f39be`, donde las correcciones ya están en el commit `9c948cf`: mismo resultado. La revisión manual con teclado y NVDA no se realizó antes del cierre: es una parte del protocolo sin ejecutar, no un incumplimiento; las hojas CSV se conservan sin rellenar. Informe: `accesibilidad-axe-2026-11-05.md`. | Parte automática favorable; parte manual no realizada. Sin decisión |
-| H1b: usabilidad | 5 personas no técnicas: las 5 completan acceso, emisión y recibo en ≤3 min y al menos 4 de 5 interpretan la verificación (criterio validado por el tutor; con n = 5, evidencia descriptiva sin inferencia estadística). Materiales en `docs/evaluation/usabilidad/`. | PENDIENTE: las sesiones las realiza el autor. | Pendiente |
+| H1b: usabilidad | 5 personas no técnicas: las 5 completan acceso, emisión y recibo en ≤3 min y al menos 4 de 5 interpretan la verificación (criterio validado por el tutor; con n = 5, evidencia descriptiva sin inferencia estadística). Materiales en `docs/evaluation/usabilidad/`. | Sesiones del 09/11/2026 (`usabilidad/hoja-registro-h1b.csv`, `node scripts/evaluation/h1b-summary.mjs`): 5 sesiones válidas (P02–P05 y la reserva R1; P01 invalidada por el entorno porque su entrada ya tenía voto; R2 realizada pero fuera del cómputo). Éxito sin ayuda en ≤ 180 s: 5 de 5. Comprensión correcta del recibo: 5 de 5. T0→T1: mediana 51 s, mínimo 36 s, máximo 79 s; 0 errores. | Aceptada (evidencia descriptiva, n = 5) |
 | H1c: rendimiento | 500 emisores simultáneos; p95 de emisión <2 s; tres ejecuciones reproducibles y errores/recursos documentados. | PENDIENTE: carga no ejecutada. | Pendiente |
 
 ## Evidencia técnica por servicio
@@ -44,9 +44,9 @@ No se asigna umbral de cobertura en esta fase.
 | RNF | Característica / subcaracterística (mapeo de `rnf_iso25010.tex`) | Evidencia prevista | Estado |
 | --- | --- | --- | --- |
 | RNF-1 | Capacidad de interacción; Inclusivity, User assistance | axe, revisión manual con teclado, foco, lector de pantalla, zoom y contraste | Pendiente |
-| RNF-3 | Capacidad de interacción; Learnability, Operability | Sesiones moderadas H1b | Pendiente |
+| RNF-3 | Capacidad de interacción; Learnability, Operability | Sesiones moderadas H1b | H1b aceptada (09/11/2026): 5 de 5 sin ayuda en ≤ 3 min; evidencia descriptiva |
 | RNF-4 | Capacidad de interacción; Learnability, Operability | Sesión con 5 administradores: al menos 4 de 5 crean, configuran y programan un proceso de opción única en ≤10 min (valor propuesto) y sin ayuda; sin hipótesis asociada; sesión no realizada | Pendiente |
-| RNF-6 | Capacidad de interacción; Self-descriptiveness | Pregunta de comprensión del recibo | Pendiente |
+| RNF-6 | Capacidad de interacción; Self-descriptiveness | Pregunta de comprensión del recibo | H1b (09/11/2026): 5 de 5 interpretan correctamente el recibo; evidencia descriptiva |
 | RNF-11 | Seguridad; Confidentiality | Revisión de esquema, logs, interfaces y separación de bases | Parcial: `VotingServiceTest` comprueba token consumido por separado, evento sin hora y hash del recibo; esquema, logs y persistencia siguen pendientes |
 | RNF-12 | Seguridad y fiabilidad; Integrity, Faultlessness | Envíos concurrentes con token único en PostgreSQL | Pendiente |
 | RNF-13 | Seguridad; Integrity, Accountability, Non-repudiation | Alteraciones de eventos, verificación de cadena y registros solo añadibles | Parcial: pruebas de dominio en curso |
@@ -68,5 +68,5 @@ contenedores, configuración y preparación de datos; se deben informar sin gene
 - Ampliar integración a otros repositorios y autorización HTTP; probar concurrencia y flujos HTTP/outbox.
 - E2E con Keycloak y Mailpit reales en 1280 px y 360 px, idiomas ES/EN y axe en flujos acordados.
 - Tres mediciones k6 con datos sintéticos, percentiles, errores, CPU/RAM y comprobación posterior de cadena y participación.
-- Sesiones moderadas, resultados agregados y cobertura JaCoCo por servicio.
+- Repetir la sesión RNF-4 con administradores sin formación previa y tiempos cronometrados; cobertura JaCoCo por servicio. (H1b hecha el 09/11/2026.)
 - Actualizar decisiones de H1a/H1b/H1c y trazabilidad solo cuando se disponga de dichas evidencias.

@@ -44,8 +44,9 @@ de plataforma SaaS de votación digital segura y auditable para organizaciones,
 con arquitectura cloud multi-tenant y API abierta, que responda a los huecos
 identificados en autenticación, experiencia móvil y verificación comprensible.
 El prototipo y la evidencia de evaluación disponible se presentan en esta
-memoria; las pruebas de integración, accesibilidad, carga y usabilidad siguen
-pendientes. Los objetivos del sistema son:
+memoria; la sesión de usabilidad con votantes (H1b) ya se realizó, y siguen
+pendientes las pruebas de integración, la revisión manual de accesibilidad y la
+carga. Los objetivos del sistema son:
 
 \begin{description}
   \item[OBJ-1.] Implementar y documentar la arquitectura SaaS multi-tenant y la gestión de
@@ -130,8 +131,9 @@ gestión y del votante, una API REST documentada y evidencias de presencia e
 integridad del voto. Cada proceso configura el acceso mediante código por
 correo o cuenta institucional. La verificación \emph{cast-as-intended}, la
 resistencia a la coacción y la verificabilidad extremo a extremo no se
-consideran resueltas; la validación empírica de accesibilidad, usabilidad y
-carga permanece pendiente.
+consideran resueltas; la validación empírica de accesibilidad y carga permanece
+pendiente, y la de usabilidad del votante se limita a la sesión H1b con cinco
+participantes.
 
 \section{Alcance y supuestos}
 \label{sec:alcance}
@@ -153,8 +155,8 @@ administrador (RNF-4, con 10 minutos como valor propuesto); los demás deben
 validarse con el cliente y el tutor antes de considerarse criterios
 definitivos de aceptación. La implementación está disponible, pero
 la evidencia actual no acredita todos los objetivos de calidad: las pruebas
-de integración de repositorios y flujos, accesibilidad, carga y usabilidad
-siguen pendientes.
+de integración de repositorios y flujos, la revisión manual de accesibilidad
+y la carga siguen pendientes.
 
 \section{Delimitación: qué no es este TFM}
 \label{sec:delimitacion}
@@ -234,10 +236,14 @@ El procedimiento y su estado son los siguientes:
   serios. La revisión manual con teclado y lector de pantalla no se realizó
   antes del cierre: es una parte del protocolo sin ejecutar, no un
   incumplimiento, y H1a queda sin decisión.
-  \item [PENDIENTE] Realizar pruebas moderadas con cinco personas no técnicas.
+  \item [H1b ACEPTADA] Realizar pruebas moderadas con cinco personas no técnicas.
   Pedirles que accedan a una votación de prueba, emitan un voto y comprueben
   el recibo. Registrar éxito sin ayuda, duración, errores y comprensión del
-  mensaje; recoger consentimiento y no usar votos reales.
+  mensaje; recoger consentimiento y no usar votos reales. Las sesiones del
+  09/11/2026 dieron cinco sesiones válidas (una se invalidó por el entorno y se
+  sustituyó por una reserva): 5 de 5 completaron la tarea sin ayuda en
+  $\leq$ 3 minutos (mediana 51~s, máximo 79~s) y 5 de 5 interpretaron
+  correctamente el recibo.
   \item [NO DEMOSTRADO] RNF-4 (sin hipótesis asociada): sesión con cinco
   administradores de organización sin formación previa; al menos cuatro de
   cinco deben crear, configurar y programar un proceso de opción única en
