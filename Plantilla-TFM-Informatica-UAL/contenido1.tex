@@ -44,9 +44,9 @@ de plataforma SaaS de votación digital segura y auditable para organizaciones,
 con arquitectura cloud multi-tenant y API abierta, que responda a los huecos
 identificados en autenticación, experiencia móvil y verificación comprensible.
 El prototipo y la evidencia de evaluación disponible se presentan en esta
-memoria; la sesión de usabilidad con votantes (H1b) ya se realizó, y siguen
-pendientes las pruebas de integración, la revisión manual de accesibilidad y la
-carga. Los objetivos del sistema son:
+memoria; la sesión de usabilidad con votantes (H1b) ya se realizó, la prueba
+de carga (H1c) se ejecutó con resultado desfavorable, y siguen pendientes las
+pruebas de integración y la revisión manual de accesibilidad. Los objetivos del sistema son:
 
 \begin{description}
   \item[OBJ-1.] Implementar y documentar la arquitectura SaaS multi-tenant y la gestión de
@@ -131,9 +131,9 @@ gestión y del votante, una API REST documentada y evidencias de presencia e
 integridad del voto. Cada proceso configura el acceso mediante código por
 correo o cuenta institucional. La verificación \emph{cast-as-intended}, la
 resistencia a la coacción y la verificabilidad extremo a extremo no se
-consideran resueltas; la validación empírica de accesibilidad y carga permanece
-pendiente, y la de usabilidad del votante se limita a la sesión H1b con cinco
-participantes.
+consideran resueltas; la validación empírica de accesibilidad permanece
+pendiente, la de usabilidad del votante se limita a la sesión H1b con cinco
+participantes y la prueba de carga local no alcanzó el umbral de RNF-17.
 
 \section{Alcance y supuestos}
 \label{sec:alcance}
@@ -155,8 +155,8 @@ administrador (RNF-4, con 10 minutos como valor propuesto); los demás deben
 validarse con el cliente y el tutor antes de considerarse criterios
 definitivos de aceptación. La implementación está disponible, pero
 la evidencia actual no acredita todos los objetivos de calidad: las pruebas
-de integración de repositorios y flujos, la revisión manual de accesibilidad
-y la carga siguen pendientes.
+de integración de repositorios y flujos y la revisión manual de accesibilidad
+siguen pendientes, y la prueba de carga no alcanzó el umbral propuesto.
 
 \section{Delimitación: qué no es este TFM}
 \label{sec:delimitacion}
@@ -252,9 +252,13 @@ El procedimiento y su estado son los siguientes:
   cinco participantes, pero solo dos no tenían formación previa y los tiempos
   se estimaron después de la sesión; el resultado es indicativo y RNF-4 no se
   declara aceptado.
-  \item [PENDIENTE] Ejecutar una prueba de carga en un entorno aislado con datos
+  \item [H1c RECHAZADA] Ejecutar una prueba de carga en un entorno aislado con datos
   sintéticos y hasta 500 sesiones concurrentes. Medir latencia por percentiles,
-  errores y consumo de recursos durante varias ejecuciones reproducibles.
+  errores y consumo de recursos durante varias ejecuciones reproducibles. Las
+  tres ejecuciones del 11/11/2026, con 500 usuarios virtuales simultáneos, dieron
+  un p95 de 4852, 2402 y 4849~ms, por encima de los 2000~ms del criterio; solo
+  se aceptaron entre 222 y 281 votos por ejecución y el resto fueron
+  conexiones rechazadas. La cadena de auditoría quedó íntegra en las tres.
   \item Contrastar la unicidad, la separación entre identidad y urna, la
   integridad del registro y la exactitud del escrutinio mediante revisión del
   diseño y pruebas funcionales; conservar informes, configuración y

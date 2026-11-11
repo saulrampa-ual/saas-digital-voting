@@ -18,9 +18,12 @@ la evaluación. La suite automatizada aporta evidencia inicial de reglas
 seleccionadas y cuatro integraciones de migraciones y esquema en PostgreSQL.
 La sesión con cinco votantes aceptó H1b: los cinco completaron el voto y
 obtuvieron el recibo sin ayuda en menos de tres minutos, e interpretaron
-correctamente la verificación. La integración de repositorios y flujos, la
-revisión manual de accesibilidad y la carga siguen pendientes, lo que impide
-una valoración completa de calidad.
+correctamente la verificación. La prueba de carga rechazó H1c en la
+configuración local evaluada: con 500 usuarios simultáneos, el p95 de la
+emisión superó los dos segundos en las tres ejecuciones y una parte de las
+conexiones fue rechazada, aunque la cadena de auditoría quedó íntegra. La
+integración de repositorios y flujos y la revisión manual de accesibilidad
+siguen pendientes, lo que impide una valoración completa de calidad.
 
 \section{Cumplimiento de objetivos}
 OBJ-1 y OE1 cuentan con arquitectura multi-tenant, organizaciones, roles y
@@ -42,15 +45,21 @@ Quedan por ejecutar la integración de repositorios y flujos con PostgreSQL,
 las pruebas E2E del stack completo, la revisión manual de accesibilidad con
 teclado y lector de pantalla (H1a: parte automática favorable; parte manual no realizada; la parte
 automática se midió en el flujo del votante tras corregir las incidencias de
-la papeleta y del recibo) y tres ejecuciones medidas
-de carga con k6 (H1c). La sesión con cinco votantes (H1b) se realizó el
+la papeleta y del recibo). La sesión con cinco votantes (H1b) se realizó el
 09/11/2026 y aceptó la hipótesis; su alcance se limita a cinco participantes
 autoseleccionados y al prototipo y la configuración local evaluados. El
 consentimiento, el guion y la hoja de registro se conservan en
 \texttt{docs/evaluation/usabilidad/}. Dos participantes señalaron que la
 pantalla del votante no muestra el escudo de VeriVoto en la cabecera y que
 queda un margen vacío amplio tras «Empezar»; se registra como mejora de la
-interfaz, sin efecto en el resultado. La sesión de RNF-4 con cinco
+interfaz, sin efecto en el resultado. Las tres ejecuciones de carga (H1c) del
+11/11/2026 rechazaron la hipótesis: p95 de 4852, 2402 y 4849~ms frente a
+2000~ms, y entre 219 y 273 conexiones rechazadas de 500 por ejecución, en un
+único equipo Windows, con los servicios fuera de contenedores y sin rampa de
+subida. Como trabajo futuro conviene medir dónde se consume el tiempo del
+registro del voto, que bloquea el proceso para encadenar cada evento, ajustar
+las colas de conexión del \emph{gateway} y de los servicios y repetir la
+medición en un entorno dimensionado, sin cambiar el criterio. La sesión de RNF-4 con cinco
 administradores se realizó el 03/11/2026: los cinco completaron la tarea sin
 ayuda de otras personas, pero solo dos no tenían formación previa y los
 tiempos se estimaron después de la sesión, por lo que RNF-4 queda como no
