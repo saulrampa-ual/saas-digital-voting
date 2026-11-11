@@ -223,7 +223,7 @@
 - Decisiones del autor: si en P9 se depura el modelo de datos de sustitución (`votes.status` `SUBSTITUTED`, RI-6/RI-8/RI-9);
   si RF-11 sigue como «Could» o pasa a «Won't» en la tabla 4.3; si «sin ayuda» (RNF-4) excluye consultar documentación
   (marcador `[PENDIENTE DEL AUTOR]` en RNF-4); si se anota RF-23/RF-22 como fuera del MVP en la tabla 1.1.
-- P7.6: sesión con votantes hecha (H1b aceptada, 09/11). Queda repetir RNF-4 con administradores sin formación previa (`rnf4-protocolo-administradores.md`).
+- P7.6: sesión con votantes hecha (H1b aceptada, 09/11). Queda repetir RNF-4 con administradores sin formación previa (`rnf4-protocolo-administradores.md`); modalidad online preparada el 11/11 (D-57), sin ejecutar ni probar con el stack: falta el ensayo remoto.
 
 ## Bloqueos / preguntas abiertas
 
@@ -240,10 +240,29 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
    corregido, pendiente de repetir) y repetir `npm run test:e2e` contra el frontend de la rama (DEF-03 descartado).
 2. Entregar el segundo encargo (`docs/evaluation/encargo-pruebas-p7-fase2.md`) a la IA de pruebas: k6, E2E con stack real
    y axe en todas las pantallas, logs, matriz de autorización completa, concurrencia y outbox.
+3. RNF-4 online (D-57): rellenar los huecos de `rnf4-participantes-online.md`, `node scripts/demo/seed-rnf4.mjs`,
+   `cloudflared tunnel --url http://localhost:4200 --http-host-header localhost:4200`, `.local\rnf4-remoto.ps1 -Url <URL>` y
+   ensayo completo con R2 desde otra red antes de la primera sesión.
 3. H1b aceptada (10/11) y H1c rechazada (11/11). Siguiente: parte manual de H1a (NVDA), repetir RNF-4 con
    administradores sin formación previa y, si el autor lo aprueba, IMP-57 (perfilar la emisión) en P9.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
+
+## RNF-4: adaptación a sesiones online (11/11/2026)
+
+- D-57: participantes a distancia por videollamada, acceso por un único túnel HTTPS (Cloudflare Tunnel) al puerto 4200.
+- `rnf4-protocolo-administradores.md` reescrito para online (acceso remoto, guion del moderador, fuentes de tiempo,
+  incidencias, latencia, limpieza). Nuevo `rnf4-participantes-online.md` (parte A antes, parte B en la llamada).
+- `hoja-registro-rnf4.csv`: añade `fecha`, `modalidad`, `navegador_so`, `t0`, `t1`, `incidencias_tecnicas`,
+  `referencia_grabacion`; `rnf4-summary.mjs` lee por nombre de columna y sigue funcionando (comprobado con la hoja vacía).
+- Nuevo `scripts/demo/seed-rnf4.mjs`: organización `RNF4`, 7 cuentas ADMIN (`admin.rnf4.p01`…`r2`) con contraseña
+  aleatoria no temporal, deshabilitadas hasta `enable Pxx`; censo «Censo de prueba RNF-4»; `remote-on/off`,
+  `disable`, `cleanup`. Credenciales en `.local/sesion-rnf4.md`. `node --check` correcto; **no ejecutado**.
+- Front: `proxy.conf.json` reenvía `/realms/verivoto` y `/resources` a Keycloak; `app-config.ts` usa el mismo origen
+  fuera de `localhost` (`tsc -p tsconfig.app.json --noEmit` correcto). `infra/compose.rnf4-remote.yaml`
+  (`KC_PROXY_HEADERS=xforwarded`). Ayuda local `.local/rnf4-remoto.ps1 -Url … | -Off`.
+- Sin probar con el stack: login por el túnel, emisor nuevo en los cuatro servicios, llamadas entre servicios con
+  *client credentials* y eventos de auditoría al crear/programar. Sin commit.
 
 ## H1c: resultado de la prueba de carga (11/11/2026)
 

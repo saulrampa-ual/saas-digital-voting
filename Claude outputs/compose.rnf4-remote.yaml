@@ -1,0 +1,9 @@
+# Override for the online RNF-4 session only (docs/evaluation/usabilidad/rnf4-protocolo-administradores.md).
+# Keycloak trusts X-Forwarded-* so that, behind the HTTPS tunnel and the Angular dev-server proxy, it sees the
+# request as https (Secure cookies). Ports stay bound to 127.0.0.1, so nobody else can send those headers.
+# Usage: docker compose -f infra/compose.yaml -f infra/compose.rnf4-remote.yaml --env-file infra/.env up -d keycloak
+# Undo:  docker compose -f infra/compose.yaml --env-file infra/.env up -d keycloak
+services:
+  keycloak:
+    environment:
+      KC_PROXY_HEADERS: xforwarded

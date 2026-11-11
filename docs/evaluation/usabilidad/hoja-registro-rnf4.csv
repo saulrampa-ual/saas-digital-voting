@@ -1,8 +1,8 @@
-id,valida,sin_formacion_previa,navegador_ancho,t0_t1_segundos,completo,sin_ayuda,consulto_documentacion,errores,ayuda_ofrecida,incidencia_entorno,observacion
-P01,,,,,,,,,,,
-P02,,,,,,,,,,,
-P03,,,,,,,,,,,
-P04,,,,,,,,,,,
-P05,,,,,,,,,,,
-R1,,,,,,,,,,,
-R2,,,,,,,,,,,
+id,fecha,modalidad,valida,sin_formacion_previa,navegador_so,navegador_ancho,t0,t1,t0_t1_segundos,completo,sin_ayuda,consulto_documentacion,errores,ayuda_ofrecida,incidencia_entorno,incidencias_tecnicas,referencia_grabacion,observacion
+P01,,online,,,,,,,,,,,,,,,,
+P02,,online,,,,,,,,,,,,,,,,
+P03,,online,,,,,,,,,,,,,,,,
+P04,,online,,,,,,,,,,,,,,,,
+P05,,online,,,,,,,,,,,,,,,,
+R1,,online,,,,,,,,,,,,,,,,
+R2,,online,,,,,,,,,,,,,,,,
