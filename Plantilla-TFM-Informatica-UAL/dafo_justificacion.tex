@@ -56,42 +56,79 @@ Competidores con ofertas gratuitas o de bajo coste; desconfianza hacia el voto r
 \section{Encaje con el máster}
 \label{sec:encaje-master}
 
-La propuesta integra contenidos de varias asignaturas del máster, como resume
-la tabla~\ref{tab:encaje-master}.
+% [Bloque B] Experiencia profesional, Prácticas Externas y asignaturas.
+El trabajo se apoya en las competencias del máster, pero también en la
+experiencia profesional y en las Prácticas Externas del autor, que han
+condicionado las decisiones de arquitectura. Tres años de desarrollo full
+stack en el sector bancario, centrados en microservicios Java/Spring Boot con
+arquitectura hexagonal, mensajería con Apache Kafka y publicación de APIs
+mediante Apigee, aportaron familiaridad con sistemas distribuidos en los que
+la separación de responsabilidades, los contratos de interfaz y la
+trazabilidad son requisitos de negocio. Esa experiencia motivó que VeriVoto se
+diseñara como un conjunto de cinco servicios con base de datos propia y
+aislamiento por organización (capítulo~\ref{cap:diseno-tecnico}), en lugar de
+un monolito, y que la urna se separase físicamente del censo.
+
+Las Prácticas Externas en Noa Estudio (Noa Software, S.~L.; 250 horas entre
+septiembre y octubre de 2026) complementaron ese perfil, centrado sobre todo en
+el backend, en la capa de cliente y en la seguridad de aplicaciones web. En
+TaskFlow se desarrolló una API REST con autenticación JWT, contraseñas
+protegidas con bcrypt y control de acceso por roles, junto con un cliente web
+en Angular (guards de ruta e interceptores HTTP) y una aplicación móvil en
+Ionic con Capacitor. En TaskVoid, un producto en uso, se implementaron
+notificaciones Web Push con identificación del servidor mediante VAPID y un
+Service Worker, y se trabajó con contenedores Docker, nginx, integración
+continua en GitHub Actions y Pull Requests revisados por el equipo. Esta
+práctica proporcionó la soltura técnica necesaria para construir la PWA
+Angular/Ionic de VeriVoto y su modelo de autorización basado en tokens JWT y
+roles por organización.
+
+La tabla~\ref{tab:encaje-master} relaciona cada asignatura con su aportación
+al proyecto y con el contexto en el que esa competencia se aplicó antes de
+este trabajo.
 
 \small
-\begin{longtable}{|p{0.30\textwidth}|p{0.64\textwidth}|}
-\caption{Relación entre asignaturas del máster y aportaciones al proyecto.}\label{tab:encaje-master}\\
+\begin{longtable}{|>{\RaggedRight\arraybackslash}p{0.18\textwidth}|>{\RaggedRight\arraybackslash}p{0.33\textwidth}|>{\RaggedRight\arraybackslash}p{0.39\textwidth}|}
+\caption[Relación entre asignaturas del máster, proyecto y aplicación previa.]{Relación entre asignaturas del máster, aportaciones al proyecto y aplicación previa en prácticas o experiencia profesional.}\label{tab:encaje-master}\\
 \hline
-\textbf{Asignatura} & \textbf{Aportación al proyecto} \\
+\textbf{Asignatura} & \textbf{Aportación al proyecto} & \textbf{Aplicación en prácticas/experiencia} \\
 \hline
 \endfirsthead
 \hline
-\textbf{Asignatura} & \textbf{Aportación al proyecto} \\
+\textbf{Asignatura} & \textbf{Aportación al proyecto} & \textbf{Aplicación en prácticas/experiencia} \\
 \hline
 \endhead
 \hline
 \endfoot
 \hline
 \endlastfoot
-Cloud Computing & Diseño del despliegue SaaS multi-tenant, aislamiento, escalabilidad y operación en nube. \\
+Cloud Computing & Diseño del despliegue SaaS multi-tenant, aislamiento, escalabilidad y operación en nube. & Prácticas: contenedores Docker y \texttt{docker-compose} para levantar base de datos, backend y frontend; nginx y configuración mediante variables de entorno. La plataforma de despliegue de la empresa era OpenShift, a la que no se tuvo acceso (sección~\ref{sec:limitaciones-trabajo-futuro}). \\
 \hline
-Desarrollo Web/Móvil & Interfaz adaptable, PWA y API REST. \\
+Desarrollo \mbox{Web/Móvil} & Interfaz adaptable, PWA y API REST. & Prácticas: cliente Angular con guards, interceptores y panel en TaskFlow; aplicación Ionic/Capacitor; Service Worker y Web Push en TaskVoid. Experiencia: APIs REST con Spring Boot en el sector bancario. \\
 \hline
-Seguridad Informática & Autenticación, modelado de amenazas, privacidad, pruebas y auditoría. \\
+Seguridad Informática & Autenticación, modelado de amenazas, privacidad, pruebas y auditoría. & Prácticas: autenticación JWT, contraseñas con bcrypt y control por roles en TaskFlow; claves VAPID como variables de entorno y suscripciones push restringidas por rol; actualización de dependencias con \texttt{npm audit}. \\
 \hline
-Integración de Tecnologías y Servicios & Proveedor de identidad opcional, API, webhooks y servicios de notificación. \\
+Integración de Tecnologías y Servicios & Proveedor de identidad opcional, API, webhooks y servicios de notificación. & Experiencia: APIs de proceso en Spring Boot expuestas mediante Apigee e integración asíncrona con Apache Kafka. Prácticas: servicio de notificaciones Web Push, Pull Requests e integración continua con GitHub Actions. \\
 \hline
-Bases de Datos a Gran Escala & Modelo multi-tenant, separación de datos y registro de auditoría. \\
+Bases de Datos a Gran Escala & Modelo multi-tenant, separación de datos y registro de auditoría. & Prácticas: modelado de datos con Prisma sobre MySQL/MariaDB; relaciones entre clientes, proyectos y tareas, y trazabilidad mediante historial en TaskVoid. \\
 \hline
-Visualización de Datos & Paneles de participación y presentación de resultados agregados. \\
+Visualización de Datos & Paneles de participación y presentación de resultados agregados. & Prácticas: panel con gráficas (ng2-charts) en TaskFlow y módulo de Planificación con diagrama de Gantt en TaskVoid. \\
 \hline
-Planificación de las TIC & Planificación, estimación de costes y análisis de alternativas de servicio. \\
+Planificación de las TIC & Planificación, estimación de costes y análisis de alternativas de servicio. & Prácticas: planificación semanal, estimación en horas y Pull Requests con plantilla de pruebas y despliegue. Experiencia: gestión ágil con Jira y Trello y control de versiones con Git Flow. \\
 \hline
-Inteligencia Artificial / Sistemas Inteligentes & Extensión opcional futura para estudiar anomalías en patrones de participación, sin inferir opciones de voto. \\
+Inteligencia Artificial / Sistemas Inteligentes & Extensión opcional futura para estudiar anomalías en patrones de participación, sin inferir opciones de voto. & Prácticas: uso de un asistente de IA en el flujo de desarrollo y en la elaboración de planes de prueba; no se aplicaron técnicas de IA al producto. \\
 \hline
 \end{longtable}
 \normalsize
+
+Las prácticas pusieron de manifiesto, además, una carencia que ha
+condicionado este trabajo. La validación se apoyaba en pruebas manuales
+documentadas en cada Pull Request, y la revisión del equipo detectaba
+defectos en casos límite que esas pruebas no cubrían. En VeriVoto esta
+lección se traduce en pruebas automatizadas desde el dominio (unitarias, de
+arquitectura y de integración con PostgreSQL) y en análisis estático y de
+dependencias en la integración continua, aunque su cobertura sigue siendo
+parcial (capítulo~\ref{cap:evaluacion-resultados}).
 
 \section{Delimitación del MVP y trabajo futuro}
 \label{sec:alcance-mvp}

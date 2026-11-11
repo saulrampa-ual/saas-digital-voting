@@ -78,3 +78,54 @@ requiere implementar la lógica de sustitución y validarla con pruebas de
 concurrencia y unicidad.
 D-03 y D-05 fueron confirmadas por el tutor el 30/10/2026 mediante correo
 electrónico.
+
+% [Bloque H] Limitaciones derivadas del perfil del autor.
+Otra limitación procede del propio perfil del autor. La selección
+tecnológica favoreció herramientas ya conocidas
+(sección~\ref{sec:tecnologias-estructura}), lo que redujo el riesgo, pero pudo
+limitar la exploración de alternativas. Además, las lecciones profesionales
+que se incorporan a esta memoria proceden de una sola empresa pequeña y de 250
+horas de prácticas, junto con la experiencia previa en un único sector; no son
+generalizables y deben leerse como justificación de decisiones, no como
+evidencia empírica.
+
+% [Bloque G] Reflexión crítica: del prototipo a la puesta en producción.
+\subsection{Del prototipo a la puesta en producción}
+\label{subsec:prototipo-produccion}
+Las Prácticas Externas ofrecen un contraste útil para valorar el alcance real
+de este trabajo. En TaskVoid, las notificaciones Web Push quedaron
+desarrolladas y probadas en local y en el entorno de desarrollo, pero no
+llegaron a desplegarse: el paso final, configurar las variables VAPID y
+reiniciar el servicio en OpenShift, dependía de un acceso al entorno de
+despliegue que no se obtuvo durante el periodo de prácticas. Desde el punto de
+vista del desarrollador, la funcionalidad estaba terminada; desde el punto de
+vista de la empresa y de sus usuarios, no existía, porque nadie podía recibir
+todavía una notificación.
+
+Un TFM tiende a la visión contraria. El prototipo académico se da por
+concluido cuando el código compila, las pruebas pasan y la arquitectura queda
+documentada, en un entorno que controla el propio autor. En una organización,
+en cambio, entre el código y su uso median permisos y accesos, entornos de
+despliegue gestionados por terceros, configuración de secretos, validación con
+usuarios reales y mantenimiento posterior de las dependencias. La experiencia
+en prácticas ha llevado a asumir que el software no genera valor hasta que se
+despliega y se usa, y que esas dependencias deben identificarse y solicitarse
+al inicio del trabajo, no al final. Como práctica profesional, el autor se
+propone incluir el acceso a los entornos y el procedimiento de despliegue en la
+definición de cada tarea, y considerar terminada una funcionalidad solo cuando
+se ha validado en el entorno en el que se usará.
+
+Aplicada a VeriVoto, esta lección delimita con precisión lo conseguido. El TFM
+aporta el artefacto: los servicios, la PWA, las pruebas automatizadas y la
+documentación. Sin embargo, el prototipo se ejecuta y evalúa solo en local con
+datos sintéticos, y su equivalente a la puesta en producción es la evaluación
+empírica definida en la sección~\ref{sec:plan-evaluacion}: la revisión manual
+de accesibilidad (H1a), la sesión con votantes (H1b) y las ejecuciones de
+carga (H1c). H1b ya está aceptada y H1c se ha rechazado en la configuración local, pero
+mientras H1a figure sin decisión en la tabla~\ref{tab:estado-hipotesis}, VeriVoto se encuentra en una situación
+análoga a la de las notificaciones de TaskVoid: implementado, pero sin la
+validación que demostraría su valor para las personas usuarias. Por ello, el
+trabajo futuro prioriza completar esa evaluación antes de ampliar
+funcionalidades y, si se abordase un despliegue real, planificar desde el
+inicio la infraestructura, los accesos, la gestión de secretos y el coste de
+mantener actualizadas las dependencias.

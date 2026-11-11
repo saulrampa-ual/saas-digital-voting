@@ -19,6 +19,19 @@ administrativos de solo adición y verificación de la cadena antes del
 escrutinio. La seguridad externa presupone TLS y que solo el gateway esté
 expuesto.
 
+% [Bloque F] Delegación de credenciales frente a las prácticas (RGPD).
+Este planteamiento difiere del seguido en las Prácticas Externas. En
+TaskFlow, la propia API almacenaba las contraseñas de los usuarios protegidas
+con bcrypt, de modo que la aplicación asumía su custodia. En VeriVoto, los
+servicios propios no almacenan contraseñas: la autenticación de los usuarios
+de gestión se delega en Keycloak, y el votante accede mediante un enlace
+personal y un código de un solo uso, que se guardan como hashes, o mediante su
+cuenta institucional. Se reduce así la cantidad de datos sensibles que debe
+proteger la lógica de negocio, en línea con el principio de minimización del
+RGPD. Del mismo modo que las claves VAPID en las prácticas, los secretos de
+configuración se proporcionan mediante variables de entorno y no forman parte
+del repositorio.
+
 \section{Riesgos residuales y límites}
 El correo es el canal de enlace y código para procesos configurados con
 \texttt{EMAIL\_CODE}; quien controle ese buzón puede suplantar al votante. La

@@ -54,3 +54,16 @@ recibos y la cadena de auditoría. La consolidación en cinco servicios (D-05)
 y la exclusión del revoto del MVP (D-03), que queda como trabajo futuro (P9),
 fueron confirmadas por el tutor el 30/10/2026 mediante correo
 electrónico.
+
+% [Bloque D] Arquitectura hexagonal y experiencia previa.
+La adopción de la arquitectura hexagonal se apoya en su uso previo en
+microservicios del sector bancario, donde aislar las reglas de negocio de los
+adaptadores de infraestructura facilitaba su mantenimiento y su sustitución.
+En VeriVoto, el dominio de cada servicio no depende de Spring ni de la base de
+datos, lo que permite probar reglas electorales como el ciclo de vida del
+proceso, el consumo del token de emisión o la verificación de la cadena de
+auditoría mediante pruebas unitarias, sin levantar infraestructura; las pruebas
+de arquitectura comprueban que esa dependencia no se introduce. De la misma
+experiencia procede la decisión contraria respecto a la mensajería: conocer el
+coste de operar Apache Kafka llevó a descartarlo en el MVP y a optar por REST
+con un patrón outbox (D-06), suficiente para el volumen previsto.

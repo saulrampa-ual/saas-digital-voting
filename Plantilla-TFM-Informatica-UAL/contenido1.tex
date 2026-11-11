@@ -36,6 +36,21 @@ criptográficos. La resistencia a la coacción y las garantías formales de
 verificabilidad extremo a extremo requieren un análisis específico y se
 consideran límites que deberán concretarse en el diseño.
 
+% [Bloque A] Motivación profesional del enfoque técnico.
+La elección del problema y del enfoque técnico responde también a la
+trayectoria profesional del autor. Durante tres años trabajó como
+desarrollador full stack en una consultora tecnológica, en proyectos para
+entidades del sector bancario, desarrollando microservicios en Java y Spring
+Boot con arquitectura hexagonal, integración asíncrona mediante Apache Kafka
+y exposición de APIs a través de la plataforma Apigee. Posteriormente, las
+Prácticas Externas del máster (250 horas en Noa Estudio) le permitieron
+trabajar sobre un producto en uso, con clientes reales, revisión de código y
+un entorno de despliegue gestionado por la empresa. Ambas experiencias
+explican que VeriVoto se plantee desde el inicio como un servicio SaaS
+multi-tenant formado por servicios desacoplados y con contratos de API
+explícitos, y no como una aplicación monolítica de alcance exclusivamente
+académico. La sección~\ref{sec:encaje-master} detalla esta relación.
+
 \section{Objetivos}
 \label{sec:objetivos}
 
@@ -191,6 +206,20 @@ implementar los casos de uso, la arquitectura y los flujos de voto y escrutinio;
 la evidencia con las métricas de la sección~\ref{sec:plan-evaluacion}. Las
 iteraciones de implementación podrán incorporar revisiones del tutor, sin
 presentarlas como una metodología ágil completa ni como sustituto del ciclo DSR.
+
+% [Bloque E] Prácticas de ingeniería aplicadas al desarrollo.
+En el desarrollo se aplican convenciones adquiridas en la experiencia
+profesional y en las Prácticas Externas: ramas por tarea (\texttt{feat/*},
+\texttt{fix/*}) creadas desde \texttt{dev}, mensajes de commit según
+Conventional Commits e integración en \texttt{main} al cerrar cada hito. Al
+tratarse de un trabajo unipersonal, no existe un revisor que desempeñe el
+papel que tenía el equipo en las prácticas. Para compensarlo, la integración
+continua ejecuta en cada cambio la compilación y las pruebas, además de un
+análisis de seguridad que comprende la búsqueda de secretos (gitleaks), el
+análisis estático (Semgrep) y la revisión de dependencias (Trivy y
+\texttt{npm audit}); SonarQube se ejecuta en local como análisis de calidad.
+Estas herramientas no sustituyen una revisión humana, pero detectan de forma
+sistemática una parte de los defectos.
 
 \section{Plan de evaluación}
 \label{sec:plan-evaluacion}

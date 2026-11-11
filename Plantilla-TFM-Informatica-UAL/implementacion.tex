@@ -2,11 +2,23 @@
 \label{cap:implementacion}
 
 \section{Tecnologías y estructura}
+\label{sec:tecnologias-estructura}
 El backend está implementado en Java 25 con Spring Boot 4.1.2 y Spring Cloud
 2025.1.3. El cliente es una PWA Angular 22 e Ionic 9. Keycloak 26.8.1 gestiona
 identidad y PostgreSQL 18.6 proporciona persistencia. La infraestructura local
 incluye PostgreSQL, Keycloak y Mailpit. Estas versiones describen la línea de
 implementación documentada en el repositorio.
+
+% [Bloque C] Justificación y sesgo de la selección tecnológica.
+La selección de este stack no es neutra. Java con Spring Boot y la
+arquitectura hexagonal proceden de la experiencia profesional del autor, y
+Angular e Ionic se consolidaron durante las Prácticas Externas. Elegir
+tecnologías ya dominadas redujo el riesgo técnico en un proyecto unipersonal
+con plazo cerrado y permitió dedicar el esfuerzo a los aspectos propios del
+dominio: el secreto del voto, el aislamiento entre organizaciones y la
+auditoría. La contrapartida es un posible sesgo, porque no se evaluaron con el
+mismo detalle otras alternativas de backend o de cliente; esta limitación se
+recoge en la sección~\ref{sec:limitaciones-trabajo-futuro}.
 
 \section{Flujo de emisión y recibo}
 El servicio de acceso valida la credencial y consume un token de un solo uso.
