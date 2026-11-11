@@ -40,8 +40,8 @@ Cada token se usa una vez para evitar medir el rechazo de doble voto.
 
 | Campo | Valor |
 | --- | --- |
-| Fecha, sistema operativo, CPU y RAM | 11/11/2026, Windows; CPU y RAM del equipo PENDIENTE (Docker Desktop dispone de 7,4 GiB) |
-| Versiones de k6, Java, PostgreSQL y Docker | k6 v2.3.0; Temurin 25.0.5; PostgreSQL 18.6 (Compose); versión de Docker PENDIENTE |
+| Fecha, sistema operativo, CPU y RAM | 11/11/2026, Windows; AMD Ryzen 7 5825U with Radeon Graphics, 16 GB RAM (15,4 GiB visibles para Windows; Docker Desktop dispone de 7,4 GiB) |
+| Versiones de k6, Java, PostgreSQL y Docker | k6 v2.3.0; Temurin 25.0.5; PostgreSQL 18.6 (Compose); Docker 29.4.0 (build 9d7ad9f) |
 | Límites de CPU/RAM y configuración del stack | Sin límites. Infraestructura en Compose (Keycloak, Mailpit, `pg-main`, `pg-ballot`); los cinco servicios y el *gateway* como procesos Java en Windows (`.local/arrancar.ps1`), en marcha desde el 03/11 |
 | Número de VU, iteraciones y duración | 500 VU × 1, sin rampa; la iteración más larga duró 5,3 s, 2,6 s y 5,5 s |
 | Ejecuciones 1, 2 y 3: p50/p90/p95/p99 y errores | Véase «Resultados H1c» |
