@@ -37,7 +37,7 @@ H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas e
 \hline
 H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan acceso, emisión y obtención del recibo en $\leq$ 3 minutos, y al menos 4 de 5 interpretan correctamente el resultado de la verificación. H0b: no se alcanza alguno de esos criterios. & Validado por el tutor & ACEPTADA: sesiones del 09/11/2026 con consentimiento y escenario sintético. Cinco sesiones válidas (P02--P05 y la reserva R1; P01 se invalidó por una incidencia de entorno, porque su entrada del censo ya tenía un voto). 5 de 5 completan acceso, emisión y recibo sin ayuda en $\leq$ 3 minutos (T0--T1: mediana 51~s, mínimo 36~s, máximo 79~s; 0 errores) y 5 de 5 interpretan correctamente el recibo. Una sesión adicional con la segunda reserva (R2) queda fuera del cómputo y tuvo el mismo resultado. Evidencia descriptiva limitada al prototipo, la configuración y la población evaluados. \\
 \hline
-H1c & Con 500 usuarios simultáneos, p95 de emisión inferior a dos segundos en tres ejecuciones. & Propuesto & PENDIENTE: el escenario k6 está preparado, pero faltan tres ejecuciones medidas; sin decisión. \\
+H1c & Con 500 usuarios simultáneos, p95 de emisión inferior a dos segundos en tres ejecuciones. & Propuesto & RECHAZADA (H0c): tres ejecuciones del 11/11/2026 (procesos sintéticos 10, 11 y 12; 500 usuarios virtuales que empiezan a la vez, un voto cada uno). p95 de la emisión: 4852, 2402 y 4849~ms, por encima de 2000~ms en las tres. Votos aceptados: 222, 240 y 281 de 500; el resto fueron conexiones rechazadas por el \emph{gateway} (273, 260 y 219) y, en la primera, 5 errores 500. En las tres, la cadena quedó íntegra y los votos de la urna coinciden con las respuestas 201 y con la participación. Un único equipo Windows en local; sin extrapolación a producción. \\
 \hline
 RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin formación previa crean, configuran y programan un proceso de opción única en $\leq$ 10 minutos y sin ayuda. & Validado por el tutor; 10 minutos como valor propuesto & NO DEMOSTRADO: sesión del 03/11/2026 con cinco participantes y consentimiento. Los 5 completan la tarea sin ayuda de personas (se permite consultar la documentación). Tiempos estimados tras la sesión, no cronometrados: entre 3,4 y 11 minutos, 4 de 5 por debajo de 10 minutos. Solo 2 de 5 no tenían formación previa, así que la muestra no alcanza la población del criterio. Evidencia indicativa; sin decisión. \\
 \hline
@@ -49,12 +49,23 @@ son evidencia descriptiva limitada al prototipo, la configuración y la
 población evaluados. La columna «Resultado medido» solo se completa con
 ejecuciones reales.
 
+En H1c, el p95 de k6 incluye las conexiones rechazadas, que terminan casi al
+instante; el de los votos aceptados es todavía mayor (5055, 2477 y 5228~ms).
+Las conexiones se rechazaron en el \emph{gateway} al llegar 500 a la vez y, en
+la primera ejecución, también entre el \emph{gateway} y ballot-box. El registro
+del voto bloquea la fila del proceso para encadenar cada evento de la urna, de
+modo que los votos de un mismo proceso se guardan de uno en uno; es una
+explicación compatible con los tiempos observados, pero no se ha medido dónde
+se consume el tiempo. El criterio no se modifica a la vista del resultado.
+
 \section{Integración y requisitos de calidad}
 La integración PostgreSQL de otros repositorios, los flujos HTTP/outbox y
-la concurrencia; las pruebas E2E completas del stack, la accesibilidad manual,
-y las mediciones de carga continúan pendientes; la sesión con votantes (H1b) se realizó el 09/11/2026. En consecuencia, la evidencia disponible no
-permite declarar aceptados RNF-1, RNF-4, RNF-11--RNF-15 ni
-RNF-17 en su conjunto; para RNF-3 y RNF-6 se dispone de la evidencia
+la concurrencia; las pruebas E2E completas del stack y la accesibilidad manual
+continúan pendientes; la sesión con votantes (H1b) se realizó el 09/11/2026 y
+las tres ejecuciones de carga (H1c), el 11/11/2026. En consecuencia, la
+evidencia disponible no permite declarar aceptados RNF-1, RNF-4 ni
+RNF-11--RNF-15 en su conjunto, y RNF-17 no se cumple en la configuración
+local evaluada; para RNF-3 y RNF-6 se dispone de la evidencia
 descriptiva de H1b, con cinco participantes.
 La correspondencia con características de ISO/IEC 25010:2023 está definida
 en el capítulo de requisitos no funcionales; la cobertura experimental por
@@ -64,8 +75,10 @@ característica debe completarse cuando se ejecuten esos protocolos.
 La cobertura baja limita la confianza que puede atribuirse a la suite. Las
 pruebas unitarias y las comprobaciones de esquema no sustituyen el aislamiento
 de base de datos de todos los repositorios ni la autorización completa entre
-organizaciones o la concurrencia real. Sin carga reproducible no cabe generalizar
-sobre el rendimiento, y el resultado de H1b, obtenido con cinco participantes
+organizaciones o la concurrencia real. El rechazo de H1c se limita a la configuración
+evaluada (un único equipo Windows, servicios fuera de contenedores y 500
+conexiones simultáneas sin rampa) y no permite estimar el rendimiento de un
+despliegue dimensionado, y el resultado de H1b, obtenido con cinco participantes
 autoseleccionados en un entorno local, no se extiende a otros votantes,
 dispositivos ni configuraciones. Los resultados aquí consignados se
 limitan a las ejecuciones disponibles y no se extrapolan a producción.

@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-10 · Rama: `dev` (H1b en `docs/h1b-resultados`, fusionada; `feature/censo-importacion-ux` fusionada) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar · sin push
+Última actualización: 2026-11-11 · Rama: `dev` (H1c en `test/h1c-load-results`, fusionada) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar hasta después de H1c · sin push
 
 ## Hitos
 
@@ -13,7 +13,7 @@
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
-| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 60 pruebas backend (0 fallos), 10 Vitest; cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c pendiente |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 60 pruebas backend (0 fallos), 10 Vitest; cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11) |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: P8.1 y borradores P8.2–P8.3 incorporados; criterios del tutor (H1a/H1b/RNF-4) y confirmación de D-03/D-05 (correo del 30/10/2026) aplicados (P8.5); PDF de 82 páginas; falta la revisión editorial y visual completa |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
@@ -211,7 +211,7 @@
 - P7.6: materiales listos (`preparacion-sesion.md`, `censo-sesion.csv`, guion, hoja y protocolo alineados con D-49).
   El autor debe montar el escenario `USAB`, hacer un ensayo y realizar las cinco sesiones con votantes; resultados en
   la hoja como cantidades (x de 5).
-- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c pendiente.
+- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11).
 - P8: enfoque aprobado por el autor. P8.1 corrige el alcance de RF-11 y añade la comparación de planificación;
   los capítulos de diseño técnico, implementación, amenazas, evaluación y conclusiones son borradores basados en
   las evidencias actuales. Se recompiló el PDF de 79 páginas y se inspeccionaron la introducción, el flujo de voto,
@@ -237,10 +237,37 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
    corregido, pendiente de repetir) y repetir `npm run test:e2e` contra el frontend de la rama (DEF-03 descartado).
 2. Entregar el segundo encargo (`docs/evaluation/encargo-pruebas-p7-fase2.md`) a la IA de pruebas: k6, E2E con stack real
    y axe en todas las pantallas, logs, matriz de autorización completa, concurrencia y outbox.
-3. H1b hecha (10/11). Siguiente evaluación: H1c (instalar k6, `scripts/load/prepare-voting-tokens.mjs`, tres ejecuciones según
-   `carga.md`) y repetir RNF-4 con administradores sin formación previa.
+3. H1b aceptada (10/11) y H1c rechazada (11/11). Siguiente: parte manual de H1a (NVDA), repetir RNF-4 con
+   administradores sin formación previa y, si el autor lo aprueba, IMP-57 (perfilar la emisión) en P9.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
+
+## H1c: resultado de la prueba de carga (11/11/2026)
+
+- Ejecuciones 1, 2 y 3 (procesos 10, 11 y 12), 500 VU × 1 sin rampa: p95 de la emisión 4852, 2402 y 4849 ms; 201 =
+  222, 240 y 281; conexiones rechazadas (`0`) 273, 260 y 219; 5 × 500 en la 1. Cadena íntegra y urna = 201 =
+  participación en las tres. **H1c RECHAZADA (H0c).** Detalle y observaciones en `docs/evaluation/carga.md`.
+- Ejecución 2: `docker stats` sin muestra dentro de los 2,6 s de k6 (condición 6 no cumplida estrictamente); no
+  cambia la decisión. Los servicios Java corren fuera de Docker: sin CPU/RAM de los servicios.
+- Versión medida: jars de `.local/run/` del 31/10 y 03/11 (procesos en marcha desde el 03/11); el código de
+  producción de *gateway*, ballot-box y voter-access es igual al de `dev` `879cb42`.
+- Prueba de humo: ejecución 11 (proceso 9) correcta. Ejecuciones 9 y 10 (procesos 7 y 8) abiertas sin votos.
+- Cambios del autor (otra herramienta) revisados: `prepare-voting-tokens.mjs` espera a que voter-access acepte el OTP,
+  conserva los correos hasta generar los tokens y reanuda un proceso ya programado/abierto; ambos scripts toleran el
+  rechazo de Keycloak por historial de contraseñas. Sin secretos en el código.
+- Memoria: tabla 13.1, procedimiento, conclusiones, resumen/abstract y RNF-17. IMP-57 (perfilar la emisión).
+
+## H1c: preparación de la comprobación y validación del backend (11/11/2026)
+
+- Autor: `./mvnw verify` en Windows, BUILD SUCCESS en 5:36 min (election 46, voter-access 38, ballot-box 22 pruebas);
+  backend de `feature/censo-importacion-ux` validado. «Connection refused» y «Surefire is going to kill self fork JVM»
+  en election-service: anotado en IMP-55 (no se corrige ahora). k6 v2.3.0 instalado por el autor.
+- Sin commit: cuenta `auditor.load@verivoto.test` y `.local/load/run-N.json` en `prepare-voting-tokens.mjs`; recuento por
+  código en `tests/load/voting.js`; nuevo `scripts/load/check-load-run.mjs` (puntos 7 y 8 de `carga.md`). Probado solo
+  el análisis del resumen de k6 v2.3.0 con un servidor simulado; sin ejecutar contra el stack.
+- Siguiente paso: prueba de humo (`LOAD_RUN=9`, `LOAD_VOTERS=20`) y después las ejecuciones 1, 2 y 3.
+- Ramas: `feat/voter-access-limit-jwt-audience` se queda sin fusionar hasta después de H1c; `test/p7-phase2-role-captures`
+  la revisa el autor; la rama remota del censo la borra el autor al hacer push.
 
 ## H1b: resultado de las sesiones con votantes (10/11/2026)
 

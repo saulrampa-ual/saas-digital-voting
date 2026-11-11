@@ -20,7 +20,7 @@
 | --- | --- | --- | --- |
 | H1a: accesibilidad del flujo | Playwright + axe en las pantallas evaluadas: cero incumplimientos críticos ni serios, más revisión manual con teclado y lector de pantalla sin bloqueos en acceso, voto y recibo. axe no certifica WCAG; un incumplimiento serio puntual se documenta como incidencia y se decide si se corrige antes del cierre (criterio validado por el tutor). | Barrido axe del flujo del votante (05/11/2026): 88 auditorías (22 pantallas o estados × 1280/360 px × ES/EN). Con `dev` `4a5e593`, 8 críticos de DEF-05 (papeleta); tras corregirlo, 0 críticos y 0 serios. DEF-06 (error de formato del recibo no visible, WCAG 3.3.1; axe no lo detecta) corregido; tercer barrido con DEF-05 y DEF-06 corregidos y las mismas versiones: 0 críticos y 0 serios, y la prueba de DEF-06 pasa. Barrido 4 (08/11/2026) sobre `06f39be`, donde las correcciones ya están en el commit `9c948cf`: mismo resultado. La revisión manual con teclado y NVDA no se realizó antes del cierre: es una parte del protocolo sin ejecutar, no un incumplimiento; las hojas CSV se conservan sin rellenar. Informe: `accesibilidad-axe-2026-11-05.md`. | Parte automática favorable; parte manual no realizada. Sin decisión |
 | H1b: usabilidad | 5 personas no técnicas: las 5 completan acceso, emisión y recibo en ≤3 min y al menos 4 de 5 interpretan la verificación (criterio validado por el tutor; con n = 5, evidencia descriptiva sin inferencia estadística). Materiales en `docs/evaluation/usabilidad/`. | Sesiones del 09/11/2026 (`usabilidad/hoja-registro-h1b.csv`, `node scripts/evaluation/h1b-summary.mjs`): 5 sesiones válidas (P02–P05 y la reserva R1; P01 invalidada por el entorno porque su entrada ya tenía voto; R2 realizada pero fuera del cómputo). Éxito sin ayuda en ≤ 180 s: 5 de 5. Comprensión correcta del recibo: 5 de 5. T0→T1: mediana 51 s, mínimo 36 s, máximo 79 s; 0 errores. | Aceptada (evidencia descriptiva, n = 5) |
-| H1c: rendimiento | 500 emisores simultáneos; p95 de emisión <2 s; tres ejecuciones reproducibles y errores/recursos documentados. | PENDIENTE: carga no ejecutada. | Pendiente |
+| H1c: rendimiento | 500 emisores simultáneos; p95 de emisión <2 s; tres ejecuciones reproducibles y errores/recursos documentados. | Tres ejecuciones del 11/11/2026 (`carga.md`, «Resultados H1c»): p95 de la emisión 4852, 2402 y 4849 ms; 201 = 222, 240 y 281 de 500; el resto, conexiones rechazadas por el *gateway* (273, 260, 219) y 5 × 500; cadena íntegra y urna = participación en las tres. Un equipo Windows en local, sin rampa. | Rechazada (H0c) |
 
 ## Evidencia técnica por servicio
 
@@ -52,7 +52,7 @@ No se asigna umbral de cobertura en esta fase.
 | RNF-13 | Seguridad; Integrity, Accountability, Non-repudiation | Alteraciones de eventos, verificación de cadena y registros solo añadibles | Parcial: pruebas de dominio en curso |
 | RNF-14 | Seguridad; Authenticity, Resistance, Confidentiality | Límites de código, bloqueo, cuenta institucional, permisos y claves API | Pendiente |
 | RNF-15 | Seguridad; Confidentiality | Dos organizaciones en pruebas de repositorio y autorización | Parcial: reglas de Caller, acceso a persistencia pendiente |
-| RNF-17 | Eficiencia de desempeño; Time behaviour, Capacity | k6: emisión, acceso y escrutinio; tres ejecuciones | Pendiente |
+| RNF-17 | Eficiencia de desempeño; Time behaviour, Capacity | k6: emisión, acceso y escrutinio; tres ejecuciones | No se cumple en la configuración local evaluada (H1c rechazada, 11/11/2026); acceso y escrutinio sin medir |
 | RNF-18 | Flexibilidad; Installability, Adaptability | Instalación PWA y comprobación en tamaños/navegadores | Pendiente |
 
 La correspondencia resume el mapeo del TFM; no constituye certificación de conformidad con la norma.
@@ -67,6 +67,6 @@ contenedores, configuración y preparación de datos; se deben informar sin gene
 
 - Ampliar integración a otros repositorios y autorización HTTP; probar concurrencia y flujos HTTP/outbox.
 - E2E con Keycloak y Mailpit reales en 1280 px y 360 px, idiomas ES/EN y axe en flujos acordados.
-- Tres mediciones k6 con datos sintéticos, percentiles, errores, CPU/RAM y comprobación posterior de cadena y participación.
+- H1c medida (11/11/2026, rechazada). Pendiente: escenarios de acceso y escrutinio; CPU/RAM de los servicios Java.
 - Repetir la sesión RNF-4 con administradores sin formación previa y tiempos cronometrados; cobertura JaCoCo por servicio. (H1b hecha el 09/11/2026.)
 - Actualizar decisiones de H1a/H1b/H1c y trazabilidad solo cuando se disponga de dichas evidencias.
