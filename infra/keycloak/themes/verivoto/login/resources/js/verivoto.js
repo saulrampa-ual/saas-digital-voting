@@ -2,8 +2,8 @@
 // 1) a one-line subtitle under the sign-in title (the second step, the email code, is announced in advance);
 // 2) the language select shown as two small flag buttons (links to the same URLs Keycloak puts in the select), plus a
 //    one-line hint for voters who land here by mistake;
-// 3) live password requirements on login-update-password.ftl (only rules the browser can check; the rest say
-//    "checked when saving"). Texts that come from the server are rendered by the template, not here;
+// 3) live password requirements on login-update-password.ftl (only rules the browser can check; the rest are
+//    checked by Keycloak when saving). Texts that come from the server are rendered by the template, not here;
 // 4) the email code as six boxes with the resend countdown (login-email-otp.ftl).
 (function () {
   'use strict';
