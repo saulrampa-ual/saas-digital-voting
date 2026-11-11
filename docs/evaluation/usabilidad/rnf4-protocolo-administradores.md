@@ -35,6 +35,10 @@ no hay inferencia estadística: el resultado es evidencia descriptiva.
 1. Stack local arrancado con datos sintéticos. **No reutilizar el escenario `USAB` de H1b** mientras esté en uso.
 2. Una organización de prueba con una cuenta ADMIN y **un censo con al menos una persona sintética** (programar exige
    censo con personas, textos en español e inglés y apertura posterior al momento de programar).
+   Lo prepara `scripts/demo/seed-rnf4.mjs` (11/11/2026): organización `RNF4`, cuenta ADMIN `admin.rnf4@verivoto.test`,
+   gestor de censo `censo.rnf4@verivoto.test` y censo «Censo de prueba RNF-4» con tres personas sintéticas; no crea
+   ningún proceso. Uso: `$env:DEMO_PASSWORD = "<12+ caracteres>"; node scripts/demo/seed-rnf4.mjs`. Se puede repetir
+   antes de cada día de sesiones: reutiliza lo que ya existe y lista los procesos que dejaron los participantes.
 3. Por cada participante, la persona moderadora inicia sesión antes con la cuenta ADMIN (usuario, contraseña y
    código de correo), de modo que el tiempo no incluya el login de Keycloak. Se deja la consola en «Inicio».
 4. Si un participante anterior dejó un proceso, se deja como está: cada participante crea uno nuevo con su propio
