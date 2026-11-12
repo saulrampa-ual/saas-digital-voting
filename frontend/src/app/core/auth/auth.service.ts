@@ -6,6 +6,21 @@ export type ManagementRole = 'SUPERADMIN' | 'ADMIN' | 'CENSUS_MANAGER' | 'AUDITO
 
 const MANAGEMENT_ROLES: readonly ManagementRole[] = ['SUPERADMIN', 'ADMIN', 'CENSUS_MANAGER', 'AUDITOR'];
 
+/** Prefix of the unsaved A3 drafts kept in this browser (see `ProcessFormPage`, D-59). */
+export const PROCESS_DRAFT_PREFIX = 'vv.processDraft:';
+
+/** Removes every unsaved A3 draft of this browser (on logout, so the next person never sees them). */
+export function clearProcessDrafts(): void {
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key?.startsWith(PROCESS_DRAFT_PREFIX)) localStorage.removeItem(key);
+    }
+  } catch {
+    // Storage unavailable (private mode, blocked): nothing was kept.
+  }
+}
+
 /**
  * Login of management users with Keycloak (Authorization Code + PKCE, RF-04).
  * Keycloak is initialized lazily, only when the management console is opened: the voter area never depends on it.
@@ -24,6 +39,11 @@ export class AuthService {
   });
   readonly organizationId = computed(() => {
     const value = this.claims()?.['organization_id'];
+    return typeof value === 'string' && value.length > 0 ? value : null;
+  });
+  /** Keycloak subject of the person signed in (`sub`); used to keep per-person browser data apart. */
+  readonly userId = computed(() => {
+    const value = this.claims()?.['sub'];
     return typeof value === 'string' && value.length > 0 ? value : null;
   });
   readonly displayName = computed(() => {
@@ -50,6 +70,7 @@ export class AuthService {
   }
 
   logout(): Promise<void> {
+    clearProcessDrafts();
     return this.keycloak.logout({ redirectUri: window.location.origin + '/admin' });
   }
 }

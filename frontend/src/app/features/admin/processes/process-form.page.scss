@@ -1,5 +1,5 @@
 // A3 (SR6/SR7, approved prototype): progress card on top («Paso n de 4», four bars), the panel of the current step
-// below it and the Atrás/Siguiente bar at the end of the panel (sticky to the bottom of the screen on phones).
+// below it and the Atrás/Siguiente bar at the end of the panel.
 .intro { color: var(--ion-color-medium); margin-top: 0; }
 .wizard { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
 /* Grid items may shrink below their content (min-width: auto made the panel 364 px wide on phones) */
@@ -77,6 +77,12 @@
 .info p { margin: 0; }
 .blank { --background: transparent; margin-top: 8px; }
 .summary { margin: 1rem 0 0; }
+.restored { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; background: #e8eef6; color: var(--ion-color-primary);
+  border-radius: var(--vv-radius-control); padding: 12px; margin: 0 0 16px; }
+.restored ion-icon { font-size: 1.25rem; flex: none; }
+.restored p { margin: 0; flex: 1 1 200px; }
+.restored ion-button { margin: 0; min-height: 44px; }
+.duration { margin: 0 0 4px; font-size: 0.9375rem; font-weight: 600; }
 
 .actions { display: flex; gap: 12px; align-items: center; margin: 1.5rem -16px -16px; padding: 16px; border-top: 1px solid var(--vv-border-color);
   background: #fbfcfd; border-radius: 0 0 var(--vv-radius-card) var(--vv-radius-card); }
@@ -85,11 +91,11 @@
 .next-hint { font-size: 0.875rem; color: var(--ion-color-medium); }
 .actions.center { justify-content: center; border: 0; background: none; margin: 1.5rem 0 0; padding: 0; }
 .spacer { flex: 1; }
-/* Phones: the bar sticks to the bottom of the screen, above the home indicator; Atrás takes one third, Siguiente two */
+/* Phones: the bar stays at the end of the panel (no longer sticky: it covered the fields while scrolling or typing);
+   Atrás takes one third, Siguiente two */
 @media (max-width: 767.98px) {
-  /* bottom: the sticky area excludes the 16 px padding of ion-content, so the bar is pulled down to the screen edge */
-  .actions:not(.center) { position: sticky; bottom: calc(-1 * var(--ion-padding, 16px)); z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 10px;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: #fff; box-shadow: 0 -6px 16px -10px rgba(20, 54, 92, 0.2); }
+  .actions:not(.center) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 10px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
   .actions:not(.center) .spacer, .next-hint { display: none; }
 }
 .success { text-align: center; padding: 1rem 0; }

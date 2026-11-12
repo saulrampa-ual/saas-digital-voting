@@ -207,7 +207,7 @@
         "ballot": "Ballot"
       },
       "defaultLanguage": "Default language",
-      "bilingualHelp": "Write every text in Spanish and English. The default language (*) is enough now; both are needed to schedule.",
+      "bilingualHelp": "Write the texts in the default language (*). The other language is optional: if you leave it empty, the same text is saved in both languages.",
       "titleLabel": "Title",
       "descriptionLabel": "Description",
       "visibility": "Who will see the result?",
@@ -218,6 +218,8 @@
       "opensAt": "Opening",
       "closesAt": "Closing",
       "calendarHelp": "Opening and closing happen automatically at these times (your browser time): they cannot be done by hand.",
+      "calendarExample": "Example: opening today at 18:00 and closing tomorrow at 18:00. The opening must be later than the moment you schedule the process (leave at least 15 minutes) and the closing, later than the opening.",
+      "duration": "Voting will be open for {{time}}.",
       "noCensuses": "There are no censuses in your organization. Ask the census manager to create one.",
       "emptyCensus": "empty: it cannot be scheduled",
       "voteType": "Ballot type",
@@ -251,7 +253,8 @@
         "max": "At most {{max}} characters.",
         "opensRequired": "Set the opening.",
         "closesRequired": "Set the closing.",
-        "closesAfter": "Closing must be after opening.",
+        "closesAfter": "Closing must be after opening (they cannot have the same time).",
+        "opensFuture": "Opening must be later than now. Choose a future time, for example in 15 minutes.",
         "censusRequired": "Choose the participating census.",
         "questionRequired": "Write the question in the default language.",
         "minOptions": "Add at least 2 options.",
@@ -268,8 +271,10 @@
       "stepOf": "Step {{n}} of {{total}}",
       "afterStep": "Next: {{name}}",
       "nextHint": "Next: {{name}}",
+      "restored": "We recovered what you were writing ({{time}}). Continue where you left off or start over.",
+      "discardDraft": "Start over",
       "textsLanguage": "Language of the texts",
-      "pending": "pending",
+      "pending": "same text",
       "inLang": {
         "es": "in Spanish",
         "en": "in English"
@@ -300,12 +305,12 @@
         "texts": {
           "title": "Title and description",
           "ok": "In Spanish and English",
-          "ko": "Translations missing (both languages are needed)"
+          "ko": "The other language is missing: edit the process and save; the default-language text will be copied"
         },
         "calendar": {
           "title": "Consistent calendar",
           "ok": "Opening is in the future and before closing",
-          "ko": "Opening must be in the future and before closing"
+          "ko": "Opening must be in the future and before closing: edit the calendar (for example, opening in 15 minutes)"
         },
         "census": {
           "title": "Census selected",
@@ -315,7 +320,7 @@
         "ballot": {
           "title": "Ballot defined",
           "ok": "Question and options in both languages",
-          "ko": "Translations missing in the question or options"
+          "ko": "The other language is missing in the question or options: edit the process and save; the default-language text will be copied"
         }
       },
       "scheduleConfirm": {

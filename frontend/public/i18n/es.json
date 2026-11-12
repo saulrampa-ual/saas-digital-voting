@@ -207,7 +207,7 @@
         "ballot": "Papeleta"
       },
       "defaultLanguage": "Idioma por defecto",
-      "bilingualHelp": "Escribe cada texto en español e inglés. Ahora basta el idioma por defecto (*); para programar hacen falta los dos.",
+      "bilingualHelp": "Escribe los textos en el idioma por defecto (*). El otro idioma es opcional: si lo dejas vacío, se guarda el mismo texto en los dos idiomas.",
       "titleLabel": "Título",
       "descriptionLabel": "Descripción",
       "visibility": "¿Quién podrá ver el resultado?",
@@ -218,6 +218,8 @@
       "opensAt": "Apertura",
       "closesAt": "Cierre",
       "calendarHelp": "La apertura y el cierre son automáticos en estas fechas (hora de tu navegador): no se pueden abrir ni cerrar a mano.",
+      "calendarExample": "Ejemplo: apertura hoy a las 18:00 y cierre mañana a las 18:00. La apertura tiene que ser posterior al momento en que programes el proceso (deja al menos 15 minutos de margen) y el cierre, posterior a la apertura.",
+      "duration": "La votación estará abierta {{time}}.",
       "noCensuses": "No hay censos en tu organización. Pide a la persona gestora del censo que cree uno.",
       "emptyCensus": "vacío: no se podrá programar",
       "voteType": "Tipo de papeleta",
@@ -251,7 +253,8 @@
         "max": "Máximo {{max}} caracteres.",
         "opensRequired": "Indica la apertura.",
         "closesRequired": "Indica el cierre.",
-        "closesAfter": "El cierre debe ser posterior a la apertura.",
+        "closesAfter": "El cierre debe ser posterior a la apertura (no pueden tener la misma hora).",
+        "opensFuture": "La apertura debe ser posterior a este momento. Elige una hora futura, por ejemplo dentro de 15 minutos.",
         "censusRequired": "Elige el censo que participa.",
         "questionRequired": "Escribe la pregunta en el idioma por defecto.",
         "minOptions": "Añade al menos 2 opciones.",
@@ -268,8 +271,10 @@
       "stepOf": "Paso {{n}} de {{total}}",
       "afterStep": "Después: {{name}}",
       "nextHint": "Siguiente: {{name}}",
+      "restored": "Hemos recuperado lo que estabas escribiendo ({{time}}). Sigue donde lo dejaste o empieza de cero.",
+      "discardDraft": "Empezar de cero",
       "textsLanguage": "Idioma de los textos",
-      "pending": "pendiente",
+      "pending": "mismo texto",
       "inLang": {
         "es": "en español",
         "en": "en inglés"
@@ -300,12 +305,12 @@
         "texts": {
           "title": "Título y descripción",
           "ok": "En español e inglés",
-          "ko": "Faltan traducciones (hacen falta los dos idiomas)"
+          "ko": "Falta el otro idioma: edita el proceso y guarda; se copiará el texto del idioma por defecto"
         },
         "calendar": {
           "title": "Calendario coherente",
           "ok": "La apertura es futura y anterior al cierre",
-          "ko": "La apertura debe ser futura y anterior al cierre"
+          "ko": "La apertura debe ser futura y anterior al cierre: edita el calendario (por ejemplo, apertura dentro de 15 minutos)"
         },
         "census": {
           "title": "Censo seleccionado",
@@ -315,7 +320,7 @@
         "ballot": {
           "title": "Papeleta definida",
           "ok": "Pregunta y opciones en los dos idiomas",
-          "ko": "Faltan traducciones en la pregunta u opciones"
+          "ko": "Falta el otro idioma en la pregunta u opciones: edita el proceso y guarda; se copiará el texto del idioma por defecto"
         }
       },
       "scheduleConfirm": {
