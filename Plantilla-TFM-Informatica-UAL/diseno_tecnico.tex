@@ -10,6 +10,22 @@ almacena los datos. La elección de cinco servicios y la exclusión del revoto
 corresponden a D-05 y D-03; ambas fueron confirmadas por el tutor el
 30/10/2026 mediante correo electrónico.
 
+La figura~\ref{fig:arquitectura-implementada} muestra los componentes que se
+ejecutan en el entorno local evaluado. A diferencia de la arquitectura
+objetivo de la figura~\ref{fig:arquitectura-componentes}, no hay CDN, WAF,
+KMS, cola de mensajes ni \emph{workers}: la propagación entre servicios se
+resuelve con REST y una tabla \emph{outbox}. Para no recargar el diagrama se
+omiten dos relaciones comunes a todos los servicios: la validación de los
+tokens emitidos por Keycloak y el envío de las acciones administrativas a
+\texttt{identity-service}, que agrega la trazabilidad.
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{0.98\textwidth}{!}{\input{Figuras/diagramas/arquitectura_implementada.tex}}
+  \caption{Arquitectura implementada en el MVP (entorno local). Las flechas discontinuas indican propagación mediante \emph{outbox} o un componente de apoyo de la consola.}
+  \label{fig:arquitectura-implementada}
+\end{figure}
+
 La separación lógica de responsabilidades es la siguiente:
 \begin{description}
  \item[Gateway.] Punto de entrada de la API y encaminamiento a los servicios.

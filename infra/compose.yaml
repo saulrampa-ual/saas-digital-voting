@@ -56,6 +56,9 @@ services:
       KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Define KEYCLOAK_DB_PASSWORD in infra/.env}
       KC_HEALTH_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
+      # RNF-4 online (D-57): behind the HTTPS tunnel and the Angular dev-server proxy, Keycloak must see the request as
+      # https (Secure cookies). Harmless locally: the port is bound to 127.0.0.1, so only this machine can send these headers.
+      KC_PROXY_HEADERS: xforwarded
       # Placeholders resolved by the realm import (infra/keycloak/realm/verivoto-realm.json)
       VERIVOTO_SUPERADMIN_EMAIL: ${VERIVOTO_SUPERADMIN_EMAIL:?Define VERIVOTO_SUPERADMIN_EMAIL in infra/.env}
       VERIVOTO_SUPERADMIN_INITIAL_PASSWORD: ${VERIVOTO_SUPERADMIN_INITIAL_PASSWORD:?Define VERIVOTO_SUPERADMIN_INITIAL_PASSWORD in infra/.env}
@@ -87,6 +90,22 @@ services:
       - "127.0.0.1:1025:1025"
       - "127.0.0.1:8025:8025"
 
+  # D-62: machine translation es<->en of the process texts in A3, on this machine (no third party, no key).
+  # Only Spanish and English are loaded; the models (~200 MB) are downloaded on the first start into lt-models.
+  libretranslate:
+    image: libretranslate/libretranslate:v1.9.6
+    environment:
+      LT_LOAD_ONLY: "es,en"
+      LT_DISABLE_WEB_UI: "true"
+      LT_DISABLE_FILES_TRANSLATION: "true"
+      LT_CHAR_LIMIT: "2000"
+      LT_BATCH_LIMIT: "60"
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - lt-models:/home/libretranslate/.local
+
 volumes:
   pg-main-data:
   pg-ballot-data:
+  lt-models:

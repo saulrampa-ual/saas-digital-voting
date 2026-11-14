@@ -10,6 +10,16 @@
     "goHome": "Ir al inicio"
   },
   "admin": {
+    "session": {
+      "warningTitle": "Tu sesión va a caducar",
+      "warningText": "Por seguridad, la sesión se cierra si no hay actividad. Quedan {{time}}. ¿Quieres seguir?",
+      "stay": "Seguir aquí",
+      "limitTitle": "La sesión no se puede ampliar más",
+      "limitText": "Has alcanzado el tiempo máximo de sesión. Quedan {{time}}: guarda lo que estés haciendo. Lo que no hayas guardado de un proceso se recupera al volver a entrar en este navegador.",
+      "expiredTitle": "Tu sesión ha caducado",
+      "expiredText": "Por seguridad, la sesión se ha cerrado. Vuelve a entrar para seguir; lo que no hubieras guardado de un proceso se recupera en este navegador.",
+      "login": "Volver a entrar"
+    },
     "menu": {
       "label": "Menú de gestión",
       "open": "Abrir menú",
@@ -186,6 +196,7 @@
       "opens": "Abre el {{date}}",
       "closes": "cierra el {{date}}",
       "empty": "Todavía no hay procesos.",
+      "viewDetail": "Ver detalle",
       "status": {
         "DRAFT": "Borrador",
         "SCHEDULED": "Programado",
@@ -194,6 +205,19 @@
         "TALLIED": "Escrutado",
         "ARCHIVED": "Archivado"
       }
+    },
+    "onboarding": {
+      "title": "Primeros pasos",
+      "intro": "Así se organiza una votación en VeriVoto. Puedes volver a abrir esta guía cuando quieras con «Guía rápida».",
+      "steps": {
+        "create": { "title": "Crea el proceso", "text": "En Procesos, pulsa «Crear proceso» y rellena los 4 pasos: datos, fechas, censo y papeleta. Se guarda como borrador.", "link": "Crear proceso" },
+        "schedule": { "title": "Revísalo y prográmalo", "text": "Abre el proceso desde Procesos y pulsa «Programar». Si falta algo, la pantalla te dice qué.", "link": "Ir a Procesos" },
+        "follow": { "title": "Sigue la votación", "text": "Se abre y se cierra sola en las fechas que pusiste (no hay botón para hacerlo a mano). En Participación ves cuánta gente ha votado.", "link": "Ir a Participación" },
+        "results": { "title": "Consulta el resultado", "text": "Al cerrarse, el recuento es automático. En Resultados ves el resultado y su huella, y puedes generar el acta.", "link": "Ir a Resultados" }
+      },
+      "note": "Basta con escribir los textos en el idioma por defecto: el otro idioma se traduce solo y puedes corregirlo.",
+      "done": "Entendido",
+      "reopen": "Guía rápida"
     },
     "processForm": {
       "title": "Crear proceso de votación",
@@ -206,11 +230,17 @@
         "census": "Censo",
         "ballot": "Papeleta"
       },
-      "defaultLanguage": "Idioma por defecto",
-      "bilingualHelp": "Escribe los textos en el idioma por defecto (*). El otro idioma es opcional: si lo dejas vacío, se guarda el mismo texto en los dos idiomas.",
+      "defaultLanguage": "Idioma en el que escribes los textos del proceso",
+      "bilingualHelp": "Escribe cada texto una sola vez. Al salir de cada campo se traduce solo al otro idioma; si quieres, puedes revisar la traducción.",
+      "willTranslate": "Se traducirá automáticamente",
+      "translating": "Traduciendo al otro idioma…",
+      "translationFailed": "No se ha podido traducir automáticamente: escribe el otro idioma o se guardará el mismo texto en los dos.",
+      "autoNote": "Traducido automáticamente: revísalo.",
+      "autoNoteShort": "Traducción automática",
+      "chip": { "pending": "se traducirá", "auto": "traducción automática" },
       "titleLabel": "Título",
       "descriptionLabel": "Descripción",
-      "visibility": "¿Quién podrá ver el resultado?",
+      "visibility": "Cuando termine la votación, ¿quién podrá ver el resultado?",
       "censusOnly": "Solo las personas del censo",
       "censusOnlyHelp": "Entran con su enlace personal y su código.",
       "publicLink": "Cualquiera con el enlace público",
@@ -221,6 +251,7 @@
       "calendarExample": "Ejemplo: apertura hoy a las 18:00 y cierre mañana a las 18:00. La apertura tiene que ser posterior al momento en que programes el proceso (deja al menos 15 minutos de margen) y el cierre, posterior a la apertura.",
       "duration": "La votación estará abierta {{time}}.",
       "noCensuses": "No hay censos en tu organización. Pide a la persona gestora del censo que cree uno.",
+      "onlyCensus": "Es el único censo de tu organización, así que ya está seleccionado.",
       "emptyCensus": "vacío: no se podrá programar",
       "voteType": "Tipo de papeleta",
       "singleChoice": "Opción única",
@@ -271,8 +302,15 @@
       "stepOf": "Paso {{n}} de {{total}}",
       "afterStep": "Después: {{name}}",
       "nextHint": "Siguiente: {{name}}",
-      "restored": "Hemos recuperado lo que estabas escribiendo ({{time}}). Sigue donde lo dejaste o empieza de cero.",
-      "discardDraft": "Empezar de cero",
+      "restored": "Hemos recuperado lo que estabas escribiendo ({{time}}). Ya está en el formulario: puedes seguir donde lo dejaste.",
+      "discardDraft": "Borrar y empezar de cero",
+      "continueDraft": "Seguir donde lo dejé",
+      "discardConfirm": "Se borrará todo lo que habías escrito. ¿Seguro?",
+      "discardYes": "Sí, borrar",
+      "discardNo": "No, conservar",
+      "reviewTranslation": "Revisar la traducción {{language}}",
+      "hideTranslation": "Ocultar la traducción {{language}}",
+      "toLang": { "es": "al español", "en": "al inglés" },
       "textsLanguage": "Idioma de los textos",
       "pending": "mismo texto",
       "inLang": {
@@ -305,7 +343,7 @@
         "texts": {
           "title": "Título y descripción",
           "ok": "En español e inglés",
-          "ko": "Falta el otro idioma: edita el proceso y guarda; se copiará el texto del idioma por defecto"
+          "ko": "Falta el otro idioma: edita el proceso y guarda; se traducirá automáticamente"
         },
         "calendar": {
           "title": "Calendario coherente",
@@ -320,7 +358,7 @@
         "ballot": {
           "title": "Papeleta definida",
           "ok": "Pregunta y opciones en los dos idiomas",
-          "ko": "Falta el otro idioma en la pregunta u opciones: edita el proceso y guarda; se copiará el texto del idioma por defecto"
+          "ko": "Falta el otro idioma en la pregunta u opciones: edita el proceso y guarda; se traducirá automáticamente"
         }
       },
       "scheduleConfirm": {

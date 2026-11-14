@@ -53,7 +53,7 @@ final class VoterCsvReader {
                     field(fields, columns, VoterImportColumns.EMAIL),
                     field(fields, columns, VoterImportColumns.PHONE),
                     field(fields, columns, VoterImportColumns.INSTITUTIONAL_ID),
-                    VoterImportColumns.language(field(fields, columns, VoterImportColumns.LANGUAGE))));
+                    VoterImportColumns.language(field(fields, columns, VoterImportColumns.PREFERRED_LANGUAGE))));
         }
         return rows;
     }

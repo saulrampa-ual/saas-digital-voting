@@ -10,6 +10,7 @@ import {
   ApiError, CensusSummary, FieldError, Lang, LocalizedText, Process, ProcessApiService, ProcessData, ResultsVisibility, VoterAuthentication,
   VoteType,
 } from '../../../core/admin/process-api.service';
+import { TextTranslationService } from '../../../core/admin/text-translation.service';
 import { AuthService, PROCESS_DRAFT_PREFIX } from '../../../core/auth/auth.service';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
@@ -29,7 +30,15 @@ interface FormModel {
   question: Record<Lang, string>;
   options: Record<Lang, string>[];
   blankVoteEnabled: boolean;
+  /**
+   * Texts of the non-default language proposed by the machine translation and not edited since (D-62): key
+   * (`title`, `description`, `question`, `options.<i>`) → default-language text that was translated.
+   */
+  auto: Record<string, string>;
 }
+
+type TextKey = 'title' | 'description' | 'question';
+const MAX: Record<TextKey | 'option', number> = { title: 150, description: 1000, question: 300, option: 200 };
 
 /** Unsaved work kept in this browser so a reload, a closed tab or a detour does not lose it (D-59). */
 interface StoredDraft {
@@ -52,9 +61,11 @@ const STEP_OF_FIELD: Record<string, Step> = {
 };
 
 /**
- * A3 (RF-06, RF-20): create or edit a DRAFT process in four steps. Every text is edited in Spanish and English
- * side by side; only the default language is required. When the other language is left empty, the text of the default
- * language is saved for it too (RI-5), so the process can be scheduled without typing it twice (D-29, D-30). Ends in F3.
+ * A3 (RF-06, RF-20): create or edit a DRAFT process in four steps. Every text is written once, in the language of
+ * the texts (the default language); the fields of the other language stay folded behind «Revisar la traducción». The other language is filled by machine translation when the
+ * person leaves a default-language field and again before saving (D-62), marked «traducido automáticamente» until the
+ * person edits it; if the translator is not available, the text of the default language is saved for it (RI-5, D-58).
+ * Ends in F3.
  */
 @Component({
   selector: 'app-process-form',
@@ -74,6 +85,7 @@ export class ProcessFormPage implements OnInit {
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
   private readonly auth = inject(AuthService);
+  private readonly translator = inject(TextTranslationService);
   protected readonly language = inject(LanguageService).current;
   /** Edit only: the process as loaded from the server (fingerprint of `fromProcess`). */
   private base: string | null = null;
@@ -93,10 +105,18 @@ export class ProcessFormPage implements OnInit {
   protected readonly serverErrors = signal<FieldError[]>([]);
   protected readonly serverDetail = signal<string | null>(null);
   protected readonly created = signal<{ id: number; title: string } | null>(null);
-  /** SR6/SR7: language of the texts shown on phones (below 700 px only one language is visible at a time). */
-  protected readonly textTab = signal<Lang>('es');
-  /** Time of the unsaved work restored on entering, shown in a notice with «Empezar de cero». */
+  /** The fields of the other language are shown too, to review or correct the translation (folded by default). */
+  protected readonly reviewOpen = signal(false);
+  /** Time of the unsaved work restored on entering, shown in a notice with «Seguir donde lo dejé». */
   protected readonly restoredAt = signal<string | null>(null);
+  /** «Borrar y empezar de cero» was pressed once: it deletes the restored work only after a second confirmation. */
+  protected readonly confirmDiscard = signal(false);
+  /** The census was selected automatically because it is the only one of the organization. */
+  protected readonly onlyCensus = signal(false);
+  /** A machine translation is running («Traduciendo…»). */
+  protected readonly translating = signal(false);
+  /** The last machine translation failed: the same text will be used in both languages. */
+  protected readonly translationFailed = signal(false);
 
   constructor() {
     // Every change is kept in this browser until the process is saved (D-59).
@@ -118,6 +138,15 @@ export class ProcessFormPage implements OnInit {
   protected readonly stepIndex = computed(() => STEPS.indexOf(this.step()));
   protected readonly nextStep = computed<Step | null>(() => STEPS[this.stepIndex() + 1] ?? null);
   protected readonly selectedCensus = computed(() => this.censuses().find((c) => c.id === this.model().censusId));
+  protected readonly otherLang = computed<Lang>(() => (this.model().defaultLanguage === 'es' ? 'en' : 'es'));
+  /** Languages whose fields are visible: the language of the texts and, while reviewing, the translated one. */
+  protected readonly shownLangs = computed<readonly Lang[]>(() =>
+    this.reviewOpen() ? [this.model().defaultLanguage, this.otherLang()] : [this.model().defaultLanguage]);
+
+  /** « en español» after a label, only while both languages are visible. */
+  protected langSuffix(lang: Lang): string {
+    return this.reviewOpen() ? ' ' + this.translate.instant('admin.processForm.inLang.' + lang) : '';
+  }
 
   async ngOnInit(): Promise<void> {
     try {
@@ -129,11 +158,11 @@ export class ProcessFormPage implements OnInit {
           this.notEditable.set(true);
         }
         this.model.set(fromProcess(process));
-        this.textTab.set(process.defaultLanguage);
         this.visited.set(new Set(STEPS));
         this.base = JSON.stringify(fromProcess(process));
       }
       if (!this.notEditable()) this.restoreDraft();
+      this.preselectOnlyCensus();
     } catch {
       this.serverDetail.set(this.translate.instant('common.loadError'));
     } finally {
@@ -143,33 +172,109 @@ export class ProcessFormPage implements OnInit {
 
   protected update(change: Partial<FormModel>): void {
     this.dirty = true;
-    this.model.update((model) => ({ ...model, ...change }));
-    if (change.defaultLanguage) {
-      this.textTab.set(change.defaultLanguage);
-    }
+    // Switching the default language turns the machine texts into the source: nothing is «automatic» any more
+    const auto = change.defaultLanguage && change.defaultLanguage !== this.model().defaultLanguage ? {} : undefined;
+    this.model.update((model) => ({ ...model, ...change, ...(auto ? { auto } : {}) }));
     this.stepErrors.set([]);
   }
 
-  /** «mismo texto» chip of the language tabs: the other language has empty texts that will reuse the default language. */
-  protected pending(lang: Lang): boolean {
+  /**
+   * Chip of the «Revisar la traducción» button in this step: «se traducirá» while some text is still empty, «traducción automática»
+   * when some text was proposed by the translator and not reviewed.
+   */
+  protected chip(lang: Lang): 'pending' | 'auto' | null {
     const m = this.model();
-    if (lang === m.defaultLanguage) return false;
-    if (this.step() === 'basics') return !m.title[lang].trim();
-    if (this.step() === 'ballot') {
-      return !m.question[lang].trim() || (m.voteType === 'SINGLE_CHOICE' && m.options.some((option) => !option[lang].trim()));
-    }
-    return false;
+    if (lang === m.defaultLanguage) return null;
+    const keys = this.step() === 'basics' ? ['title', 'description']
+      : this.step() === 'ballot' ? ['question', ...(m.voteType === 'SINGLE_CHOICE' ? m.options.map((_, i) => `options.${i}`) : [])]
+        : [];
+    if (keys.some((key) => this.source(key).trim() && !this.other(key).trim())) return 'pending';
+    if (keys.some((key) => key in m.auto)) return 'auto';
+    return null;
   }
 
-  /** Arrow keys move between the two language tabs (ARIA tabs pattern). */
-  protected onTabKey(event: KeyboardEvent): void {
-    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    const index = this.langs.indexOf(this.textTab());
-    const target = event.key === 'Home' ? 0 : event.key === 'End' ? this.langs.length - 1
-      : (index + (event.key === 'ArrowRight' ? 1 : this.langs.length - 1)) % this.langs.length;
-    this.textTab.set(this.langs[target]);
-    document.getElementById('text-tab-' + this.langs[target])?.focus();
+  /** The text of a key in the non-default language was proposed by the translator and not edited since. */
+  protected isAuto(key: string, lang: Lang): boolean {
+    return lang !== this.model().defaultLanguage && key in this.model().auto;
+  }
+
+  /**
+   * Fills, by machine translation, every text of the non-default language that is empty or still automatic and whose
+   * default-language text changed since. Called when the person leaves a default-language field and before saving.
+   * Returns false if the translator could not be used (the texts stay as they were).
+   */
+  async translateMissing(): Promise<boolean> {
+    const m = this.model();
+    const def = m.defaultLanguage;
+    const target: Lang = def === 'es' ? 'en' : 'es';
+    const keys = ['title', 'description', 'question', ...(m.voteType === 'SINGLE_CHOICE' ? m.options.map((_, i) => `options.${i}`) : [])]
+      .filter((key) => {
+        const source = this.source(key).trim();
+        if (!source) return false;
+        if (key in m.auto) return m.auto[key] !== source;
+        return !this.other(key).trim();
+      });
+    if (keys.length === 0) return true;
+    const sources = keys.map((key) => this.source(key).trim());
+    this.translating.set(true);
+    const result = await this.translator.translate(sources, def, target);
+    this.translating.set(false);
+    this.translationFailed.set(result === null);
+    if (!result) return false;
+    // Only texts that did not change meanwhile (the person may have kept typing or edited the other language)
+    keys.forEach((key, i) => {
+      const now = this.model();
+      if (this.source(key).trim() !== sources[i]) return;
+      if (this.other(key).trim() && !(key in now.auto)) return;
+      const max = key.startsWith('options.') ? MAX.option : MAX[key as TextKey];
+      const text = result[i].slice(0, max);
+      if (!text) return;
+      this.writeText(key, target, text);
+      this.model.update((model) => ({ ...model, auto: { ...model.auto, [key]: sources[i] } }));
+    });
+    this.dirty = true;
+    return true;
+  }
+
+  /** (ionBlur) of a text field: leaving a default-language text translates it into the other language. */
+  protected onTextBlur(lang: Lang): void {
+    if (lang === this.model().defaultLanguage) void this.translateMissing();
+  }
+
+  private source(key: string): string {
+    return this.textOf(key, this.model().defaultLanguage);
+  }
+
+  private other(key: string): string {
+    return this.textOf(key, this.model().defaultLanguage === 'es' ? 'en' : 'es');
+  }
+
+  private textOf(key: string, lang: Lang): string {
+    const m = this.model();
+    if (key.startsWith('options.')) return m.options[Number(key.slice(8))]?.[lang] ?? '';
+    return m[key as TextKey][lang];
+  }
+
+  private writeText(key: string, lang: Lang, value: string): void {
+    if (key.startsWith('options.')) {
+      const index = Number(key.slice(8));
+      this.model.update((model) => ({
+        ...model, options: model.options.map((option, i) => (i === index ? { ...option, [lang]: value } : option)),
+      }));
+    } else {
+      const field = key as TextKey;
+      this.model.update((model) => ({ ...model, [field]: { ...model[field], [lang]: value } }));
+    }
+  }
+
+  /** A text typed by the person in the non-default language is theirs: it is no longer «automatic». */
+  private markManual(key: string, lang: Lang): void {
+    if (lang === this.model().defaultLanguage || !(key in this.model().auto)) return;
+    this.model.update((model) => {
+      const auto = { ...model.auto };
+      delete auto[key];
+      return { ...model, auto };
+    });
   }
 
   /**
@@ -188,19 +293,17 @@ export class ProcessFormPage implements OnInit {
     }, 300);
   }
 
-  /** After a validation error, show the language tab that holds the first wrong field if the current one has none. */
+  /** After a validation error in a text of the other language, its fields are unfolded so the error is visible. */
   private showErrorLanguage(errors: FieldError[]): void {
-    const langs = errors.map((error) => error.field.split('.').pop());
-    const first = langs.find((part): part is Lang => part === 'es' || part === 'en');
-    if (first && !langs.includes(this.textTab())) {
-      this.textTab.set(first);
+    if (errors.some((error) => error.field.split('.').pop() === this.otherLang())) {
+      this.reviewOpen.set(true);
     }
   }
 
-  /** Placeholder of a text in the other language: the default-language text that will be saved if it stays empty. */
+  /** Placeholder of an empty text in the other language once the default one is written: «Se traducirá…». */
   protected fallback(text: Record<Lang, string>, lang: Lang): string {
     const def = this.model().defaultLanguage;
-    return lang === def ? '' : text[def].trim();
+    return lang === def || !text[def].trim() ? '' : this.translate.instant('admin.processForm.willTranslate');
   }
 
   /** Earliest value accepted by the date pickers: the current minute (the opening must be in the future, D-30). */
@@ -222,12 +325,16 @@ export class ProcessFormPage implements OnInit {
   });
 
   protected setText(field: 'title' | 'description' | 'question', lang: Lang, value: string): void {
+    if (this.textOf(field, lang) === value) return; // ionInput also fires when the value is set by the translator
     this.dirty = true;
+    this.markManual(field, lang);
     this.model.update((model) => ({ ...model, [field]: { ...model[field], [lang]: value } }));
   }
 
   protected setOption(index: number, lang: Lang, value: string): void {
+    if (this.textOf(`options.${index}`, lang) === value) return;
     this.dirty = true;
+    this.markManual(`options.${index}`, lang);
     this.model.update((model) => ({
       ...model,
       options: model.options.map((option, i) => (i === index ? { ...option, [lang]: value } : option)),
@@ -238,12 +345,22 @@ export class ProcessFormPage implements OnInit {
     this.dirty = true;
     this.model.update((model) => ({ ...model, options: [...model.options, { es: '', en: '' }] }));
     setTimeout(() => document.querySelectorAll<HTMLElement>('.option-row ion-input')
-      [this.model().options.length * 2 - 2]?.querySelector('input')?.focus(), 50);
+      [(this.model().options.length - 1) * this.shownLangs().length]?.querySelector('input')?.focus(), 50);
   }
 
   protected removeOption(index: number): void {
     this.dirty = true;
-    this.model.update((model) => ({ ...model, options: model.options.filter((_, i) => i !== index) }));
+    this.model.update((model) => {
+      // The automatic marks of the following options move up one position with them
+      const auto: Record<string, string> = {};
+      for (const [key, source] of Object.entries(model.auto)) {
+        if (!key.startsWith('options.')) { auto[key] = source; continue; }
+        const i = Number(key.slice(8));
+        if (i < index) auto[key] = source;
+        else if (i > index) auto[`options.${i - 1}`] = source;
+      }
+      return { ...model, auto, options: model.options.filter((_, i) => i !== index) };
+    });
   }
 
   protected goTo(step: Step): void {
@@ -287,6 +404,8 @@ export class ProcessFormPage implements OnInit {
     this.serverErrors.set([]);
     this.serverDetail.set(null);
     try {
+      // Texts still empty in the other language are translated now; without translator, the same text is used (D-58)
+      await this.translateMissing();
       const data = toProcessData(this.model());
       const id = this.id();
       const saved = id ? await this.api.update(Number(id), data) : await this.api.create(data);
@@ -365,16 +484,37 @@ export class ProcessFormPage implements OnInit {
     return errors;
   }
 
-  /** «Empezar de cero»: forgets the restored work and goes back to the empty form (or to the saved process). */
+  /**
+   * Step 3: a new process of an organization with a single census starts with that census selected (one click less);
+   * with two or more, or when editing, nothing is chosen for the person.
+   */
+  private preselectOnlyCensus(): void {
+    const only = this.censuses().length === 1 ? this.censuses()[0] : null;
+    if (!this.id() && only && this.model().censusId === null) {
+      this.model.update((model) => ({ ...model, censusId: only.id }));
+      this.onlyCensus.set(true);
+    }
+  }
+
+  /** «Seguir donde lo dejé»: closes the notice; the restored work is already in the form. */
+  protected continueDraft(): void {
+    this.restoredAt.set(null);
+    this.confirmDiscard.set(false);
+    this.focusHeading();
+  }
+
+  /** «Borrar y empezar de cero» (confirmed): forgets the restored work and goes back to the empty form (or to the saved process). */
   protected discardDraft(): void {
     this.removeDraft();
     this.dirty = false;
     this.restoredAt.set(null);
+    this.confirmDiscard.set(false);
+    this.reviewOpen.set(false);
     this.model.set(this.base ? (JSON.parse(this.base) as FormModel) : emptyModel());
-    this.textTab.set(this.model().defaultLanguage);
     this.step.set('basics');
     this.visited.set(this.base ? new Set(STEPS) : new Set(['basics']));
     this.stepErrors.set([]);
+    this.preselectOnlyCensus();
     this.focusHeading();
   }
 
@@ -400,7 +540,6 @@ export class ProcessFormPage implements OnInit {
       this.model.set({ ...emptyModel(), ...draft.model });
       this.step.set(draft.step);
       this.visited.set(new Set([...(draft.visited ?? []), draft.step]));
-      this.textTab.set(this.model().defaultLanguage);
       this.restoredAt.set(draft.savedAt);
       this.dirty = true;
     } catch {
@@ -428,8 +567,15 @@ export class ProcessFormPage implements OnInit {
     }
   }
 
+  /**
+   * After a step change the page goes back to the progress card, so the person sees which step they are on (IMP-62: on
+   * phones the bars stayed under the header), and the focus moves to the heading of the new step without scrolling.
+   */
   private focusHeading(): void {
-    setTimeout(() => document.querySelector<HTMLElement>('.step-panel h2')?.focus({ preventScroll: true }), 50);
+    setTimeout(() => {
+      document.querySelector<HTMLElement>('.wizard')?.scrollIntoView({ block: 'start' });
+      document.querySelector<HTMLElement>('.step-panel h2')?.focus({ preventScroll: true });
+    }, 50);
   }
 }
 
@@ -437,7 +583,7 @@ function emptyModel(): FormModel {
   return {
     title: { es: '', en: '' }, description: { es: '', en: '' }, defaultLanguage: 'es',
     resultsVisibility: 'CENSUS_ONLY', voterAuthentication: 'EMAIL_CODE', opensAt: '', closesAt: '', censusId: null, voteType: 'SINGLE_CHOICE',
-    question: { es: '', en: '' }, options: [{ es: '', en: '' }, { es: '', en: '' }], blankVoteEnabled: true,
+    question: { es: '', en: '' }, options: [{ es: '', en: '' }, { es: '', en: '' }], blankVoteEnabled: true, auto: {},
   };
 }
 
@@ -462,6 +608,7 @@ function fromProcess(process: Process): FormModel {
     options: process.ballot.voteType === 'SINGLE_CHOICE'
       ? process.ballot.options.map((option) => texts(option.text))
       : [{ es: '', en: '' }, { es: '', en: '' }],
+    auto: {},
   };
 }
 

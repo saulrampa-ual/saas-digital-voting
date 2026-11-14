@@ -6,16 +6,18 @@ gestión de procesos, el acceso del votante, la emisión del voto, los recibos,
 la auditoría y el escrutinio. La arquitectura implementada integra cinco
 servicios propios, Keycloak, PostgreSQL y comunicación REST con patrón
 \emph{outbox}. La autenticación del votante se configura por proceso mediante
-código por correo o cuenta institucional. La batería registrada contiene 49
-pruebas de backend y 10 de frontend; las pruebas y la compilación del frontend
-finalizaron correctamente. Cuatro pruebas de integración ejecutaron las
-migraciones y comprobaciones en PostgreSQL 18.6, incluida la consulta aislada
-de censos mediante el repositorio JPA; la autorización HTTP y otros repositorios
-siguen pendientes. La cobertura de líneas del backend varía entre
-0,0\% y 13,6\%. La sesión de usabilidad con cinco votantes aceptó H1b:
+código por correo o cuenta institucional. La batería registrada contiene 119
+pruebas de backend y 59 de frontend, todas correctas. Dieciséis pruebas de
+integración se ejecutan sobre PostgreSQL 18.6 y comprueban, entre otros
+aspectos, el aislamiento entre organizaciones, los reintentos del
+\emph{outbox} y la unicidad del voto ante intentos simultáneos; la
+autorización HTTP de identity y otros repositorios siguen pendientes. La
+cobertura de líneas del backend varía entre 14,4\% y 70,3\%. La sesión de usabilidad con cinco votantes aceptó H1b:
 los cinco completaron el voto y obtuvieron el recibo sin ayuda en menos de tres
 minutos e interpretaron correctamente la verificación (evidencia descriptiva, sin
-inferencia estadística). La prueba de carga local rechazó H1c: con 500 usuarios
+inferencia estadística). Con cinco administradores sin formación previa se
+aceptó RNF-4: todos crearon, configuraron y programaron un proceso sin ayuda en
+4 minutos o menos. La prueba de carga local rechazó H1c: con 500 usuarios
 simultáneos, el p95 de la emisión superó los dos segundos en las tres
 ejecuciones. La revisión manual de accesibilidad sigue pendiente, por lo que
 H1a no se acepta ni se rechaza con la evidencia disponible. El
@@ -31,15 +33,18 @@ management, voter access, ballot submission, receipts, audit records and
 tallying. The implemented architecture integrates five application services,
 Keycloak, PostgreSQL and REST communication with an outbox pattern. Voter
 authentication is configured per election using email codes or institutional
-accounts. The recorded test suite contains 49 backend tests and 10 frontend
-tests; frontend tests and build completed successfully. Four integration tests
-ran migrations and checks on PostgreSQL 18.6, including organization-scoped
-census queries through the JPA repository; HTTP authorization and other
-repositories remain unverified. Backend line coverage ranges from 0.0\% to
-13.6\%. A usability session with five voters
+accounts. The recorded test suite contains 119 backend tests and 59 frontend
+tests, all passing. Sixteen integration tests run on PostgreSQL 18.6 and
+check, among other aspects, isolation between organizations, outbox retries
+and vote uniqueness under simultaneous attempts; HTTP authorization in
+identity and other repositories remain unverified. Backend line coverage
+ranges from 14.4\% to 70.3\%. A usability session with five voters
 supported H1b: all five cast their vote and obtained the receipt without help in
 under three minutes and interpreted the verification correctly (descriptive
-evidence, without statistical inference). The local load test rejected H1c: with
+evidence, without statistical inference). With five organization
+administrators without previous training, the administrator usability
+requirement (RNF-4) was met: all five created, configured and scheduled a
+process without help in four minutes or less. The local load test rejected H1c: with
 500 simultaneous users, the 95th percentile of vote submission exceeded two
 seconds in all three runs. The manual accessibility review remains pending, so
 H1a is neither accepted nor rejected on the available evidence. This report

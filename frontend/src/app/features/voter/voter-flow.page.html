@@ -95,7 +95,7 @@
 
       @case ('review') {
         <app-review-step [choiceText]="choiceText()" [blank]="choice() === 'blank'" [busy]="busy()"
-                         (change)="changeSelection()" (confirm)="confirm()" />
+                         (changeSelection)="changeSelection()" (confirm)="confirm()" />
       }
 
       @case ('receipt') {

@@ -1,8 +1,8 @@
 id,fecha,modalidad,valida,sin_formacion_previa,navegador_so,navegador_ancho,t0,t1,t0_t1_segundos,completo,sin_ayuda,consulto_documentacion,errores,ayuda_ofrecida,incidencia_entorno,incidencias_tecnicas,referencia_grabacion,observacion
-P01,,online,,,,,,,,,,,,,,,,
-P02,,online,,,,,,,,,,,,,,,,
-P03,,online,,,,,,,,,,,,,,,,
-P04,,online,,,,,,,,,,,,,,,,
-P05,,online,,,,,,,,,,,,,,,,
-R1,,online,,,,,,,,,,,,,,,,
-R2,,online,,,,,,,,,,,,,,,,
+P01,13/11/2026,online,si,si,Chrome / Windows,,,,120,si,si,no,0,,no,,,"Tiempo medido por el moderador y anotado redondeado al minuto (sin t0/t1 de segundos). Interfaz anterior a D-63 (la apertura que eligió, 13:23, es anterior al cambio de las 13:55). usó títulos, preguntas u opciones propios en lugar de los de la ficha; proceso de opción única creado, configurado y programado; sin título en inglés (lo tradujo la aplicación)."
+P02,13/11/2026,online,si,si,Chrome / Windows,,,,180,si,si,no,0,,no,,,"Tiempo medido por el moderador y anotado redondeado al minuto (sin t0/t1 de segundos). Interfaz anterior a D-63 (la apertura que eligió, 12:40, es anterior al cambio de las 13:55). Datos de la ficha. Observaciones de uso recogidas en D-63."
+P03,13/11/2026,online,si,si,Chrome / Windows,,,,180,si,si,no,0,,no,,,Tiempo medido por el moderador y anotado redondeado al minuto (sin t0/t1 de segundos). Datos de la ficha (opciones solo en español; el inglés lo tradujo la aplicación).
+P04,13/11/2026,online,si,si,Chrome / Windows,,,,120,si,si,no,0,,no,,,"Tiempo medido por el moderador y anotado redondeado al minuto (sin t0/t1 de segundos). usó títulos, preguntas u opciones propios en lugar de los de la ficha; proceso de opción única creado, configurado y programado."
+P05,13/11/2026,online,si,si,Chrome / Windows,,,,240,si,si,no,0,,no,,,"Tiempo medido por el moderador y anotado redondeado al minuto (sin t0/t1 de segundos). usó títulos, preguntas u opciones propios en lugar de los de la ficha; proceso de opción única creado, configurado y programado."
+R1,,online,no,,,,,,,,,,,,,,,Reserva no utilizada en las sesiones; R1 se usó en el ensayo técnico del 13/11.
+R2,,online,no,,,,,,,,,,,,,,,Reserva no utilizada en las sesiones; R1 se usó en el ensayo técnico del 13/11.

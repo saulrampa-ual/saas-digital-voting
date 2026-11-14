@@ -2,24 +2,47 @@
 \label{cap:evaluacion-resultados}
 
 \section{Pruebas disponibles}
-En la revisión P7 registrada se ejecutaron 49 pruebas de backend y 10 de
-frontend. Las pruebas unitarias y de arquitectura cubren reglas seleccionadas
-de permisos, ciclo de vida, acceso del votante, consumo del token, cadena de
-auditoría, escrutinio y separación arquitectónica. En frontend se cubren la
-guarda de rol, el flujo de voto y recibo, y el retorno SSO con PKCE. La
-ejecución registrada de \texttt{npm run test:ci} terminó con 10 pruebas
-correctas; \texttt{npm run build} también terminó correctamente. Cuatro pruebas
-adicionales ejecutaron las migraciones Flyway de identity, election,
-voter-access y ballot-box en PostgreSQL 18.6 con Testcontainers. Verificaron
-el trigger append-only de acciones administrativas, el aislamiento por
-organización al listar y buscar censos a través de `CensusRepositoryAdapter`
-y JPA, participación con fecha sin hora y restricciones de esquema/eventos
-de la urna. La integración del repositorio no cubre autorización HTTP ni
-todos los repositorios y entidades.
+En la última ejecución completa registrada (13/11/2026) terminaron
+correctamente 119 pruebas de backend (\texttt{mvnw verify}: gateway 1,
+identity 12, election 46, voter-access 38 y ballot-box 22) y 59 de frontend
+(\texttt{npm run test:ci}); \texttt{npm run build} también terminó
+correctamente. Las pruebas unitarias y de arquitectura cubren reglas
+seleccionadas de permisos, ciclo de vida, importación del censo, acceso del
+votante, consumo del token, cadena de auditoría, escrutinio y separación
+arquitectónica. En frontend se cubren la guarda de rol, el flujo de voto y
+recibo, el retorno SSO con PKCE, componentes del panel de la consola, el
+asistente de creación de procesos, la traducción automática de sus textos y el
+aviso de caducidad de la sesión.
 
-La cobertura de líneas JaCoCo registrada es: gateway 0,0\% (0/3), identity
-13,6\% (107/785), election 10,3\% (157/1528), voter-access 7,7\% (115/1499)
-y ballot-box 13,2\% (212/1611). La cobertura es inicial y no demuestra por sí
+Dieciséis de las pruebas de backend, repartidas en ocho clases, se ejecutan
+contra PostgreSQL 18.6 con Testcontainers. Aplican las migraciones Flyway de
+identity, election, voter-access y ballot-box y verifican el trigger
+append-only de acciones administrativas, la participación con fecha sin hora
+y las restricciones de esquema y eventos de la urna. Además comprueban que una
+organización no puede leer ni modificar los datos de otra en election,
+voter-access y ballot-box; que el despachador del \emph{outbox} reintenta
+tras un fallo y entrega una sola vez; que veinte intentos simultáneos con el
+mismo token producen exactamente un voto; que ninguna tabla de voter-access
+puede almacenar la opción elegida ni un recibo; y que la emisión no escribe
+en los registros el token, el recibo ni la opción. No cubren la autorización
+HTTP de identity ni todos los repositorios y entidades.
+
+Los barridos de accesibilidad con Playwright y axe de esa misma ejecución (200
+comprobaciones: 108 de la consola, 88 del flujo del votante y 4 de la
+comprobación del recibo; 199 sin incumplimientos críticos ni serios y uno con
+un incumplimiento serio en la consola, en la edición de la papeleta a 360
+píxeles: tras avanzar de paso, la barra de pasos queda bajo la cabecera, tapada
+por el selector de idioma; corregido el mismo día haciendo que el asistente
+vuelva a la barra de pasos al cambiar de paso, y repetidas las 200
+comprobaciones sin incumplimientos críticos ni serios) se valoran en la
+tabla~\ref{tab:estado-hipotesis}; no son pruebas funcionales de extremo a
+extremo.
+
+La cobertura de líneas JaCoCo de esa ejecución es: gateway 33,3\% (1/3),
+identity 14,4\% (113/785), election 70,3\% (1267/1801), voter-access 50,2\%
+(789/1572) y ballot-box 41,1\% (672/1636). En el frontend, medida con Vitest
+sobre todo el código de \texttt{src/app} (14/11/2026), es del 22,7\% de las líneas
+(486/2139). La cobertura no demuestra por sí
 misma la corrección del sistema. El informe de evaluación detalla método y
 limitaciones en \texttt{docs/evaluation/informe.md}.
 
@@ -39,7 +62,7 @@ H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan ac
 \hline
 H1c & Con 500 usuarios simultáneos, p95 de emisión inferior a dos segundos en tres ejecuciones. & Propuesto & RECHAZADA (H0c): tres ejecuciones del 11/11/2026 (procesos sintéticos 10, 11 y 12; 500 usuarios virtuales que empiezan a la vez, un voto cada uno). p95 de la emisión: 4852, 2402 y 4849~ms, por encima de 2000~ms en las tres. Votos aceptados: 222, 240 y 281 de 500; el resto fueron conexiones rechazadas por el \emph{gateway} (273, 260 y 219) y, en la primera, 5 errores 500. En las tres, la cadena quedó íntegra y los votos de la urna coinciden con las respuestas 201 y con la participación. Un único equipo Windows en local; sin extrapolación a producción. \\
 \hline
-RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin formación previa crean, configuran y programan un proceso de opción única en $\leq$ 10 minutos y sin ayuda. & Validado por el tutor; 10 minutos como valor propuesto & NO DEMOSTRADO: sesión del 03/11/2026 con cinco participantes y consentimiento. Los 5 completan la tarea sin ayuda de personas (se permite consultar la documentación). Tiempos estimados tras la sesión, no cronometrados: entre 3,4 y 11 minutos, 4 de 5 por debajo de 10 minutos. Solo 2 de 5 no tenían formación previa, así que la muestra no alcanza la población del criterio. Evidencia indicativa; sin decisión. \\
+RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin formación previa crean, configuran y programan un proceso de opción única en $\leq$ 10 minutos y sin ayuda. & Validado por el tutor; 10 minutos como valor propuesto & ACEPTADO: sesiones online del 13/11/2026 (videollamada grabada, consentimiento escrito, escenario sintético), cinco válidas y las cinco sin formación previa en VeriVoto. 5 de 5 crean, configuran y programan el proceso sin ayuda en $\leq$ 10 minutos (mediana 3 min, mínimo 2 y máximo 4; 0 errores; ninguno consultó la guía «Primeros pasos»). Tiempos medidos por el moderador sobre la pantalla compartida y anotados redondeados al minuto; con un máximo de 4 minutos frente a 10, el redondeo no cambia la decisión. Sustituye a la sesión del 03/11/2026, no concluyente (solo 2 de 5 sin formación previa y tiempos estimados). \\
 \hline
 \end{longtable}
 \normalsize
@@ -59,23 +82,25 @@ explicación compatible con los tiempos observados, pero no se ha medido dónde
 se consume el tiempo. El criterio no se modifica a la vista del resultado.
 
 \section{Integración y requisitos de calidad}
-La integración PostgreSQL de otros repositorios, los flujos HTTP/outbox y
-la concurrencia; las pruebas E2E completas del stack y la accesibilidad manual
-continúan pendientes; la sesión con votantes (H1b) se realizó el 09/11/2026 y
+La integración PostgreSQL de otros repositorios, la autorización HTTP de
+identity, las pruebas funcionales de extremo a extremo del stack completo y la
+accesibilidad manual continúan pendientes; la sesión con votantes (H1b) se realizó el 09/11/2026 y
 las tres ejecuciones de carga (H1c), el 11/11/2026. En consecuencia, la
-evidencia disponible no permite declarar aceptados RNF-1, RNF-4 ni
+evidencia disponible no permite declarar aceptados RNF-1 ni
 RNF-11--RNF-15 en su conjunto, y RNF-17 no se cumple en la configuración
 local evaluada; para RNF-3 y RNF-6 se dispone de la evidencia
-descriptiva de H1b, con cinco participantes.
+descriptiva de H1b, con cinco participantes, y RNF-4 se acepta con la de las
+sesiones con administradores del 13/11/2026.
 La correspondencia con características de ISO/IEC 25010:2023 está definida
 en el capítulo de requisitos no funcionales; la cobertura experimental por
 característica debe completarse cuando se ejecuten esos protocolos.
 
 \section{Validez}
-La cobertura baja limita la confianza que puede atribuirse a la suite. Las
-pruebas unitarias y las comprobaciones de esquema no sustituyen el aislamiento
-de base de datos de todos los repositorios ni la autorización completa entre
-organizaciones o la concurrencia real. El rechazo de H1c se limita a la configuración
+La cobertura es desigual (del 14,4\% de identity al 70,3\% de election) y
+limita la confianza que puede atribuirse a la suite. Las pruebas de
+integración comprueban casos concretos de aislamiento entre organizaciones y
+de concurrencia sobre una única instancia; no sustituyen la verificación de
+todos los repositorios y rutas ni la concurrencia real de un despliegue. El rechazo de H1c se limita a la configuración
 evaluada (un único equipo Windows, servicios fuera de contenedores y 500
 conexiones simultáneas sin rampa) y no permite estimar el rendimiento de un
 despliegue dimensionado, y el resultado de H1b, obtenido con cinco participantes
@@ -86,5 +111,15 @@ La parte manual de H1a (teclado y lector de pantalla) no se ejecutó: el
 barrido automático solo cubre las reglas que axe puede decidir y dejó
 avisos sin resolver (contraste sobre fondos que no puede calcular y un
 atributo ARIA del recibo), y no comprueba cómo se anuncian los errores ni el
-orden del foco. Por eso H1a no se declara aceptada ni rechazada; igual que
-RNF-4, queda como evidencia parcial y sin decisión.
+orden del foco. Por eso H1a no se declara aceptada ni rechazada y queda como
+evidencia parcial y sin decisión.
+
+El resultado de RNF-4 tiene sus propias limitaciones: las cinco personas son
+estudiantes autoseleccionados del entorno del autor; la tarea se hizo a
+distancia, con un código de acceso fijo para estas cuentas (el inicio de
+sesión queda fuera del tiempo medido); los tiempos se anotaron redondeados al
+minuto; tres participantes escribieron textos propios en lugar de los de la
+ficha, y dos usaron la versión de la consola anterior a los ajustes aplicados
+durante el bloque de sesiones a partir de las observaciones de los primeros
+participantes. Nada de ello afecta a la tarea medida (crear, configurar y
+programar un proceso de opción única), pero limita la generalización.

@@ -16,25 +16,26 @@ genera ese estado.
 \label{sec:casos-uso-detallados}
 
 \subsection{RF-01: Gestionar organizaciones}
-
-\textbf{Objetivos asociados:} OBJ-1\par
-\textbf{Requisitos asociados:} RI-1\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Superadministrador (ACT-1) da de alta una organización.\par
-\textbf{Precondición:} El usuario está autenticado (RF-04) como Superadministrador.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Superadministrador solicita dar de alta una organización
-\item[2] El Sistema solicita el nombre, identificador y administrador inicial de la organización.
-\item[3] El Superadministrador introduce los datos solicitados.
-\item[4] El Sistema comprueba que el identificador no está en uso.
-\item[5] El Sistema crea la organización con su espacio de datos aislado y asigna el rol de Administrador de organización al administrador inicial.
-\end{enumerate}
-\textbf{Postcondición:} La organización existe con su espacio de datos aislado y el administrador inicial tiene asignado el rol de Administrador de organización.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 4: Si el identificador ya está en uso, el Sistema informa de la situación y solicita introducir otro identificador.
-\end{itemize}
-\textbf{Comentarios:} Ninguno\par
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-01: Gestionar organizaciones.}\label{tab:cu-rf-01}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-01: Gestionar organizaciones}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-01: Gestionar organizaciones} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Superadministrador (ACT-1)} \\ \hline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-1} \\ \hline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-1} \\ \hline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Superadministrador (ACT-1) da de alta una organización.} \\ \hline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El usuario está autenticado (RF-04) como Superadministrador.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\ \cline{2-3}
+  \cuLabel{} & 1 & El Superadministrador solicita dar de alta una organización \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema solicita el nombre, identificador y administrador inicial de la organización. \\ \cline{2-3}
+  \cuLabel{} & 3 & El Superadministrador introduce los datos solicitados. \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema comprueba que el identificador no está en uso. \\ \cline{2-3}
+  \cuLabel{} & 5 & El Sistema crea la organización con su espacio de datos aislado y asigna el rol de Administrador de organización al administrador inicial. \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{La organización existe con su espacio de datos aislado y el administrador inicial tiene asignado el rol de Administrador de organización.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\ \cline{2-3}
+  \cuLabel{} & 4 & Si el identificador ya está en uso, el Sistema informa de la situación y solicita introducir otro identificador. \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Ninguno} \\ \hline
+\end{longtable}
 
 \subsection{RF-02: Gestionar roles y permisos}
 
@@ -73,8 +74,8 @@ genera ese estado.
 \item[]\textit{Si elige alta manual:}
 \item[3.1] El Sistema solicita nombre, email o teléfono
 \item[3.2] El Gestor introduce los datos
-\item[]\textit{Si elige importar CSV:}
-\item[3.1] El Sistema solicita el fichero CSV
+\item[]\textit{Si elige importar un fichero Excel:}
+\item[3.1] El Sistema solicita el fichero Excel (.xlsx) y ofrece una plantilla descargable
 \item[3.2] El Gestor selecciona el fichero
 \item[3.3] El Sistema valida el fichero y muestra un resumen (altas, duplicados, errores)
 \item[3.4] El Gestor confirma la importación
@@ -88,7 +89,7 @@ genera ese estado.
 \item 4: Si hay duplicados, el Sistema los omite e informa de cuáles
 \item 5: Si el censo pertenece a un proceso abierto, el Sistema rechaza altas y bajas e informa
 \end{itemize}
-\textbf{Comentarios:} Prioridad M. Se asume que el censo queda congelado mientras el proceso está abierto.\par
+\textbf{Comentarios:} Prioridad M. Se asume que el censo queda congelado mientras el proceso está abierto. La consola ofrece la importación solo en Excel (.xlsx), con plantilla en español e inglés; la API mantiene la importación CSV por compatibilidad.\par
 
 \subsection{RF-04: Autenticar usuario de gestión}
 
@@ -216,31 +217,32 @@ genera ese estado.
 \textbf{Comentarios:} Prioridad M. La verificación adicional configurada (por ejemplo, OTP o autenticación federada) evita que un enlace reenviado permita votar a otra persona. La federación de identidad es una opción de diseño, no un requisito institucional.\par
 
 \subsection{RF-09: Emitir voto}
-
-\textbf{Objetivos asociados:} OBJ-3\par
-\textbf{Requisitos asociados:} RI-5, RI-6, RI-7, RNF-1, RNF-2, RNF-3, RNF-5, RNF-7, RNF-9\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) emite su voto en un proceso abierto.\par
-\textbf{Precondición:} El votante ha accedido (RF-08) y no tiene un voto contabilizado, o el proceso permite re-votar (RF-11).\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Sistema muestra la papeleta.
-\item[2] El Votante selecciona sus opciones
-\item[3] El Sistema valida la selección según el tipo de papeleta
-\item[4] El Sistema muestra un resumen y pide confirmación
-\item[5] El Votante confirma
-\item[6] El Sistema comprueba que no hay ya un voto contabilizado del votante
-\item[7] El Sistema registra el voto en la urna.
-\item[8] El Sistema marca al votante como «ha votado»
-\item[9] El Sistema confirma la emisión y ofrece el recibo (RF-10)
-\end{enumerate}
-\textbf{Postcondición:} El voto está en la urna y el votante figura como votante.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 3: Si la selección no es válida, el Sistema informa y no avanza
-\item 6: Si el votante ya votó y no se permite re-votar, el Sistema informa y no registra nada
-\item 7: Si el proceso se cierra mientras vota o falla el registro, el Sistema informa y no queda ningún voto parcial ni duplicado
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. El voto se registra en la urna y el votante queda marcado como «ha votado». Como máximo se contabiliza un voto por votante.\par
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-09: Emitir voto.}\label{tab:cu-rf-09}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-09: Emitir voto}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-09: Emitir voto} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Votante (ACT-4)} \\ \hline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-3} \\ \hline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-5, RI-6, RI-7, RNF-1, RNF-2, RNF-3, RNF-5, RNF-7, RNF-9} \\ \hline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) emite su voto en un proceso abierto.} \\ \hline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El votante ha accedido (RF-08) y no tiene un voto contabilizado, o el proceso permite re-votar (RF-11).} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\ \cline{2-3}
+  \cuLabel{} & 1 & El Sistema muestra la papeleta. \\ \cline{2-3}
+  \cuLabel{} & 2 & El Votante selecciona sus opciones \\ \cline{2-3}
+  \cuLabel{} & 3 & El Sistema valida la selección según el tipo de papeleta \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema muestra un resumen y pide confirmación \\ \cline{2-3}
+  \cuLabel{} & 5 & El Votante confirma \\ \cline{2-3}
+  \cuLabel{} & 6 & El Sistema comprueba que no hay ya un voto contabilizado del votante \\ \cline{2-3}
+  \cuLabel{} & 7 & El Sistema registra el voto en la urna. \\ \cline{2-3}
+  \cuLabel{} & 8 & El Sistema marca al votante como «ha votado» \\ \cline{2-3}
+  \cuLabel{} & 9 & El Sistema confirma la emisión y ofrece el recibo (RF-10) \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{El voto está en la urna y el votante figura como votante.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\ \cline{2-3}
+  \cuLabel{} & 3 & Si la selección no es válida, el Sistema informa y no avanza \\ \cline{2-3}
+  \cuLabel{} & 6 & Si el votante ya votó y no se permite re-votar, el Sistema informa y no registra nada \\ \cline{2-3}
+  \cuLabel{} & 7 & Si el proceso se cierra mientras vota o falla el registro, el Sistema informa y no queda ningún voto parcial ni duplicado \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. El voto se registra en la urna y el votante queda marcado como «ha votado». Como máximo se contabiliza un voto por votante.} \\ \hline
+\end{longtable}
 
 \subsection{RF-10: Obtener y verificar recibo del voto}
 
@@ -607,7 +609,7 @@ asocian a un caso de uso concreto.
 \textbf{Objetivos asociados:} OBJ-1, OBJ-2\par
 \textbf{Requisitos asociados:} RF-03, RF-06, RF-07\par
 \textbf{Descripción:} Al menos 4 de 5 administradores de organización sin formación previa deberán crear, configurar y programar un proceso de opción única en 10 minutos o menos y sin ayuda. «Sin ayuda» significa sin intervención del moderador ni de otras personas; consultar la documentación de la herramienta sí está permitido.\par
-\textbf{Comentarios:} Verificación: test de usabilidad con cinco personas con perfil de administrador. El valor de 10 minutos es propuesto. Con $n = 5$ no hay inferencia estadística: los resultados serán evidencia descriptiva limitada al prototipo, la configuración y la población evaluados. No hay hipótesis asociada en la sección~\ref{sec:plan-evaluacion}. La sesión del 03/11/2026 no cumplió las condiciones del criterio (población sin formación previa y tiempos medidos), por lo que RNF-4 se presenta como no demostrado en el capítulo de evaluación.\par
+\textbf{Comentarios:} Verificación: test de usabilidad con cinco personas con perfil de administrador. El valor de 10 minutos es propuesto. Con $n = 5$ no hay inferencia estadística: los resultados serán evidencia descriptiva limitada al prototipo, la configuración y la población evaluados. No hay hipótesis asociada en la sección~\ref{sec:plan-evaluacion}. La sesión del 03/11/2026 no cumplió las condiciones del criterio (población sin formación previa y tiempos medidos); las sesiones online del 13/11/2026 sí las cumplieron y RNF-4 se presenta como aceptado en el capítulo de evaluación.\par
 
 \subsection{RNF-5: Idiomas de la interfaz}
 

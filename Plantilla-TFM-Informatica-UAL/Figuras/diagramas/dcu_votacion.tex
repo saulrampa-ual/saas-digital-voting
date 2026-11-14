@@ -1,0 +1,26 @@
+% VeriVoto · votación. Generado por dcu.py: casos de uso en una columna, actores primarios a la izquierda y secundarios a la derecha.
+\begin{tikzpicture}
+\node[uc,minimum width=3.9cm] (rf05b) at (1.5,0.00) {RF-05b\\Acceder con enlace y código\\o cuenta institucional};
+\node[uc,minimum width=3.9cm] (rf08) at (1.5,-1.10) {RF-08\\Acceder a la papeleta};
+\node[uc,minimum width=3.9cm] (rf09) at (1.5,-2.20) {RF-09\\Emitir el voto};
+\node[uc,minimum width=3.9cm] (rf10) at (1.5,-3.30) {RF-10\\Verificar el recibo};
+\node[uc,minimum width=3.9cm] (rf15) at (1.5,-4.40) {RF-15\\Consultar el resultado};
+\node[uc,minimum width=3.9cm] (rf17) at (1.5,-5.50) {RF-17\\Enviar avisos};
+\node[uc,minimum width=3.9cm] (rf13) at (1.5,-6.60) {RF-13\\Escrutinio automático};
+\draw[boundary] (-0.90,0.95) rectangle (3.90,-7.35);
+\node[anchor=south west,font=\sffamily\small\bfseries] at (-0.90,0.95) {VeriVoto · votación};
+\actor{votante}{-3.50,-2.20}{Votante}
+\draw[assoc] (votante) -- (rf05b.west);
+\draw[assoc] (votante) -- (rf08.west);
+\draw[assoc] (votante) -- (rf09.west);
+\draw[assoc] (votante) -- (rf10.west);
+\draw[assoc] (votante) -- (rf15.west);
+\actor{reloj}{-3.50,-6.05}{Temporizador del sistema}
+\draw[assoc] (reloj) -- (rf17.west);
+\draw[assoc] (reloj) -- (rf13.west);
+\actor{idp}{6.50,0.00}{Proveedor de identidad institucional}
+\draw[assoc] (idp) -- (rf05b.east);
+\actor{correo}{6.50,-3.30}{Servicio de correo}
+\draw[assoc] (correo) -- (rf05b.east);
+\draw[assoc] (correo) -- (rf17.east);
+\end{tikzpicture}

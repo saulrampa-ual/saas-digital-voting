@@ -129,7 +129,14 @@ import { AdminPageComponent } from '../admin-page.component';
     .new input:focus-visible { outline: 3px solid var(--ion-color-primary); outline-offset: 2px; }
     .new ion-button { margin: 0; min-height: 48px; }
     details { margin-top: 8px; }
-    summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+    summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; gap: 10px; list-style: none;
+      color: var(--ion-color-primary); text-decoration: underline; }
+    summary::-webkit-details-marker { display: none; }
+    /* display: flex hides the native triangle: an explicit one shows that the question opens */
+    summary::before { content: ''; flex: none; width: 8px; height: 8px; margin: 0 2px 3px 4px; border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor; transform: rotate(-45deg); }
+    details[open] > summary::before { transform: rotate(45deg); }
+    summary:focus-visible { outline: 3px solid var(--ion-color-primary); outline-offset: 2px; }
     .scope { margin: 4px 0; padding-left: 20px; }
     .secret { border: 2px solid var(--ion-color-primary); }
     .secret h3 ion-icon { vertical-align: -3px; }

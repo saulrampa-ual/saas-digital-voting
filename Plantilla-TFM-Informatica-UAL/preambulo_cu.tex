@@ -1,0 +1,10 @@
+% Tabla de casos de uso (observación del tutor, 13/11/2026). Se carga desde main.tex, antes de \begin{document}.
+% longtable y array ya están en main.tex; xcolor lo cargan los .sty sin la opción «table», por eso colortbl.
+\usepackage{colortbl}
+\definecolor{cuHead}{HTML}{E8EEF6}
+\newlength{\cuLab}\setlength{\cuLab}{3.3cm}
+\newlength{\cuNum}\setlength{\cuNum}{1.0cm}
+\newlength{\cuText}\setlength{\cuText}{\dimexpr\textwidth-\cuLab-\cuNum-6\tabcolsep-4\arrayrulewidth\relax}
+\newlength{\cuWide}\setlength{\cuWide}{\dimexpr\cuNum+\cuText+2\tabcolsep+\arrayrulewidth\relax}
+\newlength{\cuAll}\setlength{\cuAll}{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}
+\newcommand{\cuLabel}[1]{\textbf{#1}}

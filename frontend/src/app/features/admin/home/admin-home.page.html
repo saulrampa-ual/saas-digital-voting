@@ -8,6 +8,9 @@
     <p>{{ 'admin.home.welcome' | translate: { name: auth.displayName() } }} {{ 'admin.home.intro' | translate }}</p>
   </header>
 
+  <!-- D-60: «Primeros pasos» for the ADMIN of an organization, open on the first visit, «Guía rápida» afterwards -->
+  @if (isAdmin() && auth.organizationId()) { <app-admin-onboarding /> }
+
   <!-- ===================== SUPERADMIN ===================== -->
   @if (isSuperadmin()) {
     <section class="block" aria-labelledby="home-orgs">

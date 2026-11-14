@@ -75,9 +75,10 @@
           <div class="drop" [class.dragging]="dragging()" (dragover)="onDragOver($event)" (dragleave)="dragging.set(false)"
                (drop)="onDrop($event)">
             <ion-icon name="cloud-upload-outline" aria-hidden="true"></ion-icon>
-            <p class="drop-title">{{ 'admin.census.import.drop' | translate }}</p>
+            <p class="drop-title" id="import-drop-title">{{ 'admin.census.import.drop' | translate }}</p>
             <p class="help">{{ 'admin.census.import.columns' | translate }}</p>
-            <input #fileInput id="csv-file" type="file" class="sr-only" (change)="onFileInput($event)"
+            <!-- Opened by the visible button below; out of the tab order, named by the drop zone title -->
+            <input #fileInput id="csv-file" type="file" class="sr-only" tabindex="-1" aria-labelledby="import-drop-title" (change)="onFileInput($event)"
                    accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                    [disabled]="busy()" />
             <ion-button fill="outline" (click)="fileInput.click()" [disabled]="busy()">

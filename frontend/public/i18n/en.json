@@ -10,6 +10,16 @@
     "goHome": "Go to home"
   },
   "admin": {
+    "session": {
+      "warningTitle": "Your session is about to expire",
+      "warningText": "For security, the session ends when there is no activity. {{time}} left. Do you want to continue?",
+      "stay": "Stay signed in",
+      "limitTitle": "The session cannot be extended any further",
+      "limitText": "You have reached the maximum session time. {{time}} left: save what you are doing. Unsaved work on a process is recovered when you sign in again in this browser.",
+      "expiredTitle": "Your session has expired",
+      "expiredText": "For security, the session has ended. Sign in again to continue; unsaved work on a process is recovered in this browser.",
+      "login": "Sign in again"
+    },
     "menu": {
       "label": "Management menu",
       "open": "Open menu",
@@ -186,6 +196,7 @@
       "opens": "Opens on {{date}}",
       "closes": "closes on {{date}}",
       "empty": "There are no processes yet.",
+      "viewDetail": "View details",
       "status": {
         "DRAFT": "Draft",
         "SCHEDULED": "Scheduled",
@@ -194,6 +205,19 @@
         "TALLIED": "Tallied",
         "ARCHIVED": "Archived"
       }
+    },
+    "onboarding": {
+      "title": "First steps",
+      "intro": "This is how a vote is organized in VeriVoto. You can open this guide again at any time with “Quick guide”.",
+      "steps": {
+        "create": { "title": "Create the process", "text": "In Processes, press “Create process” and fill in the 4 steps: details, dates, census and ballot. It is saved as a draft.", "link": "Create process" },
+        "schedule": { "title": "Review and schedule it", "text": "Open the process from Processes and press “Schedule”. If something is missing, the screen tells you what.", "link": "Go to Processes" },
+        "follow": { "title": "Follow the vote", "text": "It opens and closes by itself at the dates you set (there is no button to do it by hand). In Turnout you see how many people have voted.", "link": "Go to Turnout" },
+        "results": { "title": "Check the result", "text": "When it closes, the count is automatic. In Results you see the result and its fingerprint, and you can generate the minutes.", "link": "Go to Results" }
+      },
+      "note": "Writing the texts in the default language is enough: the other language is translated automatically and you can correct it.",
+      "done": "Got it",
+      "reopen": "Quick guide"
     },
     "processForm": {
       "title": "Create voting process",
@@ -206,11 +230,17 @@
         "census": "Census",
         "ballot": "Ballot"
       },
-      "defaultLanguage": "Default language",
-      "bilingualHelp": "Write the texts in the default language (*). The other language is optional: if you leave it empty, the same text is saved in both languages.",
+      "defaultLanguage": "Language in which you write the texts of the process",
+      "bilingualHelp": "Write each text only once. When you leave each field it is translated into the other language; you can review the translation if you want.",
+      "willTranslate": "It will be translated automatically",
+      "translating": "Translating into the other language…",
+      "translationFailed": "Automatic translation is not available: write the other language or the same text will be saved in both.",
+      "autoNote": "Translated automatically: review it.",
+      "autoNoteShort": "Automatic translation",
+      "chip": { "pending": "will be translated", "auto": "automatic translation" },
       "titleLabel": "Title",
       "descriptionLabel": "Description",
-      "visibility": "Who will see the result?",
+      "visibility": "When the vote ends, who will see the result?",
       "censusOnly": "Only the people in the census",
       "censusOnlyHelp": "They sign in with their personal link and code.",
       "publicLink": "Anyone with the public link",
@@ -221,6 +251,7 @@
       "calendarExample": "Example: opening today at 18:00 and closing tomorrow at 18:00. The opening must be later than the moment you schedule the process (leave at least 15 minutes) and the closing, later than the opening.",
       "duration": "Voting will be open for {{time}}.",
       "noCensuses": "There are no censuses in your organization. Ask the census manager to create one.",
+      "onlyCensus": "It is the only census of your organization, so it is already selected.",
       "emptyCensus": "empty: it cannot be scheduled",
       "voteType": "Ballot type",
       "singleChoice": "Single choice",
@@ -271,8 +302,15 @@
       "stepOf": "Step {{n}} of {{total}}",
       "afterStep": "Next: {{name}}",
       "nextHint": "Next: {{name}}",
-      "restored": "We recovered what you were writing ({{time}}). Continue where you left off or start over.",
-      "discardDraft": "Start over",
+      "restored": "We recovered what you were writing ({{time}}). It is already in the form: you can continue where you left off.",
+      "discardDraft": "Delete and start over",
+      "continueDraft": "Continue where I left off",
+      "discardConfirm": "Everything you had written will be deleted. Are you sure?",
+      "discardYes": "Yes, delete",
+      "discardNo": "No, keep it",
+      "reviewTranslation": "Review the translation {{language}}",
+      "hideTranslation": "Hide the translation {{language}}",
+      "toLang": { "es": "into Spanish", "en": "into English" },
       "textsLanguage": "Language of the texts",
       "pending": "same text",
       "inLang": {
@@ -305,7 +343,7 @@
         "texts": {
           "title": "Title and description",
           "ok": "In Spanish and English",
-          "ko": "The other language is missing: edit the process and save; the default-language text will be copied"
+          "ko": "The other language is missing: edit the process and save; it will be translated automatically"
         },
         "calendar": {
           "title": "Consistent calendar",
@@ -320,7 +358,7 @@
         "ballot": {
           "title": "Ballot defined",
           "ok": "Question and options in both languages",
-          "ko": "The other language is missing in the question or options: edit the process and save; the default-language text will be copied"
+          "ko": "The other language is missing in the question or options: edit the process and save; it will be translated automatically"
         }
       },
       "scheduleConfirm": {

@@ -11,7 +11,7 @@
 | Sistema operativo y hardware | Windows; hardware exacto PENDIENTE |
 | Java / Maven / PostgreSQL / Docker | Temurin 25.0.5; Maven Wrapper del proyecto; PostgreSQL 18.6 en contenedores Testcontainers; Docker Desktop 29.4.0 |
 | Configuración de servicios | PENDIENTE |
-| Ejecución backend | `backend`: `mvnw --batch-mode --no-transfer-progress verify`; BUILD SUCCESS; 49 pruebas, 0 fallos/errores |
+| Ejecución backend | `backend`: `mvnw --batch-mode --no-transfer-progress verify`; BUILD SUCCESS; 119 pruebas, 0 fallos/errores (ejecución del 11/11/2026, `.local/pruebas.log`) |
 | Datos | Sintéticos; no registrar ni publicar identidades, códigos, tokens o recibos completos |
 
 ## Hipótesis
@@ -26,17 +26,17 @@
 
 | Servicio | Evidencia | Resultado |
 | --- | --- | --- |
-| api-gateway | 1 prueba ArchUnit | 1 pasada; cobertura de líneas 0,0 % (0/3) |
+| api-gateway | 1 prueba ArchUnit | 1 pasada; cobertura de líneas 33,3 % (1/3) |
 | identity-service | Tests unitarios/arquitectura + `IdentityPostgresIntegrationTest` | 12 pasadas; migraciones Flyway y trigger de acciones administrativas solo añadibles comprobados |
-| election-service | Tests unitarios/arquitectura + `ElectionPostgresIntegrationTest` | 10 pasadas; Flyway 6 migraciones y aislamiento de censos probado a través de `CensusRepositoryAdapter`/JPA para listar y buscar por organización |
-| voter-access-service | Tests unitarios/arquitectura + `VoterAccessPostgresIntegrationTest` | 9 pasadas; migraciones y participación con fecha SQL, sin columnas de hora, comprobadas |
-| ballot-box-service | Tests unitarios/arquitectura + `BallotBoxPostgresIntegrationTest` | 17 pasadas; migraciones, esquema sin identificadores/tiempos de identidad y rechazo de evento `VOTE_RECEIVED` con hora comprobados |
-| frontend | Vitest: `role.guard.spec.ts`, `voter-api.service.spec.ts`, `voter-sso.service.spec.ts` | 10 pasadas; no se ha medido cobertura |
+| election-service | Tests unitarios/arquitectura + `ElectionPostgresIntegrationTest` | 46 pasadas (incluye `ElectionOrganizationIsolationIntegrationTest`, aislamiento HTTP entre organizaciones, y `ProcessSyncOutboxIntegrationTest`, reintento y entrega única del outbox); Flyway 6 migraciones y aislamiento de censos probado a través de `CensusRepositoryAdapter`/JPA para listar y buscar por organización |
+| voter-access-service | Tests unitarios/arquitectura + `VoterAccessPostgresIntegrationTest` | 38 pasadas (incluye `VoterAccessScenariosIntegrationTest`: otra organización recibe 404, idempotencia, 20 intentos simultáneos con un token dan 1 voto, ninguna tabla puede guardar opción ni recibo); migraciones y participación con fecha SQL, sin columnas de hora, comprobadas |
+| ballot-box-service | Tests unitarios/arquitectura + `BallotBoxPostgresIntegrationTest` | 22 pasadas (incluye `BallotBoxScenariosIntegrationTest`: otra organización recibe 404, idempotencia, la emisión no registra token, recibo ni opción); migraciones, esquema sin identificadores/tiempos de identidad y rechazo de evento `VOTE_RECEIVED` con hora comprobados |
+| frontend | Vitest: `role.guard.spec.ts`, `voter-api.service.spec.ts`, `voter-sso.service.spec.ts` | 59 pasadas en 9 ficheros en la ejecución del 13/11/2026 (además, `home-dashboard.spec.ts`, `day-chart.component.spec.ts`, `process-form.page.spec.ts`, `text-translation.service.spec.ts`, `admin-onboarding.component.spec.ts` y `session-timeout.service.spec.ts`); cobertura de líneas 22,7 % (486/2139, todo `src/app`, `npm run test:coverage` en el equipo del autor, 14/11/2026, IMP-49) |
 
-Backend: 49 pruebas, 0 fallos y 0 errores en la última ejecución completa `verify`. Frontend: 10 pruebas, 0 fallos;
-`npm run test:ci` y `npm run build` completaron correctamente. Total conjunto: 59 pruebas. Informes JaCoCo:
+Backend: 119 pruebas, 0 fallos y 0 errores en la última ejecución completa `verify` (13/11/2026, mismo resultado que el 11/11). Frontend: 59 pruebas, 0 fallos;
+`npm run test:ci` y `npm run build` completaron correctamente. Total conjunto: 178 pruebas. E2E (Playwright + axe) de la misma ejecución: 199 de 200; falla `A4-process-edit-ballot · 360px · en` (`target-size` serio: tras avanzar de paso la barra de pasos queda bajo la cabecera). Corregido con IMP-62 y repetido el E2E completo en el entorno de la IA (Chrome headless, mismo código): 200 de 200. Informes JaCoCo:
 `backend/services/<servicio>/target/site/jacoco/index.html`.
-Las cifras JaCoCo de la tabla reflejan el informe inicial de cobertura previo a las cuatro pruebas de integración; el gateway no contiene lógica ejercitada en estas pruebas. No se recalculan porcentajes sin una extracción homogénea posterior.
+Cobertura de líneas JaCoCo de la ejecución del 11/11/2026 (suma de `LINE_COVERED` y `LINE_MISSED` del `jacoco.csv` de cada servicio): gateway 33,3 % (1/3), identity 14,4 % (113/785), election 70,3 % (1267/1801), voter-access 50,2 % (789/1572), ballot-box 41,1 % (672/1636). Sustituyen a las cifras iniciales (0,0–13,6 %), anteriores a las pruebas de integración.
 No se asigna umbral de cobertura en esta fase.
 
 ## RNF e ISO/IEC 25010:2023
@@ -45,7 +45,7 @@ No se asigna umbral de cobertura en esta fase.
 | --- | --- | --- | --- |
 | RNF-1 | Capacidad de interacción; Inclusivity, User assistance | axe, revisión manual con teclado, foco, lector de pantalla, zoom y contraste | Pendiente |
 | RNF-3 | Capacidad de interacción; Learnability, Operability | Sesiones moderadas H1b | H1b aceptada (09/11/2026): 5 de 5 sin ayuda en ≤ 3 min; evidencia descriptiva |
-| RNF-4 | Capacidad de interacción; Learnability, Operability | Sesión con 5 administradores: al menos 4 de 5 crean, configuran y programan un proceso de opción única en ≤10 min (valor propuesto) y sin ayuda; sin hipótesis asociada; sesión no realizada | Pendiente |
+| RNF-4 | Capacidad de interacción; Learnability, Operability | Sesión con 5 administradores: al menos 4 de 5 crean, configuran y programan un proceso de opción única en ≤10 min (valor propuesto) y sin ayuda; sin hipótesis asociada; sesiones online del 13/11/2026: 5 de 5 sin formación previa, sin ayuda, máximo 4 min (tiempos redondeados al minuto) | **Aceptado** |
 | RNF-6 | Capacidad de interacción; Self-descriptiveness | Pregunta de comprensión del recibo | H1b (09/11/2026): 5 de 5 interpretan correctamente el recibo; evidencia descriptiva |
 | RNF-11 | Seguridad; Confidentiality | Revisión de esquema, logs, interfaces y separación de bases | Parcial: `VotingServiceTest` comprueba token consumido por separado, evento sin hora y hash del recibo; esquema, logs y persistencia siguen pendientes |
 | RNF-12 | Seguridad y fiabilidad; Integrity, Faultlessness | Envíos concurrentes con token único en PostgreSQL | Pendiente |
@@ -68,5 +68,5 @@ contenedores, configuración y preparación de datos; se deben informar sin gene
 - Ampliar integración a otros repositorios y autorización HTTP; probar concurrencia y flujos HTTP/outbox.
 - E2E con Keycloak y Mailpit reales en 1280 px y 360 px, idiomas ES/EN y axe en flujos acordados.
 - H1c medida (11/11/2026, rechazada). Pendiente: escenarios de acceso y escrutinio; CPU/RAM de los servicios Java.
-- Repetir la sesión RNF-4 con administradores sin formación previa y tiempos cronometrados; cobertura JaCoCo por servicio. (H1b hecha el 09/11/2026.)
+- Cobertura JaCoCo por servicio. (H1b hecha el 09/11/2026; RNF-4 repetido y aceptado el 13/11/2026: 5 de 5 sin formación previa, sin ayuda, mediana 3 min y máximo 4 min; detalle en `usabilidad/resultados-rnf4-administradores.md`.)
 - Actualizar decisiones de H1a/H1b/H1c y trazabilidad solo cuando se disponga de dichas evidencias.

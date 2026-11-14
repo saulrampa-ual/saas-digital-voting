@@ -34,7 +34,8 @@ verificación, registros de auditoría y una interfaz accesible. La verificació
 debe presentarse de forma comprensible para personas sin conocimientos
 criptográficos. La resistencia a la coacción y las garantías formales de
 verificabilidad extremo a extremo requieren un análisis específico y se
-consideran límites que deberán concretarse en el diseño.
+consideran límites de este trabajo
+(sección~\ref{sec:limitaciones-trabajo-futuro}).
 
 % [Bloque A] Motivación profesional del enfoque técnico.
 La elección del problema y del enfoque técnico responde también a la
@@ -273,14 +274,14 @@ El procedimiento y su estado son los siguientes:
   sustituyó por una reserva): 5 de 5 completaron la tarea sin ayuda en
   $\leq$ 3 minutos (mediana 51~s, máximo 79~s) y 5 de 5 interpretaron
   correctamente el recibo.
-  \item [NO DEMOSTRADO] RNF-4 (sin hipótesis asociada): sesión con cinco
+  \item [RNF-4 ACEPTADO] RNF-4 (sin hipótesis asociada): sesión con cinco
   administradores de organización sin formación previa; al menos cuatro de
   cinco deben crear, configurar y programar un proceso de opción única en
   10 minutos o menos (valor propuesto) y sin ayuda de otras personas (se
-  permite consultar la documentación). La sesión se realizó el 03/11/2026 con
-  cinco participantes, pero solo dos no tenían formación previa y los tiempos
-  se estimaron después de la sesión; el resultado es indicativo y RNF-4 no se
-  declara aceptado.
+  permite consultar la documentación). En las sesiones online del 13/11/2026,
+  cinco administradores sin formación previa completaron la tarea sin ayuda en
+  4 minutos o menos (mediana 3 minutos); la sesión anterior, del 03/11/2026, no
+  fue concluyente.
   \item [H1c RECHAZADA] Ejecutar una prueba de carga en un entorno aislado con datos
   sintéticos y hasta 500 sesiones concurrentes. Medir latencia por percentiles,
   errores y consumo de recursos durante varias ejecuciones reproducibles. Las
@@ -600,7 +601,8 @@ La figura~\ref{fig:arquitectura-componentes} conserva la arquitectura objetivo
 de la especificación. Elementos como CDN/WAF, KMS, cola y workers son parte de
 esa propuesta y no deben interpretarse como componentes desplegados del MVP.
 La arquitectura implementada y sus límites se describen en el
-capítulo~\ref{cap:diseno-tecnico}.
+capítulo~\ref{cap:diseno-tecnico}
+(figura~\ref{fig:arquitectura-implementada}).
 
 \begin{figure}[htbp]
   \centering
@@ -612,9 +614,8 @@ capítulo~\ref{cap:diseno-tecnico}.
 \section{Secuencia de emisión y verificación del voto}
 \label{sec:secuencia-voto}
 
-La figura~\ref{fig:secuencia-emision-voto} representa el flujo lógico de
-emisión, pero conserva nombres conceptuales de la especificación. En la
-implementación, voter-access consume el token y ballot-box guarda el voto, el
+La figura~\ref{fig:secuencia-emision-voto} representa el flujo de emisión
+con los componentes implementados: voter-access consume el token y ballot-box guarda el voto, el
 hash del recibo y el evento en una transacción. El registro de participación
 solo conserva el día; la urna no almacena identidad ni marca temporal por voto.
 El recibo acredita presencia (RF-10), mientras que la cadena se verifica por
@@ -650,18 +651,19 @@ de participación, la urna, los recibos, los eventos de auditoría y los
 resultados. Esta separación persigue que el sistema pueda controlar la
 unicidad y mostrar la participación sin conservar una relación directa entre
 la persona y su opción elegida. La integridad del registro se apoya en huellas
-encadenadas; el diseño técnico deberá especificar su generación, protección,
-publicación y verificación.
+encadenadas; su generación y verificación se describen en el
+capítulo~\ref{cap:implementacion}.
 
 \section{Criterios de calidad y validación}
 \label{sec:validacion-calidad}
 
-La validación deberá relacionar cada requisito con evidencias concretas:
+La validación relaciona cada requisito con evidencias concretas:
 pruebas de accesibilidad con teclado y lector de pantalla, pruebas de
 usabilidad, concurrencia y carga, revisión de aislamiento multi-tenant,
 comprobación de registros y evaluación de los flujos de protección de datos.
-Los criterios cuantitativos se tratarán como objetivos propuestos hasta su
-aprobación por las partes interesadas.
+Los criterios cuantitativos se tratan como objetivos propuestos, salvo los
+validados por el tutor. Las pruebas realizadas, sus resultados y las que
+quedan pendientes se recogen en el capítulo~\ref{cap:evaluacion-resultados}.
 
 % Capítulos de apoyo elaborados a partir de los requisitos del proyecto.
 \input{especificacion_detallada}

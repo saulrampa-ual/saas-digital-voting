@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-11 · Rama: `dev` (H1c en `test/h1c-load-results`, fusionada) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar hasta después de H1c · sin push
+Última actualización: 2026-11-13 · Rama: `dev` (H1c en `test/h1c-load-results`, fusionada) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar hasta después de H1c · sin push
 
 ## Hitos
 
@@ -13,7 +13,7 @@
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
-| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 60 pruebas backend (0 fallos), 10 Vitest; cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11) |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 119 pruebas backend y 28 Vitest en la ejecución del 11/11 (0 fallos; 53 Vitest tras los cambios del 12–13/11, ejecutadas solo en el entorno de la IA); cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11) |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: P8.1 y borradores P8.2–P8.3 incorporados; criterios del tutor (H1a/H1b/RNF-4) y confirmación de D-03/D-05 (correo del 30/10/2026) aplicados (P8.5); PDF de 82 páginas; falta la revisión editorial y visual completa |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
@@ -233,7 +233,7 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Novedad del 04/11: ejecutar `seed-usab.mjs` con el stack real, la primera ejecución de SonarQube y revisar el primer resultado del workflow `security` (F5). Novedad del 05/11: escenario `USAB` preparado; antes del sábado 07/11 completar el consentimiento y confirmar participantes; ejecutar las pruebas de la rama `feat/voter-access-limit-jwt-audience` (D2, D5) y no fusionarla antes del 09/11; exportar las incidencias de SonarQube y los artefactos de `security` (F5).
+Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). **Novedad del 13/11:** ver «Sesiones RNF-4 online, C2 y observaciones de participantes (13/11/2026)»: terminar las sesiones, registrar resultados de RNF-4 (C1), `cleanup`, repetir `.local\pruebas.ps1`, capturas de C2 y revisión del autor antes del commit. Novedad del 04/11: ejecutar `seed-usab.mjs` con el stack real, la primera ejecución de SonarQube y revisar el primer resultado del workflow `security` (F5). Novedad del 05/11: escenario `USAB` preparado; antes del sábado 07/11 completar el consentimiento y confirmar participantes; ejecutar las pruebas de la rama `feat/voter-access-limit-jwt-audience` (D2, D5) y no fusionarla antes del 09/11; exportar las incidencias de SonarQube y los artefactos de `security` (F5).
 
 0. Autor: resolver las decisiones pendientes (modelo de sustitución en P9, RF-11 Could/Won't, «sin ayuda» en RNF-4, RF-22/RF-23 en la tabla 1.1).
 1. Cargar la demo UAL con `scripts/demo/seed-ual.mjs` (primer intento fallido al capturar el código de autorización;
@@ -247,6 +247,59 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
    administradores sin formación previa y, si el autor lo aprueba, IMP-57 (perfilar la emisión) en P9.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
+
+## Sesiones RNF-4 online, C2 y observaciones de participantes (13/11/2026)
+
+Todo en `dev`, **sin commit**, pendiente de revisión del autor.
+
+- **Scripts de sesión.** `scripts/demo/lib/login-code.mjs` no tenía `fixed` ni `FIXED_CODE` (`login-code-fixed`
+  fallaba): añadidos según D-61 y probados por el autor con R1 (código 111111). Nuevo comando
+  `seed-rnf4.mjs passwords`: regenera contraseñas, quita el bloqueo por intentos y reescribe
+  `.local/sesion-rnf4.md` solo con la API de administración; el seed completo no termina con el modo remoto activo
+  (IMP-59). El túnel rápido del 12/11 había caducado («Tunnel not found»); se levantó uno nuevo con
+  `.local\rnf4-remoto.ps1`.
+- **C2 (memoria).** Figura nueva `Figuras/diagramas/arquitectura_implementada.tex` (figura 10.1) y su texto en
+  `diseno_tecnico.tex`; LibreTranslate en `implementacion.tex`; RF-03 pasa a importar Excel (.xlsx); texto heredado en
+  futuro de `contenido1.tex` pasado a presente; participante «Voter-access API» en la figura de secuencia.
+- **Cifras de pruebas de la memoria** actualizadas con la ejecución del 11/11/2026 (`.local/pruebas.log`, `jacoco.csv`):
+  119 backend, 28 frontend, 16 de integración en 8 clases, 200 Playwright + axe; cobertura de líneas gateway 33,3 %,
+  identity 14,4 %, election 70,3 %, voter-access 50,2 %, ballot-box 41,1 %. Ficheros: `evaluacion_resultados.tex`,
+  `resumentexto.tex`, `conclusiones.tex`, `plan_gantt.tex`, `docs/evaluation/informe.md`.
+- **Observaciones de participantes (D-63)**, aplicadas con las sesiones en curso por decisión del autor: A3 con un solo
+  campo por texto y «Revisar la traducción» plegado; aviso de recuperación con «Seguir donde lo dejé»; idioma del login
+  conservado en la consola; botones de idioma compactos en móvil; «Ver detalle» en la lista de procesos; indicador de
+  desplegable en Claves API; pregunta de visibilidad más clara. Comprobado en el entorno de la IA: `ngc`, `ng build`
+  y 53 pruebas Vitest (2 nuevas). El servidor de desarrollo del autor recompiló sin errores a las 13:55.
+- **Mejoras registradas:** IMP-59 (seed en modo remoto), IMP-60 (autorización HTTP de identity), IMP-61 (una
+  organización por participante).
+
+- **Tarde del 13/11.** El túnel de las 11:07 cayó a las 17:16 por un corte de red del equipo (~1 h sin conexión: Cloudflare
+  borró el túnel rápido); nuevo túnel a las 18:22 (`belts-six-sought-girls`). **Revisión del tutor (correo del 13/11):**
+  invitado al repositorio (`javicriado`); guía de arranque `docs/GUIA-TUTOR.md`; prototipos visuales estáticos en
+  `docs/prototipos/` (login, creación de proceso, votación, resultados, participación); resumen de cambios enviado en PDF.
+  **CU en tabla:** `preambulo_cu.tex` (cargado en `main.tex`) y `scripts/memoria/cu-a-tabla.mjs`; convertidos RF-01 y RF-09
+  como ejemplo (compilan); el resto, cuando el tutor apruebe el formato (`node scripts/memoria/cu-a-tabla.mjs
+  Plantilla-TFM-Informatica-UAL/especificacion_detallada.tex --write`). **DCU:** propuesta en
+  `Figuras/diagramas/dcu_{estilo,gestion,votacion}.tex` (`scripts/memoria/dcu.py`), **sin incluir** en la memoria hasta la
+  reunión con el tutor. **D1 (IMP-15):** aviso de caducidad de sesión preparado en `.local/pendiente-d1/` (fuera del árbol;
+  59 Vitest); **aplicado al repositorio el 13/11 tras la última sesión RNF-4**. F5 sin avanzar: la sesión de la IA no tiene acceso a GitHub ni al
+  SonarQube local.
+
+- **Cierre del bloque RNF-4 (13/11, noche).** Hoja `hoja-registro-rnf4.csv` completa (P01–P05 válidas, sin formación
+  previa, sin ayuda, 2–4 min, tiempos redondeados al minuto); **RNF-4 aceptado** y aplicado en la memoria.
+  `seed-rnf4.mjs cleanup` y `rnf4-remoto.ps1 -Off` ejecutados (cuentas deshabilitadas, código de acceso aleatorio para
+  todos otra vez; los correos con «111111» de Mailpit son de las sesiones, todos anteriores al `cleanup`). Batería
+  `.local\pruebas.ps1`: backend 119/119, Vitest 59/59, build correcto, E2E 199/200 (falla
+  `A4-process-edit-ballot · 360px · en`, `target-size`; reproducido en el entorno de la IA y ajeno a D-63; IMP-62).
+  Cifras de la memoria actualizadas (178 pruebas). IMP-62 aprobada y hecha: E2E 200/200 (entorno de la IA). **14/11:** SonarQube relanzado (gates en ERROR por cobertura e
+  incidencias del código nuevo); 31 incidencias clasificadas (10 reales, 8 falsos positivos, 13 aceptadas) en
+  `quality-and-security.md`; las 10 reales corregidas e IMP-49 hecha (frontend 22,7 % de líneas). Segundo análisis: incidencias nuevas del backend 0; quedaban `S1845`/`S8786` en `VoterData` (corregidas con `EmailRule`, común con `PrivacyQuery`) y el `input` de censos (ahora `aria-labelledby`; axe censos 24/24). Falta marcar 21 incidencias FP/aceptadas en SonarQube. Siguiente: el autor
+  marca las aceptadas, relanza `sonar.ps1`, carga la demo para las capturas, commit y push.
+
+Pendiente de esta sesión: anotar en `observacion` qué versión de la interfaz usó cada participante; capturas seguras
+(C2) cuando acaben las sesiones; repetir `.local\pruebas.ps1` (backend, Vitest, build y E2E) con el stack libre y
+actualizar las cifras si cambian; revisar a mano en móvil los cambios de D-63; `cleanup` y `rnf4-remoto.ps1 -Off` al
+terminar el bloque.
 
 ## RNF-4: adaptación a sesiones online (11/11/2026)
 

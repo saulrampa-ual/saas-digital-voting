@@ -10,10 +10,11 @@ Ficheros de la sesión:
 
 | Fichero | Uso |
 | --- | --- |
+| `rnf4-guia-consola.md` (+ PDF) | Documentación de la aplicación que se puede consultar: es el `[ENLACE_DOCUMENTACIÓN]` |
 | `rnf4-participantes-online.md` | Texto para enviar a cada participante (parte A antes, parte B al empezar la llamada) |
 | `hoja-registro-rnf4.csv` | Una fila por sesión |
 | `scripts/demo/seed-rnf4.mjs` | Escenario sintético, cuentas por participante, activar/desactivar el acceso remoto |
-| `infra/compose.rnf4-remote.yaml` | Override de Keycloak para funcionar detrás del túnel |
+| `.local/rnf4-remoto.ps1` | Arranca el túnel y pasa el stack a modo remoto (`-Off` lo deshace); git-ignorado |
 | `.local/sesion-rnf4.md` | Credenciales generadas (git-ignorado; se borra al terminar) |
 
 ## Criterio (no cambia)
@@ -89,8 +90,9 @@ contraseña al visitante y es poco fiable.
      con `X-Forwarded-Proto: https`.
    - `frontend/src/app/core/config/app-config.ts`: en `localhost` usa `http://localhost:8080` como siempre; con
      cualquier otro host usa el mismo origen de la página.
-2. **Keycloak, configuración del servidor**: `infra/compose.rnf4-remote.yaml` añade `KC_PROXY_HEADERS=xforwarded`
-   para que Keycloak trate las peticiones del túnel como HTTPS (cookies `Secure`). No se toca `infra/compose.yaml`.
+2. **Keycloak, configuración del servidor**: `infra/compose.yaml` incluye `KC_PROXY_HEADERS=xforwarded` para que
+   Keycloak trate las peticiones del túnel como HTTPS (cookies `Secure`). En local no cambia nada: el puerto está ligado
+   a `127.0.0.1` y nadie más puede enviar esas cabeceras.
 3. **Keycloak, realm** (`node scripts/demo/seed-rnf4.mjs remote-on <URL>`, por la API de administración local):
    - *Frontend URL* del realm `verivoto` = `<URL>`: el emisor (`iss`) de los tokens y las URL del login pasan a ser las
      del túnel. El realm `master` y la consola `/admin` siguen solo en `http://localhost:8080`.
@@ -115,41 +117,28 @@ contraseña al visitante y es poco fiable.
 
 ### Puesta en marcha (orden exacto)
 
-Atajo: `.local\rnf4-remoto.ps1` (local, git-ignorado) hace los pasos 3 a 5 en un solo comando y los deshace con
-`-Off`. Para los servicios 8081–8084 y el front, fija o quita las variables del emisor, relanza `arrancar.ps1`,
-recrea Keycloak con o sin el override y ejecuta `remote-on` / `remote-off`:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .local\rnf4-remoto.ps1 -Url https://<host-del-tunel>
-powershell -ExecutionPolicy Bypass -File .local\rnf4-remoto.ps1 -Off
-```
-
-Ojo: `arrancar.ps1` recrea Keycloak **sin** el override; si se relanza a mano durante las sesiones, hay que volver a
-ejecutar `rnf4-remoto.ps1 -Url ...`.
-
-Paso a paso, con el stack local arrancado y probado en `localhost`:
+Con el stack local arrancado (`.local\arrancar.ps1`, «STACK READY») y probado en `localhost`:
 
 ```powershell
 # 0. Una sola vez: instalar cloudflared
 winget install --id Cloudflare.cloudflared
 
-# 1. Escenario y cuentas, ANTES de activar el modo remoto (sus logins van por localhost)
+# 1. Una sola vez (o para regenerar contraseñas): escenario y cuentas, ANTES del modo remoto
 $env:DEMO_PASSWORD = "<12+ caracteres>"
 node scripts/demo/seed-rnf4.mjs
 
-# 2. Túnel (dejar esta consola abierta todo el bloque de sesiones). Sin dominio:
-cloudflared tunnel --url http://localhost:4200 --http-host-header localhost:4200
-#    copiar la URL https://<palabras>.trycloudflare.com que imprime
-#    Con dominio en Cloudflare: ver «Túnel con nombre» más abajo
-
-# 3. Keycloak detrás del proxy (recrea solo el contenedor; los datos siguen en pg-main)
-docker compose -p verivoto-p7-phase2 -f infra/compose.yaml -f infra/compose.rnf4-remote.yaml --env-file infra/.env up -d keycloak
-
-# 4. Realm y cliente
-node scripts/demo/seed-rnf4.mjs remote-on https://<host-del-tunel>
-
-# 5. Reiniciar los cuatro servicios con las variables del apartado anterior; front con: cd frontend; npm start
+# 2. Túnel + modo remoto, en un solo comando (unos minutos)
+powershell -ExecutionPolicy Bypass -File .local\rnf4-remoto.ps1
 ```
+
+`rnf4-remoto.ps1` localiza `cloudflared.exe` (aunque no esté en el PATH de la consola), lo arranca en una ventana
+minimizada con registro en `.local\cloudflared.log`, lee la URL `https://….trycloudflare.com`, ejecuta `remote-on`,
+para los cuatro servicios y el front y los vuelve a arrancar con `arrancar.ps1` y las variables del emisor. Termina con
+`REMOTE ON: participants open <URL>/admin`. **No cerrar la ventana minimizada de cloudflared**: es el túnel. Con un
+túnel ya abierto: `-Url https://<host>`. Para volver a local: `-Off` (cierra el túnel y quita las variables).
+
+Si durante las sesiones se relanza `arrancar.ps1` a mano desde otra consola, los servicios que arranque no tendrán las
+variables del emisor: en ese caso, volver a ejecutar `rnf4-remoto.ps1 -Url <URL actual>`.
 
 Túnel con nombre (solo si hay un dominio en Cloudflare). Una vez:
 
@@ -188,17 +177,15 @@ Comprobaciones antes de cada bloque (desde un móvil con datos, fuera de la red 
 
 ### Si cambia la URL
 
-Solo con *quick tunnel*, si `cloudflared` se reinicia: (1) `remote-on` con la URL nueva (sustituye a la anterior),
-(2) reiniciar los cuatro servicios con `$PUBLIC` nuevo, (3) reenviar el enlace al participante. La sesión en curso se
+Solo con *quick tunnel*, si `cloudflared` se cae: (1) `powershell -ExecutionPolicy Bypass -File .local\rnf4-remoto.ps1`
+(abre un túnel nuevo y lo aplica todo, unos minutos), (2) reenviar el enlace nuevo al participante. La sesión en curso se
 marca con incidencia técnica (ver «Incidencias»).
 
 ### Al terminar el bloque de sesiones
 
 ```powershell
-node scripts/demo/seed-rnf4.mjs cleanup        # deshabilita las 7 cuentas y ejecuta remote-off
-# Ctrl+C en la consola de cloudflared (el quick tunnel y su URL desaparecen)
-docker compose -p verivoto-p7-phase2 -f infra/compose.yaml --env-file infra/.env up -d keycloak   # Keycloak sin el override
-# reiniciar los servicios sin las variables *_OIDC_ISSUER_URI ni ..._JWK_SET_URI
+powershell -ExecutionPolicy Bypass -File .local\rnf4-remoto.ps1 -Off   # cierra el túnel, remote-off, servicios en local
+node scripts/demo/seed-rnf4.mjs cleanup        # deshabilita las 7 cuentas
 Remove-Item .local\sesion-rnf4.md              # cuando la hoja de registro esté completa
 ```
 
@@ -228,15 +215,14 @@ o el vídeo muestra esperas visibles (> 2 s) de la interfaz, se anota como incid
    temporal** (no aparece el cambio forzado de contraseña) y **de un solo uso** (la cuenta se habilita al empezar su
    llamada y se deshabilita al terminar), y el censo «Censo de prueba RNF-4» con una persona sintética (programar exige
    censo con personas, textos en español e inglés y apertura posterior al momento de programar).
-3. Rellenar los huecos `[ENLACE]`, `[FECHA_TAREA]`, `[ENLACE_DOCUMENTACIÓN]`, `[FECHA_BORRADO]` de `rnf4-participantes-online.md`. Las fechas de la ficha son las mismas para todos y
+3. Subir el PDF de `rnf4-guia-consola.md` a un sitio accesible sin cuenta (por ejemplo, Google Drive con «Cualquier
+   persona con el enlace» y solo lectura) y usar ese enlace como `[ENLACE_DOCUMENTACIÓN]`. Rellenar los huecos `[ENLACE]`, `[FECHA_TAREA]`, `[ENLACE_DOCUMENTACIÓN]`, `[FECHA_BORRADO]` de `rnf4-participantes-online.md`. Las fechas de la ficha son las mismas para todos y
    posteriores a la última sesión.
 4. Grabación en el equipo del autor (OBS u otro grabador local), capturando la ventana de la videollamada y el reloj
    del sistema visible. El reloj del equipo del autor es también el del servidor: vídeo y registros de auditoría
    comparten hora.
 5. Ensayo completo con la cuenta R2 (o una propia) en remoto, desde otra red. Si R2 se usa en el ensayo, se vuelve a
    ejecutar el seed para regenerar su contraseña y no queda como reserva limpia: se anota.
-6. Si un participante anterior dejó un proceso, se deja como está: cada participante crea uno nuevo con su propio
-   título (ver la ficha).
 
 ## Ficha de la tarea
 
@@ -255,27 +241,31 @@ Los datos son neutros y sintéticos. No se pide ninguna preferencia personal.
 
 ## Guion de la persona moderadora (videollamada)
 
-**Antes de la llamada** (5 min): `node scripts/demo/seed-rnf4.mjs enable Pxx`; medir la latencia; abrir Mailpit en
-local filtrado por `admin.rnf4.pxx@verivoto.test`; tener la hoja de registro abierta y un cronómetro con vueltas.
+**Antes de la primera llamada** (una vez): `node scripts/demo/seed-rnf4.mjs login-code-fixed` (las cuentas RNF-4
+siguen viendo el paso del código, pero el código es siempre **111111**, porque su correo no sale de Mailpit; el resto
+de usuarios mantiene el código aleatorio; `cleanup` lo deshace). Alternativa: `login-code-off` (sin paso de código).
+
+**Antes de cada llamada** (5 min): `node scripts/demo/seed-rnf4.mjs enable Pxx`; medir la latencia; tener la hoja de
+registro abierta y un cronómetro con vueltas. Mailpit solo hace falta si no se ejecutó `login-code-fixed` ni `login-code-off`.
 
 1. **Conexión y grabación.** Pedir que comparta la **pantalla completa** (no solo una pestaña), con notificaciones
    silenciadas y otras aplicaciones cerradas. Empezar a grabar. Leer: «La sesión se está grabando. ¿Confirmas que
    aceptas la grabación tal como se explicaba en el mensaje?». Pregunta de formación previa (apartado
    «Participantes»).
 2. **Login (fuera del tiempo).** Pegar en el chat el enlace y las credenciales (parte B, primer bloque). La persona
-   entra; cuando Keycloak pida el código, la persona moderadora lo lee en Mailpit y lo dicta o lo pega en el chat. Se
-   espera a que la consola muestre «Inicio». Anotar navegador y sistema operativo (preguntarlo o verlo en pantalla).
+   entra y, cuando Keycloak pida el código, escribe **111111** (va junto a las credenciales; con `login-code-off` no
+   se pide; sin ninguno de los dos, la persona moderadora lo lee en Mailpit). Se espera a que la consola muestre «Inicio» con la tarjeta «Primeros pasos». Anotar navegador y sistema operativo (preguntarlo o verlo en pantalla).
 3. **Instrucciones.** Leer literalmente: «Vas a usar la consola de una herramienta de votaciones. Te voy a pegar en el
-   chat una ficha con lo que tienes que hacer. Puedes consultar la documentación de la aplicación en el enlace que te
-   paso; no puedes buscar en Internet ni pedir ayuda a nadie. Yo solo observo y tomo notas. Si me pides ayuda, paro el
+   chat una ficha con lo que tienes que hacer. Puedes consultar la guía «Primeros pasos» de la pantalla de Inicio
+   (botón «Guía rápida» si la cierras); no puedes buscar en Internet ni pedir ayuda a nadie. Yo solo observo y tomo notas. Si me pides ayuda, paro el
    tiempo y la tarea cuenta como no completada. Avísame cuando la tengas lista».
-4. **Ficha.** Pegar la ficha y el enlace a la documentación en el chat. **T0** = primer clic o pulsación en la consola
+4. **Ficha.** Pegar la ficha en el chat. **T0** = primer clic o pulsación en la consola
    tras terminar de leer la ficha (visible en la pantalla compartida). Iniciar el cronómetro y decir en voz alta la
    hora del reloj del sistema («T0, 10:14:05»): queda en la grabación.
 5. **Observación.** Cámara y micrófono de la persona moderadora apagados o en silencio, sin comentarios. Anotar con la
    función de vuelta del cronómetro los momentos de error y las consultas de documentación.
-   - **Consulta de documentación**: se ve en la pantalla completa (cambio a la pestaña o al fichero del
-     `[ENLACE_DOCUMENTACIÓN]`). Permitida; `consulto_documentacion = si`.
+   - **Consulta de documentación**: se ve en la pantalla completa (abrir la «Guía rápida» o leer la tarjeta
+     «Primeros pasos» después de T0). Permitida; `consulto_documentacion = si`.
    - **Búsqueda externa** (buscador, otra web, otra aplicación de chat o IA): se anota con su minuto en
      `observacion` y la sesión cuenta como `sin_ayuda = no`.
    - **Petición de ayuda**: responder «¿Quieres que te ayude? Si te ayudo, paro el tiempo y la tarea cuenta como no
@@ -296,12 +286,12 @@ local filtrado por `admin.rnf4.pxx@verivoto.test`; tener la hoja de registro abi
 | Momento | Fuente principal | Fuente de contraste |
 | --- | --- | --- |
 | T0 | Cronómetro + hora dicha en la grabación | Vídeo: primer clic después de leer la ficha |
-| T1 | Cronómetro + hora dicha en la grabación | Registro de auditoría / fecha de programación del proceso en la app (misma hora del sistema) |
+| T1 | Cronómetro + hora dicha en la grabación | «Historial de estados» del proceso: Borrador → Programado, con hora y minuto (misma hora del sistema) |
 
-`t0_t1_segundos` se calcula con el cronómetro. Después de la sesión se revisa con el vídeo y con la marca de tiempo
-de la programación en la app; si difieren más de 5 s, prevalece el vídeo y se anota la diferencia en `observacion`.
-Antes del ensayo, comprobar qué eventos registra la auditoría de la consola (creación y programación del proceso, con
-hora); si no registra la programación, el contraste de T1 se hace con el estado y las fechas del proceso.
+`t0_t1_segundos` se calcula con el cronómetro. Después de la sesión se revisa con el vídeo (segundos) y con el
+«Historial de estados» de la ficha del proceso, que muestra la hora del cambio a «Programado» con precisión de
+minuto; si cronómetro y vídeo difieren más de 5 s, prevalece el vídeo y se anota la diferencia en `observacion`. La
+página «Auditoría» de la consola solo la ve el rol AUDITOR, así que no se usa como fuente durante la sesión.
 
 ### Compartir pantalla y grabar desde el lado del autor, frente a OBS del participante
 

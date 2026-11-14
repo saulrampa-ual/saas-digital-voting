@@ -1,0 +1,44 @@
+% VeriVoto · consola de gestión. Generado por dcu.py: casos de uso en una columna, actores primarios a la izquierda y secundarios a la derecha.
+\begin{tikzpicture}
+\node[uc,minimum width=4.6cm] (rf04) at (1.5,0.00) {RF-04 / RF-05a\\Iniciar sesión};
+\node[uc,minimum width=4.6cm] (rf01) at (1.5,-1.40) {RF-01\\Dar de alta organización};
+\node[uc,minimum width=4.6cm] (rf03) at (1.5,-2.80) {RF-03\\Gestionar el censo};
+\node[uc,minimum width=4.6cm] (rf02) at (1.5,-4.20) {RF-02\\Asignar roles};
+\node[uc,minimum width=4.6cm] (rf06) at (1.5,-5.60) {RF-06\\Crear y configurar proceso};
+\node[uc,minimum width=4.6cm] (rf07) at (1.5,-7.00) {RF-07\\Programar proceso};
+\node[uc,minimum width=4.6cm] (rf14) at (1.5,-8.40) {RF-14\\Consultar participación};
+\node[uc,minimum width=4.6cm] (rf15) at (1.5,-9.80) {RF-15\\Consultar y exportar resultados};
+\node[uc,minimum width=4.6cm] (rf16) at (1.5,-11.20) {RF-16\\Generar acta};
+\node[uc,minimum width=4.6cm] (rf18) at (1.5,-12.60) {RF-18\\Exportar o borrar\\datos personales};
+\node[uc,minimum width=4.6cm] (rf19) at (1.5,-14.00) {RF-19\\Consultar trazabilidad};
+\node[uc,minimum width=4.6cm] (rf12) at (1.5,-15.40) {RF-12\\Verificar el registro de la urna};
+\node[uc,minimum width=4.6cm] (rf21) at (1.5,-16.80) {RF-21\\Consultar datos por la API};
+\draw[boundary] (-1.25,0.95) rectangle (4.25,-17.55);
+\node[anchor=south west,font=\sffamily\small\bfseries] at (-1.25,0.95) {VeriVoto · consola de gestión};
+\actor{super}{-3.85,-1.40}{Superadmin.}
+\draw[assoc] (super) -- (rf01.west);
+\actor{censo}{-3.85,-2.80}{Gestor de censo}
+\draw[assoc] (censo) -- (rf03.west);
+\actor{admin}{-3.85,-9.10}{Administrador de organización}
+\draw[assoc] (admin) -- (rf02.west);
+\draw[assoc] (admin) -- (rf06.west);
+\draw[assoc] (admin) -- (rf07.west);
+\draw[assoc] (admin) -- (rf14.west);
+\draw[assoc] (admin) -- (rf15.west);
+\draw[assoc] (admin) -- (rf16.west);
+\draw[assoc] (admin) -- (rf18.west);
+\draw[assoc] (admin) -- (rf19.west);
+\actor{audit}{-3.85,-14.70}{Auditor}
+\draw[assoc] (audit) -- (rf19.west);
+\draw[assoc] (audit) -- (rf12.west);
+\actor{integ}{-3.85,-16.80}{Sistema de integración}
+\draw[assoc] (integ) -- (rf21.west);
+\actor{idp}{6.85,0.00}{Proveedor de identidad}
+\draw[assoc] (idp) -- (rf04.east);
+\actor{gest}{-6.85,-8.05}{Usuario de gestión}
+\draw[gen] ($(super)+(-.3,.2)$) -- (gest);
+\draw[gen] ($(censo)+(-.3,.2)$) -- (gest);
+\draw[gen] ($(admin)+(-.3,.2)$) -- (gest);
+\draw[gen] ($(audit)+(-.3,.2)$) -- (gest);
+\draw[assoc] (gest) ++(0,.6) |- (rf04.west);
+\end{tikzpicture}

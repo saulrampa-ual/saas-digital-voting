@@ -19,7 +19,7 @@ final class VoterImportColumns {
     static final String EMAIL = "email";
     static final String PHONE = "phone";
     static final String INSTITUTIONAL_ID = "institutional_id";
-    static final String LANGUAGE = "preferred_language";
+    static final String PREFERRED_LANGUAGE = "preferred_language";
 
     /** Normalized header → column. */
     private static final Map<String, String> HEADERS = Map.ofEntries(
@@ -33,11 +33,11 @@ final class VoterImportColumns {
             Map.entry("telefono", PHONE),
             Map.entry("institutional id", INSTITUTIONAL_ID),
             Map.entry("identificador institucional", INSTITUTIONAL_ID),
-            Map.entry("preferred language", LANGUAGE),
-            Map.entry("language", LANGUAGE),
-            Map.entry("language for messages", LANGUAGE),
-            Map.entry("idioma", LANGUAGE),
-            Map.entry("idioma de las comunicaciones", LANGUAGE));
+            Map.entry("preferred language", PREFERRED_LANGUAGE),
+            Map.entry("language", PREFERRED_LANGUAGE),
+            Map.entry("language for messages", PREFERRED_LANGUAGE),
+            Map.entry("idioma", PREFERRED_LANGUAGE),
+            Map.entry("idioma de las comunicaciones", PREFERRED_LANGUAGE));
 
     /** Required columns with the name shown to the user when one is missing. */
     private static final Map<String, String> REQUIRED = new LinkedHashMap<>();

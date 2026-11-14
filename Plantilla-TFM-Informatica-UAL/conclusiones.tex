@@ -15,15 +15,17 @@ ambas bases o los dispositivos.
 
 \textbf{RQ3.} ISO/IEC 25010:2023 proporciona el marco para organizar los RNF y
 la evaluación. La suite automatizada aporta evidencia inicial de reglas
-seleccionadas y cuatro integraciones de migraciones y esquema en PostgreSQL.
+seleccionadas y dieciséis pruebas de integración en PostgreSQL (migraciones y
+esquema, aislamiento entre organizaciones, \emph{outbox} y unicidad del voto
+ante intentos simultáneos).
 La sesión con cinco votantes aceptó H1b: los cinco completaron el voto y
 obtuvieron el recibo sin ayuda en menos de tres minutos, e interpretaron
 correctamente la verificación. La prueba de carga rechazó H1c en la
 configuración local evaluada: con 500 usuarios simultáneos, el p95 de la
 emisión superó los dos segundos en las tres ejecuciones y una parte de las
 conexiones fue rechazada, aunque la cadena de auditoría quedó íntegra. La
-integración de repositorios y flujos y la revisión manual de accesibilidad
-siguen pendientes, lo que impide una valoración completa de calidad.
+integración del resto de repositorios, las pruebas funcionales de extremo a
+extremo y la revisión manual de accesibilidad siguen pendientes, lo que impide una valoración completa de calidad.
 
 \section{Cumplimiento de objetivos}
 OBJ-1 y OE1 cuentan con arquitectura multi-tenant, organizaciones, roles y
@@ -59,13 +61,13 @@ interfaz, sin efecto en el resultado. Las tres ejecuciones de carga (H1c) del
 subida. Como trabajo futuro conviene medir dónde se consume el tiempo del
 registro del voto, que bloquea el proceso para encadenar cada evento, ajustar
 las colas de conexión del \emph{gateway} y de los servicios y repetir la
-medición en un entorno dimensionado, sin cambiar el criterio. La sesión de RNF-4 con cinco
-administradores se realizó el 03/11/2026: los cinco completaron la tarea sin
-ayuda de otras personas, pero solo dos no tenían formación previa y los
-tiempos se estimaron después de la sesión, por lo que RNF-4 queda como no
-demostrado y su resultado solo es indicativo. Cerrarlo requiere repetir la
-sesión con administradores sin formación previa y tiempos cronometrados. Si alguna de estas
-evaluaciones no se completa antes de la entrega, su resultado figura como
+medición en un entorno dimensionado, sin cambiar el criterio. RNF-4 se aceptó en las sesiones
+online del 13/11/2026: cinco administradores sin formación previa crearon,
+configuraron y programaron un proceso sin ayuda en 4 minutos o menos (mediana
+3 minutos), frente a los 10 del criterio; la sesión del 03/11/2026, con solo
+dos participantes sin formación previa y tiempos estimados, no fue
+concluyente. Si alguna de las evaluaciones pendientes
+no se completa antes de la entrega, su resultado figura como
 PENDIENTE en la tabla~\ref{tab:estado-hipotesis} y constituye una limitación
 de este trabajo. También se debe ampliar la cobertura de código.
 Las propuestas registradas en \texttt{docs/ai/IMPROVEMENTS.md} orientan

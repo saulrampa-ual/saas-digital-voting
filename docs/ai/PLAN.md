@@ -15,8 +15,8 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Bloque | Estado |
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
-| Pruebas y medición (P7) | En curso: 60 pruebas backend, 19 frontend, cobertura 7–14 %; H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
-| Memoria (P8) | En curso: borrador de 82 páginas; tabla de hipótesis en «PENDIENTE» |
+| Pruebas y medición (P7) | En curso: 119 pruebas backend y 28 frontend en la ejecución del 11/11 (cobertura de líneas 14–70 %); RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
+| Memoria (P8) | En curso: C1 aplicado para H1a, H1b y H1c; C2 en curso (13/11: figura de arquitectura implementada, RF-03 con Excel, cifras de pruebas del 11/11); faltan capturas y C4 |
 | Publicación | `dev` va por delante de `origin/dev`: falta `git push origin dev` (lo hace el autor) |
 
 ---
@@ -147,6 +147,8 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
   (12), mantenibilidad A (1) y cobertura 0,0 %. Clasificación pendiente hasta exportar la lista de incidencias. Workflow
   `build`: todo en verde y Vitest 19 de 19 (captura). Workflow `security`: sin verificar (solo comunicación del autor);
   faltan `semgrep-report` y `trivy-report`. Detalle y pasos de exportación en `docs/architecture/quality-and-security.md`.
+  **13/11/2026:** workflow `security` de `dev` en verde (run `43066068128`); `npm audit` 0; Semgrep local 0 ERROR y sin
+  hallazgos nuevos (IMP-46 e IMP-48 ya registradas; resto mitigado o falso positivo). Falta SonarQube, tras las sesiones RNF-4.
 - [ ] **F6 · Primer `dev` → `main`** (`Autor`, sábado tras F1–F5).
 
 ## 3. Necesitan al autor
@@ -189,7 +191,7 @@ El resto de `IMPROVEMENTS.md` queda para P9 salvo que se decida otra cosa.
   demostrado); H1a: parte automática favorable tras corregir DEF-05 y DEF-06, parte manual no realizada y H1a sin decisión (08/11, aplicado en la memoria); H1b aceptada y aplicada en la memoria (10/11); H1c rechazada y aplicada en la memoria (11/11); antes: H1c sin
   datos. C2 y C3 no se adelantan hasta tener H1a, H1b y H1c medidas o declaradas limitación.
 - [ ] **C2 · Alinear con lo implementado** (`IA`): figuras de arquitectura (objetivo frente a implementado),
-  diagramas conceptuales y texto heredado; capturas seguras de las pantallas (datos sintéticos de la demo UAL).
+  diagramas conceptuales y texto heredado; capturas seguras de las pantallas (datos sintéticos de la demo UAL). **En curso (13/11/2026):** figura de arquitectura implementada, texto heredado, RF-03 (Excel), figura de secuencia y cifras de pruebas hechos, sin commit; faltan las capturas.
 - [x] **C3 · Aplicar las decisiones Q-01 a Q-04** (`IA`) en la especificación y las tablas 1.1 y 4.3. **Hecho (08/11/2026, D-56)**, adelantado a petición del autor (el plan decía esperar a H1a, H1b y H1c): `contenido1.tex` (tablas 1.1 y 4.3), `especificacion_detallada.tex` (nota de alcance, RF-11 y RI-6) y `conclusiones.tex` (P9).
 - [ ] **C4 · Revisión editorial y visual final** (`Ambos`, P8.4): compilar el PDF, revisar página a página,
   avisos de maquetación de portada y contraportada; el autor da el visto bueno.
@@ -253,3 +255,5 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 08/11/2026 | B3, C1 (H1a) | Revisión manual de H1a no realizada (NVDA no leía la página en el equipo del autor). Anexo del guion aplicado a la tabla 13.1, la sección de validez, `conclusiones.tex` y `contenido1.tex`, con el barrido 4 (`06f39be`): parte automática favorable; parte manual no realizada; sin decisión. CSV sin rellenar. Sin commit |
 | 10/11/2026 | B2, C1 (H1b) | Sesiones H1b del 09/11: 5 válidas (P01 invalidada por el entorno, R1 la sustituye, R2 fuera del cómputo); 5 de 5 sin ayuda en ≤ 180 s, 5 de 5 comprensión; mediana 51 s. H1b aceptada y aplicada en `evaluacion_resultados.tex`, `contenido1.tex`, `conclusiones.tex`, `resumentexto.tex`, `especificacion_detallada.tex` e `informe.md`. IMP-56 (logo y margen). `feature/censo-importacion-ux` fusionada en `dev` y borrada. Rama `docs/h1b-resultados` |
 | 11/11/2026 | P7.5, C1 (H1c) | Prueba de humo (ejecución 11) y tres ejecuciones de 500 VU (procesos 10–12): p95 4852, 2402 y 4849 ms; 222/240/281 votos aceptados, resto conexiones rechazadas; cadena íntegra. **H1c rechazada**, aplicada en `evaluacion_resultados.tex`, `contenido1.tex`, `conclusiones.tex`, `resumentexto.tex`, `especificacion_detallada.tex`, `informe.md` y `carga.md`. `check-load-run.mjs`, auditor sintético y recuento por código; IMP-57; IMP-55 actualizada. Rama `test/h1c-load-results` |
+| 13/11/2026 | RNF-4 online, C2, D-63 | Sesiones online en curso (túnel nuevo, `login-code-fixed` reparado, comando `passwords`). C2: figura 10.1 de arquitectura implementada, RF-03 con Excel, texto heredado y cifras de pruebas del 11/11 (119 backend, 28 frontend, cobertura 14–70 %). Observaciones de participantes aplicadas en la consola (D-63; 53 Vitest en el entorno de la IA). IMP-59 a IMP-61. Sin commit |
+| 13/11/2026 | B4, A12, C1 (RNF-4) | Sesiones RNF-4 online P01–P05: 5 de 5 válidas, sin formación previa, sin ayuda y en ≤ 4 min (mediana 3 min); **RNF-4 aceptado** y aplicado en `evaluacion_resultados.tex`, `conclusiones.tex`, `contenido1.tex`, `especificacion_detallada.tex` y `resumentexto.tex`. Tiempos redondeados al minuto (limitación anotada). D1 aplicado. Sin commit |

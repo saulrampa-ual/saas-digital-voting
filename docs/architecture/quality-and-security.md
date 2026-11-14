@@ -161,3 +161,98 @@ real, falso positivo o aceptado:
        ConvertTo-Json -Depth 10 | Out-File ".local\sonar\$k-hotspots.json" -Encoding utf8
    }
    ```
+
+## Revisión F5 del 13/11/2026 (workflow `security` y análisis local)
+
+**Workflow `security` en GitHub** (rama `dev`, consultado con la API de GitHub): las ejecuciones de `dev` del 11/11
+terminan en verde salvo una cancelada por `concurrency` (la sustituyó la siguiente). Última completa: run `43066068128`
+(11/11/2026 17:13 UTC): gitleaks, Semgrep (puerta de severidad ERROR) y Trivy + `npm audit` (puerta HIGH/CRITICAL
+corregibles), los tres pasos en `success`. Los artefactos `semgrep-report` y `trivy-report` existen, pero la red de la
+sesión de la IA no permite descargarlos (almacenamiento de artefactos de GitHub); siguen disponibles 30 días desde la
+página del run.
+
+**Comprobación local equivalente** (mismo commit de `dev`, `4d6c0d5`; no incluye los cambios sin commit del 12–13/11):
+
+| Herramienta | Resultado | Clasificación |
+| --- | --- | --- |
+| `npm audit` (dependencias de producción y todas) | 0 vulnerabilidades | — |
+| Semgrep 1.183.0 con las reglas comunitarias de `semgrep-rules` (java, typescript, generic/secrets, dockerfile, github-actions; el registro `p/…` no es accesible desde la sesión, así que **es una aproximación**, no el mismo conjunto) | 37 hallazgos, 0 de severidad ERROR | ver abajo |
+
+- `github-actions-mutable-action-tag` ×7 (WARNING), `.github/workflows/build.yml`: Actions por etiqueta y no por SHA.
+  **Real, ya registrado** como IMP-46 (pendiente de aprobación).
+- `dockerfile-source-not-pinned` ×1 (INFO), `infra/keycloak/Dockerfile`: `FROM` sin *digest*. **Real, ya registrado** como IMP-48.
+- `prefer-copy-over-add` ×1 (INFO), mismo Dockerfile: `ADD` de una URL. **Mitigado**: lleva `--checksum=sha256:…`, que
+  Docker comprueba antes de usar el fichero.
+- `i18next-key-format` ×28 (WARNING), consola y pruebas e2e: **falso positivo**; la regla es de i18next y el proyecto
+  usa `@ngx-translate/core` con otro formato de claves (D-28).
+
+Sin hallazgos nuevos respecto a la línea base. **Trivy** no se ha podido repetir en local (su base de datos se descarga de
+`ghcr.io`, no accesible desde la sesión); el CI lo pasó. **SonarQube**: pendiente de exportar la lista de incidencias
+cuando termine el bloque de sesiones RNF-4 (arrancarlo consume memoria del equipo que sirve las sesiones).
+
+## SonarQube · análisis del 14/11/2026 (commit `e079eb1` + cambios sin commit del 12–14/11)
+
+**Quality gates: ERROR en los dos proyectos**, por dos condiciones sobre el **código nuevo** (desde el 04/11): cobertura
+< 80 % (backend 67,6 %; frontend 0,0 %, porque no se envía ningún informe `lcov`: IMP-49) e incidencias nuevas > 0
+(backend 1, frontend 3). Duplicación del código nuevo: 0,0 % en ambos. Sin *security hotspots* pendientes. Datos leídos
+en la interfaz de SonarQube por el autor; la clasificación se ha hecho revisando cada fichero y línea citados.
+
+Clasificación: **R** = real, **FP** = falso positivo, **A** = aceptado (decisión de diseño documentada).
+
+| Proyecto | Regla (nº) | Dónde | Clase | Motivo |
+| --- | --- | --- | --- | --- |
+| backend | `java:S4502` CSRF desactivado (4) | `SecurityConfiguration` de los cuatro servicios | A | API REST sin estado con token Bearer en cabecera; no hay cookies de sesión que un tercero pueda reutilizar, así que CSRF no aplica (recomendación de Spring Security para *resource servers*) |
+| backend | `java:S2077` SQL dinámico (2) | `AdminActionRepositoryAdapter.java:82, 84` | FP | Solo se concatenan fragmentos JPQL fijos; todos los valores van como parámetros (`setParameter`) |
+| backend | `java:S3655` `Optional.get()` (2) | `ApiKeyService.java:93`, `identity/AdminActionService.java:46` | FP | `isEmpty()` se comprueba justo antes en el mismo método; se puede reescribir con `orElseThrow` sin cambiar el comportamiento |
+| backend | `java:S6218` record con array (1) | `Minutes.java:7` (`byte[] pdf`) | R (bajo) | `equals`/`hashCode`/`toString` compararían el array por referencia; hoy no se comparan actas, pero conviene sobrescribirlos |
+| backend | `java:S1845` nombres que solo difieren en mayúsculas (5) | `PrivacyQuery` (`EMAIL`/`email`, `PHONE`/`phone`), `VoterImportColumns` (`LANGUAGE`/`language()`, **nueva**) | R (legibilidad) | Renombrar las constantes (`EMAIL_PATTERN`, `LANGUAGE_HEADER`…) |
+| backend | `java:S8786` expresión regular costosa (2) | `PrivacyQuery.java:12` (correo) | R (mitigado) | El patrón admite retroceso polinómico, pero la entrada se limita antes a 100 caracteres |
+| frontend | `typescript:S2871` `sort()` sin comparador (3) | `day-chart.component.ts:119-120`, `home-dashboard.ts:100` | FP | Ordena fechas ISO `AAAA-MM-DD`, para las que el orden de texto por defecto es el correcto |
+| frontend | `typescript:S6544` promesa donde se espera `void` (4) | `ngOnInit` asíncronos y similares | A | Patrón habitual en Angular; cada método captura sus errores dentro |
+| frontend | `typescript:S6959` `reduce()` sin valor inicial (1) | `home-dashboard.ts:114` | FP | La lista vacía se descarta en la línea anterior |
+| frontend | `Web:InputWithoutLabelCheck` (1, **nueva**) | `census-detail.page.html:80` | R | El `input type=file` oculto no tiene nombre accesible; el botón visible es el control real: ocultarlo a la tecnología de apoyo o darle nombre |
+| frontend | `Web:S6845` `tabindex` en elemento no interactivo (2, **nuevas**) | `census-detail.page.html:103, 243` | A | Regiones desplazables de tablas que deben recibir el foco con teclado (DEF-07, WCAG 2.1.1; regla `scrollable-region-focusable` de axe) |
+| frontend | `typescript:S7651` (1) | `review-step.component.ts:61` | R | Salida llamada `change`, igual que un evento nativo del DOM: renombrarla |
+| frontend | `typescript:S8786` expresión regular costosa (3) | `voter-sso.service.ts:116`, `app.config.ts:24`, `census-detail.page.ts:34` | A | Se aplican a datos propios (base64 aleatorio, URL de la propia API) o a un campo de longitud limitada en el cliente |
+
+**Resumen:** de 31 incidencias, 10 reales (ninguna explotable: legibilidad, accesibilidad y un `equals` sin uso), 8 falsos
+positivos y 13 aceptadas por diseño. Las 4 nuevas que rompen la condición «incidencias nuevas = 0» son 2 reales
+(`S1845` en `VoterImportColumns`, `InputWithoutLabelCheck`) y 2 aceptadas (`S6845`); las aceptadas se marcan en
+SonarQube como «Accepted» con el motivo de esta tabla. La cobertura del código nuevo no se alcanzará en el plazo del
+TFM con el umbral por defecto (80 %): se documenta como limitación y se propone medir la del frontend (IMP-49).
+
+### Correcciones del 14/11/2026 (las 10 reales de la tabla anterior; aprobadas por el autor)
+
+- `VoterImportColumns`: `LANGUAGE` → `PREFERRED_LANGUAGE` (`S1845`).
+- `PrivacyQuery`: `EMAIL`/`PHONE` → `EMAIL_PARTS`/`PHONE_DIGITS` (`S1845`) y comprobación del correo sin el patrón con
+  retroceso (`S8786`): misma regla (dominio con un punto que no es ni el primer ni el último carácter), verificada con
+  300 000 cadenas aleatorias frente al patrón anterior, sin diferencias.
+- `Minutes`: `equals`, `hashCode` y `toString` propios que comparan el PDF por contenido y no lo imprimen (`S6218`).
+- `census-detail.page.html`: el `input type=file` oculto, que abre el botón visible, queda fuera del teclado y de la
+  tecnología de apoyo (`tabindex="-1"`, `aria-hidden="true"`) (`InputWithoutLabelCheck`).
+- `review-step.component.ts`: salida `change` → `changeSelection` (`S7651`) y su uso en `voter-flow.page.html`.
+- IMP-49: cobertura del frontend enviada a SonarQube (`npm run test:coverage`, `lcov`).
+
+Comprobado en el entorno de la IA: Vitest 59/59, `ng build` y E2E 200/200. El backend (Java 25) no se puede compilar ahí:
+lo comprueba `sonar.ps1`, que ejecuta `mvnw verify`. Quedan las 13 aceptadas, que el autor marca como «Accepted» en
+SonarQube con el motivo de la tabla, y la condición de cobertura del código nuevo (80 %), que se documenta como limitación.
+
+### Segundo análisis del 14/11/2026 (tras las correcciones) y cierre
+
+Datos exportados por el autor a `.local/sonar/` (API de SonarQube). **Incidencias nuevas: backend 0 (antes 1),
+frontend 3 (antes 3)**; cobertura del código nuevo: backend 64,7 %, frontend 65,3 % (antes 0,0 %, sin informe). Las
+correcciones eliminaron `S6218`, `S7651`, `S8786` de `PrivacyQuery` y `S1845` de `PrivacyQuery` y `VoterImportColumns`.
+
+Pendientes que aparecieron con la lista exportada (la tabla anterior atribuía a `PrivacyQuery` dos incidencias que en
+realidad estaban también en `VoterData`) y se corrigen el mismo día:
+
+- `VoterData.java:10-11`: `S1845` (×2) y `S8786` (×1), mismo caso que `PrivacyQuery`. La regla del correo pasa a una clase
+  común del dominio, `EmailRule` (misma regla, sin retroceso), usada por `VoterData` y `PrivacyQuery`.
+- `census-detail.page.html:81`: `InputWithoutLabelCheck` seguía abierta (la regla exige un nombre explícito): el `input`
+  se nombra con `aria-labelledby` al título de la zona de arrastre y sigue fuera del orden de tabulación. Barridos axe de
+  censos y procesos: 24/24.
+
+Quedan **21 incidencias que el autor marca en SonarQube** (*Issues* → incidencia → cambiar estado), con el motivo de la
+tabla anterior: **«False positive»** para `S2077` (2), `S3655` (2), `S2871` (3) y `S6959` (1); **«Accept»** para `S4502`
+(4), `S6845` (2), `S6544` (4) y `S8786` del frontend (3). Con eso, la única condición que falla en los dos *quality
+gates* es la cobertura del código nuevo (< 80 %), que se documenta como limitación del TFM sin cambiar el umbral.

@@ -67,3 +67,24 @@ limitación de la evaluación.
   valor (3,4 min).
 - Sin protocolo escrito específico para administradores.
 - n = 5: evidencia descriptiva, sin inferencia estadística.
+
+## Repetición online del 13/11/2026 (sustituye a la sesión del 03/11)
+
+Protocolo: `rnf4-protocolo-administradores.md` (modalidad online, D-57, D-61). Hoja anónima: `hoja-registro-rnf4.csv`.
+Resumen generado con `node scripts/evaluation/rnf4-summary.mjs`.
+
+| Dato | Valor |
+| --- | --- |
+| Sesiones válidas | 5 de 5 (P01–P05), las cinco sin formación previa; reservas no usadas |
+| Completan crear, configurar y programar | 5 de 5 |
+| Sin ayuda de personas | 5 de 5; ninguno consultó la guía «Primeros pasos» |
+| Duración T0→T1 | mediana 3 min (180 s); mínimo 2 min; máximo 4 min |
+| Errores observados | 0 |
+| Equipo | ordenador, Chrome en Windows, los cinco |
+| **Decisión** | **RNF-4 ACEPTADO** (5 de 5 frente a 4 de 5 exigidos) |
+
+Limitaciones: tiempos medidos por el moderador y anotados redondeados al minuto (sin `t0`/`t1` en segundos; el máximo,
+4 min, queda lejos de los 10 del criterio, así que el redondeo no cambia la decisión); estudiantes autoseleccionados del
+entorno del autor; código de acceso fijo para estas cuentas (login fuera del tiempo medido, D-61); tres participantes
+usaron textos propios en lugar de los de la ficha; la consola cambió durante el bloque (D-63: P01 y P02 con la versión
+anterior). Con n = 5, evidencia descriptiva sin inferencia estadística.

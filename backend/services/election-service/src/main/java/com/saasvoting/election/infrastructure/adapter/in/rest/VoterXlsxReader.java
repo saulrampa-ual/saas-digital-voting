@@ -70,7 +70,7 @@ final class VoterXlsxReader {
                     field(values, columns, VoterImportColumns.EMAIL),
                     field(values, columns, VoterImportColumns.PHONE),
                     field(values, columns, VoterImportColumns.INSTITUTIONAL_ID),
-                    VoterImportColumns.language(field(values, columns, VoterImportColumns.LANGUAGE))));
+                    VoterImportColumns.language(field(values, columns, VoterImportColumns.PREFERRED_LANGUAGE))));
         }
         return rows;
     }

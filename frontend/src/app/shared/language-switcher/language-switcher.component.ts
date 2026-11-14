@@ -48,6 +48,12 @@ import { AppLanguage } from '../../core/config/app-config';
     .lang:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }
     .lang svg { width: 22px; height: 15px; flex: none; border-radius: 2px; box-shadow: 0 0 0 1px #0000001f; }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    /* Phones: the code only (still 44 px), so the buttons do not crowd or cut the page title */
+    @media (max-width: 575.98px) {
+      .langs { gap: 2px; margin-inline-start: 8px; }
+      .lang { padding: 0 6px; font-size: 0.8125rem; border-width: 1.5px; }
+      .lang svg { display: none; }
+    }
   `,
 })
 export class LanguageSwitcherComponent {
