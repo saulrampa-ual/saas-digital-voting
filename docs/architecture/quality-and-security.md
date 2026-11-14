@@ -256,3 +256,20 @@ Quedan **21 incidencias que el autor marca en SonarQube** (*Issues* → incidenc
 tabla anterior: **«False positive»** para `S2077` (2), `S3655` (2), `S2871` (3) y `S6959` (1); **«Accept»** para `S4502`
 (4), `S6845` (2), `S6544` (4) y `S8786` del frontend (3). Con eso, la única condición que falla en los dos *quality
 gates* es la cobertura del código nuevo (< 80 %), que se documenta como limitación del TFM sin cambiar el umbral.
+
+### Cierre del 14/11/2026 (tarde): incidencias marcadas y pruebas para la cobertura del código nuevo
+
+- Las 21 incidencias quedan marcadas en SonarQube con el motivo de la tabla en un comentario (8 «False positive», 13
+  «Accepted»). Resultado leído en SonarQube: 0 incidencias abiertas en los dos proyectos, notas A en seguridad,
+  fiabilidad y mantenibilidad, y la condición «incidencias nuevas = 0» en OK. La única condición en ERROR es la
+  cobertura del código nuevo (65,3 % en los dos; mínimo 80 %).
+- El autor pide alcanzar el 80 % en lugar de documentarlo como limitación. Pruebas añadidas (datos sintéticos, sin
+  cambios en el código de producción):
+  - Backend: `VoterXlsxReaderTest` (+12 casos: cadenas compartidas, celdas sin referencia, tipos de celda, filas vacías,
+    hoja ausente, destinos de hoja, XML mal formado, referencias no válidas) y `MinutesTest` (nuevo, 4 casos).
+  - Frontend: `auth.service.spec.ts`, `session-timeout.component.spec.ts` y `census-detail.page.spec.ts` (nuevos), y
+    casos añadidos en `admin-onboarding.component.spec.ts` y `session-timeout.service.spec.ts`.
+- Comprobado en el entorno de la IA: frontend Vitest 92/92 (antes 59) y `tsc` de las pruebas sin errores; cobertura del
+  código nuevo estimada con el `lcov` resultante sobre las líneas nuevas que da SonarQube: 87 %. Las pruebas del backend
+  **no se han podido compilar ni ejecutar** (no hay Java 25 ni acceso a Maven Central en ese entorno): las comprueba
+  `sonar.ps1`, que ejecuta `mvnw verify`. La cifra definitiva de los dos proyectos es la del siguiente análisis.

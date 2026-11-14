@@ -58,4 +58,36 @@ describe('SessionTimeoutService (D1)', () => {
     expect(service.state()).toBe('active');
     expect(service.secondsLeft()).toBeNull();
   });
+
+  it('checks every second once started and stops when asked', () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(now);
+      keycloak.refreshTokenParsed = { exp: sec + 121 };
+      service.start();
+      service.start(); // idempotent
+      expect(service.state()).toBe('active');
+      vi.advanceTimersByTime(1000);
+      expect(service.state()).toBe('warning');
+      service.stop();
+      vi.advanceTimersByTime(200_000);
+      expect(service.state()).toBe('warning');
+      service.stop(); // nothing to stop
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('keeps the warning when the session can no longer be refreshed', async () => {
+    keycloak.refreshTokenParsed = { exp: Date.now() / 1000 + 60 };
+    keycloak.updateToken.mockRejectedValue(new Error('session ended'));
+    await service.extend();
+    expect(service.extending()).toBe(false);
+    expect(service.state()).toBe('limit');
+  });
+
+  it('«Volver a entrar» goes to the login page and back to the same screen', async () => {
+    await service.login();
+    expect(keycloak.login).toHaveBeenCalledWith({ redirectUri: window.location.href });
+  });
 });
