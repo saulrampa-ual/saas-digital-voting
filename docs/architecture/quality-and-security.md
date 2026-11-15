@@ -273,3 +273,9 @@ gates* es la cobertura del código nuevo (< 80 %), que se documenta como limitac
   código nuevo estimada con el `lcov` resultante sobre las líneas nuevas que da SonarQube: 87 %. Las pruebas del backend
   **no se han podido compilar ni ejecutar** (no hay Java 25 ni acceso a Maven Central en ese entorno): las comprueba
   `sonar.ps1`, que ejecuta `mvnw verify`. La cifra definitiva de los dos proyectos es la del siguiente análisis.
+
+**Resultado del análisis posterior (14/11/2026, 16:12–16:14, leído en SonarQube):** los dos *quality gates* en
+**«Passed»**. Cobertura del código nuevo: backend 85,8 %, frontend 87,3 % (mínimo 80 %); incidencias nuevas 0 y
+duplicación 0,0 % en ambos; 0 incidencias abiertas. Las pruebas del backend compilan y pasan (`BUILD SUCCESS` de
+`sonar.ps1`). La cobertura del código nuevo deja de ser una limitación; la cobertura global sigue siendo baja y es la
+que hay que citar como tal si se menciona. Pruebas subidas a `dev` en `f370bc8`.

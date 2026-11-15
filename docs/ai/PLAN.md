@@ -15,7 +15,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Bloque | Estado |
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
-| Pruebas y medición (P7) | En curso: 119 pruebas backend y 28 frontend en la ejecución del 11/11 (cobertura de líneas 14–70 %); RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
+| Pruebas y medición (P7) | En curso: 135 pruebas backend (14/11) y 92 frontend (15/11); cobertura de líneas 14–73 % por servicio en backend y 33,7 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
 | Memoria (P8) | En curso: C1 aplicado para H1a, H1b y H1c; C2 en curso (13/11: figura de arquitectura implementada, RF-03 con Excel, cifras de pruebas del 11/11); faltan capturas y C4 |
 | Publicación | `dev` va por delante de `origin/dev`: falta `git push origin dev` (lo hace el autor) |
 

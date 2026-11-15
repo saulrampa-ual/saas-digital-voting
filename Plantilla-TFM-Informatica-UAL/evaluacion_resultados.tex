@@ -2,17 +2,18 @@
 \label{cap:evaluacion-resultados}
 
 \section{Pruebas disponibles}
-En la última ejecución completa registrada (13/11/2026) terminaron
-correctamente 119 pruebas de backend (\texttt{mvnw verify}: gateway 1,
-identity 12, election 46, voter-access 38 y ballot-box 22) y 59 de frontend
-(\texttt{npm run test:ci}); \texttt{npm run build} también terminó
-correctamente. Las pruebas unitarias y de arquitectura cubren reglas
+En las últimas ejecuciones registradas terminaron correctamente 135 pruebas
+de backend (\texttt{mvnw verify} del 14/11/2026: gateway 1, identity 12,
+election 58, voter-access 38 y ballot-box 26) y 92 de frontend, en 12 ficheros
+(\texttt{npm run test:ci} del 15/11/2026); \texttt{npm run build} terminó
+correctamente en la ejecución completa del 13/11/2026. Las pruebas unitarias y de arquitectura cubren reglas
 seleccionadas de permisos, ciclo de vida, importación del censo, acceso del
 votante, consumo del token, cadena de auditoría, escrutinio y separación
 arquitectónica. En frontend se cubren la guarda de rol, el flujo de voto y
 recibo, el retorno SSO con PKCE, componentes del panel de la consola, el
-asistente de creación de procesos, la traducción automática de sus textos y el
-aviso de caducidad de la sesión.
+asistente de creación de procesos, la traducción automática de sus textos, el
+aviso de caducidad de la sesión, el servicio de autenticación y la importación
+del censo en Excel.
 
 Dieciséis de las pruebas de backend, repartidas en ocho clases, se ejecutan
 contra PostgreSQL 18.6 con Testcontainers. Aplican las migraciones Flyway de
@@ -27,7 +28,8 @@ puede almacenar la opción elegida ni un recibo; y que la emisión no escribe
 en los registros el token, el recibo ni la opción. No cubren la autorización
 HTTP de identity ni todos los repositorios y entidades.
 
-Los barridos de accesibilidad con Playwright y axe de esa misma ejecución (200
+Los barridos de accesibilidad con Playwright y axe de la ejecución completa
+del 13/11/2026 (200
 comprobaciones: 108 de la consola, 88 del flujo del votante y 4 de la
 comprobación del recibo; 199 sin incumplimientos críticos ni serios y uno con
 un incumplimiento serio en la consola, en la edición de la papeleta a 360
@@ -38,11 +40,16 @@ comprobaciones sin incumplimientos críticos ni serios) se valoran en la
 tabla~\ref{tab:estado-hipotesis}; no son pruebas funcionales de extremo a
 extremo.
 
-La cobertura de líneas JaCoCo de esa ejecución es: gateway 33,3\% (1/3),
-identity 14,4\% (113/785), election 70,3\% (1267/1801), voter-access 50,2\%
-(789/1572) y ballot-box 41,1\% (672/1636). En el frontend, medida con Vitest
-sobre todo el código de \texttt{src/app} (14/11/2026), es del 22,7\% de las líneas
-(486/2139). La cobertura no demuestra por sí
+La cobertura de líneas JaCoCo, medida en la ejecución del 14/11/2026 que
+acompaña al análisis de SonarQube, es: gateway 33,3\% (1/3), identity 14,4\%
+(113/785), election 73,0\% (1297/1777), voter-access 50,2\% (789/1572) y
+ballot-box 41,6\% (683/1641); en conjunto, 49,9\% (2883/5778). En el
+frontend, medida con Vitest sobre todo el código de \texttt{src/app} en esa
+misma ejecución, es del 33,7\% de las líneas (726/2155). En el código añadido
+o modificado desde el análisis del 04/11/2026, SonarQube mide una cobertura del
+85,8\% en el backend y del 87,3\% en el frontend, por encima del mínimo del
+80\% de su \emph{quality gate}; esa métrica combina líneas y condiciones, por
+lo que no es comparable con las cifras anteriores. La cobertura no demuestra por sí
 misma la corrección del sistema. El informe de evaluación detalla método y
 limitaciones en \texttt{docs/evaluation/informe.md}.
 
@@ -96,8 +103,10 @@ en el capítulo de requisitos no funcionales; la cobertura experimental por
 característica debe completarse cuando se ejecuten esos protocolos.
 
 \section{Validez}
-La cobertura es desigual (del 14,4\% de identity al 70,3\% de election) y
-limita la confianza que puede atribuirse a la suite. Las pruebas de
+La cobertura global es baja y desigual (del 14,4\% de identity al 73,0\% de
+election en el backend y 33,7\% en el frontend) y limita la confianza que
+puede atribuirse a la suite; solo el código añadido desde el 04/11/2026 supera
+el 80\%. Las pruebas de
 integración comprueban casos concretos de aislamiento entre organizaciones y
 de concurrencia sobre una única instancia; no sustituyen la verificación de
 todos los repositorios y rutas ni la concurrencia real de un despliegue. El rechazo de H1c se limita a la configuración
