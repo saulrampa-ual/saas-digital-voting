@@ -13,7 +13,7 @@
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
-| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 119 pruebas backend y 28 Vitest en la ejecución del 11/11 (0 fallos; 53 Vitest tras los cambios del 12–13/11, ejecutadas solo en el entorno de la IA); cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11) |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Cerrado el 15/11/2026: 135 pruebas backend y 92 frontend, 0 fallos; H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11); RNF-4 aceptado (13/11). Limitaciones en `docs/evaluation/resultados-p7/cierre.md` |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: P8.1 y borradores P8.2–P8.3 incorporados; criterios del tutor (H1a/H1b/RNF-4) y confirmación de D-03/D-05 (correo del 30/10/2026) aplicados (P8.5); PDF de 82 páginas; falta la revisión editorial y visual completa |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
@@ -199,6 +199,8 @@
 
 
 ## Pendiente
+
+> P7 se cerró el 15/11/2026. Los puntos P7.x de esta lista que no se completaron quedan como limitaciones declaradas (`docs/evaluation/resultados-p7/cierre.md`), no como trabajo en curso. D2 y D5 fusionadas por el autor el 15/11/2026 (`c48dbab`; `mvnw verify`: 151 pruebas, 0 fallos); memoria, `informe.md`, `threat-model.md` e `IMPROVEMENTS.md` actualizados. C4 parcial: figuras 8.1 y 8.2 y tabla 13.1. Siguiente paso: el autor compila la memoria y ejecuta `node scripts/dev/keycloak-api-audience.mjs` en su Keycloak local; después A9 y el resto de C4.
 
 - P7.1: ampliar cobertura unitaria de censo/CSV, validación de claims institucionales, privacidad, recordatorios,
   errores, pruebas del flujo visual del votante y reglas de dominio que aún no tienen pruebas.
