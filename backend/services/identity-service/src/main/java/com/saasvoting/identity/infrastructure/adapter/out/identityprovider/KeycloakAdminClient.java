@@ -34,6 +34,8 @@ public class KeycloakAdminClient implements IdentityProvider {
     private static final String INTEGRATION_ROLE = "INTEGRATION";
     /** Short-lived tokens, so a revoked key stops working within minutes. */
     private static final int INTEGRATION_TOKEN_SECONDS = 300;
+    /** Same value as {@code spring.security.oauth2.resourceserver.jwt.audiences} of every service and the realm. */
+    private static final String API_AUDIENCE = "verivoto-api";
 
     private final RestClient restClient;
     private final KeycloakAdminProperties properties;
@@ -129,7 +131,8 @@ public class KeycloakAdminClient implements IdentityProvider {
 
     /**
      * RF-21 (D-47): confidential client with only the client-credentials grant. A hard-coded claim puts the
-     * organization in every token and the realm role INTEGRATION reaches the token through the roles mapper.
+     * organization in every token, the realm role INTEGRATION reaches the token through the roles mapper and the
+     * audience mapper adds the API audience that every service requires (IMP-27, D-52).
      */
     @Override
     public ApiClient createApiClient(String organizationId, String clientId, String description) {
@@ -147,6 +150,11 @@ public class KeycloakAdminClient implements IdentityProvider {
                 Map.entry("protocol", "openid-connect"),
                 Map.entry("attributes", Map.of("access.token.lifespan", Integer.toString(INTEGRATION_TOKEN_SECONDS))),
                 Map.entry("protocolMappers", List.of(
+                        Map.of("name", "audience " + API_AUDIENCE, "protocol", "openid-connect",
+                                "protocolMapper", "oidc-audience-mapper",
+                                "config", Map.of("included.custom.audience", API_AUDIENCE,
+                                        "access.token.claim", "true", "id.token.claim", "false",
+                                        "introspection.token.claim", "true")),
                         Map.of("name", "organization", "protocol", "openid-connect",
                                 "protocolMapper", "oidc-hardcoded-claim-mapper",
                                 "config", Map.of("claim.name", "organization_id", "claim.value", organizationId,
