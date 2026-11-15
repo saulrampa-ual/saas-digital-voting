@@ -77,6 +77,17 @@ class CensusImportTest {
         verify(voters, org.mockito.Mockito.times(1)).saveAll(anyList());
     }
 
+    @Test
+    void reportsTemplateExampleLinesWithoutFilteringThemFromTheSummary() {
+        var summary = service.importVoters(caller, 12, List.of(
+                new ImportRow(2, "María García López", "MARIA.GARCIA@example.com", "600123456", "12345678A", "es"),
+                new ImportRow(3, "John Smith", "john.smith@example.com", "600654321", "87654321B", "en"),
+                new ImportRow(4, "Persona real", "real@verivoto.test", null, null, "es")), true, true);
+
+        assertEquals(List.of(2, 3), summary.exampleLines());
+        assertEquals(3, summary.toCreate());
+    }
+
     private static List<ImportRow> rows() {
         return List.of(
                 new ImportRow(2, "Votante Uno", "UNO@verivoto.test", null, "ID-001", "es"),

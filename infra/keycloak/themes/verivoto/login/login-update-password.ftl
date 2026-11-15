@@ -9,7 +9,7 @@
     <li class="vv-rule" data-rule="${name}" data-value="${value?c}" data-state="pending"><span class="vv-rule-text">${text}</span><span class="vv-rule-state vv-sr"> (${msg("vvPasswordRulePending")})</span></li>
 </#macro>
 <#macro serverRule text>
-    <li class="vv-rule" data-state="server"><span class="vv-rule-text">${text}</span><span class="vv-rule-state"> (${msg("vvPasswordRuleOnSave")})</span></li>
+    <li class="vv-rule" data-state="server"><span class="vv-rule-text">${text}</span></li>
 </#macro>
 
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('password','password-confirm'); section>

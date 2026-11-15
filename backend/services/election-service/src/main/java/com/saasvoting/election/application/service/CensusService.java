@@ -28,11 +28,15 @@ import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
 /** Census management (RF-03). */
 public final class CensusService implements ManageCensusesUseCase, ManageVotersUseCase, ImportVotersUseCase {
+
+    /** Emails of the example rows of the downloadable templates ({@code frontend/public/templates}). */
+    private static final Set<String> TEMPLATE_EXAMPLE_EMAILS = Set.of("maria.garcia@example.com", "john.smith@example.com");
 
     private final CensusRepository censuses;
     private final VoterRepository voters;
@@ -115,8 +119,12 @@ public final class CensusService implements ManageCensusesUseCase, ManageVotersU
         List<Voter> toCreate = new ArrayList<>();
         List<ImportSummary.Duplicate> duplicates = new ArrayList<>();
         List<ImportSummary.InvalidLine> invalidLines = new ArrayList<>();
+        List<Integer> exampleLines = new ArrayList<>();
 
         for (ImportRow row : rows) {
+            if (row.email() != null && TEMPLATE_EXAMPLE_EMAILS.contains(row.email().strip().toLowerCase(Locale.ROOT))) {
+                exampleLines.add(row.line());
+            }
             VoterData data;
             try {
                 data = toVoterData(row);
@@ -143,7 +151,7 @@ public final class CensusService implements ManageCensusesUseCase, ManageVotersU
         if (apply && !toCreate.isEmpty()) {
             voters.saveAll(toCreate);
         }
-        return new ImportSummary(apply, toCreate.size(), duplicates, invalidLines);
+        return new ImportSummary(apply, toCreate.size(), duplicates, invalidLines, exampleLines);
     }
 
     private static VoterData toVoterData(ImportRow row) {
@@ -151,7 +159,8 @@ public final class CensusService implements ManageCensusesUseCase, ManageVotersU
         try {
             language = row.language() == null || row.language().isBlank() ? null : Language.fromCode(row.language());
         } catch (IllegalArgumentException e) {
-            throw new InvalidVoterDataException("language", "El idioma debe ser «es» o «en».");
+            throw new InvalidVoterDataException("language",
+                    "El idioma debe ser «Español» o «Inglés» (también vale «es» o «en»), o quedar vacío.");
         }
         return new VoterData(
                 row.fullName() == null ? "" : row.fullName(),

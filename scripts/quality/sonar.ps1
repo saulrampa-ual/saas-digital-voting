@@ -5,7 +5,8 @@
 .DESCRIPTION
   1. Starts SonarQube (infra/compose.quality.yaml) if it is not running and waits until it is UP.
   2. Backend: mvnw verify (tests and JaCoCo reports) and the pinned sonar-maven-plugin.
-  3. Frontend: @sonar/scan with frontend/sonar-project.properties.
+  3. Frontend: unit tests with coverage (npm run test:coverage, IMP-49), then @sonar/scan with
+     frontend/sonar-project.properties.
   4. Prints the quality gate of both projects.
   The token is read from $env:SONAR_TOKEN (SonarQube > My Account > Security > Generate token, type
   "Global Analysis Token"); it is never written to a file.
@@ -52,6 +53,9 @@ if (-not $SkipBackend) {
 if (-not $SkipFrontend) {
   Push-Location (Join-Path $root 'frontend')
   try {
+    # IMP-49: unit tests with coverage first, so SonarQube reads coverage/verivoto-web/lcov.info
+    npm run test:coverage
+    if ($LASTEXITCODE -ne 0) { throw 'npm run test:coverage failed' }
     npx --yes @sonar/scan@5.0.2 "-Dsonar.host.url=$HostUrl" "-Dsonar.token=$env:SONAR_TOKEN"
     if ($LASTEXITCODE -ne 0) { throw 'Frontend analysis failed' }
   } finally { Pop-Location }

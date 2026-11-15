@@ -40,6 +40,8 @@ export interface ImportSummary {
   toCreate: number;
   duplicates: { line: number; reason: 'EMAIL' | 'INSTITUTIONAL_ID' }[];
   invalidLines: { line: number; message: string }[];
+  /** Lines with the example emails of the downloadable template; they are not filtered. */
+  exampleLines?: number[];
 }
 
 /** Limits of D-27 checked before uploading (the service checks them again). */

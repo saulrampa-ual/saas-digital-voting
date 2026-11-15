@@ -4,6 +4,7 @@ import { IonIcon, IonRouterOutlet } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService, ManagementRole } from '../../core/auth/auth.service';
 import { AdminNavService } from './admin-nav.service';
+import { SessionTimeoutComponent } from './session-timeout.component';
 
 interface MenuEntry {
   readonly path: string;
@@ -59,7 +60,7 @@ const MENU: readonly MenuEntry[] = [
  */
 @Component({
   selector: 'app-admin-shell',
-  imports: [RouterLink, RouterLinkActive, TranslatePipe, IonIcon, IonRouterOutlet],
+  imports: [RouterLink, RouterLinkActive, TranslatePipe, IonIcon, IonRouterOutlet, SessionTimeoutComponent],
   host: { '[class.expanded]': 'nav.expanded()' },
   template: `
     <nav id="admin-nav" class="rail" [class.expanded]="nav.expanded()" [attr.aria-label]="'admin.menu.label' | translate">
@@ -102,6 +103,7 @@ const MENU: readonly MenuEntry[] = [
       </button>
     </nav>
     <ion-router-outlet id="admin-content" class="outlet"></ion-router-outlet>
+    <app-session-timeout />
   `,
   styles: `
     :host { --rail-width: 64px; --rail-expanded-width: 16rem; }

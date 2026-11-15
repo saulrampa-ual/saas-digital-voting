@@ -44,6 +44,7 @@ import { AdminPageComponent } from '../admin-page.component';
                   {{ 'admin.processes.opens' | translate: { date: (process.opensAt | localDate: language()) } }} ·
                   {{ 'admin.processes.closes' | translate: { date: (process.closesAt | localDate: language()) } }}
                 </p>
+                <p class="view">{{ 'admin.processes.viewDetail' | translate }}</p>
               </ion-label>
               <app-status-badge slot="end" class="badge-end" [status]="process.status" />
             </ion-item>
@@ -60,6 +61,7 @@ import { AdminPageComponent } from '../admin-page.component';
     .cards ion-item { --background: #fff; border: 1px solid var(--vv-border-color); border-radius: var(--vv-radius-card);
       margin-bottom: 12px; --min-height: 72px; }
     h2 { font-weight: 600; }
+    .view { margin-top: 6px; font-weight: 600; color: var(--ion-color-primary); text-decoration: underline; }
     .badge-top { display: none; margin-bottom: 4px; }
     @media (max-width: 575.98px) { .badge-top { display: block; } .badge-end { display: none; } }
   `,

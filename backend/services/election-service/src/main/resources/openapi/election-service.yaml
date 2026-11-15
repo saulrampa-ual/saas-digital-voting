@@ -168,13 +168,20 @@ paths:
     post:
       tags: [censuses]
       operationId: importVoters
-      summary: Validate or import a CSV of voters
+      summary: Validate or import a CSV or Excel (.xlsx) list of voters
       description: |
         Role: CENSUS_MANAGER. RF-03.
         With `dryRun=true` (default) nothing is stored and the summary is returned (screen A2).
         With `dryRun=false` valid new voters are stored; duplicates are skipped and listed. If the file
         has invalid lines, the import is rejected unless `discardInvalidLines=true`.
-        CSV columns: `full_name,email,phone,institutional_id,preferred_language` (header required).
+        File: CSV (UTF-8, separator `,` or `;`) or Excel `.xlsx` (first sheet; recognised by the `.xlsx`
+        name or the ZIP signature). The first row is the header: `full_name,email,phone,institutional_id,
+        preferred_language` or the titles of the downloadable template (Nombre completo, Correo electrónico,
+        Teléfono, Identificador institucional, Idioma de las comunicaciones; or Full name, Email, Phone,
+        Institutional ID, Language for messages), matched ignoring case, accents, `*` and `_`. Language:
+        `es`/`en` or Español/Inglés/Spanish/English; empty means Spanish. In an .xlsx the line of each row is
+        its row number. `exampleLines` lists the lines that use the example emails of the template; they
+        are not filtered.
       parameters:
         - name: dryRun
           in: query
@@ -192,7 +199,7 @@ paths:
               properties:
                 file:
                   type: string
-                  contentMediaType: text/csv
+                  description: "`text/csv` or `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`"
       responses:
         '200':
           description: Import summary
@@ -574,7 +581,7 @@ components:
         totalItems: { type: integer }
     ImportSummary:
       type: object
-      required: [applied, toCreate, duplicates, invalidLines]
+      required: [applied, toCreate, duplicates, invalidLines, exampleLines]
       properties:
         applied:
           type: boolean
@@ -596,6 +603,10 @@ components:
             properties:
               line: { type: integer }
               message: { type: string }
+        exampleLines:
+          type: array
+          description: Lines with the example emails of the downloadable template (reported, not filtered).
+          items: { type: integer }
     ProcessStatus:
       type: string
       enum: [DRAFT, SCHEDULED, OPEN, CLOSED, TALLIED, ARCHIVED]

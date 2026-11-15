@@ -34,7 +34,23 @@ verificación, registros de auditoría y una interfaz accesible. La verificació
 debe presentarse de forma comprensible para personas sin conocimientos
 criptográficos. La resistencia a la coacción y las garantías formales de
 verificabilidad extremo a extremo requieren un análisis específico y se
-consideran límites que deberán concretarse en el diseño.
+consideran límites de este trabajo
+(sección~\ref{sec:limitaciones-trabajo-futuro}).
+
+% [Bloque A] Motivación profesional del enfoque técnico.
+La elección del problema y del enfoque técnico responde también a la
+trayectoria profesional del autor. Durante tres años trabajó como
+desarrollador full stack en una consultora tecnológica, en proyectos para
+entidades del sector bancario, desarrollando microservicios en Java y Spring
+Boot con arquitectura hexagonal, integración asíncrona mediante Apache Kafka
+y exposición de APIs a través de la plataforma Apigee. Posteriormente, las
+Prácticas Externas del máster (250 horas en Noa Estudio) le permitieron
+trabajar sobre un producto en uso, con clientes reales, revisión de código y
+un entorno de despliegue gestionado por la empresa. Ambas experiencias
+explican que VeriVoto se plantee desde el inicio como un servicio SaaS
+multi-tenant formado por servicios desacoplados y con contratos de API
+explícitos, y no como una aplicación monolítica de alcance exclusivamente
+académico. La sección~\ref{sec:encaje-master} detalla esta relación.
 
 \section{Objetivos}
 \label{sec:objetivos}
@@ -44,8 +60,9 @@ de plataforma SaaS de votación digital segura y auditable para organizaciones,
 con arquitectura cloud multi-tenant y API abierta, que responda a los huecos
 identificados en autenticación, experiencia móvil y verificación comprensible.
 El prototipo y la evidencia de evaluación disponible se presentan en esta
-memoria; las pruebas de integración, accesibilidad, carga y usabilidad siguen
-pendientes. Los objetivos del sistema son:
+memoria; la sesión de usabilidad con votantes (H1b) ya se realizó, la prueba
+de carga (H1c) se ejecutó con resultado desfavorable, y siguen pendientes las
+pruebas de integración y la revisión manual de accesibilidad. Los objetivos del sistema son:
 
 \begin{description}
   \item[OBJ-1.] Implementar y documentar la arquitectura SaaS multi-tenant y la gestión de
@@ -114,21 +131,25 @@ OE1 (OBJ-1) & RQ2, RQ3 & RF-01, RF-02, RF-04, RF-05a, RF-19 & RNF-14, RNF-15 & P
 \hline
 OE2 (OBJ-2) & RQ2, RQ3 & RF-03, RF-06, RF-07, RF-17, RF-21 & RNF-8, RNF-10, RNF-17 & Configuración válida y transiciones de estado correctas; revisión de mensajes, contrato OpenAPI y medición de respuesta bajo carga. \\
 \hline
-OE3 (OBJ-3) & RQ1, RQ2, RQ3 & RF-05b, RF-08, RF-09, RF-10, RF-20, RF-23; RF-11 fuera del MVP \mbox{(D-03)}, sin evidencia de evaluación & RNF-1, RNF-3, RNF-6, RNF-7, RNF-11, RNF-12 & Auditoría WCAG 2.2 AA y revisión manual; éxito de tareas y comprensión del recibo; unicidad, idiomas y separación de identidad y urna. \\
+OE3 (OBJ-3) & RQ1, RQ2, RQ3 & RF-05b, RF-08, RF-09, RF-10, RF-20; RF-11 \mbox{(D-03)} y RF-23 fuera del MVP, sin evidencia de evaluación & RNF-1, RNF-3, RNF-6, RNF-7, RNF-11, RNF-12 & Auditoría WCAG 2.2 AA y revisión manual; éxito de tareas y comprensión del recibo; unicidad, idiomas y separación de identidad y urna. \\
 \hline
-OE4 (OBJ-4) & RQ2, RQ3 & RF-12, RF-13, RF-14, RF-15, RF-16, RF-19, RF-22 & RNF-11, RNF-13, RNF-17 & Recalcular el resultado desde votos contabilizables; verificar huellas y registro; medir respuesta del escrutinio. \\
+OE4 (OBJ-4) & RQ2, RQ3 & RF-12, RF-13, RF-14, RF-15, RF-16, RF-19; RF-22 fuera del MVP, sin evidencia de evaluación & RNF-11, RNF-13, RNF-17 & Recalcular el resultado desde votos contabilizables; verificar huellas y registro; medir respuesta del escrutinio. \\
 \hline
 \end{longtable}
 \setlength{\tabcolsep}{6pt}
 \normalsize
+\noindent\footnotesize RF-11, RF-22 y RF-23 se conservan por trazabilidad con la especificación v1.0:
+quedan fuera del alcance del MVP y se trasladan a trabajo futuro (P9), por lo que no se evalúan en esta
+entrega.\normalsize
 
 El prototipo implementa una experiencia web adaptable, autenticación de
 gestión y del votante, una API REST documentada y evidencias de presencia e
 integridad del voto. Cada proceso configura el acceso mediante código por
 correo o cuenta institucional. La verificación \emph{cast-as-intended}, la
 resistencia a la coacción y la verificabilidad extremo a extremo no se
-consideran resueltas; la validación empírica de accesibilidad, usabilidad y
-carga permanece pendiente.
+consideran resueltas; la validación empírica de accesibilidad permanece
+pendiente, la de usabilidad del votante se limita a la sesión H1b con cinco
+participantes y la prueba de carga local no alcanzó el umbral de RNF-17.
 
 \section{Alcance y supuestos}
 \label{sec:alcance}
@@ -150,8 +171,8 @@ administrador (RNF-4, con 10 minutos como valor propuesto); los demás deben
 validarse con el cliente y el tutor antes de considerarse criterios
 definitivos de aceptación. La implementación está disponible, pero
 la evidencia actual no acredita todos los objetivos de calidad: las pruebas
-de integración de repositorios y flujos, accesibilidad, carga y usabilidad
-siguen pendientes.
+de integración de repositorios y flujos y la revisión manual de accesibilidad
+siguen pendientes, y la prueba de carga no alcanzó el umbral propuesto.
 
 \section{Delimitación: qué no es este TFM}
 \label{sec:delimitacion}
@@ -187,6 +208,20 @@ la evidencia con las métricas de la sección~\ref{sec:plan-evaluacion}. Las
 iteraciones de implementación podrán incorporar revisiones del tutor, sin
 presentarlas como una metodología ágil completa ni como sustituto del ciclo DSR.
 
+% [Bloque E] Prácticas de ingeniería aplicadas al desarrollo.
+En el desarrollo se aplican convenciones adquiridas en la experiencia
+profesional y en las Prácticas Externas: ramas por tarea (\texttt{feat/*},
+\texttt{fix/*}) creadas desde \texttt{dev}, mensajes de commit según
+Conventional Commits e integración en \texttt{main} al cerrar cada hito. Al
+tratarse de un trabajo unipersonal, no existe un revisor que desempeñe el
+papel que tenía el equipo en las prácticas. Para compensarlo, la integración
+continua ejecuta en cada cambio la compilación y las pruebas, además de un
+análisis de seguridad que comprende la búsqueda de secretos (gitleaks), el
+análisis estático (Semgrep) y la revisión de dependencias (Trivy y
+\texttt{npm audit}); SonarQube se ejecuta en local como análisis de calidad.
+Estas herramientas no sustituyen una revisión humana, pero detectan de forma
+sistemática una parte de los defectos.
+
 \section{Plan de evaluación}
 \label{sec:plan-evaluacion}
 
@@ -219,7 +254,7 @@ descriptiva limitada al prototipo, la configuración y la población evaluados.
 
 El procedimiento y su estado son los siguientes:
 \begin{enumerate}
-  \item [parte automática favorable; parte manual pendiente] Ejecutar una auditoría automática de accesibilidad (por ejemplo,
+  \item [parte automática favorable; parte manual no realizada] Ejecutar una auditoría automática de accesibilidad (por ejemplo,
   axe) en las pantallas evaluadas, con cero incumplimientos críticos ni
   serios, y una revisión manual con teclado y lector de pantalla sin bloqueos
   en el flujo de acceso, voto y recibo. La auditoría automática por sí sola no
@@ -228,22 +263,32 @@ El procedimiento y su estado son los siguientes:
   la papeleta; corregida, el nuevo barrido da 0 críticos y 0 serios. También
   se corrigió el error de formato del recibo, que no se mostraba (axe no lo
   detecta); un tercer barrido con las dos correcciones da 0 críticos y 0
-  serios. La revisión manual está pendiente.
-  \item [PENDIENTE] Realizar pruebas moderadas con cinco personas no técnicas.
+  serios. La revisión manual con teclado y lector de pantalla no se realizó
+  antes del cierre: es una parte del protocolo sin ejecutar, no un
+  incumplimiento, y H1a queda sin decisión.
+  \item [H1b ACEPTADA] Realizar pruebas moderadas con cinco personas no técnicas.
   Pedirles que accedan a una votación de prueba, emitan un voto y comprueben
   el recibo. Registrar éxito sin ayuda, duración, errores y comprensión del
-  mensaje; recoger consentimiento y no usar votos reales.
-  \item [NO DEMOSTRADO] RNF-4 (sin hipótesis asociada): sesión con cinco
+  mensaje; recoger consentimiento y no usar votos reales. Las sesiones del
+  09/11/2026 dieron cinco sesiones válidas (una se invalidó por el entorno y se
+  sustituyó por una reserva): 5 de 5 completaron la tarea sin ayuda en
+  $\leq$ 3 minutos (mediana 51~s, máximo 79~s) y 5 de 5 interpretaron
+  correctamente el recibo.
+  \item [RNF-4 ACEPTADO] RNF-4 (sin hipótesis asociada): sesión con cinco
   administradores de organización sin formación previa; al menos cuatro de
   cinco deben crear, configurar y programar un proceso de opción única en
   10 minutos o menos (valor propuesto) y sin ayuda de otras personas (se
-  permite consultar la documentación). La sesión se realizó el 03/11/2026 con
-  cinco participantes, pero solo dos no tenían formación previa y los tiempos
-  se estimaron después de la sesión; el resultado es indicativo y RNF-4 no se
-  declara aceptado.
-  \item [PENDIENTE] Ejecutar una prueba de carga en un entorno aislado con datos
+  permite consultar la documentación). En las sesiones online del 13/11/2026,
+  cinco administradores sin formación previa completaron la tarea sin ayuda en
+  4 minutos o menos (mediana 3 minutos); la sesión anterior, del 03/11/2026, no
+  fue concluyente.
+  \item [H1c RECHAZADA] Ejecutar una prueba de carga en un entorno aislado con datos
   sintéticos y hasta 500 sesiones concurrentes. Medir latencia por percentiles,
-  errores y consumo de recursos durante varias ejecuciones reproducibles.
+  errores y consumo de recursos durante varias ejecuciones reproducibles. Las
+  tres ejecuciones del 11/11/2026, con 500 usuarios virtuales simultáneos, dieron
+  un p95 de 4852, 2402 y 4849~ms, por encima de los 2000~ms del criterio; solo
+  se aceptaron entre 222 y 281 votos por ejecución y el resto fueron
+  conexiones rechazadas. La cadena de auditoría quedó íntegra en las tres.
   \item Contrastar la unicidad, la separación entre identidad y urna, la
   integridad del registro y la exactitud del escrutinio mediante revisión del
   diseño y pruebas funcionales; conservar informes, configuración y
@@ -266,7 +311,9 @@ limitarán al prototipo, configuración y población evaluados; no se
 generalizarán a elecciones oficiales ni a despliegues de producción.
 
 \textbf{Validez de constructo.} Una puntuación de axe no equivale a una
-certificación WCAG; completar una tarea no demuestra por sí solo que la
+certificación WCAG; además, la revisión manual de H1a no se realizó, así que la
+conclusión sobre accesibilidad se limita a lo que axe puede decidir;
+completar una tarea no demuestra por sí solo que la
 verificación sea comprensible o confiable; y un test de carga no demuestra
 disponibilidad ni resistencia a ataques. Para reducir estas amenazas se
 combinarán métricas observables, revisión manual y evidencias de diseño, y se
@@ -431,7 +478,7 @@ RF-09 & Emitir voto & Registrar una selección válida y evitar que la identidad
 \hline
 RF-10 & Verificar recibo & Comprobar que el voto consta en la urna usando el recibo emitido. & Must & Informe RF-16: recibo verificable; Helios y Belenios. \\
 \hline
-RF-11 & Sustituir voto & Permitir cambiar el voto antes del cierre, conservando el anterior como no contabilizable. & Could & Informe RF-17: revoto; queda fuera del MVP por alcance. \\
+RF-11 & Sustituir voto & Permitir cambiar el voto antes del cierre, conservando el anterior como no contabilizable. & Won't & Informe RF-17: revoto; fuera del MVP (D-03) y trabajo futuro (P9). Se conserva el identificador por trazabilidad con la especificación v1.0; no se implementa en esta entrega. \\
 \hline
 RF-12 & Consultar registro de urna & Verificar el registro encadenado y la huella publicada del proceso. & Should & Informe RF-21: auditoría e integridad. \\
 \hline
@@ -554,7 +601,8 @@ La figura~\ref{fig:arquitectura-componentes} conserva la arquitectura objetivo
 de la especificación. Elementos como CDN/WAF, KMS, cola y workers son parte de
 esa propuesta y no deben interpretarse como componentes desplegados del MVP.
 La arquitectura implementada y sus límites se describen en el
-capítulo~\ref{cap:diseno-tecnico}.
+capítulo~\ref{cap:diseno-tecnico}
+(figura~\ref{fig:arquitectura-implementada}).
 
 \begin{figure}[htbp]
   \centering
@@ -566,9 +614,8 @@ capítulo~\ref{cap:diseno-tecnico}.
 \section{Secuencia de emisión y verificación del voto}
 \label{sec:secuencia-voto}
 
-La figura~\ref{fig:secuencia-emision-voto} representa el flujo lógico de
-emisión, pero conserva nombres conceptuales de la especificación. En la
-implementación, voter-access consume el token y ballot-box guarda el voto, el
+La figura~\ref{fig:secuencia-emision-voto} representa el flujo de emisión
+con los componentes implementados: voter-access consume el token y ballot-box guarda el voto, el
 hash del recibo y el evento en una transacción. El registro de participación
 solo conserva el día; la urna no almacena identidad ni marca temporal por voto.
 El recibo acredita presencia (RF-10), mientras que la cadena se verifica por
@@ -604,18 +651,19 @@ de participación, la urna, los recibos, los eventos de auditoría y los
 resultados. Esta separación persigue que el sistema pueda controlar la
 unicidad y mostrar la participación sin conservar una relación directa entre
 la persona y su opción elegida. La integridad del registro se apoya en huellas
-encadenadas; el diseño técnico deberá especificar su generación, protección,
-publicación y verificación.
+encadenadas; su generación y verificación se describen en el
+capítulo~\ref{cap:implementacion}.
 
 \section{Criterios de calidad y validación}
 \label{sec:validacion-calidad}
 
-La validación deberá relacionar cada requisito con evidencias concretas:
+La validación relaciona cada requisito con evidencias concretas:
 pruebas de accesibilidad con teclado y lector de pantalla, pruebas de
 usabilidad, concurrencia y carga, revisión de aislamiento multi-tenant,
 comprobación de registros y evaluación de los flujos de protección de datos.
-Los criterios cuantitativos se tratarán como objetivos propuestos hasta su
-aprobación por las partes interesadas.
+Los criterios cuantitativos se tratan como objetivos propuestos, salvo los
+validados por el tutor. Las pruebas realizadas, sus resultados y las que
+quedan pendientes se recogen en el capítulo~\ref{cap:evaluacion-resultados}.
 
 % Capítulos de apoyo elaborados a partir de los requisitos del proyecto.
 \input{especificacion_detallada}

@@ -30,11 +30,24 @@ class VoterCsvReaderTest {
     }
 
     @Test
+    void continuesToReadTechnicalHeaders() throws Exception {
+        List<ImportRow> rows = VoterCsvReader.read(new StringReader(
+                "institutional_id,preferred_language,phone,email,full_name\n"
+                        + "001A,en,0012345,persona@verivoto.test,Votante Sintético\n"));
+
+        assertEquals("Votante Sintético", rows.getFirst().fullName());
+        assertEquals("persona@verivoto.test", rows.getFirst().email());
+        assertEquals("0012345", rows.getFirst().phone());
+        assertEquals("001A", rows.getFirst().institutionalId());
+        assertEquals("en", rows.getFirst().language());
+    }
+
+    @Test
     void rejectsMissingRequiredHeader() {
         VoterCsvReader.InvalidCsvException error = assertThrows(VoterCsvReader.InvalidCsvException.class,
                 () -> VoterCsvReader.read(new StringReader("full_name,phone\nVotante,600000000\n")));
 
-        assertEquals("Falta la columna «email» en la cabecera.", error.getMessage());
+        assertEquals("Falta la columna «Correo electrónico» en la primera fila.", error.getMessage());
     }
 
     @Test

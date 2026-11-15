@@ -7,6 +7,21 @@
     <ion-button fill="outline" [routerLink]="['/admin/procesos', id()]">{{ 'admin.processForm.backToProcess' | translate }}</ion-button>
   } @else {
     <p class="intro">{{ 'admin.processForm.intro' | translate }}</p>
+    @if (restoredAt(); as at) {
+      <div class="restored" role="status">
+        <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+        <p>{{ 'admin.processForm.restored' | translate: { time: at | localDate: language() } }}</p>
+        <ion-button size="small" (click)="continueDraft()">{{ 'admin.processForm.continueDraft' | translate }}</ion-button>
+        @if (!confirmDiscard()) {
+          <button type="button" class="link" (click)="confirmDiscard.set(true)">{{ 'admin.processForm.discardDraft' | translate }}</button>
+        } @else {
+          <!-- Starting over deletes what was written: it is asked twice and it is not the main action -->
+          <p class="confirm" role="alert">{{ 'admin.processForm.discardConfirm' | translate }}</p>
+          <ion-button fill="outline" color="danger" size="small" (click)="discardDraft()">{{ 'admin.processForm.discardYes' | translate }}</ion-button>
+          <ion-button fill="outline" size="small" (click)="confirmDiscard.set(false)">{{ 'admin.processForm.discardNo' | translate }}</ion-button>
+        }
+      </div>
+    }
     <div class="wizard">
       <!-- SR6/SR7: «Paso n de 4 · nombre» and four bars; the names under the bars from 700 px, «Después: …» below it -->
       <nav class="steps" [attr.aria-label]="'admin.processForm.stepsLabel' | translate">
@@ -55,16 +70,18 @@
             </div>
           }
           <ng-template #textTabs>
-            <!-- SR6/SR7: below 700 px the Spanish and English texts are shown one language at a time -->
-            <div class="text-tabs" role="tablist" [attr.aria-label]="'admin.processForm.textsLanguage' | translate">
-              @for (l of langs; track l) {
-                <button type="button" role="tab" [id]="'text-tab-' + l" [attr.aria-selected]="textTab() === l"
-                        [attr.tabindex]="textTab() === l ? 0 : -1" (click)="textTab.set(l)" (keydown)="onTabKey($event)">
-                  {{ 'language.' + l | translate }}{{ l === model().defaultLanguage ? ' *' : '' }}
-                  @if (pending(l)) { <span class="chip">{{ 'admin.processForm.pending' | translate }}</span> }
-                </button>
-              }
-            </div>
+            <!-- RNF-4 sessions (13/11): the texts are written once, in the language of the texts; the other language
+                 is translated (D-62) and stays folded until the person asks to review it -->
+            <button type="button" class="review-toggle" [attr.aria-expanded]="reviewOpen()" (click)="reviewOpen.set(!reviewOpen())">
+              <span class="caret" [class.open]="reviewOpen()" aria-hidden="true"></span>
+              <span>{{ (reviewOpen() ? 'admin.processForm.hideTranslation' : 'admin.processForm.reviewTranslation') | translate: { language: ('admin.processForm.toLang.' + otherLang() | translate) } }}</span>
+              @if (chip(otherLang()); as c) { <span class="chip" [class.chip-auto]="c === 'auto'">{{ 'admin.processForm.chip.' + c | translate }}</span> }
+            </button>
+            <!-- D-62: state of the machine translation of the other language -->
+            <p class="translation-state" aria-live="polite">
+              @if (translating()) { {{ 'admin.processForm.translating' | translate }} }
+              @else if (translationFailed()) { {{ 'admin.processForm.translationFailed' | translate }} }
+            </p>
           </ng-template>
           @switch (step()) {
             @case ('basics') {
@@ -77,19 +94,21 @@
               </ion-segment>
               <p class="help">{{ 'admin.processForm.bilingualHelp' | translate }}</p>
               <ng-container [ngTemplateOutlet]="textTabs" />
-              <div class="pair" [attr.data-tab]="textTab()">
-                @for (l of langs; track l) {
+              <div class="pair" [class.single]="!reviewOpen()">
+                @for (l of shownLangs(); track l) {
                   <div class="field" [class.lang-es]="l === 'es'" [class.lang-en]="l === 'en'"><ion-input class="vv-field" labelPlacement="stacked" [maxlength]="150" [counter]="true"
-                             [label]="('admin.processForm.titleLabel' | translate) + ' ' + ('admin.processForm.inLang.' + l | translate) + (l === model().defaultLanguage ? ' *' : '')"
-                             [value]="model().title[l]" (ionInput)="setText('title', l, $event.detail.value ?? '')" [class.invalid]="!!errorFor('title.' + l)"></ion-input>
+                             [label]="('admin.processForm.titleLabel' | translate) + langSuffix(l) + (l === model().defaultLanguage ? ' *' : '')"
+                             [placeholder]="fallback(model().title, l)" [value]="model().title[l]" (ionInput)="setText('title', l, $event.detail.value ?? '')" (ionBlur)="onTextBlur(l)" [class.invalid]="!!errorFor('title.' + l)"></ion-input>
+                    @if (isAuto('title', l)) { <p class="auto-note">{{ 'admin.processForm.autoNote' | translate }}</p> }
                     @if (errorFor('title.' + l); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
                 }
               </div>
-              <div class="pair" [attr.data-tab]="textTab()">
-                @for (l of langs; track l) {
+              <div class="pair" [class.single]="!reviewOpen()">
+                @for (l of shownLangs(); track l) {
                   <div class="field" [class.lang-es]="l === 'es'" [class.lang-en]="l === 'en'"><ion-textarea class="vv-field" labelPlacement="stacked" [autoGrow]="true" [rows]="3" [maxlength]="1000" [counter]="true"
-                                [label]="('admin.processForm.descriptionLabel' | translate) + ' ' + ('admin.processForm.inLang.' + l | translate)"
-                                [value]="model().description[l]" (ionInput)="setText('description', l, $event.detail.value ?? '')" [class.invalid]="!!errorFor('description.' + l)"></ion-textarea>
+                                [label]="('admin.processForm.descriptionLabel' | translate) + langSuffix(l)"
+                                [placeholder]="fallback(model().description, l)" [value]="model().description[l]" (ionInput)="setText('description', l, $event.detail.value ?? '')" (ionBlur)="onTextBlur(l)" [class.invalid]="!!errorFor('description.' + l)"></ion-textarea>
+                    @if (isAuto('description', l)) { <p class="auto-note">{{ 'admin.processForm.autoNote' | translate }}</p> }
                     @if (errorFor('description.' + l); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
                 }
               </div>
@@ -106,16 +125,20 @@
             }
             @case ('calendar') {
               <h2 tabindex="-1">{{ 'admin.processForm.steps.calendar' | translate }}</h2>
+              <p class="help" id="calendar-example">{{ 'admin.processForm.calendarExample' | translate }}</p>
               <div class="pair">
                 <div class="field"><ion-input class="vv-field" type="datetime-local" labelPlacement="stacked"
-                           [label]="('admin.processForm.opensAt' | translate) + ' *'" [value]="model().opensAt"
+                           [label]="('admin.processForm.opensAt' | translate) + ' *'" [min]="minDateTime()" aria-describedby="calendar-example" [value]="model().opensAt"
                            (ionInput)="update({ opensAt: $event.detail.value ?? '' })" [class.invalid]="!!errorFor('opensAt')"></ion-input>
                     @if (errorFor('opensAt'); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
                 <div class="field"><ion-input class="vv-field" type="datetime-local" labelPlacement="stacked"
-                           [label]="('admin.processForm.closesAt' | translate) + ' *'" [value]="model().closesAt"
+                           [label]="('admin.processForm.closesAt' | translate) + ' *'" [min]="model().opensAt || minDateTime()" aria-describedby="calendar-example" [value]="model().closesAt"
                            (ionInput)="update({ closesAt: $event.detail.value ?? '' })" [class.invalid]="!!errorFor('closesAt')"></ion-input>
                     @if (errorFor('closesAt'); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
               </div>
+              @if (duration(); as d) {
+                <p class="duration" aria-live="polite">{{ d.key | translate: d.params }}</p>
+              }
               <div class="info"><ion-icon name="time-outline" aria-hidden="true"></ion-icon>
                 <p>{{ 'admin.processForm.calendarHelp' | translate }}</p></div>
             }
@@ -123,6 +146,8 @@
               <h2 tabindex="-1">{{ 'admin.processForm.steps.census' | translate }}</h2>
               @if (censuses().length === 0) {
                 <ion-text color="warning"><p>{{ 'admin.processForm.noCensuses' | translate }}</p></ion-text>
+              } @else if (onlyCensus() && censuses().length === 1 && model().censusId === censuses()[0].id) {
+                <p class="help">{{ 'admin.processForm.onlyCensus' | translate }}</p>
               }
               <ion-radio-group [value]="model().censusId" (ionChange)="update({ censusId: $event.detail.value })"
                                [attr.aria-label]="'admin.processForm.steps.census' | translate">
@@ -166,26 +191,29 @@
                     <strong>{{ 'admin.processForm.yesNo' | translate }}</strong><br><small>{{ 'admin.processForm.yesNoHelp' | translate }}</small>
                   </ion-radio></ion-item>
               </ion-radio-group>
+              <p class="help">{{ 'admin.processForm.bilingualHelp' | translate }}</p>
               <ng-container [ngTemplateOutlet]="textTabs" />
-              <div class="pair" [attr.data-tab]="textTab()">
-                @for (l of langs; track l) {
+              <div class="pair" [class.single]="!reviewOpen()">
+                @for (l of shownLangs(); track l) {
                   <div class="field" [class.lang-es]="l === 'es'" [class.lang-en]="l === 'en'"><ion-input class="vv-field" labelPlacement="stacked" [maxlength]="300" [counter]="true"
-                             [label]="('admin.processForm.question' | translate) + ' ' + ('admin.processForm.inLang.' + l | translate) + (l === model().defaultLanguage ? ' *' : '')"
-                             [value]="model().question[l]" (ionInput)="setText('question', l, $event.detail.value ?? '')" [class.invalid]="!!errorFor('question.' + l)"></ion-input>
+                             [label]="('admin.processForm.question' | translate) + langSuffix(l) + (l === model().defaultLanguage ? ' *' : '')"
+                             [placeholder]="fallback(model().question, l)" [value]="model().question[l]" (ionInput)="setText('question', l, $event.detail.value ?? '')" (ionBlur)="onTextBlur(l)" [class.invalid]="!!errorFor('question.' + l)"></ion-input>
+                    @if (isAuto('question', l)) { <p class="auto-note">{{ 'admin.processForm.autoNote' | translate }}</p> }
                     @if (errorFor('question.' + l); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
                 }
               </div>
               @if (model().voteType === 'SINGLE_CHOICE') {
                 <p class="label">{{ 'admin.processForm.options' | translate }}</p>
-                <div class="options" [attr.data-tab]="textTab()">
+                <div class="options" [class.single]="!reviewOpen()">
                   @for (option of model().options; track $index; let i = $index) {
                     <div class="option-row">
                       <span class="pos" aria-hidden="true">{{ i + 1 }}</span>
-                      @for (l of langs; track l) {
+                      @for (l of shownLangs(); track l) {
                         <div class="field" [class.lang-es]="l === 'es'" [class.lang-en]="l === 'en'"><ion-input class="vv-field" [maxlength]="200"
-                                   [attr.aria-label]="('admin.processForm.option' | translate: { n: i + 1 }) + ' (' + l.toUpperCase() + ')'"
-                                   [placeholder]="('admin.processForm.option' | translate: { n: i + 1 }) + ' (' + l.toUpperCase() + ')'"
-                                   [value]="option[l]" (ionInput)="setOption(i, l, $event.detail.value ?? '')" [class.invalid]="!!errorFor('options.' + i + '.' + l)"></ion-input>
+                                   [attr.aria-label]="('admin.processForm.option' | translate: { n: i + 1 }) + langSuffix(l)"
+                                   [placeholder]="fallback(option, l) || ('admin.processForm.option' | translate: { n: i + 1 }) + langSuffix(l)"
+                                   [value]="option[l]" (ionInput)="setOption(i, l, $event.detail.value ?? '')" (ionBlur)="onTextBlur(l)" [class.invalid]="!!errorFor('options.' + i + '.' + l)"></ion-input>
+                      @if (isAuto('options.' + i, l)) { <p class="auto-note">{{ 'admin.processForm.autoNoteShort' | translate }}</p> }
                       @if (errorFor('options.' + i + '.' + l); as message) { <p class="field-error" role="alert">{{ message }}</p> }</div>
                       }
                       <ion-button fill="outline" color="danger" [disabled]="model().options.length <= 2"
@@ -216,7 +244,7 @@
           @if (stepErrors().length && step() !== 'census') {
             <ion-text color="danger"><p class="summary" role="alert">{{ 'admin.processForm.fixErrors' | translate }}</p></ion-text>
           }
-          <!-- SR6/SR7: below 768 px this bar sticks to the bottom of the screen (above the home indicator) -->
+          <!-- SR6/SR7: the bar stays at the end of the panel at every width (sticking it to the screen covered other fields) -->
           <div class="actions">
             <ion-button fill="outline" [disabled]="stepIndex() === 0 || saving()" (click)="back()">{{ 'admin.processForm.back' | translate }}</ion-button>
             <span class="spacer"></span>

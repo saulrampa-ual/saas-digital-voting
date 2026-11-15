@@ -1,0 +1,14 @@
+% Estilo común de los diagramas de casos de uso (UML 2.5): actor = muñeco, caso de uso = elipse, límite del sistema = rectángulo.
+\tikzset{
+  uc/.style={draw=blue!45!black,fill=blue!4,ellipse,align=center,inner sep=1.5pt,minimum width=3.6cm,minimum height=.95cm,font=\sffamily\scriptsize},
+  boundary/.style={draw=gray!70,rounded corners=3pt,thick},
+  assoc/.style={draw=gray!75!black},
+  gen/.style={-{Triangle[open,length=6pt,width=7pt]},draw=gray!75!black},
+  actorname/.style={font=\sffamily\scriptsize,align=center,text width=2.4cm},
+  pics/actor/.style={code={
+    \draw[thick] (0,.42) circle (.13);
+    \draw[thick] (0,.29) -- (0,-.05) (-.22,.17) -- (.22,.17) (0,-.05) -- (-.17,-.32) (0,-.05) -- (.17,-.32);
+  }},
+}
+% \actor{name}{position}{label}: muñeco y nombre debajo; el nodo «name» es el punto de anclaje de las asociaciones
+\newcommand{\actor}[3]{\pic at (#2) {actor}; \node[actorname,below=.36cm] at (#2) {#3}; \coordinate (#1) at (#2);}

@@ -17,6 +17,7 @@ import { LocalizedPipe } from '../../../shared/pipes/localized.pipe';
 import { StatusBadgeComponent } from '../../../shared/status-badge/status-badge.component';
 import { DayChartComponent } from '../../../shared/day-chart/day-chart.component';
 import { AdminPageComponent } from '../admin-page.component';
+import { AdminOnboardingComponent } from './admin-onboarding.component';
 import {
   CheckState, VERIFIABLE_STATUSES, censusOverview, checkState, countByStatus, cumulativeByDay, latestCheck, openNow,
   adminCount, participationTotals, recentlyClosed, upcoming,
@@ -63,7 +64,7 @@ interface AttentionItem {
 @Component({
   selector: 'app-admin-home',
   imports: [AdminPageComponent, NgTemplateOutlet, RouterLink, IonIcon, IonSpinner, IonText, TranslatePipe, LocalDatePipe, LocalizedPipe,
-    StatusBadgeComponent, DayChartComponent],
+    StatusBadgeComponent, DayChartComponent, AdminOnboardingComponent],
   templateUrl: './admin-home.page.html',
   styleUrl: './admin-home.page.scss',
 })

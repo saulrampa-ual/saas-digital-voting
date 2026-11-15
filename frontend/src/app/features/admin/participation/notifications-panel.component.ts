@@ -50,7 +50,8 @@ import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
         @if (formError(); as e) { <p id="reminder-error" class="server-error" role="alert">{{ e }}</p> }
         @if (message(); as m) { <p class="ok" role="status">{{ m }}</p> }
         @if (d.reminders.length > 0) {
-          <div class="table-wrap">
+          <!-- DEF-07 (WCAG 2.1.1): scrollable tables are focusable regions with a name -->
+          <div class="table-wrap" tabindex="0" role="region" [attr.aria-label]="'admin.notifications.remindersTitle' | translate">
             <table>
               <caption class="sr-only">{{ 'admin.notifications.remindersTitle' | translate }}</caption>
               <thead><tr><th scope="col">{{ 'admin.notifications.col.when' | translate }}</th>
@@ -76,7 +77,7 @@ import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 
       <section class="card" aria-labelledby="emails-title">
         <h3 id="emails-title">{{ 'admin.notifications.emailsTitle' | translate }}</h3>
-        <div class="table-wrap">
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="emails-title">
           <table class="counts">
             <caption class="sr-only">{{ 'admin.notifications.emailsTitle' | translate }}</caption>
             <thead><tr><th scope="col">{{ 'admin.notifications.col.type' | translate }}</th>
@@ -100,7 +101,7 @@ import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
         @if (totalFailed() > 0) {
           <h4>{{ 'admin.notifications.failedTitle' | translate }}</h4>
           @if (d.failed.length > 0) {
-            <div class="table-wrap">
+            <div class="table-wrap" tabindex="0" role="region" [attr.aria-label]="'admin.notifications.failedTitle' | translate">
               <table>
                 <caption class="sr-only">{{ 'admin.notifications.failedTitle' | translate }}</caption>
                 <thead><tr><th scope="col">{{ 'admin.notifications.col.person' | translate }}</th>

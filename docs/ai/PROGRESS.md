@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-05 · Rama: `dev` (F5 fusionada en `2fb5f02` más las respuestas del autor) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar · sin push
+Última actualización: 2026-11-15 · Rama: `dev` (HEAD `f370bc8`; cambios locales sin commit) · D2/D5 en `feat/voter-access-limit-jwt-audience` (`4ec0efc`, `72bdfba`), sin fusionar hasta después de H1c · sin push
 
 ## Hitos
 
@@ -13,11 +13,14 @@
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
-| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 60 pruebas backend (0 fallos), 10 Vitest; cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a y H1c pendientes |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | En curso: 119 pruebas backend y 28 Vitest en la ejecución del 11/11 (0 fallos; 53 Vitest tras los cambios del 12–13/11, ejecutadas solo en el entorno de la IA); cuatro casos axe ejecutados con incidencia DEF-01 (críticos/serios); H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11) |
 | P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: P8.1 y borradores P8.2–P8.3 incorporados; criterios del tutor (H1a/H1b/RNF-4) y confirmación de D-03/D-05 (correo del 30/10/2026) aplicados (P8.5); PDF de 82 páginas; falta la revisión editorial y visual completa |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
 ## Hecho
+
+- H1c: completados en `docs/evaluation/carga.md` los datos del equipo usados en la medición: AMD Ryzen 7 5825U,
+  16 GB RAM (15,4 GiB visibles para Windows) y Docker 29.4.0 (build 9d7ad9f). Datos consultados el 11/11/2026.
 
 - P7.0: pruebas activadas el 2026-10-31 según autorización `ACTIVAR TESTS` del prompt de continuación. Añadidos
   `spring-boot-starter-test`, Testcontainers 2.0.5 (gestionado por Spring Boot), ArchUnit 1.5.1 y JaCoCo 0.8.16;
@@ -203,15 +206,15 @@
   concurrencia de tokens y reintentos/idempotencia de outbox.
 - P7.3: inspección del esquema y logs para secreto del voto; pruebas de todas las manipulaciones de cadena y límites
   de datos temporales.
-- P7.4: Playwright con Keycloak y Mailpit reales, flujos de votación y gestión en 1280/360 px y ES/EN, axe y
-  ejecución de `docs/evaluation/accesibilidad-manual.md`; añadir job E2E a CI. El runner unitario está configurado;
+- P7.4: Playwright con Keycloak y Mailpit reales, flujos de votación y gestión en 1280/360 px y ES/EN, axe
+  (la revisión manual de `docs/evaluation/accesibilidad-manual.md` no se realizó; H1a sin decisión); añadir job E2E a CI. El runner unitario está configurado;
   el navegador real y E2E siguen sin ejecutarse.
 - P7.5: completar escenarios k6 de acceso y escrutinio; preparar en entorno local las credenciales sintéticas
   fuera del repo; ejecutar tres mediciones de voto con percentiles, errores y recursos y comprobar la cadena/participación.
 - P7.6: materiales listos (`preparacion-sesion.md`, `censo-sesion.csv`, guion, hoja y protocolo alineados con D-49).
   El autor debe montar el escenario `USAB`, hacer un ensayo y realizar las cinco sesiones con votantes; resultados en
   la hoja como cantidades (x de 5).
-- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a/H1b/H1c siguen pendientes.
+- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11).
 - P8: enfoque aprobado por el autor. P8.1 corrige el alcance de RF-11 y añade la comparación de planificación;
   los capítulos de diseño técnico, implementación, amenazas, evaluación y conclusiones son borradores basados en
   las evidencias actuales. Se recompiló el PDF de 79 páginas y se inspeccionaron la introducción, el flujo de voto,
@@ -220,7 +223,7 @@
 - Decisiones del autor: si en P9 se depura el modelo de datos de sustitución (`votes.status` `SUBSTITUTED`, RI-6/RI-8/RI-9);
   si RF-11 sigue como «Could» o pasa a «Won't» en la tabla 4.3; si «sin ayuda» (RNF-4) excluye consultar documentación
   (marcador `[PENDIENTE DEL AUTOR]` en RNF-4); si se anota RF-23/RF-22 como fuera del MVP en la tabla 1.1.
-- P7.6: sesión con cinco votantes (prioritaria) y, si se hace, sesión RNF-4 con cinco administradores (requiere protocolo propio).
+- P7.6: sesión con votantes hecha (H1b aceptada, 09/11). Queda repetir RNF-4 con administradores sin formación previa (`rnf4-protocolo-administradores.md`); modalidad online preparada el 11/11 (D-57), sin ejecutar ni probar con el stack: falta el ensayo remoto.
 
 ## Bloqueos / preguntas abiertas
 
@@ -230,17 +233,135 @@
 
 ## Cómo continuar (siguiente paso exacto)
 
-Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Novedad del 04/11: ejecutar `seed-usab.mjs` con el stack real, la primera ejecución de SonarQube y revisar el primer resultado del workflow `security` (F5). Novedad del 05/11: escenario `USAB` preparado; antes del sábado 07/11 completar el consentimiento y confirmar participantes; ejecutar las pruebas de la rama `feat/voter-access-limit-jwt-audience` (D2, D5) y no fusionarla antes del 09/11; exportar las incidencias de SonarQube y los artefactos de `security` (F5).
+Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). **Novedad del 13/11:** ver «Sesiones RNF-4 online, C2 y observaciones de participantes (13/11/2026)»: terminar las sesiones, registrar resultados de RNF-4 (C1), `cleanup`, repetir `.local\pruebas.ps1`, capturas de C2 y revisión del autor antes del commit. Novedad del 04/11: ejecutar `seed-usab.mjs` con el stack real, la primera ejecución de SonarQube y revisar el primer resultado del workflow `security` (F5). Novedad del 05/11: escenario `USAB` preparado; antes del sábado 07/11 completar el consentimiento y confirmar participantes; ejecutar las pruebas de la rama `feat/voter-access-limit-jwt-audience` (D2, D5) y no fusionarla antes del 09/11; exportar las incidencias de SonarQube y los artefactos de `security` (F5).
 
 0. Autor: resolver las decisiones pendientes (modelo de sustitución en P9, RF-11 Could/Won't, «sin ayuda» en RNF-4, RF-22/RF-23 en la tabla 1.1).
 1. Cargar la demo UAL con `scripts/demo/seed-ual.mjs` (primer intento fallido al capturar el código de autorización;
    corregido, pendiente de repetir) y repetir `npm run test:e2e` contra el frontend de la rama (DEF-03 descartado).
 2. Entregar el segundo encargo (`docs/evaluation/encargo-pruebas-p7-fase2.md`) a la IA de pruebas: k6, E2E con stack real
    y axe en todas las pantallas, logs, matriz de autorización completa, concurrencia y outbox.
-3. Realizar la sesión de usabilidad con cinco votantes (autor, prioritaria) y registrar resultados como cantidades (x de 5);
-   RNF-4 solo si se prepara un protocolo para administradores.
+3. RNF-4 online (D-57): rellenar los huecos de `rnf4-participantes-online.md`, `node scripts/demo/seed-rnf4.mjs`,
+   `cloudflared tunnel --url http://localhost:4200 --http-host-header localhost:4200`, `.local\rnf4-remoto.ps1 -Url <URL>` y
+   ensayo completo con R2 desde otra red antes de la primera sesión.
+3. H1b aceptada (10/11) y H1c rechazada (11/11). Siguiente: parte manual de H1a (NVDA), repetir RNF-4 con
+   administradores sin formación previa y, si el autor lo aprueba, IMP-57 (perfilar la emisión) en P9.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.
+
+## Sesiones RNF-4 online, C2 y observaciones de participantes (13/11/2026)
+
+Todo en `dev`, **sin commit**, pendiente de revisión del autor.
+
+- **Scripts de sesión.** `scripts/demo/lib/login-code.mjs` no tenía `fixed` ni `FIXED_CODE` (`login-code-fixed`
+  fallaba): añadidos según D-61 y probados por el autor con R1 (código 111111). Nuevo comando
+  `seed-rnf4.mjs passwords`: regenera contraseñas, quita el bloqueo por intentos y reescribe
+  `.local/sesion-rnf4.md` solo con la API de administración; el seed completo no termina con el modo remoto activo
+  (IMP-59). El túnel rápido del 12/11 había caducado («Tunnel not found»); se levantó uno nuevo con
+  `.local\rnf4-remoto.ps1`.
+- **C2 (memoria).** Figura nueva `Figuras/diagramas/arquitectura_implementada.tex` (figura 10.1) y su texto en
+  `diseno_tecnico.tex`; LibreTranslate en `implementacion.tex`; RF-03 pasa a importar Excel (.xlsx); texto heredado en
+  futuro de `contenido1.tex` pasado a presente; participante «Voter-access API» en la figura de secuencia.
+- **Cifras de pruebas de la memoria** actualizadas con la ejecución del 11/11/2026 (`.local/pruebas.log`, `jacoco.csv`):
+  119 backend, 28 frontend, 16 de integración en 8 clases, 200 Playwright + axe; cobertura de líneas gateway 33,3 %,
+  identity 14,4 %, election 70,3 %, voter-access 50,2 %, ballot-box 41,1 %. Ficheros: `evaluacion_resultados.tex`,
+  `resumentexto.tex`, `conclusiones.tex`, `plan_gantt.tex`, `docs/evaluation/informe.md`.
+- **Observaciones de participantes (D-63)**, aplicadas con las sesiones en curso por decisión del autor: A3 con un solo
+  campo por texto y «Revisar la traducción» plegado; aviso de recuperación con «Seguir donde lo dejé»; idioma del login
+  conservado en la consola; botones de idioma compactos en móvil; «Ver detalle» en la lista de procesos; indicador de
+  desplegable en Claves API; pregunta de visibilidad más clara. Comprobado en el entorno de la IA: `ngc`, `ng build`
+  y 53 pruebas Vitest (2 nuevas). El servidor de desarrollo del autor recompiló sin errores a las 13:55.
+- **Mejoras registradas:** IMP-59 (seed en modo remoto), IMP-60 (autorización HTTP de identity), IMP-61 (una
+  organización por participante).
+
+- **Tarde del 13/11.** El túnel de las 11:07 cayó a las 17:16 por un corte de red del equipo (~1 h sin conexión: Cloudflare
+  borró el túnel rápido); nuevo túnel a las 18:22 (`belts-six-sought-girls`). **Revisión del tutor (correo del 13/11):**
+  invitado al repositorio (`javicriado`); guía de arranque `docs/GUIA-TUTOR.md`; prototipos visuales estáticos en
+  `docs/prototipos/` (login, creación de proceso, votación, resultados, participación); resumen de cambios enviado en PDF.
+  **CU en tabla:** `preambulo_cu.tex` (cargado en `main.tex`) y `scripts/memoria/cu-a-tabla.mjs`; convertidos RF-01 y RF-09
+  como ejemplo (compilan); el resto, cuando el tutor apruebe el formato (`node scripts/memoria/cu-a-tabla.mjs
+  Plantilla-TFM-Informatica-UAL/especificacion_detallada.tex --write`). **DCU:** propuesta en
+  `Figuras/diagramas/dcu_{estilo,gestion,votacion}.tex` (`scripts/memoria/dcu.py`), **sin incluir** en la memoria hasta la
+  reunión con el tutor. **D1 (IMP-15):** aviso de caducidad de sesión preparado en `.local/pendiente-d1/` (fuera del árbol;
+  59 Vitest); **aplicado al repositorio el 13/11 tras la última sesión RNF-4**. F5 sin avanzar: la sesión de la IA no tiene acceso a GitHub ni al
+  SonarQube local.
+
+- **Cierre del bloque RNF-4 (13/11, noche).** Hoja `hoja-registro-rnf4.csv` completa (P01–P05 válidas, sin formación
+  previa, sin ayuda, 2–4 min, tiempos redondeados al minuto); **RNF-4 aceptado** y aplicado en la memoria.
+  `seed-rnf4.mjs cleanup` y `rnf4-remoto.ps1 -Off` ejecutados (cuentas deshabilitadas, código de acceso aleatorio para
+  todos otra vez; los correos con «111111» de Mailpit son de las sesiones, todos anteriores al `cleanup`). Batería
+  `.local\pruebas.ps1`: backend 119/119, Vitest 59/59, build correcto, E2E 199/200 (falla
+  `A4-process-edit-ballot · 360px · en`, `target-size`; reproducido en el entorno de la IA y ajeno a D-63; IMP-62).
+  Cifras de la memoria actualizadas (178 pruebas). IMP-62 aprobada y hecha: E2E 200/200 (entorno de la IA). **14/11:** SonarQube relanzado (gates en ERROR por cobertura e
+  incidencias del código nuevo); 31 incidencias clasificadas (10 reales, 8 falsos positivos, 13 aceptadas) en
+  `quality-and-security.md`; las 10 reales corregidas e IMP-49 hecha (frontend 22,7 % de líneas). Segundo análisis: incidencias nuevas del backend 0; quedaban `S1845`/`S8786` en `VoterData` (corregidas con `EmailRule`, común con `PrivacyQuery`) y el `input` de censos (ahora `aria-labelledby`; axe censos 24/24). Falta marcar 21 incidencias FP/aceptadas en SonarQube. Siguiente: el autor
+  marca las aceptadas, relanza `sonar.ps1`, carga la demo para las capturas, commit y push. **14/11 (tarde):** commit `aa33912` en `dev` (subido por el autor); las 21 incidencias marcadas en SonarQube (0 abiertas, notas A; los gates solo fallan por cobertura del código nuevo, 65,3 %). A petición del autor se añaden pruebas para llegar al 80 %: backend `VoterXlsxReaderTest` (+12) y `MinutesTest` (sin compilar en el entorno de la IA), frontend 92/92 con `auth.service`, `session-timeout.component` y `census-detail.page` (cobertura del código nuevo estimada 87 %); detalle en `quality-and-security.md`. Siguiente: el autor relanza `sonar.ps1` (comprueba las pruebas del backend y la cobertura), carga la demo con un `DEMO_PASSWORD` nuevo para las capturas, commit y push, y limpieza de `.local` y del token. **14/11 (noche):** análisis relanzado por el autor: los dos gates en «Passed» (código nuevo: backend 85,8 %, frontend 87,3 %; 0 incidencias abiertas); pruebas subidas en `f370bc8`. `seed-ual.mjs` no ha terminado hoy (no existe `.local/demo-ual.md`). Siguiente: cargar la demo, capturas, actualizar en la memoria el texto de la cobertura, limpieza de `.local` y del token. **15/11:** texto de la cobertura actualizado en `evaluacion_resultados.tex`, `resumentexto.tex`, `conclusiones.tex` y `docs/evaluation/informe.md` con los informes de la ejecución del 14/11 (JaCoCo: 14,4–73,0 % por servicio, 49,9 % en conjunto; frontend 33,7 %; código nuevo 85,8 % y 87,3 % según SonarQube); sin commit. Recuentos de pruebas actualizados en la memoria, `informe.md` y `PLAN.md`: 135 de backend (Surefire del 14/11) y 92 de frontend en 12 ficheros (`npm run test:ci` del autor, 15/11); total 227. Figuras 5.1 (arquitectura objetivo) y 5.2 (secuencia de emisión) redistribuidas con más separación, sin cambiar componentes, mensajes ni numeración (`Figuras/diagramas/`); compiladas aparte en el entorno de la IA, pendiente de la compilación del autor. **15/11:** capturas de C2 hechas con el script nuevo `scripts/demo/capturas-memoria.mjs` (consola como ADMIN y AUDITOR, datos de la demo UAL; `seed-ual.mjs` no terminó por faltar las invitaciones en Mailpit, pero los datos ya existían) en `Figuras/capturas/`; seis incluidas en `implementacion.tex` (sección «Material gráfico», RF-06, RF-07, RF-14, RF-15/16, RF-19), sin compilar en el entorno de la IA. **15/11 (cierre):** memoria compilada con pdfLaTeX en dos pasadas (96 páginas; sin referencias sin resolver). Revisadas visualmente las figuras 5.1 y 5.2 y el capítulo 13; el Abstract sigue desbordando a la página XI casi vacía. Confirmado en `seed-ual.mjs` que Laura Moreno y Sergio Cano son cuentas de prueba `@ual.test`; «zc<» y «UAL PERMISO NAVIDAD» no aparecen en el seed y requieren una captura limpia antes de la entrega. Se eliminó `.local/` (incluidos JAR y logs; stack local detenido); `SONAR_TOKEN` no aparece en los ámbitos de proceso, usuario ni equipo. Pendiente: capturas del flujo del votante cuando haya un proceso abierto con alguien sin votar; commit y push cuando lo decida el autor.
+
+Pendiente de esta sesión: anotar en `observacion` qué versión de la interfaz usó cada participante; capturas seguras
+(C2) cuando acaben las sesiones; repetir `.local\pruebas.ps1` (backend, Vitest, build y E2E) con el stack libre y
+actualizar las cifras si cambian; revisar a mano en móvil los cambios de D-63; `cleanup` y `rnf4-remoto.ps1 -Off` al
+terminar el bloque.
+
+## RNF-4: adaptación a sesiones online (11/11/2026)
+
+- D-57: participantes a distancia por videollamada, acceso por un único túnel HTTPS (Cloudflare Tunnel) al puerto 4200.
+- `rnf4-protocolo-administradores.md` reescrito para online (acceso remoto, guion del moderador, fuentes de tiempo,
+  incidencias, latencia, limpieza). Nuevo `rnf4-participantes-online.md` (parte A antes, parte B en la llamada).
+- `hoja-registro-rnf4.csv`: añade `fecha`, `modalidad`, `navegador_so`, `t0`, `t1`, `incidencias_tecnicas`,
+  `referencia_grabacion`; `rnf4-summary.mjs` lee por nombre de columna y sigue funcionando (comprobado con la hoja vacía).
+- Nuevo `scripts/demo/seed-rnf4.mjs`: organización `RNF4`, 7 cuentas ADMIN (`admin.rnf4.p01`…`r2`) con contraseña
+  aleatoria no temporal, deshabilitadas hasta `enable Pxx`; censo «Censo de prueba RNF-4»; `remote-on/off`,
+  `disable`, `cleanup`. Credenciales en `.local/sesion-rnf4.md`. `node --check` correcto; **no ejecutado**.
+- Front: `proxy.conf.json` reenvía `/realms/verivoto` y `/resources` a Keycloak; `app-config.ts` usa el mismo origen
+  fuera de `localhost` (`tsc -p tsconfig.app.json --noEmit` correcto). `infra/compose.rnf4-remote.yaml`
+  (`KC_PROXY_HEADERS=xforwarded`). Ayuda local `.local/rnf4-remoto.ps1 -Url … | -Off`.
+- Sin probar con el stack: login por el túnel, emisor nuevo en los cuatro servicios, llamadas entre servicios con
+  *client credentials* y eventos de auditoría al crear/programar. Sin commit.
+
+## H1c: resultado de la prueba de carga (11/11/2026)
+
+- Ejecuciones 1, 2 y 3 (procesos 10, 11 y 12), 500 VU × 1 sin rampa: p95 de la emisión 4852, 2402 y 4849 ms; 201 =
+  222, 240 y 281; conexiones rechazadas (`0`) 273, 260 y 219; 5 × 500 en la 1. Cadena íntegra y urna = 201 =
+  participación en las tres. **H1c RECHAZADA (H0c).** Detalle y observaciones en `docs/evaluation/carga.md`.
+- Ejecución 2: `docker stats` sin muestra dentro de los 2,6 s de k6 (condición 6 no cumplida estrictamente); no
+  cambia la decisión. Los servicios Java corren fuera de Docker: sin CPU/RAM de los servicios.
+- Versión medida: jars de `.local/run/` del 31/10 y 03/11 (procesos en marcha desde el 03/11); el código de
+  producción de *gateway*, ballot-box y voter-access es igual al de `dev` `879cb42`.
+- Prueba de humo: ejecución 11 (proceso 9) correcta. Ejecuciones 9 y 10 (procesos 7 y 8) abiertas sin votos.
+- Cambios del autor (otra herramienta) revisados: `prepare-voting-tokens.mjs` espera a que voter-access acepte el OTP,
+  conserva los correos hasta generar los tokens y reanuda un proceso ya programado/abierto; ambos scripts toleran el
+  rechazo de Keycloak por historial de contraseñas. Sin secretos en el código.
+- Memoria: tabla 13.1, procedimiento, conclusiones, resumen/abstract y RNF-17. IMP-57 (perfilar la emisión).
+
+## H1c: preparación de la comprobación y validación del backend (11/11/2026)
+
+- Autor: `./mvnw verify` en Windows, BUILD SUCCESS en 5:36 min (election 46, voter-access 38, ballot-box 22 pruebas);
+  backend de `feature/censo-importacion-ux` validado. «Connection refused» y «Surefire is going to kill self fork JVM»
+  en election-service: anotado en IMP-55 (no se corrige ahora). k6 v2.3.0 instalado por el autor.
+- Sin commit: cuenta `auditor.load@verivoto.test` y `.local/load/run-N.json` en `prepare-voting-tokens.mjs`; recuento por
+  código en `tests/load/voting.js`; nuevo `scripts/load/check-load-run.mjs` (puntos 7 y 8 de `carga.md`). Probado solo
+  el análisis del resumen de k6 v2.3.0 con un servidor simulado; sin ejecutar contra el stack.
+- Siguiente paso: prueba de humo (`LOAD_RUN=9`, `LOAD_VOTERS=20`) y después las ejecuciones 1, 2 y 3.
+- Ramas: `feat/voter-access-limit-jwt-audience` se queda sin fusionar hasta después de H1c; `test/p7-phase2-role-captures`
+  la revisa el autor; la rama remota del censo la borra el autor al hacer push.
+
+## H1b: resultado de las sesiones con votantes (10/11/2026)
+
+- Sesiones del 09/11/2026 (escenario `USAB`). Hoja `docs/evaluation/usabilidad/hoja-registro-h1b.csv` corregida: valores
+  `si`/`no`, segundos enteros (cronómetro min:s,cc redondeado; P02 «1,08,97» = 69 s) y sin los códigos de recibo que se
+  habían anotado (la hoja no debe contenerlos).
+- `node scripts/evaluation/h1b-summary.mjs`: 5 válidas de 5 (reservas usadas: 1; invalidadas por el entorno: 1);
+  éxito sin ayuda en ≤ 180 s 5 de 5; comprensión 5 de 5; mediana 51 s, mínimo 36 s, máximo 79 s; 0 errores.
+  **H1b ACEPTADA** (evidencia descriptiva, n = 5).
+- P01 inválida (su entrada del censo ya tenía voto del 06/11; incidencia de entorno) y sustituida por R1. R2 se realizó
+  pero no era necesaria: fuera del cómputo, mismo resultado.
+- Aplicado en la memoria: tabla 13.1 (`evaluacion_resultados.tex`), procedimiento de `contenido1.tex`, `conclusiones.tex`,
+  resumen y abstract (`resumentexto.tex`) y comentarios de RNF-3/RNF-6 (`especificacion_detallada.tex`); `informe.md` y
+  `hoja-registro.md`. La frase del bloque G de `conclusiones.tex` (cambio del autor aún sin commit) también se ajustó en el
+  árbol de trabajo. IMP-56: logo y margen de la pantalla del votante (P05, R2).
+- Ramas: `feature/censo-importacion-ux` fusionada en `dev` (`1078a48`; Vitest 28/28 y build sin errores en copia Linux;
+  backend sin ejecutar aquí por falta de Maven Central y Java 25) y borrada en local. Sin fusionar:
+  `feat/voter-access-limit-jwt-audience` (exige actualizar el realm y pruebas Maven del autor) y
+  `test/p7-phase2-role-captures` (conflicto en `scripts/demo/seed-ual.mjs` con la refactorización a `lib/common.mjs`).
 
 ## Evaluación H1a, H1b y H1c (05/11/2026, tarde)
 
@@ -266,6 +387,50 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
   resultados) y las hojas vacías `accesibilidad-manual-obligatorias.csv` (39 filas) y `accesibilidad-manual-recomendadas.csv`
   (10). Datos: demo UAL (`seed-ual.mjs`), no `USAB`. La revisión la hace el autor; sin datos todavía. El anexo del
   guion tiene la redacción por si no se realiza («parte automática favorable; parte manual no realizada»), sin aplicar.
+- **Versión de H1a (08/11/2026)**: `dev` está en `06f39be` (merge de `fix/auditoria-visual`); las correcciones de DEF-05
+  y DEF-06 entraron en `9c948cf`. Los ficheros del votante son idénticos a los medidos el 05/11 salvo por los saltos de
+  línea (CRLF en Windows), por eso cambiaron dos SHA-256. Barrido 4 sobre `06f39be`: 88 auditorías, 0 críticos, 0 serios.
+  Guion actualizado con el commit y los SHA-256 completos de `06f39be`. Copia temporal en `.local/claude-tmp/` (ignorada).
+- **H1a, parte manual no realizada (08/11/2026)**: el autor no pudo hacer la revisión (NVDA no leía la página en su
+  equipo) y decidió cerrarla sin ejecutar. Aplicado el anexo del guion en la tabla 13.1 y la sección de validez
+  (`evaluacion_resultados.tex`), `conclusiones.tex` y `contenido1.tex` (lista de hipótesis y validez de constructo),
+  con el barrido 4 sobre `06f39be`. **H1a: parte automática favorable; parte manual no realizada; sin decisión**
+  (no rechazada; mismo tratamiento que RNF-4). Las hojas CSV se conservan sin rellenar. Sin commit.
+- **A4, consola de gestión (08/11/2026)**: `frontend/tests/e2e/admin-console.accessibility.spec.ts` (nuevo, sin commit)
+  simula Keycloak (código de autorización y token sintético por rol) y la API, y pasa axe por 27 pantallas o estados de
+  la consola y los resultados públicos, a 1280 y 360 px y en ES y EN: 108 auditorías, 0 críticos, 3 serios, todos de
+  **DEF-07** (`.table-wrap` desborda a 360 px y no recibe el foco: detalle de censo en ES y correos no entregados de
+  Participación en ES y EN). DEF-07 registrado en `defectos.md` con dos opciones de corrección, **sin aplicar**; las
+  3 combinaciones van como `test.fail`. 108 de 108 pruebas en verde. No cambia H1a. Informe:
+  `docs/evaluation/accesibilidad-axe-consola-2026-11-08.md`.
+- **DEF-07 corregido (08/11/2026)**, opción A aprobada por el autor: cada `.table-wrap` de la consola (detalle de
+  censo, panel de correos, claves de API, privacidad, auditoría y trazabilidad) tiene `tabindex="0"`, `role="region"` y
+  nombre. Barrido 2: 108 auditorías, 0 críticos, 0 serios; `test.fail` quitado, 108 de 108; Vitest 19 de 19 y build
+  correctos. Avisos de axe sin decidir listados en el informe como «pendientes de decisión». Sin commit.
+- **A10, A5 y RNF-4 (08/11/2026, noche; sin commit, pendiente de revisión)**: job `e2e-a11y` en `build.yml` con las
+  tres pruebas axe (votante, recibo y consola), sin secretos; con `CI=1` en el entorno de la IA, 200 de 200 en 10,3 min.
+  A5: `day-chart.component.spec.ts` (9 pruebas; Vitest 28 de 28). A5 backend y A6 bloqueados: el entorno de la IA no
+  accede a Maven Central ni a Docker Hub y no tiene Java 25. RNF-4: `rnf4-protocolo-administradores.md` y
+  `hoja-registro-rnf4.csv` para repetir la sesión con 5 administradores sin formación previa y tiempos cronometrados;
+  no ejecutado. `scripts/evaluation/rnf4-summary.mjs` calcula la decisión desde la hoja (probado solo con datos
+  inventados fuera del repositorio, igual que `h1b-summary.mjs`, que se volvió a comprobar el 08/11).
+- **A5 backend y A6 (08/11/2026, noche; sin commit)**: pruebas unitarias nuevas en election (`CensusServiceTest`,
+  `PrivacyServiceTest`) y voter-access (`JwtVoterIdentityVerifierTest`, `VoterAccessServiceSsoTest`,
+  `NotificationAdminServiceTest`, `PersonalDataServiceTest`): 38. Integración con Testcontainers (A6, alcance acordado):
+  aislamiento entre organizaciones por HTTP en los tres servicios (404 según OpenAPI), outbox (reintento, entrega única,
+  rechazo permanente que bloquea), receptores idempotentes, 20 envíos simultáneos del mismo token = 1 voto, y secreto
+  del voto en esquema y logs: 13 pruebas en 4 clases. `voter-access` y `ballot-box` ganan `spring-boot-starter-webmvc-test`
+  y `spring-security-test` (scope test). Ejecutadas por la IA con las librerías de `~/.m2` del autor, Java 21 y, las de
+  integración, contra PostgreSQL 16 local (sin Docker): todo en verde. **Verificado por el autor** el 08/11/2026:
+  `./mvnw verify` en Windows (Java 25.0.5, Testcontainers con PostgreSQL 18.6): BUILD SUCCESS en 5:27 min; election
+  36, voter-access 38 y ballot-box 22 pruebas, 0 fallos ni errores. En election aparecen errores de conexión en el log
+  (no fallos) y Surefire espera 30 s al cerrar: ver IMP-55.
+- **Tabla de alcance (08/11/2026)**: `dafo_justificacion.tex`, fila «Trabajo futuro» con RF-11 (informe RF-17, revoto,
+  D-03); RF-17 del informe sale de la lista «sin ID local» y la correspondencia RF-11 → RF-17 se añade al párrafo de
+  la tabla. Sin commit.
+- **C3 y Q-01, Q-03, Q-04 (08/11/2026)**: respuestas del autor registradas (D-56) y aplicadas en `contenido1.tex`
+  (tablas 1.1 y 4.3), `especificacion_detallada.tex` (nota de alcance, RF-11 prioridad W, RI-6) y `conclusiones.tex`
+  (P9: modelo de sustitución descrito y no operativo). Sin commit.
 - **H1b**: sin datos; sesiones el 09/11 (escenario `USAB` listo; hoja `hoja-registro-h1b.csv` y
   `scripts/evaluation/h1b-summary.mjs` preparados, probados solo con datos inventados fuera del repositorio). Con 5 participantes, el criterio de 90 % y 80 % que
   cita el autor equivale al validado por el tutor (5 de 5 en ≤ 3 min; 4 de 5 interpretan el recibo).
@@ -362,6 +527,21 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). Noveda
   IA), las vulnerabilidades Maven de Trivy y los paquetes `p/…` de Semgrep (sin acceso a sus registros). Registradas
   IMP-46–IMP-49.
 
+## Consola de gestión: barra de iconos, logo, banderas y gráfica por periodo (03/11/2026)
+
+Rama `feat/console-rail-navigation` (`8f1bbf5`), fusionada en `dev` en `c571021`.
+
+- Barra de iconos siempre visible para todos los roles; la hamburguesa de su parte superior la despliega con los
+  nombres de las secciones y solo ese botón la vuelve a plegar (el contenido se desplaza desde 992 px; por debajo se
+  superpone). Se quita el nombre del usuario del pie de la barra (ya está en la cabecera); cerrar sesión queda como icono.
+- Cabecera: logo de VeriVoto (escudo del prototipo) centrado; la hamburguesa pasa a la barra.
+- Selector de idioma: botones ES/EN con las banderas de España y Reino Unido, con el mismo aspecto que el login de
+  Keycloak (`aria-pressed`, objetivos de 44 px).
+- Participación por día (inicio y página de participación): componente compartido `app-day-chart` con escala fija de
+  0 a 100 %, todos los días del periodo de votación (los futuros, vacíos) y los meses bajo el eje. Solo días, nunca
+  horas (D-18).
+- La medición axe de la consola de gestión con este diseño es parte de A4 (ver `docs/ai/PLAN.md`).
+
 ## Login y panel de inicio (02/11/2026)
 
 Rama `feat/login-and-home-polish` creada desde `feat/role-home-dashboards` (sin fusionar entonces) y fusionada en `dev` con autorización del autor.
@@ -373,7 +553,7 @@ Rama `feat/login-and-home-polish` creada desde `feat/role-home-dashboards` (sin 
 - Ajuste del 03/11/2026 (rama `feat/login-language-flags`): logo del panel más grande (32 px de texto, escudo de 46 px); en móvil la banda azul solo lleva el logo y la tarjeta queda justo debajo; se quita el hueco antes del botón (campo oculto de Keycloak que sumaba dos huecos de 24 px); el selector de idioma pasa a dos botones pequeños con bandera (España y Reino Unido) y código ES/EN, enlazados a las mismas URL de Keycloak (el `select` queda como alternativa sin JS); aviso «¿Vas a votar? Usa el enlace personal…» bajo la tarjeta. axe sin incumplimientos a 1280 y 360 px en ES y EN. `feat/role-home-dashboards` borrada en local tras comprobar que está en `dev` (la remota `origin/feat/role-home-dashboards` sigue: borrarla requiere push).
 - Rediseño responsive del 03/11/2026 (rama `feat/login-responsive-redesign`, a partir de «VeriVoto – Logo y prototipos»): logo del prototipo (escudo con ranura de urna, check menta; «Veri» blanco y «Voto» `#5FD3A1`), paleta `#16365C`/`#4B5563`. Escritorio (≥ 768 px, 50/50): logo, mensaje y puntos de confianza en un único bloque centrado (antes el logo quedaba separado del mensaje y el pie se montaba sobre el tercer punto), pie abajo, marca de agua al 6 % en la esquina; escalones para poca altura (≤ 760 px), 768–1023 px y ≥ 1600 px. Móvil (< 768 px, `100dvh`): banda con logo y eslogan que crece con la altura, tarjeta superpuesta 24 px, aviso al votante y franja inferior con los tres puntos en versión corta (mismo `<ul>` reordenado con `display: contents`, sin duplicar texto); safe areas con `env()`. Se anulan dos huecos de keycloak.v2 (pie vacío dentro de la tarjeta, 28 px). Revisado en el navegador con Keycloak real: sin scroll en 360×640, 375×667, 390×844, 430×932, 768×1024, 1280×650, 1366×768, 1440×900 y 1920×1080; en 844×390 (horizontal) el formulario completo cabe y solo el aviso queda bajo el pliegue. axe 4.10.2 sin incumplimientos en ES (360) y EN (1440).
 - Presupuesto de estilos por componente de Angular: aviso a 8 kB y error a 12 kB (el SCSS del inicio ocupa 7,8 kB).
-- Comprobaciones: `npm run test:ci` 19/19 (3 pruebas nuevas de agregados) y `npm run build` sin avisos, ejecutados en una copia Linux del frontend con Node 22.23. Login real en Keycloak a 1280 y 360 px y pantalla de contraseña nueva en ES y EN (flujo «He olvidado mi contraseña» con la cuenta de auditoría, sin guardar la contraseña): axe 4.10.2 sin incumplimientos. PENDIENTE_PANEL
+- Comprobaciones: `npm run test:ci` 19/19 (3 pruebas nuevas de agregados) y `npm run build` sin avisos, ejecutados en una copia Linux del frontend con Node 22.23. Login real en Keycloak a 1280 y 360 px y pantalla de contraseña nueva en ES y EN (flujo «He olvidado mi contraseña» con la cuenta de auditoría, sin guardar la contraseña): axe 4.10.2 sin incumplimientos.
 
 ## Consolidación de ramas (01/11/2026)
 

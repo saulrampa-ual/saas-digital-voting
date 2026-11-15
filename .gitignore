@@ -52,3 +52,4 @@ environment-report.txt
 
 # Local-only files of the demo scripts (access summaries and personal voting links)
 .local/
+Claude outputs/

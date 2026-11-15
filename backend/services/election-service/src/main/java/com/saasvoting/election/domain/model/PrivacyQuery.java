@@ -9,19 +9,18 @@ import java.util.regex.Pattern;
  */
 public record PrivacyQuery(String email, String phone) {
 
-    private static final Pattern EMAIL = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
-    private static final Pattern PHONE = Pattern.compile("^[0-9]{1,15}$");
+    private static final Pattern PHONE_DIGITS = Pattern.compile("^[0-9]{1,15}$");
 
     public static PrivacyQuery parse(String value) {
         String text = value == null ? "" : value.strip();
         if (text.contains("@")) {
             String email = text.toLowerCase(Locale.ROOT);
-            if (email.length() <= 100 && EMAIL.matcher(email).matches()) {
+            if (email.length() <= 100 && EmailRule.isValid(email)) {
                 return new PrivacyQuery(email, null);
             }
         } else {
             String phone = text.replaceAll("[\\s().+-]", "");
-            if (PHONE.matcher(phone).matches()) {
+            if (PHONE_DIGITS.matcher(phone).matches()) {
                 return new PrivacyQuery(null, phone);
             }
         }

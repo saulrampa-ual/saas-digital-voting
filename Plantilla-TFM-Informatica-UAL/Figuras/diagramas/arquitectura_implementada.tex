@@ -1,0 +1,61 @@
+% Arquitectura implementada en el MVP (entorno local). Misma notación que la figura de arquitectura objetivo.
+\begin{tikzpicture}[
+  font=\sffamily\scriptsize,
+  client/.style={draw=gray!65,rounded corners=2pt,fill=gray!8,align=center,
+    minimum height=.72cm,text width=6.2cm,inner sep=3pt},
+  service/.style={draw=blue!50!black,rounded corners=2pt,fill=blue!5,align=center,
+    minimum height=1.25cm,text width=2.55cm,inner sep=3pt},
+  store/.style={draw=teal!55!black,rounded corners=2pt,fill=teal!8,align=center,
+    minimum height=.7cm,text width=2.3cm,inner sep=3pt},
+  external/.style={draw=gray!65,rounded corners=2pt,fill=gray!8,align=center,
+    minimum height=.72cm,text width=2.75cm,inner sep=3pt},
+  sync/.style={-{Stealth},thick,draw=gray!70},
+  async/.style={-{Stealth},thick,dashed,draw=gray!70},
+  lbl/.style={font=\sffamily\tiny,fill=white,inner sep=1pt},
+  zone/.style={anchor=west,fill=white,font=\sffamily\scriptsize\bfseries,inner sep=2pt}
+]
+% Cliente y componentes de apoyo
+\node[client] (web) at (0,0) {Aplicación web Angular/Ionic (PWA)\\flujo del votante y consola de gestión};
+\node[external] (keycloak) at (-5.4,-1.5) {Keycloak\\identidad de gestión y SSO institucional};
+\node[service,minimum height=.82cm,text width=3.2cm] (gateway) at (0,-1.5) {api-gateway\\punto de entrada de la API};
+\node[external] (translate) at (5.4,0) {LibreTranslate (local)\\traducción de textos};
+\node[external] (mail) at (5.4,-1.5) {Mailpit (SMTP local)\\enlaces y códigos};
+
+% Servicios propios
+\node[service] (identity) at (-5.4,-3.7) {identity-service\\organizaciones, roles, claves de API, trazabilidad};
+\node[service] (election) at (-1.8,-3.7) {election-service\\censos, procesos, papeletas, ciclo de vida};
+\node[service] (access) at (1.8,-3.7) {voter-access-service\\acceso del votante, participación, avisos};
+\node[service] (ballot) at (5.4,-3.7) {ballot-box-service\\votos, recibos, cadena, escrutinio};
+
+% Persistencia
+\draw[dashed,rounded corners=4pt,draw=gray!55] (-6.95,-6.95) rectangle (3.35,-5.45);
+\node[zone] at (-6.8,-6.95) {pg-main (PostgreSQL; aloja también la base de Keycloak)};
+\node[store] (identitydb) at (-5.4,-6.1) {identity\_db};
+\node[store] (electiondb) at (-1.8,-6.1) {election\_db};
+\node[store] (accessdb) at (1.8,-6.1) {voter\_access\_db};
+\draw[dashed,rounded corners=4pt,draw=gray!55] (3.85,-6.95) rectangle (6.95,-5.45);
+\node[zone] at (4.0,-6.95) {pg-ballot (PostgreSQL)};
+\node[store] (ballotdb) at (5.4,-6.1) {ballot\_box\_db};
+
+% Entrada
+\draw[sync] (web) -- (gateway);
+\draw[sync] (web.west) -| node[lbl,pos=.25] {OIDC} (keycloak.north);
+\draw[async] (web) -- node[lbl] {consola} (translate);
+\draw[sync] (gateway.south) -- ++(0,-.5) -| (identity.60);
+\draw[sync] (gateway.south) -- ++(0,-.5) -| (election.north);
+\draw[sync] (gateway.south) -- ++(0,-.5) -| (access.120);
+\draw[sync] (gateway.south) -- ++(0,-.5) -| (ballot.north);
+
+% Entre servicios
+\draw[sync] (identity.125) -- node[lbl,anchor=east,xshift=-2pt] {API de admin.} (identity.125 |- keycloak.south);
+\draw[async] (election) -- node[lbl] {outbox} (access);
+\draw[async] (election.south east) to[bend right=22] node[lbl,pos=.3] {outbox} (ballot.south west);
+\draw[sync] (ballot) -- node[lbl] {token} (access);
+\draw[sync] (access.50) |- node[lbl,pos=.75] {SMTP} (mail.west);
+
+% Persistencia
+\draw[sync] (identity) -- (identitydb);
+\draw[sync] (election) -- (electiondb);
+\draw[sync] (access) -- (accessdb);
+\draw[sync] (ballot) -- (ballotdb);
+\end{tikzpicture}

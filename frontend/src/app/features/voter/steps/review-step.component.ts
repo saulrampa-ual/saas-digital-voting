@@ -25,7 +25,7 @@ import { TranslatePipe } from '@ngx-translate/core';
       <ion-text><p>{{ 'voter.review.notYet' | translate }}</p></ion-text>
     </div>
     <div class="actions">
-      <ion-button expand="block" fill="outline" [disabled]="busy()" (click)="change.emit()">
+      <ion-button expand="block" fill="outline" [disabled]="busy()" (click)="changeSelection.emit()">
         {{ 'voter.review.change' | translate }}
       </ion-button>
       <ion-button expand="block" color="secondary" [disabled]="busy()" (click)="confirm.emit()">
@@ -58,6 +58,7 @@ export class ReviewStepComponent {
   readonly choiceText = input.required<string>();
   readonly blank = input(false);
   readonly busy = input(false);
-  readonly change = output<void>();
+  /** «Cambiar mi selección» (not `change`, which is also a native DOM event). */
+  readonly changeSelection = output<void>();
   readonly confirm = output<void>();
 }

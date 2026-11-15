@@ -8,7 +8,14 @@
 at (current page.center)
           {\parbox[b][\paperheight]{\paperwidth}{
            \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{Figuras/logos/TFG_back}
-          }};
+           }};
+% La plantilla institucional incluye una franja negra sobre el bloque turquesa.
+% Se cubre con el color del fondo para mantener la contraportada limpia.
+\definecolor{TFMBackColor}{RGB}{49,133,156}
+\fill[TFMBackColor]
+  ([xshift=5cm,yshift=4.0cm]current page.south west)
+  rectangle
+  ([yshift=4.9cm]current page.south east);
 \node (texto) [rectangle,text width=0.5\paperwidth,yshift=0pt]
 at (f)
           {\parbox{0.65\paperwidth}{\justifying \large \color{white}

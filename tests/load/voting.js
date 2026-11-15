@@ -22,6 +22,8 @@ if (new Set(tokens.slice(0, vus * iterations)).size !== vus * iterations) {
   throw new Error('Los tokens asignados a los VU deben ser distintos.');
 }
 
+const STATUSES = [0, 201, 400, 401, 403, 404, 409, 410, 422, 423, 429, 500, 502, 503, 504];
+
 export const options = {
   scenarios: {
     cast_votes: {
@@ -34,6 +36,9 @@ export const options = {
   summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(90)', 'p(95)', 'p(99)'],
   thresholds: {
     'http_req_duration{operation:cast_vote}': ['p(95)<2000'],
+    // Count per HTTP status only, so the summary export shows them (check-load-run.mjs and the discard rules of
+    // docs/evaluation/carga.md). 'count>=0' never fails and does not change what is measured. 0 = no response.
+    ...Object.fromEntries(STATUSES.map((s) => [`http_reqs{operation:cast_vote,status:${s}}`, ['count>=0']])),
   },
 };
 

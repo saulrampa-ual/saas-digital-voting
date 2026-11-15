@@ -2,11 +2,25 @@
 \label{cap:implementacion}
 
 \section{Tecnologías y estructura}
+\label{sec:tecnologias-estructura}
 El backend está implementado en Java 25 con Spring Boot 4.1.2 y Spring Cloud
 2025.1.3. El cliente es una PWA Angular 22 e Ionic 9. Keycloak 26.8.1 gestiona
 identidad y PostgreSQL 18.6 proporciona persistencia. La infraestructura local
-incluye PostgreSQL, Keycloak y Mailpit. Estas versiones describen la línea de
+incluye PostgreSQL, Keycloak, Mailpit y LibreTranslate; este último traduce
+entre español e inglés los textos del proceso en la consola y se ejecuta en
+local, sin servicios externos (D-62). Estas versiones describen la línea de
 implementación documentada en el repositorio.
+
+% [Bloque C] Justificación y sesgo de la selección tecnológica.
+La selección de este stack no es neutra. Java con Spring Boot y la
+arquitectura hexagonal proceden de la experiencia profesional del autor, y
+Angular e Ionic se consolidaron durante las Prácticas Externas. Elegir
+tecnologías ya dominadas redujo el riesgo técnico en un proyecto unipersonal
+con plazo cerrado y permitió dedicar el esfuerzo a los aspectos propios del
+dominio: el secreto del voto, el aislamiento entre organizaciones y la
+auditoría. La contrapartida es un posible sesgo, porque no se evaluaron con el
+mismo detalle otras alternativas de backend o de cliente; esta limitación se
+recoge en la sección~\ref{sec:limitaciones-trabajo-futuro}.
 
 \section{Flujo de emisión y recibo}
 El servicio de acceso valida la credencial y consume un token de un solo uso.
@@ -33,7 +47,67 @@ trazabilidad y API de integración. La matriz conserva el detalle por endpoint
 y evita duplicar una tabla extensa que se desactualizaría con facilidad.
 
 \section{Material gráfico}
+\label{sec:material-grafico}
 Las fuentes editables de secuencia y actividad se conservan en
-\texttt{Figuras/diagramas/}. No se incorporan capturas nuevas en esta revisión:
-las capturas representativas del cliente deben generarse en el entorno de
-demostración y revisarse para asegurar que no contienen datos personales.
+\texttt{Figuras/diagramas/}. Las capturas de esta sección proceden de la
+consola de gestión en el entorno local de demostración, con la organización
+ficticia «Universidad de Almería» de los datos de demostración. Todos los
+datos que muestran son sintéticos (cuentas y votantes del dominio reservado
+\texttt{ual.test}); ninguna contiene datos personales. Se generan con el
+script \texttt{scripts/demo/capturas-memoria.mjs}, que inicia sesión como una
+persona usuaria y guarda las imágenes en \texttt{Figuras/capturas/}, de modo
+que pueden repetirse tras un cambio de la interfaz.
+
+La figura~\ref{fig:captura-asistente} muestra el primer paso del asistente de
+creación de un proceso (RF-06) y la figura~\ref{fig:captura-ciclo-vida}, el
+ciclo de vida de un proceso abierto, cuyos cambios de estado son automáticos
+en las fechas fijadas (RF-07). El seguimiento de la participación (RF-14)
+aparece en la figura~\ref{fig:captura-participacion}: solo ofrece recuentos
+agregados y por día, nunca quién ha votado. Las
+figuras~\ref{fig:captura-resultados} y~\ref{fig:captura-resultados-publicos}
+recogen el resultado de un proceso escrutado en la consola y en la página
+pública (RF-15 y RF-16), con las huellas que permiten recalcular el recuento.
+Por último, la figura~\ref{fig:captura-trazabilidad} muestra el registro de
+acciones administrativas (RF-19).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{capturas/consola-proceso-nuevo-es}
+  \caption{Asistente de creación de un proceso de votación, paso 1 de 4 (RF-06).}
+  \label{fig:captura-asistente}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{capturas/consola-proceso-abierto-es}
+  \caption{Ciclo de vida de un proceso abierto: estados, datos del proceso e historial (RF-07).}
+  \label{fig:captura-ciclo-vida}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{capturas/consola-participacion-es}
+  \caption{Panel de participación de un proceso abierto: recuentos agregados y acumulado por día (RF-14).}
+  \label{fig:captura-participacion}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{capturas/consola-resultados-es}
+  \caption{Resultados de un proceso escrutado en la consola, con la exportación, el acta y las huellas del resultado y de la urna (RF-15 y RF-16).}
+  \label{fig:captura-resultados}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{capturas/resultados-publicos-es}
+  \caption{Página pública de resultados de un proceso con enlace público (RF-15).}
+  \label{fig:captura-resultados-publicos}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{capturas/consola-trazabilidad-es}
+  \caption{Registro de acciones administrativas de la organización (RF-19). Los nombres corresponden a cuentas ficticias de prueba.}
+  \label{fig:captura-trazabilidad}
+\end{figure}

@@ -1,14 +1,14 @@
 # H1a · Barrido axe del flujo del votante (05/11/2026)
 
 Parte automática de H1a (RNF-1, WCAG 2.2 AA). Tarea A4 de `docs/ai/PLAN.md`. La revisión manual con teclado y NVDA
-(`accesibilidad-manual.md`, tarea B3) la hace el autor y **no forma parte de esta medición**.
+(`accesibilidad-manual.md`, tarea B3) **no forma parte de esta medición** y no se realizó antes del cierre.
 
 ## Qué se midió
 
 | Elemento | Valor |
 | --- | --- |
-| Fecha | 05/11/2026 (tres barridos: antes de corregir DEF-05, con DEF-05 corregido y con DEF-05 y DEF-06 corregidos) |
-| Versión evaluada | Barrido 1: `dev` en `4a5e593`. Barrido 2: `dev` en `4a5e593` con la corrección de DEF-05 en `frontend/src/app/features/voter/steps/ballot-step.component.ts` (sin commit). **Barrido 3 (vigente):** `dev` en `4a5e593` con las correcciones de DEF-05 y DEF-06 sin commit (huellas SHA-256, 12 primeros caracteres: `ballot-step.component.ts` `353213fb93e6`, `receipt-check.page.ts` `402c9ef12240`, `voter-flow.accessibility.spec.ts` `747d65cbec86`) |
+| Fecha | 05/11/2026 (tres barridos: antes de corregir DEF-05, con DEF-05 corregido y con DEF-05 y DEF-06 corregidos) y 08/11/2026 (barrido 4, sobre el commit `06f39be`) |
+| Versión evaluada | Barrido 1: `dev` en `4a5e593`. Barrido 2: `dev` en `4a5e593` con la corrección de DEF-05 en `frontend/src/app/features/voter/steps/ballot-step.component.ts` (sin commit). **Barrido 3:** `dev` en `4a5e593` con las correcciones de DEF-05 y DEF-06 sin commit (huellas SHA-256, 12 primeros caracteres: `ballot-step.component.ts` `353213fb93e6`, `receipt-check.page.ts` `402c9ef12240`, `voter-flow.accessibility.spec.ts` `747d65cbec86`, con saltos LF). **Barrido 4 (vigente):** `dev` en `06f39be` (merge de `fix/auditoria-visual`; las correcciones de DEF-05 y DEF-06 entraron en `9c948cf`), árbol limpio. Los ficheros del flujo del votante son idénticos a los del barrido 3 salvo por los saltos de línea; los cambios de `06f39be` afectan a la consola de gestión, la página 404, claves i18n nuevas e iconos |
 | Prueba | `frontend/tests/e2e/voter-flow.accessibility.spec.ts` |
 | Herramientas (iguales en los tres barridos) | Playwright 1.64.1 · Chromium (Chrome for Testing 153.0.8010.12) · axe-core 4.14.0 · `@axe-core/playwright` 4.14.0 |
 | Aplicación | Angular 22.2.4 · Ionic 9.0.10 · servidor de desarrollo (`ng serve`) · Node.js 22.23.4 |
@@ -43,13 +43,17 @@ disponible; V8 resultado; B5 comprobar recibo (inicial, formato erróneo, presen
 - **Barrido 2:** 0 incumplimientos en las 88 auditorías. La prueba E2E anterior del recibo
   (`receipt-check.accessibility.spec.ts`) también pasa (4 de 4).
 - **Corrección de DEF-06** (aprobada por el autor): ver más abajo.
-- **Barrido 3 (05/11/2026, noche; vigente):** 0 incumplimientos en las 88 auditorías, con las mismas versiones de las
+- **Barrido 3 (05/11/2026, noche):** 0 incumplimientos en las 88 auditorías, con las mismas versiones de las
   herramientas. El estado «formato erróneo» del recibo ya no está marcado como fallo conocido y pasa en verde en los
   cuatro casos; `receipt-check.accessibility.spec.ts`, 4 de 4 (92 pruebas en total, 92 pasan). Vitest 19 de 19 y
   compilación correctos. En una primera ejecución completa falló una prueba ajena a DEF-06 (B4 recibo, 1280 px, ES: la
   escritura del código de acceso se quedó en la primera cifra al arrancar y no llegó a la papeleta, por tiempo de
   espera); por separado pasó, y el barrido completo se repitió desde cero con 92 de 92. Los resultados de este informe
   son los de esa repetición.
+- **Barrido 4 (08/11/2026; vigente):** repetido sobre `06f39be` (copia exacta con `git archive`, en el entorno de la
+  IA), con las mismas herramientas: 88 auditorías, 0 críticos, 0 serios, 0 moderados, 0 menores; 92 de 92 pruebas;
+  Vitest 19 de 19 y compilación correctos. Los avisos sin decidir son los mismos que en el barrido 3. La revisión
+  manual no se realizó (08/11/2026): parte manual no realizada; sin decisión.
 
 Avisos que axe no puede decidir solo («incomplete»; requieren la revisión manual, no son incumplimientos):
 `color-contrast` en B2, B4, B5, C4, V6 y V8 (texto sobre fondos que axe no puede calcular) y `aria-prohibited-attr`
@@ -72,9 +76,10 @@ manual con teclado y lector de pantalla sin bloqueos en acceso, voto y recibo.
 
 - **Parte automática: favorable** en la versión con DEF-05 y DEF-06 corregidos (barrido 3: 0 críticos y 0 serios en 88
   auditorías).
-- **Parte manual: pendiente** (la hace el autor con teclado y NVDA).
-- **Decisión: H1a, parte automática medida y favorable; parte manual pendiente.** No se declara aceptada hasta tener
-  la revisión manual con NVDA, que se hace sobre la misma versión del barrido 3.
+- **Parte manual: no realizada** antes del cierre (08/11/2026); es una parte del protocolo sin ejecutar, no un
+  incumplimiento.
+- **Decisión: H1a, parte automática favorable; parte manual no realizada; sin decisión.** No se declara aceptada ni
+  rechazada, igual que RNF-4.
 
 ## Qué no cubre
 

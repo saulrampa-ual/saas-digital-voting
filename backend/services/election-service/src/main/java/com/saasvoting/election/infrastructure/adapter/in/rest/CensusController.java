@@ -22,12 +22,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.saasvoting.election.domain.model.ImportRow;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /** RF-03. Contract: {@code openapi/election-service.yaml}. */
@@ -112,15 +115,30 @@ public class CensusController {
             @RequestPart("file") MultipartFile file,
             @RequestParam(defaultValue = "true") boolean dryRun,
             @RequestParam(defaultValue = "false") boolean discardInvalidLines) throws IOException {
-        try (Reader reader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8)) {
-            ImportSummaryResponse summary = ImportSummaryResponse.fromDomain(imports.importVoters(
-                    CallerResolver.from(jwt), censusId, VoterCsvReader.read(reader), dryRun, discardInvalidLines));
-            if (summary.applied()) {
-                actions.record(jwt, "VOTERS_IMPORTED", "CENSUS", censusId, censusName(jwt, censusId),
-                        String.valueOf(summary.toCreate()), null);
-            }
-            return summary;
+        List<ImportRow> rows;
+        try (InputStream input = new BufferedInputStream(file.getInputStream())) {
+            rows = isXlsx(file.getOriginalFilename(), input)
+                    ? VoterXlsxReader.read(input)
+                    : VoterCsvReader.read(new InputStreamReader(input, StandardCharsets.UTF_8));
         }
+        ImportSummaryResponse summary = ImportSummaryResponse.fromDomain(imports.importVoters(
+                CallerResolver.from(jwt), censusId, rows, dryRun, discardInvalidLines));
+        if (summary.applied()) {
+            actions.record(jwt, "VOTERS_IMPORTED", "CENSUS", censusId, censusName(jwt, censusId),
+                    String.valueOf(summary.toCreate()), null);
+        }
+        return summary;
+    }
+
+    /** An .xlsx is a ZIP: it is recognised by its name or by the ZIP signature «PK\3\4», whatever its name. */
+    private static boolean isXlsx(String fileName, InputStream input) throws IOException {
+        if (fileName != null && fileName.toLowerCase(Locale.ROOT).endsWith(".xlsx")) {
+            return true;
+        }
+        input.mark(4);
+        byte[] signature = input.readNBytes(4);
+        input.reset();
+        return signature.length == 4 && signature[0] == 'P' && signature[1] == 'K' && signature[2] == 3 && signature[3] == 4;
     }
 
     /** A voter is identified only by its id; the label is the census, never personal data (RF-19, RNF-16). */
