@@ -1,5 +1,7 @@
 # Resumen para el autor
 
+> Instantánea del 31/10/2026. El estado final de P7 está en `cierre.md` (15/11/2026).
+
 La rama añade pruebas CSV/importación, una prueba HTTP parcial de autorización y aislamiento, inspección del esquema completo de ballot-box y dos casos de cadena. Las pruebas nuevas de election pasan; se añadieron Playwright 1.64.1 y axe 4.14.0 y cuatro exploraciones automáticas de la pantalla de comprobación de recibo.
 
 Para continuar las comprobaciones manualmente, sigue `manual-simulacion-roles.md`: incluye cinco identidades sintéticas, pasos para crearlas al levantar los servicios, matriz de permisos y recorrido de una votación local. Las cuentas no estaban provisionadas al redactar el manual.

@@ -15,9 +15,9 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Bloque | Estado |
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
-| Pruebas y medición (P7) | En curso: 135 pruebas backend (14/11) y 92 frontend (15/11); cobertura de líneas 14–73 % por servicio en backend y 33,7 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
+| Pruebas y medición (P7) | Cerrado el 15/11/2026: 151 pruebas backend y 92 frontend (15/11); cobertura de líneas 26–91 % por servicio en backend y 33,7 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
 | Memoria (P8) | En curso: C1 aplicado para H1a, H1b y H1c; C1 y C2 hechos (15/11: capturas, figuras 5.1 y 5.2, cifras de pruebas y cobertura); falta C4 |
-| Publicación | `dev` coincide con `origin/dev` (`573fd7e`, 15/11/2026); `dev` lleva 22 commits de ventaja sobre `main`: falta F6 |
+| Publicación | PR #4 fusionado en `main` el 15/11/2026 (`7ee3a57`), con `build` y `security` en verde. Anteproyecto firmado por el director (comunicado por el autor el 15/11/2026) |
 
 ---
 
@@ -82,7 +82,7 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   definición de ejecución válida en `docs/evaluation/carga.md`. El autor ejecuta; la IA analiza y cierra H1c.
 - [x] **A8 · Gantt de la memoria** (`IA`, IMP-02): la iteración 3 aún dice «re-voto». **Hecho:** `plan_gantt.tex` ya dice «Iteración 3. Emisión y recibo (RF-09--RF-10)» (comprobado el 08/11/2026).
 - [ ] **A9 · RF-05a** (`IA`, según Q-07): IdP externo de prueba y prueba de inicio de sesión de gestión federado.
-- [ ] **A10 · Job E2E en CI** (`IA`): Playwright + axe en GitHub Actions (al menos con servicios simulados).
+- [x] **A10 · Job E2E en CI** (`IA`): Playwright + axe en GitHub Actions (al menos con servicios simulados). **Hecho (15/11/2026: el job de accesibilidad E2E pasa en GitHub en el PR #4 y en `main`)**
   **Borrador (08/11/2026, sin commit, pendiente de revisión del autor):** job `e2e-a11y` en `build.yml` (`ubuntu-latest`,
   Node 24, `npx playwright install --with-deps chromium`, `npm run test:e2e`, artefacto `e2e-a11y-results`). Sin
   secretos. Probado en el entorno de la IA con `CI=1`: 200 de 200 en 10,3 min; falta verlo en GitHub tras el push.
@@ -149,7 +149,7 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
   faltan `semgrep-report` y `trivy-report`. Detalle y pasos de exportación en `docs/architecture/quality-and-security.md`.
   **13/11/2026:** workflow `security` de `dev` en verde (run `43066068128`); `npm audit` 0; Semgrep local 0 ERROR y sin
   hallazgos nuevos (IMP-46 e IMP-48 ya registradas; resto mitigado o falso positivo). Falta SonarQube, tras las sesiones RNF-4.
-- [ ] **F6 · Primer `dev` → `main`** (`Autor`, sábado tras F1–F5).
+- [x] **F6 · Primer `dev` → `main`** (`Autor`, sábado tras F1–F5). **Hecho (15/11/2026: PR #4 fusionado en `main`, `7ee3a57`; `build` y `security` en verde)**
 
 ## 3. Necesitan al autor
 
@@ -172,12 +172,12 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
 el despliegue y D4 si sobra tiempo. Las que más aportan antes de entregar, de más a menos:
 
 - [x] **D1 · IMP-15**: aviso 2 minutos antes de que caduque la sesión de gestión (WCAG 2.2.1). **Hecho (13/11/2026: aviso de caducidad de sesión aplicado y con pruebas)**
-- [ ] **D2 · IMP-21**: límite de peticiones por IP en el *gateway* para `/api/v1/voter-access/**` (RNF-14). **En curso
+- [x] **D2 · IMP-21**: límite de peticiones por IP en el *gateway* para `/api/v1/voter-access/**` (RNF-14). **En curso **Hecho (15/11/2026: fusionada en `dev`, `c48dbab`; `mvnw verify` del autor con 151 pruebas y 0 fallos)**
   (05/11):** commit `4ec0efc` en la rama `feat/voter-access-limit-jwt-audience`, sin fusionar; faltan las pruebas del autor.
 - [ ] **D3 · IMP-32**: cabeceras CSP, HSTS y `Referrer-Policy` en el despliegue del frontal. Solo si hay despliegue: el
   TFM se ejecuta y evalúa en local y no está previsto desplegarlo (05/11, D-53).
 - [ ] **D4 · IMP-11 / IMP-40**: al suspender una organización, deshabilitar sus usuarios y claves de API en Keycloak.
-- [ ] **D5 · IMP-27**: comprobar la audiencia del JWT en cada servicio y quitar `verivoto-dev-swagger` en producción
+- [x] **D5 · IMP-27**: comprobar la audiencia del JWT en cada servicio y quitar `verivoto-dev-swagger` en producción **Hecho (15/11/2026: fusionada en `dev`, `c48dbab`; `mvnw verify` del autor con 151 pruebas y 0 fallos)**
   (esta segunda parte solo aplica si hay despliegue, D-53). **En curso (05/11):** commit `72bdfba` en la misma rama que D2, sin fusionar;
   faltan las pruebas del autor y actualizar el realm local (`scripts/dev/keycloak-api-audience.mjs`).
 
@@ -198,7 +198,7 @@ El resto de `IMPROVEMENTS.md` queda para P9 salvo que se decida otra cosa.
 
 ## 6. Cierre
 
-- [ ] **E1 · Cerrar P7** (`IA`): cuando A3–A7 y B2–B4 estén hechos o declarados pendientes, actualizar `PROGRESS.md`,
+- [x] **E1 · Cerrar P7** (`IA`): cuando A3–A7 y B2–B4 estén hechos o declarados pendientes, actualizar `PROGRESS.md`, **Hecho (15/11/2026: `TRACEABILITY.md`, `PROGRESS.md` y `resultados-p7/cierre.md`)**
   `TRACEABILITY.md` (columna de evidencia) y `docs/evaluation/resultados-p7/`.
 - [ ] **E2 · `dev` → `main`** (`Autor`, según Q-09) y etiqueta de la versión entregada.
 - [ ] **E3 · Entrega** (`Autor`): PDF final y anexos.
@@ -258,3 +258,5 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 13/11/2026 | RNF-4 online, C2, D-63 | Sesiones online en curso (túnel nuevo, `login-code-fixed` reparado, comando `passwords`). C2: figura 10.1 de arquitectura implementada, RF-03 con Excel, texto heredado y cifras de pruebas del 11/11 (119 backend, 28 frontend, cobertura 14–70 %). Observaciones de participantes aplicadas en la consola (D-63; 53 Vitest en el entorno de la IA). IMP-59 a IMP-61. Sin commit |
 | 13/11/2026 | B4, A12, C1 (RNF-4) | Sesiones RNF-4 online P01–P05: 5 de 5 válidas, sin formación previa, sin ayuda y en ≤ 4 min (mediana 3 min); **RNF-4 aceptado** y aplicado en `evaluacion_resultados.tex`, `conclusiones.tex`, `contenido1.tex`, `especificacion_detallada.tex` y `resumentexto.tex`. Tiempos redondeados al minuto (limitación anotada). D1 aplicado. Sin commit |
 | 15/11/2026 | Revisión del plan; C2, F5 | Contrastado con el repositorio: A3, A4, A6, A7, A12, F5, D1, C1 y C2 marcados como hechos. Cobertura y recuentos del 14–15/11 en la memoria (135 backend, 92 frontend), capturas y figuras 5.1/5.2; `573fd7e` subido. Abiertos: A5 (resto), A9, A10 (verlo en GitHub), D2/D5 (rama sin fusionar), D4, F6, C4, E1–E3, Q-10 |
+| 15/11/2026 | F6, A10, E1, anteproyecto | PR #4 en `main` con todos los checks en verde; P7 cerrado (evidencia por RF en `TRACEABILITY.md`, `resultados-p7/cierre.md`); anteproyecto firmado. D2 y D5: la rama se fusiona sin conflictos con `dev` (comprobado con `git apply --3way --check`); falta `mvnw verify` del autor |
+| 15/11/2026 | D2, D5, C4 (parcial) | Rama de IMP-21 e IMP-27 fusionada por el autor (`c48dbab`) y verificada: 151 pruebas de backend. Memoria actualizada (151 y 92 pruebas; cobertura 52,4 % en backend). C4 parcial: figuras 8.1 y 8.2 redistribuidas y tabla 13.1 con resultados breves y el detalle en el texto |

@@ -33,6 +33,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${ELECTION_OIDC_ISSUER_URI:http://localhost:8080/realms/verivoto}
+          # IMP-27 (D-52, threat T-05): only access tokens with the API audience (audience mapper of the realm clients)
+          audiences: verivoto-api
 
 management:
   endpoints:

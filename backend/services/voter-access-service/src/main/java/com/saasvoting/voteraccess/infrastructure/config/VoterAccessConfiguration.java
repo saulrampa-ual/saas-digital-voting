@@ -30,11 +30,14 @@ import com.saasvoting.voteraccess.infrastructure.adapter.out.client.ServiceToken
 import com.saasvoting.voteraccess.infrastructure.adapter.out.identity.JwtVoterIdentityVerifier;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.mail.SmtpMailer;
 import com.saasvoting.voteraccess.infrastructure.adapter.out.persistence.JpaAdminActionOutbox;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.time.Clock;
@@ -110,10 +113,18 @@ public class VoterAccessConfiguration {
                 properties.policy(), unitOfWork, clock, identities);
     }
 
-    /** RF-05b (D-48): ID tokens of the institutional account, issued by the same realm to the voter client. */
+    /**
+     * RF-05b (D-48): ID tokens of the institutional account, issued by the same realm to the voter client. Their
+     * audience is the voter client, not the API audience that the resource server now requires (IMP-27, D-52), so they
+     * get their own decoder: same issuer and keys, discovered on first use like the decoder of the resource server.
+     * {@link JwtVoterIdentityVerifier} then checks that the audience is the voter client.
+     */
     @Bean
-    VoterIdentityVerifier voterIdentityVerifier(JwtDecoder decoder, AccessProperties properties) {
-        return new JwtVoterIdentityVerifier(decoder, properties.ssoClientId());
+    VoterIdentityVerifier voterIdentityVerifier(
+            @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri,
+            AccessProperties properties) {
+        JwtDecoder idTokenDecoder = new SupplierJwtDecoder(() -> JwtDecoders.fromIssuerLocation(issuerUri));
+        return new JwtVoterIdentityVerifier(idTokenDecoder, properties.ssoClientId());
     }
 
     @Bean

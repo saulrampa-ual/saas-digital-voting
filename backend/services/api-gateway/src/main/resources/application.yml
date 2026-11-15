@@ -22,10 +22,26 @@ spring:
               uri: ${VOTER_ACCESS_SERVICE_URI:http://localhost:8083}
               predicates:
                 - Path=/api/v1/voter-access/**
+              # IMP-21 (D-52): per-IP limit with the beans of com.saasvoting.gateway.ratelimit; 429 with Retry-After
+              filters:
+                - name: RequestRateLimiter
             - id: ballot-box
               uri: ${BALLOT_BOX_SERVICE_URI:http://localhost:8084}
               predicates:
                 - Path=/api/v1/ballot-box/**
+
+# IMP-21 (D-52): token bucket per client address on /api/v1/voter-access/** (proposed values; see
+# docs/architecture/threat-model.md, T-22). Locally every browser request reaches the gateway through the Angular
+# proxy (one address, 127.0.0.1), so the limit is shared by all local users. The load test H1c from one machine must
+# run with GATEWAY_VOTER_ACCESS_RATE_LIMIT_ENABLED=false (and say so in its results).
+verivoto:
+  gateway:
+    voter-access-rate-limit:
+      enabled: ${GATEWAY_VOTER_ACCESS_RATE_LIMIT_ENABLED:true}
+      capacity: ${GATEWAY_VOTER_ACCESS_RATE_LIMIT_CAPACITY:120}
+      refill-per-minute: ${GATEWAY_VOTER_ACCESS_RATE_LIMIT_PER_MINUTE:120}
+      # Proxies in front of the gateway that append X-Forwarded-For; 0 ignores the header (it can be forged)
+      trusted-proxies: ${GATEWAY_TRUSTED_PROXIES:0}
 
 management:
   endpoints:
