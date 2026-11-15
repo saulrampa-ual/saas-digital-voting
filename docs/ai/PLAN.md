@@ -16,8 +16,8 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
 | Pruebas y medición (P7) | En curso: 135 pruebas backend (14/11) y 92 frontend (15/11); cobertura de líneas 14–73 % por servicio en backend y 33,7 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
-| Memoria (P8) | En curso: C1 aplicado para H1a, H1b y H1c; C2 en curso (13/11: figura de arquitectura implementada, RF-03 con Excel, cifras de pruebas del 11/11); faltan capturas y C4 |
-| Publicación | `dev` va por delante de `origin/dev`: falta `git push origin dev` (lo hace el autor) |
+| Memoria (P8) | En curso: C1 aplicado para H1a, H1b y H1c; C1 y C2 hechos (15/11: capturas, figuras 5.1 y 5.2, cifras de pruebas y cobertura); falta C4 |
+| Publicación | `dev` coincide con `origin/dev` (`573fd7e`, 15/11/2026); `dev` lleva 22 commits de ventaja sobre `main`: falta F6 |
 
 ---
 
@@ -49,9 +49,9 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   `fix/login-mobile-spacing`, `feat/console-rail-navigation`) y la remota `origin/feat/role-home-dashboards`.
 - [x] **A2 · Poner al día `PROGRESS.md`** (`IA`, 08/11/2026): entrada de la consola del 03/11 (barra de iconos, logo, banderas,
   gráfica por periodo) y quitar la marca suelta `PENDIENTE_PANEL`.
-- [ ] **A3 · Demo UAL y E2E** (`Ambos`): arrancar el stack, `node scripts/demo/seed-ual.mjs` (corregido, sin repetir)
+- [x] **A3 · Demo UAL y E2E** (`Ambos`): arrancar el stack, `node scripts/demo/seed-ual.mjs` (corregido, sin repetir) **Hecho (15/11/2026: demo UAL cargada y usada para las capturas de la memoria; E2E del 13/11, 200 de 200 tras IMP-62)**
   y `npm run test:e2e` contra el frontend de la rama actual (no otro servidor en el puerto 4200, ver DEF-03).
-- [ ] **A4 · axe en todas las pantallas** (`Ambos`, parte automática de H1a): login, inicio de cada rol, censos,
+- [x] **A4 · axe en todas las pantallas** (`Ambos`, parte automática de H1a): login, inicio de cada rol, censos, **Hecho (08/11/2026; repetido el 13/11: 200 comprobaciones sin críticos ni serios)**
   procesos (A3/A4), participación, resultados, auditoría, trazabilidad, privacidad, claves de API, flujo del votante
   (V1–V8, B1–B5) en 1280 y 360 px, ES y EN. Criterio: cero incumplimientos críticos ni serios. El selector de idioma
   con banderas es nuevo (sustituye al que dio DEF-01): repetir también `/recibo/:id`. **En curso (05/11):** flujo del
@@ -72,10 +72,10 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   (`day-chart.component.spec.ts`, 9 pruebas; Vitest 28 de 28). Backend escrito (08/11/2026, sin commit): `CensusServiceTest`,
   `PrivacyServiceTest` (election) y `JwtVoterIdentityVerifierTest`, `VoterAccessServiceSsoTest`, `NotificationAdminServiceTest`,
   `PersonalDataServiceTest` (voter-access), 38 pruebas que pasan. **Verificadas por el autor (08/11/2026):** `./mvnw verify` en Windows con Java 25.0.5 y Testcontainers (PostgreSQL 18.6): BUILD SUCCESS en 5:27 min; election 36, voter-access 38 y ballot-box 22 pruebas, 0 fallos.
-- [ ] **A6 · Integración P7.2/P7.3** (`IA`; **escrita 08/11/2026, sin commit**: `ElectionOrganizationIsolationIntegrationTest`, `ProcessSyncOutboxIntegrationTest`, `VoterAccessScenariosIntegrationTest`, `BallotBoxScenariosIntegrationTest`, 13 pruebas que pasan; alcance acordado: solo el cruce entre organizaciones, no la matriz de roles; se añaden `spring-boot-starter-webmvc-test` y `spring-security-test` como dependencias de prueba en voter-access y ballot-box. **Verificadas por el autor (08/11/2026):** `./mvnw verify` en Windows con Java 25.0.5 y Testcontainers (PostgreSQL 18.6): BUILD SUCCESS en 5:27 min; election 36, voter-access 38 y ballot-box 22 pruebas, 0 fallos.): matriz completa de autorización HTTP entre organizaciones y roles,
+- [x] **A6 · Integración P7.2/P7.3** (`IA`; **escrita 08/11/2026, sin commit**: `ElectionOrganizationIsolationIntegrationTest`, `ProcessSyncOutboxIntegrationTest`, `VoterAccessScenariosIntegrationTest`, `BallotBoxScenariosIntegrationTest`, 13 pruebas que pasan; alcance acordado: solo el cruce entre organizaciones, no la matriz de roles; se añaden `spring-boot-starter-webmvc-test` y `spring-security-test` como dependencias de prueba en voter-access y ballot-box. **Verificadas por el autor (08/11/2026):** `./mvnw verify` en Windows con Java 25.0.5 y Testcontainers (PostgreSQL 18.6): BUILD SUCCESS en 5:27 min; election 36, voter-access 38 y ballot-box 22 pruebas, 0 fallos.): matriz completa de autorización HTTP entre organizaciones y roles, **Hecho (08/11/2026; en `dev` y en las 135 pruebas del 14/11)**
   concurrencia del token de voto (un solo voto con N envíos), reintentos e idempotencia del *outbox*, inspección del
   esquema y de los logs para el secreto del voto (RNF-11), todas las manipulaciones de la cadena.
-- [ ] **A7 · Carga H1c** (`Ambos`): instalar k6, completar escenarios de acceso y escrutinio, credenciales sintéticas
+- [x] **A7 · Carga H1c** (`Ambos`): instalar k6, completar escenarios de acceso y escrutinio, credenciales sintéticas **Hecho (11/11/2026: tres ejecuciones; H1c rechazada, véase `carga.md`)**
   fuera del repo, tres ejecuciones de 500 VU con p95, errores y recursos; comprobar la cadena y la participación después.
   **En curso (05/11):** `scripts/load/prepare-voting-tokens.mjs` prepara cada ejecución (sin probar con el stack real).
   Solo después de las sesiones H1b (Mailpit guarda 500 mensajes). Falta instalar k6 y ejecutar. Variables y
@@ -98,7 +98,7 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   (IMP-54). **Tercer intento (05/11, 12:04): terminó bien** con una contraseña nueva: organización `USAB`, dos cuentas
   de gestión, censo de 7 entradas, censo de ensayo de 2, procesos #4 (sesión) y #5 (ensayo) abiertos hasta el 12/11/2026
   a las 12:04, 9 invitaciones y `.local/sesion-usab.md` generado. **Escenario `USAB` preparado.**
-- [ ] **A12 · Registrar la sesión RNF-4** (`IA`, tras Q-11): hoja de resultados de administradores en
+- [x] **A12 · Registrar la sesión RNF-4** (`IA`, tras Q-11): hoja de resultados de administradores en **Hecho (13/11/2026: sesiones online P01–P05; RNF-4 aceptado)**
   `docs/evaluation/usabilidad/`, resultado como cantidades (x de 5) y su paso a la memoria (C1). **En curso (05/11):**
   `resultados-rnf4-administradores.md`: 5 de 5 sin ayuda de personas, 4 de 5 con tiempo estimado ≤ 10 min y solo 2 de 5
   sin formación previa. RNF-4 **no demostrado**, evidencia indicativa; ya pasado a la memoria (parte RNF-4 de C1). Solo
@@ -139,7 +139,7 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
   clave de la NVD.
 - [x] **F4 · Secretos** (`IA`, IMP-09, 04/11/2026): gitleaks 8.30.1 sobre todo el historial en el CI y
   `.pre-commit-config.yaml`. Línea base: 0 secretos.
-- [ ] **F5 · Corregir lo que salga** (`IA`): mirar el primer resultado del workflow `security` en GitHub (las
+- [x] **F5 · Corregir lo que salga** (`IA`): mirar el primer resultado del workflow `security` en GitHub (las **Hecho (14/11/2026: los dos *quality gates* en «Passed», 0 incidencias abiertas, `security` en verde el 13/11; IMP-46 e IMP-48 siguen pendientes de aprobación)**
   vulnerabilidades de Maven solo se ven allí) y el *quality gate* de SonarQube; pendientes de la línea base: IMP-46
   (Actions de `build.yml` por SHA), IMP-47, IMP-48 e IMP-49 (necesitan aprobación). Anotar los resultados en la memoria.
   **En curso (05/11):** SonarQube, según la captura del autor: los dos *quality gates* en «Passed»; backend con seguridad
@@ -171,7 +171,7 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
 **Aprobado por el autor el 04/11/2026 (Q-08, D-52).** Propuesta de la IA (03/11): hacer ya D1, D2 y D5 (bajo coste y mejoran accesibilidad y seguridad), D3 al preparar
 el despliegue y D4 si sobra tiempo. Las que más aportan antes de entregar, de más a menos:
 
-- [ ] **D1 · IMP-15**: aviso 2 minutos antes de que caduque la sesión de gestión (WCAG 2.2.1).
+- [x] **D1 · IMP-15**: aviso 2 minutos antes de que caduque la sesión de gestión (WCAG 2.2.1). **Hecho (13/11/2026: aviso de caducidad de sesión aplicado y con pruebas)**
 - [ ] **D2 · IMP-21**: límite de peticiones por IP en el *gateway* para `/api/v1/voter-access/**` (RNF-14). **En curso
   (05/11):** commit `4ec0efc` en la rama `feat/voter-access-limit-jwt-audience`, sin fusionar; faltan las pruebas del autor.
 - [ ] **D3 · IMP-32**: cabeceras CSP, HSTS y `Referrer-Policy` en el despliegue del frontal. Solo si hay despliegue: el
@@ -185,12 +185,12 @@ El resto de `IMPROVEMENTS.md` queda para P9 salvo que se decida otra cosa.
 
 ## 5. Memoria (P8)
 
-- [ ] **C1 · Resultados de la evaluación** (`IA`, tras A4, A7, B2, B3): completar `docs/evaluation/informe.md`, la tabla
+- [x] **C1 · Resultados de la evaluación** (`IA`, tras A4, A7, B2, B3): completar `docs/evaluation/informe.md`, la tabla **Hecho (13/11/2026: H1a sin decisión, H1b aceptada, H1c rechazada y RNF-4 aceptado, aplicados en la memoria)**
   13.1 (`evaluacion_resultados.tex`), la lista `[PENDIENTE]` de `contenido1.tex` y las conclusiones. Lo que no se
   mida se deja como PENDIENTE y limitación, sin inventar resultados. **En curso (05/11):** parte de RNF-4 hecha (no
   demostrado); H1a: parte automática favorable tras corregir DEF-05 y DEF-06, parte manual no realizada y H1a sin decisión (08/11, aplicado en la memoria); H1b aceptada y aplicada en la memoria (10/11); H1c rechazada y aplicada en la memoria (11/11); antes: H1c sin
   datos. C2 y C3 no se adelantan hasta tener H1a, H1b y H1c medidas o declaradas limitación.
-- [ ] **C2 · Alinear con lo implementado** (`IA`): figuras de arquitectura (objetivo frente a implementado),
+- [x] **C2 · Alinear con lo implementado** (`IA`): figuras de arquitectura (objetivo frente a implementado), **Hecho (15/11/2026: capturas de la consola añadidas en `implementacion.tex`; figuras 5.1 y 5.2 redistribuidas; cifras de pruebas y cobertura del 14–15/11)**
   diagramas conceptuales y texto heredado; capturas seguras de las pantallas (datos sintéticos de la demo UAL). **En curso (13/11/2026):** figura de arquitectura implementada, texto heredado, RF-03 (Excel), figura de secuencia y cifras de pruebas hechos, sin commit; faltan las capturas.
 - [x] **C3 · Aplicar las decisiones Q-01 a Q-04** (`IA`) en la especificación y las tablas 1.1 y 4.3. **Hecho (08/11/2026, D-56)**, adelantado a petición del autor (el plan decía esperar a H1a, H1b y H1c): `contenido1.tex` (tablas 1.1 y 4.3), `especificacion_detallada.tex` (nota de alcance, RF-11 y RI-6) y `conclusiones.tex` (P9).
 - [ ] **C4 · Revisión editorial y visual final** (`Ambos`, P8.4): compilar el PDF, revisar página a página,
@@ -257,3 +257,4 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 11/11/2026 | P7.5, C1 (H1c) | Prueba de humo (ejecución 11) y tres ejecuciones de 500 VU (procesos 10–12): p95 4852, 2402 y 4849 ms; 222/240/281 votos aceptados, resto conexiones rechazadas; cadena íntegra. **H1c rechazada**, aplicada en `evaluacion_resultados.tex`, `contenido1.tex`, `conclusiones.tex`, `resumentexto.tex`, `especificacion_detallada.tex`, `informe.md` y `carga.md`. `check-load-run.mjs`, auditor sintético y recuento por código; IMP-57; IMP-55 actualizada. Rama `test/h1c-load-results` |
 | 13/11/2026 | RNF-4 online, C2, D-63 | Sesiones online en curso (túnel nuevo, `login-code-fixed` reparado, comando `passwords`). C2: figura 10.1 de arquitectura implementada, RF-03 con Excel, texto heredado y cifras de pruebas del 11/11 (119 backend, 28 frontend, cobertura 14–70 %). Observaciones de participantes aplicadas en la consola (D-63; 53 Vitest en el entorno de la IA). IMP-59 a IMP-61. Sin commit |
 | 13/11/2026 | B4, A12, C1 (RNF-4) | Sesiones RNF-4 online P01–P05: 5 de 5 válidas, sin formación previa, sin ayuda y en ≤ 4 min (mediana 3 min); **RNF-4 aceptado** y aplicado en `evaluacion_resultados.tex`, `conclusiones.tex`, `contenido1.tex`, `especificacion_detallada.tex` y `resumentexto.tex`. Tiempos redondeados al minuto (limitación anotada). D1 aplicado. Sin commit |
+| 15/11/2026 | Revisión del plan; C2, F5 | Contrastado con el repositorio: A3, A4, A6, A7, A12, F5, D1, C1 y C2 marcados como hechos. Cobertura y recuentos del 14–15/11 en la memoria (135 backend, 92 frontend), capturas y figuras 5.1/5.2; `573fd7e` subido. Abiertos: A5 (resto), A9, A10 (verlo en GitHub), D2/D5 (rama sin fusionar), D4, F6, C4, E1–E3, Q-10 |
