@@ -850,6 +850,11 @@
     }
   },
   "voter": {
+    "tooMany": {
+      "title": "Too many requests",
+      "wait": "Too many requests are coming from your network right now. Wait {{seconds}} seconds and try again.",
+      "soon": "Too many requests are coming from your network right now. Wait a moment and try again."
+    },
     "welcome": {
       "eyebrow": "Vote",
       "closes": "You can vote until {{closes}}.",

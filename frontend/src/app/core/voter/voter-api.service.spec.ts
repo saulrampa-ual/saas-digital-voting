@@ -56,4 +56,16 @@ describe('VoterApiService voting flow', () => {
       resendAvailableAt: '2026-10-31T12:01:00Z' });
     await expect(promise).resolves.toMatchObject({ maskedEmail: '***@example.test' });
   });
+
+  it('tells the 429 of the gateway, with its wait, from the 429 of voter-access (IMP-50)', async () => {
+    const limited = api.linkStatus('synthetic-link').catch((error) => error);
+    http.expectOne('/api/v1/voter-access/links/synthetic-link')
+      .flush(null, { status: 429, statusText: 'Too Many Requests', headers: { 'Retry-After': '30' } });
+    await expect(limited).resolves.toMatchObject({ status: 429, rateLimited: true, retryAfterSeconds: 30 });
+
+    const tooSoon = api.sendCode('synthetic-link').catch((error) => error);
+    http.expectOne('/api/v1/voter-access/links/synthetic-link/otp')
+      .flush({ resendAvailableAt: '2026-10-31T12:01:00Z' }, { status: 429, statusText: 'Too Many Requests' });
+    await expect(tooSoon).resolves.toMatchObject({ status: 429, rateLimited: false, retryAfterSeconds: null });
+  });
 });

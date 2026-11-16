@@ -27,7 +27,6 @@ recoge el estado final de P7; el detalle y las fuentes están en `docs/evaluatio
 - Parte manual de H1a.
 - RF-05a: inicio de sesión de gestión con un IdP externo (A9).
 - Autorización HTTP de identity y repositorios sin prueba de integración propia.
-- Pruebas unitarias del flujo visual del votante (resto de A5).
 - E2E funcional con Keycloak y Mailpit reales: los barridos usan servicios simulados.
 - Escenarios k6 de acceso y escrutinio: solo se midió la emisión.
 

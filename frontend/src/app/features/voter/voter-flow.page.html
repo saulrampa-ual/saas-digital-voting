@@ -148,6 +148,13 @@
           </ion-button>
         </app-error-state>
       }
+      @case ('tooMany') {
+        <app-error-state titleKey="voter.tooMany.title"
+                         [messageKey]="retryAfter() === null ? 'voter.tooMany.soon' : 'voter.tooMany.wait'"
+                         [messageParams]="{ seconds: retryAfter() }" icon="time-outline">
+          <ion-button expand="block" color="secondary" (click)="load()">{{ 'voter.states.retry' | translate }}</ion-button>
+        </app-error-state>
+      }
       @default {
         <app-error-state titleKey="voter.states.error.title" messageKey="voter.states.error.message" />
       }
