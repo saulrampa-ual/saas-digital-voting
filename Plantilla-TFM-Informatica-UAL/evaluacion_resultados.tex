@@ -4,8 +4,8 @@
 \section{Pruebas disponibles}
 En las últimas ejecuciones registradas terminaron correctamente 151 pruebas
 de backend (\texttt{mvnw verify} del 15/11/2026: gateway 16, identity 13,
-election 58, voter-access 38 y ballot-box 26) y 92 de frontend, en 12 ficheros
-(\texttt{npm run test:ci} del 15/11/2026); \texttt{npm run build} terminó
+election 58, voter-access 38 y ballot-box 26) y 144 de frontend, en 13 ficheros
+(\texttt{npm run test:coverage} del 16/11/2026); \texttt{npm run build} terminó
 correctamente en la ejecución completa del 13/11/2026. Las pruebas unitarias y de arquitectura cubren reglas
 seleccionadas de permisos, ciclo de vida, importación del censo, acceso del
 votante, consumo del token, cadena de auditoría, escrutinio y separación
@@ -14,8 +14,9 @@ dirección del \emph{gateway} y la audiencia que el cliente de administración d
 Keycloak asigna a las claves de API. En frontend se cubren la guarda de rol, el flujo de voto y
 recibo, el retorno SSO con PKCE, componentes del panel de la consola, el
 asistente de creación de procesos, la traducción automática de sus textos, el
-aviso de caducidad de la sesión, el servicio de autenticación y la importación
-del censo en Excel.
+aviso de caducidad de la sesión, el servicio de autenticación, la importación
+del censo en Excel y los estados del flujo del votante (enlace, código,
+papeleta, voto, recibo, resultado y cuenta institucional).
 
 Dieciséis de las pruebas de backend, repartidas en ocho clases, se ejecutan
 contra PostgreSQL 18.6 con Testcontainers. Aplican las migraciones Flyway de
@@ -40,14 +41,17 @@ por el selector de idioma; corregido el mismo día haciendo que el asistente
 vuelva a la barra de pasos al cambiar de paso, y repetidas las 200
 comprobaciones sin incumplimientos críticos ni serios) se valoran en la
 tabla~\ref{tab:estado-hipotesis}; no son pruebas funcionales de extremo a
-extremo.
+extremo. El 16/11/2026 se añadieron al barrido del flujo del votante los tres
+estados del aviso de demasiadas peticiones (al abrir el enlace, al pedir el
+código y al comprobarlo): sus 12 comprobaciones nuevas, y las 88 anteriores
+repetidas con ellas, no dan incumplimientos críticos ni serios.
 
 La cobertura de líneas JaCoCo, medida en la ejecución del 15/11/2026, es:
 gateway 91,2\% (62/68), identity 26,3\% (208/790), election 74,1\%
 (1316/1777), voter-access 50,4\% (793/1573) y ballot-box 41,6\% (683/1641);
 en conjunto, 52,4\% (3062/5849). En el frontend, medida con Vitest sobre todo
-el código de \texttt{src/app} el 14/11/2026, es del 33,7\% de las líneas
-(726/2155). En el código añadido o modificado desde el análisis del
+el código de \texttt{src/app} el 16/11/2026, es del 42,0\% de las líneas
+(960/2287). En el código añadido o modificado desde el análisis del
 04/11/2026, SonarQube midió el 14/11/2026 una cobertura del
 85,8\% en el backend y del 87,3\% en el frontend, por encima del mínimo del
 80\% de su \emph{quality gate}; esa métrica combina líneas y condiciones, por
@@ -65,7 +69,7 @@ limitaciones en \texttt{docs/evaluation/informe.md}.
 \endfirsthead
 \hline\textbf{Hipótesis} & \textbf{Criterio del protocolo} & \textbf{Estado del criterio} & \textbf{Resultado medido} \\
 \hline\endhead
-H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo. La auditoría automática no certifica conformidad WCAG. & Validado por el tutor & SIN DECISIÓN. Parte automática favorable: los barridos axe del flujo del votante (88 auditorías) dan 0 incumplimientos críticos y 0 serios tras corregir dos incidencias. La revisión manual con teclado y lector de pantalla no se realizó. \\
+H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo. La auditoría automática no certifica conformidad WCAG. & Validado por el tutor & SIN DECISIÓN. Parte automática favorable: los barridos axe del flujo del votante (100 auditorías desde el 16/11/2026) dan 0 incumplimientos críticos y 0 serios tras corregir dos incidencias. La revisión manual con teclado y lector de pantalla no se realizó. \\
 \hline
 H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan acceso, emisión y obtención del recibo en $\leq$ 3 minutos, y al menos 4 de 5 interpretan correctamente el resultado de la verificación. H0b: no se alcanza alguno de esos criterios. & Validado por el tutor & ACEPTADA (09/11/2026). 5 de 5 completan acceso, emisión y recibo sin ayuda en $\leq$ 3 minutos (mediana 51~s, máximo 79~s) y 5 de 5 interpretan correctamente el recibo. \\
 \hline
@@ -78,7 +82,7 @@ RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin fo
 
 El detalle de cada resultado de la tabla~\ref{tab:estado-hipotesis} es el siguiente.
 
-\textbf{H1a.} Parte automática favorable; parte manual no realizada. Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de la regla \texttt{aria-required-children}, todos de una misma incidencia en la papeleta; corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Repetido el 08/11/2026 sobre la versión vigente (\texttt{06f39be}), con el mismo resultado. La revisión manual con teclado y lector de pantalla que exige el criterio no se realizó antes del cierre: no es un incumplimiento, sino una parte del protocolo sin ejecutar. Evidencia parcial; sin decisión.
+\textbf{H1a.} Parte automática favorable; parte manual no realizada. Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de la regla \texttt{aria-required-children}, todos de una misma incidencia en la papeleta; corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Repetido el 08/11/2026 sobre la versión vigente (\texttt{06f39be}), con el mismo resultado. La revisión manual con teclado y lector de pantalla que exige el criterio no se realizó antes del cierre: no es un incumplimiento, sino una parte del protocolo sin ejecutar. Evidencia parcial; sin decisión. El 16/11/2026, con el aviso de demasiadas peticiones, el barrido del flujo del votante pasa a 25 pantallas o estados y 100 auditorías, todas sin incumplimientos críticos ni serios.
 
 \textbf{H1b.} ACEPTADA: sesiones del 09/11/2026 con consentimiento y escenario sintético. Cinco sesiones válidas (P02--P05 y la reserva R1; P01 se invalidó por una incidencia de entorno, porque su entrada del censo ya tenía un voto). 5 de 5 completan acceso, emisión y recibo sin ayuda en $\leq$ 3 minutos (T0--T1: mediana 51~s, mínimo 36~s, máximo 79~s; 0 errores) y 5 de 5 interpretan correctamente el recibo. Una sesión adicional con la segunda reserva (R2) queda fuera del cómputo y tuvo el mismo resultado. Evidencia descriptiva limitada al prototipo, la configuración y la población evaluados.
 
@@ -116,7 +120,7 @@ característica debe completarse cuando se ejecuten esos protocolos.
 
 \section{Validez}
 La cobertura global es baja y desigual (del 26,3\% de identity al 91,2\% del
-\emph{gateway} en el backend y 33,7\% en el frontend) y limita la confianza que
+\emph{gateway} en el backend y 42,0\% en el frontend) y limita la confianza que
 puede atribuirse a la suite; solo el código añadido desde el 04/11/2026 supera
 el 80\%. Las pruebas de
 integración comprueban casos concretos de aislamiento entre organizaciones y

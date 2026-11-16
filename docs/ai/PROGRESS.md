@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-15 · Rama: `dev` (HEAD `17603bd`; cambios locales sin commit) · D2/D5 integradas por el autor (`c48dbab`) · sin push
+Última actualización: 2026-11-16 · Rama: `dev` (HEAD `6c21190`; cambios locales sin commit) · D2/D5 integradas por el autor (`c48dbab`) · sin push
 
 ## Hitos
 
@@ -14,14 +14,15 @@
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Cerrado el 15/11/2026: 151 pruebas backend y 92 frontend, 0 fallos; H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11); RNF-4 aceptado (13/11). Limitaciones en `docs/evaluation/resultados-p7/cierre.md` |
-| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 95 páginas; revisión editorial y visual completa aún pendiente |
+| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 92 páginas; revisión editorial y visual completa aún pendiente |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
 ## Hecho
 
 - 15/11: memoria recompilada dos veces con pdfLaTeX (95 páginas; sin referencias sin resolver). Revisión visual solicitada completada: tabla 13.1 legible en una página y su explicación continúa correctamente en la siguiente; figuras 8.1 y 8.2 legibles, sin solapamientos. Script `node scripts/dev/keycloak-api-audience.mjs` ejecutado contra Keycloak local ya activo; añadió el audience mapper `verivoto-api` a seis clientes (admin, cuatro servicios y Swagger). No se modificó el comportamiento del voto.
 - 15/11 (C4, lectura del PDF de 95 páginas): sin texto ni figuras cortados. Corregidos el ancho de la tabla 1.1, la ruta larga del apéndice A.1 (`\path`) y las filas de P7 y P8 de la tabla 9.2, que aún daban RNF-4 como pendiente. La contraportada queda al límite de espacio: el resumen no admite más texto. Pendiente de la compilación del autor.
-- 16/11 (sin commit): **IMP-50** hecha (mensaje propio del 429 del *gateway* en el flujo del votante, con la espera de `Retry-After` cuando se puede leer). **A5, flujo del votante:** `voter-flow.page.spec.ts` (51 pruebas de la máquina de estados: enlace, código, papeleta, voto, recibo, resultado, cuenta institucional) y un caso más en `voter-api.service.spec.ts`. En el entorno de la IA (Node 22, Linux): Vitest 144 de 144 en 13 ficheros, `ng build` correcto, `tsc` de las pruebas sin errores y cobertura de líneas del frontend 43,2 % (989/2287); **la memoria sigue con 92 pruebas y 33,7 % hasta que el autor ejecute `npm run test:coverage`**. Capturas de la memoria agrupadas de dos en dos (figuras 11.1–11.6, tres páginas en lugar de seis). Revisión del secreto del voto: el cambio es solo de interfaz; no añade registros, almacenamiento ni datos nuevos.
+- 16/11 (sin commit): **IMP-50** hecha (mensaje propio del 429 del *gateway* en el flujo del votante, con la espera de `Retry-After` cuando se puede leer). **A5, flujo del votante:** `voter-flow.page.spec.ts` (51 pruebas de la máquina de estados: enlace, código, papeleta, voto, recibo, resultado, cuenta institucional) y un caso más en `voter-api.service.spec.ts`. En el entorno de la IA (Node 22, Linux): Vitest 144 de 144 en 13 ficheros, `ng build` correcto, `tsc` de las pruebas sin errores y cobertura de líneas del frontend 43,2 % (989/2287); Ejecución del autor (16/11, `npm run test:coverage`): 144 de 144 y cobertura de líneas 42,0 % (960/2287), ya en la memoria. **Barrido axe:** tres estados de IMP-50 añadidos a `voter-flow.accessibility.spec.ts`; 100 de 100 sin críticos ni serios (Chrome en el entorno de la IA). Capturas de la memoria agrupadas de dos en dos (figuras 11.1–11.6, tres páginas en lugar de seis). Revisión del secreto del voto: el cambio es solo de interfaz; no añade registros, almacenamiento ni datos nuevos.
+- 16/11: eliminados de `.local/` `old-fe-src.tgz`, `voter-flow.accessibility.spec.ts` y la carpeta `figs-preview` a petición del autor. Memoria recompilada en dos pasadas con pdfLaTeX: 92 páginas, sin referencias sin resolver.
 
 - H1c: completados en `docs/evaluation/carga.md` los datos del equipo usados en la medición: AMD Ryzen 7 5825U,
   16 GB RAM (15,4 GiB visibles para Windows) y Docker 29.4.0 (build 9d7ad9f). Datos consultados el 11/11/2026.
@@ -204,7 +205,7 @@
 
 ## Pendiente
 
-> P7 se cerró el 15/11/2026. Los puntos P7.x de esta lista que no se completaron quedan como limitaciones declaradas (`docs/evaluation/resultados-p7/cierre.md`), no como trabajo en curso. D2 y D5 fusionadas por el autor el 15/11/2026 (`c48dbab`; `mvnw verify`: 151 pruebas, 0 fallos); memoria, `informe.md`, `threat-model.md` e `IMPROVEMENTS.md` actualizados. C4: figuras 8.1 y 8.2 y tabla 13.1 revisadas visualmente el 15/11; memoria compilada (95 páginas) y `keycloak-api-audience.mjs` ejecutado contra Keycloak local. Siguiente paso: A9 y el resto de C4.
+> P7 se cerró el 15/11/2026. Los puntos P7.x de esta lista que no se completaron quedan como limitaciones declaradas (`docs/evaluation/resultados-p7/cierre.md`), no como trabajo en curso. D2 y D5 fusionadas por el autor el 15/11/2026 (`c48dbab`; `mvnw verify`: 151 pruebas, 0 fallos); memoria, `informe.md`, `threat-model.md` e `IMPROVEMENTS.md` actualizados. C4: figuras 8.1 y 8.2 y tabla 13.1 revisadas visualmente el 15/11; memoria recompilada (92 páginas) el 16/11 y `keycloak-api-audience.mjs` ejecutado contra Keycloak local. Siguiente paso: A9 y el resto de C4.
 
 - P7.1: ampliar cobertura unitaria de censo/CSV, validación de claims institucionales, privacidad, recordatorios,
   errores, pruebas del flujo visual del votante y reglas de dominio que aún no tienen pruebas.
