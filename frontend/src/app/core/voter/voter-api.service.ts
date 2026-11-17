@@ -58,8 +58,18 @@ export class VoterApiError extends Error {
   constructor(
     readonly status: number,
     readonly problem: Record<string, unknown>,
+    /** Seconds of the `Retry-After` header, when the response carries one that can be read. */
+    readonly retryAfterSeconds: number | null = null,
   ) {
     super(`Voter API error ${status}`);
+  }
+
+  /**
+   * IMP-50: 429 of the gateway (limit per client address, IMP-21), which has no problem details. The 429 of
+   * voter-access («wait before asking for another code») always says when the next code can be requested.
+   */
+  get rateLimited(): boolean {
+    return this.status === 429 && this.problem['resendAvailableAt'] === undefined;
   }
 
   get processStatus(): ProcessStatus | null {
@@ -140,7 +150,9 @@ export class VoterApiService {
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         const problem = typeof error.error === 'object' && error.error !== null ? error.error : {};
-        throw new VoterApiError(error.status, problem as Record<string, unknown>);
+        const retryAfter = Number.parseInt(error.headers?.get('Retry-After') ?? '', 10);
+        throw new VoterApiError(error.status, problem as Record<string, unknown>,
+          Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : null);
       }
       throw error;
     }

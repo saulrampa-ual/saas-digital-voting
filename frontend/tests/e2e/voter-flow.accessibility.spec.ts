@@ -25,7 +25,7 @@ const viewports = [
 ] as const;
 const languages = ['es', 'en'] as const;
 
-type Reply = { status: number; body?: unknown };
+type Reply = { status: number; body?: unknown; headers?: Record<string, string> };
 type Api = Partial<Record<'link' | 'otp' | 'verify' | 'ballot' | 'vote' | 'receipt' | 'result' | 'counted', Reply>>;
 
 const link = (overrides: Record<string, unknown> = {}) => ({
@@ -53,12 +53,15 @@ const result = {
 };
 const problem = (status: number, extra: Record<string, unknown> = {}): Reply =>
   ({ status, body: { type: 'about:blank', title: 'Synthetic', status, ...extra } });
+/** IMP-21/IMP-50: the 429 of the gateway (limit per client address) has no problem details, only `Retry-After`. */
+const gatewayLimit = (seconds: number): Reply => ({ status: 429, headers: { 'Retry-After': String(seconds) } });
 
 async function mockApi(page: Page, api: Api): Promise<void> {
   const answer = (reply: Reply | undefined) => ({
     status: reply?.status ?? 500,
     contentType: reply && reply.status >= 400 ? 'application/problem+json' : 'application/json',
     body: JSON.stringify(reply?.body ?? {}),
+    headers: reply?.headers,
   });
   await page.route('**/api/v1/**', (route) => {
     const url = new URL(route.request().url());
@@ -152,6 +155,16 @@ const scenarios: { screen: string; api: Api; go?: (page: Page) => Promise<void>;
     go: async (p) => { await p.getByRole('button', { name: /empezar|start/i }).click(); await typeCode(p, '123456'); await p.locator('app-error-state').waitFor(); } },
   { screen: 'C4-locked', api: { link: { status: 200, body: link() }, otp: { status: 202, body: codeSent }, verify: problem(423, { lockedUntil: future(0.01) }) },
     go: async (p) => { await p.getByRole('button', { name: /empezar|start/i }).click(); await typeCode(p, '123456'); await p.locator('app-error-state').waitFor(); } },
+  // IMP-50 (16/11/2026): wait message after a 429 of the gateway, on the link and on the code step
+  { screen: 'IMP50-too-many-link', api: { link: gatewayLimit(30) },
+    go: async (p) => { await p.locator('app-error-state').waitFor();
+      expect.soft(await p.getByRole('alert').filter({ hasText: /30 (segundos|seconds)/ }).count(), 'IMP-50: wait announced').toBe(1); } },
+  { screen: 'IMP50-too-many-code', api: { link: { status: 200, body: link() }, otp: gatewayLimit(20) },
+    go: async (p) => { await p.getByRole('button', { name: /empezar|start/i }).click();
+      await p.locator('app-access-code-step [role="alert"]').waitFor(); } },
+  { screen: 'IMP50-too-many-verify', api: { link: { status: 200, body: link() }, otp: { status: 202, body: codeSent }, verify: gatewayLimit(15) },
+    go: async (p) => { await p.getByRole('button', { name: /empezar|start/i }).click(); await typeCode(p, '123456');
+      await p.locator('#code-error').waitFor(); } },
   { screen: 'V4-not-open', api: { link: { status: 200, body: link({ status: 'SCHEDULED', opensAt: future(1) }) } } },
   { screen: 'V5-closed', api: { link: { status: 200, body: link({ status: 'CLOSED', closesAt: past(1) }) } } },
   { screen: 'C3-invalid-link', api: { link: problem(404) } },

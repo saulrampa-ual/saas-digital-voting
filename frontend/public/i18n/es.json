@@ -850,6 +850,11 @@
     }
   },
   "voter": {
+    "tooMany": {
+      "title": "Demasiadas peticiones",
+      "wait": "Ahora mismo llegan demasiadas peticiones desde tu red. Espera {{seconds}} segundos y vuelve a intentarlo.",
+      "soon": "Ahora mismo llegan demasiadas peticiones desde tu red. Espera un momento y vuelve a intentarlo."
+    },
     "welcome": {
       "eyebrow": "Votación",
       "closes": "Puedes votar hasta el {{closes}}.",

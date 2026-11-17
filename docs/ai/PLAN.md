@@ -15,7 +15,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Bloque | Estado |
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
-| Pruebas y medición (P7) | Cerrado el 15/11/2026: 151 pruebas backend y 92 frontend (15/11); cobertura de líneas 26–91 % por servicio en backend y 33,7 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
+| Pruebas y medición (P7) | Cerrado el 15/11/2026: 151 pruebas backend (15/11) y 144 frontend (16/11); cobertura de líneas 26–91 % por servicio en backend y 42,0 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
 | Memoria (P8) | En curso: C1 aplicado para H1a, H1b y H1c; C1 y C2 hechos (15/11: capturas, figuras 5.1 y 5.2, cifras de pruebas y cobertura); falta C4 |
 | Publicación | PR #4 fusionado en `main` el 15/11/2026 (`7ee3a57`), con `build` y `security` en verde. Anteproyecto firmado por el director (comunicado por el autor el 15/11/2026) |
 
@@ -66,7 +66,7 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   sin acceso con teclado; sin corregir, necesita aprobación). Resultados públicos (V8) y 404: 0. Informe:
   `docs/evaluation/accesibilidad-axe-consola-2026-11-08.md`. **DEF-07 corregido el mismo día** (opción A, aprobada por
   el autor): barrido 2 con 0 críticos y 0 serios, 108 de 108 sin marcas. A4 completa; no cambia H1a (flujo del votante).
-- [ ] **A5 · Pruebas unitarias P7.1** (`IA`): censo/CSV, claims institucionales (RF-05b), privacidad (RF-18),
+- [x] **A5 · Pruebas unitarias P7.1** (`IA`): censo/CSV, claims institucionales (RF-05b), privacidad (RF-18), **Hecho (16/11/2026: flujo del votante cubierto con `voter-flow.page.spec.ts`; lo que quede sin prueba figura como limitación en `resultados-p7/cierre.md`)**
   recordatorios (RF-17), errores y reglas de dominio sin prueba; frontend: gráfica por día (`app-day-chart`),
   agregados del inicio y flujo visual del votante. **Parcial (08/11/2026, sin commit):** frontend, gráfica por día
   (`day-chart.component.spec.ts`, 9 pruebas; Vitest 28 de 28). Backend escrito (08/11/2026, sin commit): `CensusServiceTest`,
@@ -260,3 +260,4 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 15/11/2026 | Revisión del plan; C2, F5 | Contrastado con el repositorio: A3, A4, A6, A7, A12, F5, D1, C1 y C2 marcados como hechos. Cobertura y recuentos del 14–15/11 en la memoria (135 backend, 92 frontend), capturas y figuras 5.1/5.2; `573fd7e` subido. Abiertos: A5 (resto), A9, A10 (verlo en GitHub), D2/D5 (rama sin fusionar), D4, F6, C4, E1–E3, Q-10 |
 | 15/11/2026 | F6, A10, E1, anteproyecto | PR #4 en `main` con todos los checks en verde; P7 cerrado (evidencia por RF en `TRACEABILITY.md`, `resultados-p7/cierre.md`); anteproyecto firmado. D2 y D5: la rama se fusiona sin conflictos con `dev` (comprobado con `git apply --3way --check`); falta `mvnw verify` del autor |
 | 15/11/2026 | D2, D5, C4 (parcial) | Rama de IMP-21 e IMP-27 fusionada por el autor (`c48dbab`) y verificada: 151 pruebas de backend. Memoria actualizada (151 y 92 pruebas; cobertura 52,4 % en backend). C4 parcial: figuras 8.1 y 8.2 redistribuidas y tabla 13.1 con resultados breves y el detalle en el texto |
+| 16/11/2026 | IMP-50, A5, C4 | Mensaje del 429 del *gateway* en el flujo del votante (aprobado por el autor); 52 pruebas nuevas de frontend (144 en el entorno de la IA, cobertura 43,2 %; pendiente de la ejecución del autor para pasar las cifras a la memoria); capturas de dos en dos. Sin commit |

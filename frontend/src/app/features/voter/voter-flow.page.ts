@@ -27,7 +27,7 @@ import { ReceiptStepComponent } from './steps/receipt-step.component';
 type Screen =
   | 'loading' | 'welcome' | 'sso' | 'code' | 'ballot' | 'review' | 'receipt'
   | 'notOpen' | 'closed' | 'invalidLink' | 'expiredLink' | 'locked'
-  | 'alreadyVoted' | 'sessionExpired' | 'notRecorded' | 'error'
+  | 'alreadyVoted' | 'sessionExpired' | 'notRecorded' | 'tooMany' | 'error'
   | 'resultsReady' | 'results';
 
 /** What the code is for: voting while open, seeing the result once tallied (D-41). */
@@ -73,6 +73,8 @@ export class VoterFlowPage implements OnInit {
   protected readonly receiptCode = signal<string | null>(null);
   protected readonly votedOn = signal<string | null>(null);
   protected readonly lockedUntil = signal<string | null>(null);
+  /** IMP-50: seconds to wait after a 429 of the gateway; null when the response does not say. */
+  protected readonly retryAfter = signal<number | null>(null);
   protected readonly purpose = signal<Purpose>('vote');
   protected readonly result = signal<Result | null>(null);
   protected readonly verification = signal<VerificationState>('checking');
@@ -111,7 +113,13 @@ export class VoterFlowPage implements OnInit {
     });
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): Promise<void> {
+    return this.load();
+  }
+
+  /** Reads the personal link and shows its first screen; also «Reintentar» after a 429 of the gateway (IMP-50). */
+  protected async load(): Promise<void> {
+    this.screen.set('loading');
     try {
       const link = await this.api.linkStatus(this.linkToken());
       this.link.set(link);
@@ -171,6 +179,8 @@ export class VoterFlowPage implements OnInit {
       this.ssoError.set(this.translate.instant('voter.sso.cancelled') as string);
     } else if (outcome.status === 401 || outcome.status === 409) {
       this.ssoError.set(this.translate.instant('voter.sso.invalid') as string);
+    } else if (outcome.status === 429) {
+      this.ssoError.set(this.tooManyText(null));
     } else if (outcome.status === 423 || outcome.status === 422 || outcome.status === 404 || outcome.status === 410) {
       this.handleAccessError(new VoterApiError(outcome.status, outcome.problem));
     } else {
@@ -204,7 +214,9 @@ export class VoterFlowPage implements OnInit {
       if (!(error instanceof VoterApiError)) {
         throw error;
       }
-      if (error.status === 429) {
+      if (error.rateLimited) {
+        this.codeError.set(this.tooManyText(error.retryAfterSeconds));
+      } else if (error.status === 429) {
         this.codeError.set(this.translate.instant('voter.code.tooSoon'));
       } else if (error.status === 503 || error.status === 0) {
         this.codeError.set(this.translate.instant('voter.code.mailFailed'));
@@ -224,6 +236,11 @@ export class VoterFlowPage implements OnInit {
     } catch (error) {
       if (!(error instanceof VoterApiError)) {
         throw error;
+      }
+      if (error.rateLimited) {
+        // The code was not checked: it stays in the field so the person can send it again.
+        this.codeError.set(this.tooManyText(error.retryAfterSeconds));
+        return;
       }
       this.codeStep()?.clear();
       if (error.status === 400) {
@@ -352,11 +369,21 @@ export class VoterFlowPage implements OnInit {
     return null;
   }
 
+  /** IMP-50: plain message for a 429 of the gateway, with the wait when the response says it. */
+  private tooManyText(seconds: number | null): string {
+    return (seconds === null
+      ? this.translate.instant('voter.tooMany.soon')
+      : this.translate.instant('voter.tooMany.wait', { seconds })) as string;
+  }
+
   private handleLinkError(error: unknown): void {
     if (error instanceof VoterApiError && error.status === 404) {
       this.screen.set('invalidLink');
     } else if (error instanceof VoterApiError && error.status === 410) {
       this.screen.set('expiredLink');
+    } else if (error instanceof VoterApiError && error.rateLimited) {
+      this.retryAfter.set(error.retryAfterSeconds);
+      this.screen.set('tooMany');
     } else {
       this.screen.set('error');
     }
