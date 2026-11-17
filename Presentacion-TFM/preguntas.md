@@ -1,14 +1,14 @@
 # Preguntas previsibles del tribunal
 
-Respuestas orientativas basadas en la memoria (cifras a 16/11/2026). Son para preparar, no para recitar: di la idea
+Respuestas orientativas basadas en la memoria (cifras a 17/11/2026). Son para preparar, no para recitar: di la idea
 con tus palabras y, si no sabes algo, dilo y explica cómo lo averiguarías.
 
 Según el protocolo, pregunta primero el **secretario**, después el **vocal** y por último el **presidente**. La
 rúbrica valora el trabajo (5 puntos), la memoria (2,5) y la presentación (2,5), y pide justificar cada nota, así que
 suelen preguntar por decisiones, por la evaluación y por lo que falta.
 
-Las diapositivas de reserva (después de «Gracias») sirven de apoyo: decisiones de arquitectura, arquitectura objetivo,
-amenazas STRIDE y plan frente a ejecución.
+Las diapositivas de reserva (después de «Gracias») sirven de apoyo: H1c en detalle, participación y trazabilidad,
+decisiones de arquitectura, arquitectura objetivo, amenazas STRIDE y plan frente a ejecución.
 
 ---
 
@@ -83,7 +83,8 @@ urna. Con veinte envíos simultáneos del mismo token se registra un solo voto (
 **¿Qué amenazas analizaste?**
 STRIDE sobre las interfaces y almacenes (capítulo 12). Ejemplos ya cubiertos: audiencia del JWT exigida (un token de
 otro cliente no sirve), límite de peticiones por IP en el gateway, rutas internas solo para clientes de servicio
-concretos y secretos fuera del repositorio (gitleaks en CI).
+concretos, suspensión de una organización que desactiva sus cuentas y claves, Actions e imágenes fijadas por SHA o
+*digest* y secretos fuera del repositorio (gitleaks en CI).
 
 ## Evaluación
 
@@ -115,7 +116,7 @@ Cada requisito no funcional se asigna a una característica y subcaracterística
 dentro de seguridad) con una métrica y un umbral. La evaluación indica qué características tienen evidencia y cuáles
 no; no es una certificación.
 
-**La cobertura es baja (52 % y 42 %). ¿No es un problema?**
+**La cobertura es baja (59 % y 42 %). ¿No es un problema?**
 Es una limitación declarada. El código nuevo desde noviembre supera el 85 % y las reglas críticas (secreto, unicidad,
 aislamiento, cadena) tienen pruebas específicas, incluidas de integración. La cobertura no demuestra corrección por sí
 sola; lo prioritario fue cubrir lo que protege el voto.

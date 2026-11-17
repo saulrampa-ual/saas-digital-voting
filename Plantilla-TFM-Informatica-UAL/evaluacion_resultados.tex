@@ -2,23 +2,25 @@
 \label{cap:evaluacion-resultados}
 
 \section{Pruebas disponibles}
-En las últimas ejecuciones registradas terminaron correctamente 151 pruebas
-de backend (\texttt{mvnw verify} del 15/11/2026: gateway 16, identity 13,
-election 58, voter-access 38 y ballot-box 26) y 144 de frontend, en 13 ficheros
+En las últimas ejecuciones registradas terminaron correctamente 168 pruebas
+de backend (\texttt{mvnw verify} del 15/11/2026 y pruebas de identity del
+17/11/2026: gateway 16, identity 30, election 58, voter-access 38 y
+ballot-box 26) y 144 de frontend, en 13 ficheros
 (\texttt{npm run test:coverage} del 16/11/2026); \texttt{npm run build} terminó
 correctamente en la ejecución completa del 13/11/2026. Las pruebas unitarias y de arquitectura cubren reglas
 seleccionadas de permisos, ciclo de vida, importación del censo, acceso del
 votante, consumo del token, cadena de auditoría, escrutinio y separación
 arquitectónica; las añadidas el 15/11/2026 cubren el límite de peticiones por
 dirección del \emph{gateway} y la audiencia que el cliente de administración de
-Keycloak asigna a las claves de API. En frontend se cubren la guarda de rol, el flujo de voto y
+Keycloak asigna a las claves de API, y las del 17/11/2026, la desactivación
+de cuentas y claves al suspender una organización. En frontend se cubren la guarda de rol, el flujo de voto y
 recibo, el retorno SSO con PKCE, componentes del panel de la consola, el
 asistente de creación de procesos, la traducción automática de sus textos, el
 aviso de caducidad de la sesión, el servicio de autenticación, la importación
 del censo en Excel y los estados del flujo del votante (enlace, código,
 papeleta, voto, recibo, resultado y cuenta institucional).
 
-Dieciséis de las pruebas de backend, repartidas en ocho clases, se ejecutan
+Veintitrés de las pruebas de backend, repartidas en nueve clases, se ejecutan
 contra PostgreSQL 18.6 con Testcontainers. Aplican las migraciones Flyway de
 identity, election, voter-access y ballot-box y verifican el trigger
 append-only de acciones administrativas, la participación con fecha sin hora
@@ -28,8 +30,11 @@ voter-access y ballot-box; que el despachador del \emph{outbox} reintenta
 tras un fallo y entrega una sola vez; que veinte intentos simultáneos con el
 mismo token producen exactamente un voto; que ninguna tabla de voter-access
 puede almacenar la opción elegida ni un recibo; y que la emisión no escribe
-en los registros el token, el recibo ni la opción. No cubren la autorización
-HTTP de identity ni todos los repositorios y entidades.
+en los registros el token, el recibo ni la opción. En identity comprueban por
+HTTP que cada rol solo gestiona organizaciones, usuarios, claves de API y
+trazabilidad de su ámbito, que las rutas internas solo aceptan los clientes de
+servicio previstos y que suspender una organización desactiva sus cuentas y
+claves. No cubren todos los repositorios y entidades.
 
 Los barridos de accesibilidad con Playwright y axe de la ejecución completa
 del 13/11/2026 (200
@@ -46,10 +51,10 @@ estados del aviso de demasiadas peticiones (al abrir el enlace, al pedir el
 código y al comprobarlo): sus 12 comprobaciones nuevas, y las 88 anteriores
 repetidas con ellas, no dan incumplimientos críticos ni serios.
 
-La cobertura de líneas JaCoCo, medida en la ejecución del 15/11/2026, es:
-gateway 91,2\% (62/68), identity 26,3\% (208/790), election 74,1\%
-(1316/1777), voter-access 50,4\% (793/1573) y ballot-box 41,6\% (683/1641);
-en conjunto, 52,4\% (3062/5849). En el frontend, medida con Vitest sobre todo
+La cobertura de líneas JaCoCo, con los últimos informes de cada servicio
+(15 a 17/11/2026), es: gateway 91,2\% (62/68), identity 75,2\% (625/831),
+election 74,1\% (1316/1777), voter-access 50,4\% (793/1573) y ballot-box
+41,6\% (683/1641); en conjunto, 59,1\% (3479/5890). En el frontend, medida con Vitest sobre todo
 el código de \texttt{src/app} el 16/11/2026, es del 42,0\% de las líneas
 (960/2287). En el código añadido o modificado desde el análisis del
 04/11/2026, SonarQube midió el 14/11/2026 una cobertura del
@@ -105,8 +110,7 @@ explicación compatible con los tiempos observados, pero no se ha medido dónde
 se consume el tiempo. El criterio no se modifica a la vista del resultado.
 
 \section{Integración y requisitos de calidad}
-La integración PostgreSQL de otros repositorios, la autorización HTTP de
-identity, las pruebas funcionales de extremo a extremo del stack completo y la
+La integración PostgreSQL de otros repositorios, las pruebas funcionales de extremo a extremo del stack completo y la
 accesibilidad manual continúan pendientes; la sesión con votantes (H1b) se realizó el 09/11/2026 y
 las tres ejecuciones de carga (H1c), el 11/11/2026. En consecuencia, la
 evidencia disponible no permite declarar aceptados RNF-1 ni
@@ -119,7 +123,7 @@ en el capítulo de requisitos no funcionales; la cobertura experimental por
 característica debe completarse cuando se ejecuten esos protocolos.
 
 \section{Validez}
-La cobertura global es baja y desigual (del 26,3\% de identity al 91,2\% del
+La cobertura global es baja y desigual (del 41,6\% de ballot-box al 91,2\% del
 \emph{gateway} en el backend y 42,0\% en el frontend) y limita la confianza que
 puede atribuirse a la suite; solo el código añadido desde el 04/11/2026 supera
 el 80\%. Las pruebas de

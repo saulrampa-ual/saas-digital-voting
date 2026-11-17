@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-16 · Rama: `dev` (HEAD `64cc3d6`; cambios locales sin commit) · D2/D5 integradas por el autor (`c48dbab`) · sin push
+Última actualización: 2026-11-17 · Rama: `dev` (HEAD `64cc3d6`; cambios locales sin commit) · D2/D5 integradas por el autor (`c48dbab`) · sin push
 
 ## Hitos
 
@@ -25,6 +25,8 @@
 - 16/11, tarde (sin commit): **D4** (IMP-11, IMP-40): suspender una organización desactiva en Keycloak sus cuentas de gestión y los clientes de sus claves activas, y bloquea crear cuentas nuevas; reactivarla las activa (GET y PUT de la representación completa, idempotente; Keycloak primero y estado después). **Autorización HTTP de identity:** `IdentityAuthorizationIntegrationTest` (7 casos con PostgreSQL real y Keycloak simulado) más `OrganizationServiceTest` (5), un caso en `ManagementUserServiceTest` y 4 en `KeycloakAdminClientTest`; `spring-boot-starter-webmvc-test` y `spring-security-test` añadidos a identity. **No compilado en el entorno de la IA** (sin Java 25 ni Maven Central): falta el `mvnw verify` del autor, que debería dar 168 pruebas de backend. **IMP-46** aplicado en `build.yml`; **IMP-48** a la espera de los *digest*. **C4:** revisión de coherencia y estilo de la memoria (objetivos, alcance, plan de evaluación, RQ1, limitaciones, RF-13, SMS, comillas, «revotación», «en línea»). **Defensa:** `Presentacion-TFM/` con `presentacion.tex` (17 diapositivas y 4 de reserva), `estilo-ual.sty`, `guion.md` y `preguntas.md`.
 - 16/11: eliminados de `.local/` `old-fe-src.tgz`, `voter-flow.accessibility.spec.ts` y la carpeta `figs-preview` a petición del autor. Memoria recompilada en dos pasadas con pdfLaTeX: 92 páginas, sin referencias sin resolver.
 - 16/11: eliminados a petición del autor los ficheros de vista previa `.local/s-08.png`, `s-13.png`, `sheet0.png`, `sheet1.png`, `t.png` y `tex.tgz`; verificada su ausencia.
+- 17/11: verificados D4, IMP-46 y las pruebas de identity. `mvnw -pl services/identity-service -am test`: 30 pruebas, 0 fallos (incluye 7 HTTP con PostgreSQL 18.6 y 10 unitarias asociadas a D4). Consultados los digest OCI actuales: Keycloak `sha256:3f3c5f8e03c614774b4bd9173b88391fefa4153bfc010d8012d59ad825377332`, Gitleaks `sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f`, Trivy `sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c`; aún no se fijan en los manifiestos.
+- 17/11 (sin commit): **IMP-48** aplicado con los *digest* del autor (Dockerfile de Keycloak, gitleaks y Trivy en `security.yml`). Memoria, `informe.md`, `cierre.md`, `PLAN.md` y `TRACEABILITY.md` con 168 pruebas de backend (identity 30), 312 en total, 23 de integración sobre PostgreSQL en 9 clases y cobertura de líneas del backend 59,1 % (3479/5890; identity 75,2 %); la autorización HTTP de identity deja de figurar como pendiente. **Defensa: 15 minutos** (confirmado por el director): `presentacion.tex` pasa a 14 diapositivas y 6 de reserva; `guion.md` rehecho (≈ 13 min). Pendiente de decisión: prioridades MoSCoW de los RNF (columna «Por validar» de la tabla 7.1).
 
 - H1c: completados en `docs/evaluation/carga.md` los datos del equipo usados en la medición: AMD Ryzen 7 5825U,
   16 GB RAM (15,4 GiB visibles para Windows) y Docker 29.4.0 (build 9d7ad9f). Datos consultados el 11/11/2026.

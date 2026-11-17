@@ -46,27 +46,6 @@
 }
 
 % ---------------------------------------------------------------- 2
-\begin{frame}{Contenido}
-  \begin{columns}[T]
-    \column{0.48\textwidth}
-    \begin{enumerate}
-      \item Problema y estado del arte
-      \item Objetivos y preguntas de investigación
-      \item Metodología y alcance
-      \item Arquitectura y secreto del voto
-    \end{enumerate}
-    \column{0.48\textwidth}
-    \begin{enumerate}\setcounter{enumi}{4}
-      \item El prototipo en funcionamiento
-      \item Calidad y evaluación
-      \item Conclusiones, limitaciones y trabajo futuro
-    \end{enumerate}
-  \end{columns}
-  \vfill
-  \ualbloque{\small Todo lo que se presenta se ha ejecutado en local con datos sintéticos: el prototipo no está desplegado en producción.}
-\end{frame}
-
-% ---------------------------------------------------------------- 3
 \section{Problema}
 \begin{frame}{Problema y motivación}
   \begin{columns}[T]
@@ -90,7 +69,7 @@
   \end{columns}
 \end{frame}
 
-% ---------------------------------------------------------------- 4
+% ---------------------------------------------------------------- 3
 \begin{frame}{Estado del arte: huecos detectados}
   \footnotesize
   \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}p{0.30\textwidth}>{\raggedright\arraybackslash}p{0.35\textwidth}@{}}
@@ -106,7 +85,7 @@
   \ualbloque{\small \textbf{Hueco:} autenticación institucional, experiencia móvil accesible y una \textbf{verificación comprensible}, en un servicio multi-organización con API abierta.}
 \end{frame}
 
-% ---------------------------------------------------------------- 5
+% ---------------------------------------------------------------- 4
 \section{Objetivos}
 \begin{frame}{Objetivos y preguntas de investigación}
   \begin{columns}[T]
@@ -128,7 +107,7 @@
   \end{columns}
 \end{frame}
 
-% ---------------------------------------------------------------- 6
+% ---------------------------------------------------------------- 5
 \begin{frame}{Metodología y alcance}
   \begin{columns}[T]
     \column{0.5\textwidth}
@@ -145,11 +124,12 @@
       \item RF-01 a RF-21 implementados
       \item Fuera: sustituir el voto (RF-11), métodos avanzados (RF-22), cifrado en cliente (RF-23)
       \item Actores: superadministrador, administración, gestión de censo, auditoría y votante
+      \item Evaluado en local con datos sintéticos (no desplegado)
     \end{itemize}
   \end{columns}
 \end{frame}
 
-% ---------------------------------------------------------------- 7
+% ---------------------------------------------------------------- 6
 \section{Arquitectura}
 \begin{frame}{Arquitectura implementada}
   \centering
@@ -157,7 +137,7 @@
   \footnotesize Java 25 + Spring Boot (hexagonal) · Angular/Ionic (PWA) · Keycloak 26 · PostgreSQL 18 · REST + \emph{outbox}
 \end{frame}
 
-% ---------------------------------------------------------------- 8
+% ---------------------------------------------------------------- 7
 \begin{frame}{Secreto del voto: separar identidad y urna}
   \begin{columns}[T]
     \column{0.36\textwidth}
@@ -175,7 +155,7 @@
   \end{columns}
 \end{frame}
 
-% ---------------------------------------------------------------- 9
+% ---------------------------------------------------------------- 8
 \begin{frame}{Recibo y auditoría}
   \begin{columns}[T]
     \column{0.5\textwidth}
@@ -198,37 +178,25 @@
   \ualbloque{\small Acredita \textbf{presencia e integridad}; no es verificabilidad extremo a extremo (fuera de alcance, RF-23).}
 \end{frame}
 
-% ---------------------------------------------------------------- 10
+% ---------------------------------------------------------------- 9
 \section{Prototipo}
-\begin{frame}{El prototipo: consola de gestión}
+\begin{frame}{El prototipo}
   \begin{columns}[T]
     \column{0.5\textwidth}\centering
     \includegraphics[width=\linewidth]{capturas/consola-proceso-nuevo-es}\\
     \footnotesize Asistente de creación (RF-06)
     \column{0.5\textwidth}\centering
-    \includegraphics[width=\linewidth]{capturas/consola-participacion-es}\\
-    \footnotesize Participación agregada, nunca quién votó (RF-14)
-  \end{columns}
-\end{frame}
-
-% ---------------------------------------------------------------- 11
-\begin{frame}{El prototipo: resultados y trazabilidad}
-  \begin{columns}[T]
-    \column{0.5\textwidth}\centering
     \includegraphics[width=\linewidth]{capturas/consola-resultados-es}\\
     \footnotesize Resultado, acta y huellas (RF-15, RF-16)
-    \column{0.5\textwidth}\centering
-    \includegraphics[width=\linewidth]{capturas/consola-trazabilidad-es}\\
-    \footnotesize Acciones administrativas, solo añadir (RF-19)
   \end{columns}
 \end{frame}
 
-% ---------------------------------------------------------------- 12
+% ---------------------------------------------------------------- 10
 \section{Evaluación}
 \begin{frame}{Calidad del código y seguridad}
   \begin{columns}[T]
-    \column{0.24\textwidth}\cifra{295}{pruebas automáticas, 0 fallos\\(151 backend, 144 frontend)}
-    \column{0.24\textwidth}\cifra{16}{de integración sobre PostgreSQL real}
+    \column{0.24\textwidth}\cifra{312}{pruebas automáticas, 0 fallos\\(168 backend, 144 frontend)}
+    \column{0.24\textwidth}\cifra{23}{de integración sobre PostgreSQL real}
     \column{0.24\textwidth}\cifra{212}{comprobaciones axe sin incumplimientos críticos ni serios}
     \column{0.24\textwidth}\cifra{>85\,\%}{cobertura del código nuevo (SonarQube)}
   \end{columns}
@@ -236,11 +204,11 @@
   \begin{itemize}\small
     \item CI en GitHub Actions: pruebas, accesibilidad, Semgrep, Trivy, gitleaks, \texttt{npm audit}
     \item Modelo de amenazas STRIDE; límite de peticiones por IP y audiencia JWT exigida
-    \item Cobertura global de líneas: 52,4\,\% backend y 42,0\,\% frontend (limitación declarada)
+    \item Cobertura global de líneas: 59,1\,\% backend y 42,0\,\% frontend (limitación declarada)
   \end{itemize}
 \end{frame}
 
-% ---------------------------------------------------------------- 13
+% ---------------------------------------------------------------- 11
 \begin{frame}{Hipótesis: resultados}
   \footnotesize
   \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedright\arraybackslash}p{0.36\textwidth}>{\raggedright\arraybackslash}p{0.36\textwidth}@{}}
@@ -257,28 +225,7 @@
   \ualbloque{\footnotesize Con \(n = 5\) la evidencia es descriptiva, sin inferencia estadística. Los criterios no se cambiaron al ver los resultados.}
 \end{frame}
 
-% ---------------------------------------------------------------- 14
-\begin{frame}{H1c: por qué no se alcanzó el rendimiento}
-  \begin{columns}[T]
-    \column{0.48\textwidth}
-    \textbf{Lo medido} (11/11/2026, un equipo Windows)
-    \begin{itemize}\small
-      \item p95 de la emisión: 4852, 2402 y 4849 ms
-      \item Votos aceptados: 222, 240 y 281 de 500
-      \item Resto: conexiones rechazadas por el \emph{gateway}
-      \item En las tres: cadena íntegra y recuento coherente
-    \end{itemize}
-    \column{0.48\textwidth}
-    \textbf{Causas probables y siguiente paso}
-    \begin{itemize}\small
-      \item 500 conexiones a la vez, sin rampa
-      \item Bloqueo del proceso para encadenar cada voto: se guardan de uno en uno
-      \item Perfilar, ajustar colas y repetir en un entorno dimensionado, \textbf{sin cambiar el criterio}
-    \end{itemize}
-  \end{columns}
-\end{frame}
-
-% ---------------------------------------------------------------- 15
+% ---------------------------------------------------------------- 12
 \section{Conclusiones}
 \begin{frame}{Conclusiones}
   \begin{description}\small
@@ -290,7 +237,7 @@
   \ualbloque{\small Los cuatro objetivos están implementados; la aceptación experimental es parcial y se declara como tal.}
 \end{frame}
 
-% ---------------------------------------------------------------- 16
+% ---------------------------------------------------------------- 13
 \begin{frame}{Limitaciones y trabajo futuro}
   \begin{columns}[T]
     \column{0.48\textwidth}
@@ -314,7 +261,7 @@
   \end{columns}
 \end{frame}
 
-% ---------------------------------------------------------------- 17
+% ---------------------------------------------------------------- 14
 {
 \setbeamertemplate{footline}{}
 \begin{frame}[plain]
@@ -333,6 +280,37 @@
 % ================================================================ Reserva
 \appendix
 \section{Diapositivas de reserva}
+
+\begin{frame}{Reserva: H1c, por qué no se alcanzó el rendimiento}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \textbf{Lo medido} (11/11/2026, un equipo Windows)
+    \begin{itemize}\small
+      \item p95 de la emisión: 4852, 2402 y 4849 ms
+      \item Votos aceptados: 222, 240 y 281 de 500
+      \item Resto: conexiones rechazadas por el \emph{gateway}
+      \item En las tres: cadena íntegra y recuento coherente
+    \end{itemize}
+    \column{0.48\textwidth}
+    \textbf{Causas probables y siguiente paso}
+    \begin{itemize}\small
+      \item 500 conexiones a la vez, sin rampa
+      \item Bloqueo del proceso para encadenar cada voto: se guardan de uno en uno
+      \item Perfilar, ajustar colas y repetir en un entorno dimensionado, \textbf{sin cambiar el criterio}
+    \end{itemize}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Reserva: participación y trazabilidad}
+  \begin{columns}[T]
+    \column{0.5\textwidth}\centering
+    \includegraphics[width=\linewidth]{capturas/consola-participacion-es}\\
+    \footnotesize Participación agregada, nunca quién votó (RF-14)
+    \column{0.5\textwidth}\centering
+    \includegraphics[width=\linewidth]{capturas/consola-trazabilidad-es}\\
+    \footnotesize Acciones administrativas, solo añadir (RF-19)
+  \end{columns}
+\end{frame}
 
 \begin{frame}{Reserva: decisiones de arquitectura}
   \small
