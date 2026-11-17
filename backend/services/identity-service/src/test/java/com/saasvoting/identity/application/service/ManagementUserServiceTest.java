@@ -14,6 +14,9 @@ import com.saasvoting.identity.domain.model.Caller;
 import com.saasvoting.identity.domain.model.LastAdministratorException;
 import com.saasvoting.identity.domain.model.ManagementRole;
 import com.saasvoting.identity.domain.model.ManagementUser;
+import com.saasvoting.identity.domain.model.PersonData;
+import com.saasvoting.identity.domain.model.OrganizationSuspendedException;
+import com.saasvoting.identity.domain.model.Organization;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -65,5 +68,17 @@ class ManagementUserServiceTest {
 
         verify(identityProvider).changeRole(targetId, ManagementRole.ADMIN, ManagementRole.AUDITOR);
         verify(users).save(target.withRole(ManagementRole.AUDITOR));
+    }
+
+    @Test
+    void createsNoAccountsInASuspendedOrganization() {
+        when(organizations.existsById(ORGANIZATION)).thenReturn(true);
+        when(organizations.findById(ORGANIZATION)).thenReturn(Optional.of(
+                Organization.register(ORGANIZATION.replace("-", ""), "Test", NOW).withStatus(Organization.Status.SUSPENDED)));
+
+        assertThrows(OrganizationSuspendedException.class, () -> service.create(admin, ORGANIZATION,
+                new PersonData("Persona Nueva", "nueva@verivoto.test"), ManagementRole.AUDITOR));
+
+        verify(identityProvider, never()).createUser(any(), any(), any());
     }
 }

@@ -176,7 +176,7 @@ el despliegue y D4 si sobra tiempo. Las que más aportan antes de entregar, de m
   (05/11):** commit `4ec0efc` en la rama `feat/voter-access-limit-jwt-audience`, sin fusionar; faltan las pruebas del autor.
 - [ ] **D3 · IMP-32**: cabeceras CSP, HSTS y `Referrer-Policy` en el despliegue del frontal. Solo si hay despliegue: el
   TFM se ejecuta y evalúa en local y no está previsto desplegarlo (05/11, D-53).
-- [ ] **D4 · IMP-11 / IMP-40**: al suspender una organización, deshabilitar sus usuarios y claves de API en Keycloak.
+- [x] **D4 · IMP-11 / IMP-40**: al suspender una organización, deshabilitar sus usuarios y claves de API en Keycloak. **Hecho (16/11/2026, sin commit): IMP-11 e IMP-40 (cuentas y claves); pendiente del `mvnw verify` del autor**
 - [x] **D5 · IMP-27**: comprobar la audiencia del JWT en cada servicio y quitar `verivoto-dev-swagger` en producción **Hecho (15/11/2026: fusionada en `dev`, `c48dbab`; `mvnw verify` del autor con 151 pruebas y 0 fallos)**
   (esta segunda parte solo aplica si hay despliegue, D-53). **En curso (05/11):** commit `72bdfba` en la misma rama que D2, sin fusionar;
   faltan las pruebas del autor y actualizar el realm local (`scripts/dev/keycloak-api-audience.mjs`).
@@ -261,3 +261,4 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 15/11/2026 | F6, A10, E1, anteproyecto | PR #4 en `main` con todos los checks en verde; P7 cerrado (evidencia por RF en `TRACEABILITY.md`, `resultados-p7/cierre.md`); anteproyecto firmado. D2 y D5: la rama se fusiona sin conflictos con `dev` (comprobado con `git apply --3way --check`); falta `mvnw verify` del autor |
 | 15/11/2026 | D2, D5, C4 (parcial) | Rama de IMP-21 e IMP-27 fusionada por el autor (`c48dbab`) y verificada: 151 pruebas de backend. Memoria actualizada (151 y 92 pruebas; cobertura 52,4 % en backend). C4 parcial: figuras 8.1 y 8.2 redistribuidas y tabla 13.1 con resultados breves y el detalle en el texto |
 | 16/11/2026 | IMP-50, A5, C4 | Mensaje del 429 del *gateway* en el flujo del votante (aprobado por el autor); 52 pruebas nuevas de frontend (144 en el entorno de la IA, cobertura 43,2 %; pendiente de la ejecución del autor para pasar las cifras a la memoria); capturas de dos en dos. Sin commit |
+| 16/11/2026 | D4, IMP-46, IMP-48, C4, defensa | D4 implementado con pruebas (incluida la autorización HTTP de identity, `IdentityAuthorizationIntegrationTest`); IMP-46 aplicado; IMP-48 a la espera de los *digest*. Revisión de coherencia y estilo de la memoria (textos que seguían dando por pendientes evaluaciones ya hechas). Presentación de la defensa en `Presentacion-TFM/` (beamer, guion y preguntas). Sin commit |

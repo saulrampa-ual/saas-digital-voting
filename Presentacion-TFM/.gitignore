@@ -1,0 +1,10 @@
+# Auxiliares de LaTeX
+*.aux
+*.nav
+*.snm
+*.toc
+*.out
+*.vrb
+*.synctex.gz
+*.fls
+*.fdb_latexmk
