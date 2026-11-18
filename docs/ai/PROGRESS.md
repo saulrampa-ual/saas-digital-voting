@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-17 · Rama: `dev` (HEAD `64cc3d6`; cambios locales sin commit) · D2/D5 integradas por el autor (`c48dbab`) · sin push
+Última actualización: 2026-11-17 · Rama: `dev` (HEAD `91958ff`; cambios locales sin commit) · D2/D5 integradas por el autor (`c48dbab`) · sin push
 
 ## Hitos
 
@@ -14,10 +14,12 @@
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Cerrado el 15/11/2026: 151 pruebas backend y 92 frontend, 0 fallos; H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11); RNF-4 aceptado (13/11). Limitaciones en `docs/evaluation/resultados-p7/cierre.md` |
-| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 92 páginas; revisión editorial y visual completa aún pendiente |
+| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 93 páginas y presentación de defensa con 20 diapositivas; revisión editorial y visual completa aún pendiente |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
 ## Hecho
+
+- 17/11: eliminada `.local/sheet-15min.png` a petición del autor. Memoria compilada dos veces con pdfLaTeX (93 páginas) y presentación compilada dos veces (20 páginas: 14 principales y 6 de reserva); ambos PDFs sin referencias sin resolver.
 
 - 15/11: memoria recompilada dos veces con pdfLaTeX (95 páginas; sin referencias sin resolver). Revisión visual solicitada completada: tabla 13.1 legible en una página y su explicación continúa correctamente en la siguiente; figuras 8.1 y 8.2 legibles, sin solapamientos. Script `node scripts/dev/keycloak-api-audience.mjs` ejecutado contra Keycloak local ya activo; añadió el audience mapper `verivoto-api` a seis clientes (admin, cuatro servicios y Swagger). No se modificó el comportamiento del voto.
 - 15/11 (C4, lectura del PDF de 95 páginas): sin texto ni figuras cortados. Corregidos el ancho de la tabla 1.1, la ruta larga del apéndice A.1 (`\path`) y las filas de P7 y P8 de la tabla 9.2, que aún daban RNF-4 como pendiente. La contraportada queda al límite de espacio: el resumen no admite más texto. Pendiente de la compilación del autor.

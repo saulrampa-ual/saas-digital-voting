@@ -37,6 +37,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Q-10 | ¿Qué fecha tiene la próxima revisión con el tutor y qué quiere ver? (marca el orden de C1–C4) | C | **En espera (03/11):** se le envió la memoria actualizada y aún no ha respondido. Las indicaciones de la reunión del 21/10/2026 ya están aplicadas (sección 7) |
 | Q-11 | Resultados de la sesión RNF-4: para cada administrador (A1–A5), ¿terminó crear, configurar y programar un proceso de opción única?, ¿cuánto tardó?, ¿necesitó ayuda (y de qué tipo)? Fecha de la sesión y si firmaron consentimiento | C1 | **Respondida (05/11):** sesión el 03/11/2026, 5 participantes (P01–P05, anónimos), consentimiento firmado, 5 de 5 sin ayuda de personas (D-55). Tiempos **estimados** tras la sesión, no medidos: 5, 5, 11, 3,4 y 3,4 min (uno corregido de 6 a 11 min), sin asignar a nadie. **Solo 2 de 5 sin formación previa.** RNF-4 **no demostrado**; evidencia indicativa (`docs/evaluation/usabilidad/resultados-rnf4-administradores.md`) |
 | Q-12 | SSO con cuentas de la UAL: ¿los 4 compañeros aceptan por escrito que se usen sus correos solo para la prueba, en local y borrándolos después? ¿Tienes una cuenta de Google personal para crear el proyecto de Google Cloud? | A9 | **Respondida (05/11, D-54):** cuenta de Google Cloud creada. Los 4 compañeros dieron su aceptación **verbal** (uso de sus correos solo en la prueba, en local y borrado después). **No hay constancia escrita** y el autor no la pedirá por ahora: se registra como limitación, no como consentimiento documentado |
+| Q-13 | Prioridades MoSCoW de los RNF (tabla 7.1): la memoria propone Must para RNF-1, 3, 6, 7, 11–16 y Should para RNF-2, 4, 5, 8–10 y 17 (RNF-18 sigue Could), marcadas con asterisco. ¿Las confirma el tutor? | Tabla 7.1 sin asteriscos | **Pendiente (17/11/2026):** propuesta aplicada en la memoria; se pregunta al tutor en el próximo correo o reunión |
 
 ---
 
@@ -218,6 +219,55 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 - [x] Empezar la implementación sin esperar validación de los módulos.
 - [ ] Próxima reunión: pendiente de que el tutor responda (Q-10).
 
+## 8. Objetivos del anteproyecto y RNF (17/11/2026)
+
+Criterio acordado con el autor: **primero se cumplen los objetivos del anteproyecto firmado** (OE1–OE5, cada uno con
+su evidencia); lo que no exige el anteproyecto se trata como mejora y se hace solo si queda tiempo.
+
+### 8.1 Objetivos del anteproyecto
+
+| OE | Evidencia que pide el anteproyecto | Estado |
+| --- | --- | --- |
+| OE1 | Pruebas de autorización por rol y de aislamiento entre organizaciones | Cumplido: `IdentityAuthorizationIntegrationTest` (17/11) y pruebas de aislamiento de election, voter-access y ballot-box |
+| OE2 | Pruebas de las transiciones de estado y contrato OpenAPI publicado | Cumplido: `ProcessStatusTest`, `VotingProcessTest`; contratos en `openapi/` de cada servicio y Swagger UI |
+| OE3 | Unicidad del token de emisión y ausencia de vínculos entre identidad y voto | Cumplido: 20 envíos simultáneos dan 1 voto; esquema y registros sin vínculo (voter-access y ballot-box) |
+| OE4 | Recálculo independiente del resultado y verificación de la cadena de huellas | Cumplido: recálculo en el navegador (D-37), `ChainVerifierTest`, `TallyResultTest` |
+| OE5 | Informe de evaluación por hipótesis, con los criterios no alcanzados | Cumplido: capítulo 13 e `informe.md` (H1b y RNF-4 aceptados, H1c rechazada, H1a sin decisión) |
+
+La memoria solo tenía OE1–OE4; el 17/11 se añadió OE5 (objetivos, tabla 1.1 y conclusiones) para que coincida con el
+anteproyecto.
+
+### 8.2 RNF: evidencia actual y qué falta
+
+| RNF | Prioridad propuesta | Evidencia actual | ¿Lo exige el anteproyecto? | Acción |
+| --- | --- | --- | --- | --- |
+| RNF-1 Accesibilidad | Must | axe: 212 comprobaciones sin críticos ni serios; revisión manual no hecha | Sí (auditoría WCAG): cumplido con la parte automática | Mejora: revisión manual con Narrador de Windows (autor, 1–2 h). Si se hace, H1a puede decidirse |
+| RNF-2 Adaptable y navegadores | Should | Barridos a 360 y 1280 px; solo Chrome | No | Mejora: E2E en Firefox y WebKit (IA prepara, autor ejecuta) |
+| RNF-3 Uso del votante | Must | H1b aceptada | Sí | — |
+| RNF-4 Uso del administrador | Should | Aceptado (13/11) | No (se hizo igualmente) | — |
+| RNF-5 Idiomas | Should | Barridos en es y en; textos es/en | No | Citar como evidencia en el capítulo 13 |
+| RNF-6 Claridad de la verificación | Must | H1b: 5 de 5 | Sí | — |
+| RNF-7 Prevención de errores | Must | Pantalla de revisión; pruebas «no vota sin selección» y error de papeleta | Indirectamente (OE3) | Citar como evidencia en el capítulo 13 |
+| RNF-8, 9, 10 Mensajes, orientación, consistencia | Should | Indicador de pasos y estados probados; revisión heurística (2 evaluadores) no hecha | No | Mejora: revisión heurística de Nielsen |
+| RNF-11 Secreto | Must | Esquema y registros revisados; pruebas de integración | Sí (OE3) | — |
+| RNF-12 Unicidad | Must | 20 envíos simultáneos dan 1 voto | Sí (OE3) | — |
+| RNF-13 Integridad y trazabilidad | Must | Cadena de huellas, trigger solo añadir, escrutinio bloqueado si se rompe | Sí (OE4) | — |
+| RNF-14 Seguridad de acceso | Must | Límites de código y bloqueo, límite por IP, audiencia JWT, rutas internas, suspensión | Indirectamente (OE1) | Citar como evidencia en el capítulo 13 |
+| RNF-15 Aislamiento | Must | Pruebas HTTP con dos organizaciones en los cuatro servicios | Sí (OE1) | — |
+| RNF-16 Protección de datos | Must | `PrivacyServiceTest`, `PersonalDataServiceTest` (búsqueda, exportación, borrado o anonimización) | No | Citar como evidencia en el capítulo 13 |
+| RNF-17 Rendimiento | Should | H1c rechazada y documentada | Sí (prueba de carga): cumplido al documentarla | Mejora (P9): perfilar, optimizar y repetir |
+| RNF-18 PWA instalable | Could | Manifiesto y *service worker*; instalación no probada | No | Mejora: instalar en Android e iOS |
+
+### 8.3 Orden de trabajo hasta la entrega (27/01/2027)
+
+1. [x] Tabla 7.1 con prioridades propuestas y nota; OE5 en la memoria (IA, 17/11).
+2. [ ] Preguntar Q-13 al tutor (autor).
+3. [ ] Tabla «RNF → evidencia» en el capítulo 13 con lo de la columna «Evidencia actual» (IA, una sesión). Cierra la duda
+   del tribunal sobre qué RNF tienen evidencia.
+4. [ ] Revisión C4 final y ensayos de la defensa (ambos).
+5. Mejoras, solo si sobra tiempo y por este orden: revisión manual de accesibilidad (RNF-1), E2E en Firefox y WebKit
+   (RNF-2), revisión heurística (RNF-8–10), instalación de la PWA (RNF-18), optimización de H1c (RNF-17), A9 (RF-05a).
+
 ## Calendario orientativo
 
 | Semanas | Foco |
@@ -262,3 +312,4 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 15/11/2026 | D2, D5, C4 (parcial) | Rama de IMP-21 e IMP-27 fusionada por el autor (`c48dbab`) y verificada: 151 pruebas de backend. Memoria actualizada (151 y 92 pruebas; cobertura 52,4 % en backend). C4 parcial: figuras 8.1 y 8.2 redistribuidas y tabla 13.1 con resultados breves y el detalle en el texto |
 | 16/11/2026 | IMP-50, A5, C4 | Mensaje del 429 del *gateway* en el flujo del votante (aprobado por el autor); 52 pruebas nuevas de frontend (144 en el entorno de la IA, cobertura 43,2 %; pendiente de la ejecución del autor para pasar las cifras a la memoria); capturas de dos en dos. Sin commit |
 | 16/11/2026 | D4, IMP-46, IMP-48, C4, defensa | D4 implementado con pruebas (incluida la autorización HTTP de identity, `IdentityAuthorizationIntegrationTest`); IMP-46 aplicado; IMP-48 a la espera de los *digest*. Revisión de coherencia y estilo de la memoria (textos que seguían dando por pendientes evaluaciones ya hechas). Presentación de la defensa en `Presentacion-TFM/` (beamer, guion y preguntas). Sin commit |
+| 17/11/2026 | Q-13, sección 8, IMP-48 | Prioridades MoSCoW propuestas en la tabla 7.1; OE5 añadido a la memoria; plan de objetivos del anteproyecto y RNF; IMP-48 aplicado; defensa ajustada a 15 min. Sin commit |
