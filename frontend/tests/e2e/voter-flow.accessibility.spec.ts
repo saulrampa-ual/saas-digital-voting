@@ -1,8 +1,9 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { test, type MockReply, type MockResolver } from './support/api-mock';
 
 /**
  * H1a (RNF-1), automatic part: axe on every screen and state of the voter flow (V1–V8, B1–B5, C3–C4), at 1280 and
@@ -56,27 +57,26 @@ const problem = (status: number, extra: Record<string, unknown> = {}): Reply =>
 /** IMP-21/IMP-50: the 429 of the gateway (limit per client address) has no problem details, only `Retry-After`. */
 const gatewayLimit = (seconds: number): Reply => ({ status: 429, headers: { 'Retry-After': String(seconds) } });
 
-async function mockApi(page: Page, api: Api): Promise<void> {
-  const answer = (reply: Reply | undefined) => ({
+/** Synthetic answers by path, for `page.route` and for the fallback server of Firefox and WebKit (IMP-63). */
+function resolver(api: Api): MockResolver {
+  const answer = (reply: Reply | undefined): MockReply => ({
     status: reply?.status ?? 500,
     contentType: reply && reply.status >= 400 ? 'application/problem+json' : 'application/json',
     body: JSON.stringify(reply?.body ?? {}),
     headers: reply?.headers,
   });
-  await page.route('**/api/v1/**', (route) => {
-    const url = new URL(route.request().url());
+  return (method, url) => {
     const path = url.pathname;
-    const method = route.request().method();
-    if (path.endsWith('/otp/verify')) return route.fulfill(answer(api.verify));
-    if (path.endsWith('/otp') && method === 'POST') return route.fulfill(answer(api.otp));
-    if (/\/voter-access\/links\/[^/]+$/.test(path)) return route.fulfill(answer(api.link));
-    if (path.endsWith('/ballot')) return route.fulfill(answer(api.ballot));
-    if (path.endsWith('/votes')) return route.fulfill(answer(api.vote));
-    if (path.includes('/receipts/')) return route.fulfill(answer(api.receipt));
-    if (path.endsWith('/results/counted-votes')) return route.fulfill(answer(api.counted));
-    if (path.endsWith('/results')) return route.fulfill(answer(api.result));
-    return route.fulfill({ status: 404, contentType: 'application/problem+json', body: '{}' });
-  });
+    if (path.endsWith('/otp/verify')) return answer(api.verify);
+    if (path.endsWith('/otp') && method === 'POST') return answer(api.otp);
+    if (/\/voter-access\/links\/[^/]+$/.test(path)) return answer(api.link);
+    if (path.endsWith('/ballot')) return answer(api.ballot);
+    if (path.endsWith('/votes')) return answer(api.vote);
+    if (path.includes('/receipts/')) return answer(api.receipt);
+    if (path.endsWith('/results/counted-votes')) return answer(api.counted);
+    if (path.endsWith('/results')) return answer(api.result);
+    return { status: 404, contentType: 'application/problem+json', body: '{}' };
+  };
 }
 
 async function chooseLanguage(page: Page, language: 'es' | 'en'): Promise<void> {
@@ -113,7 +113,9 @@ async function audit(page: Page, screen: string, viewport: string, language: str
   };
   const dir = join(process.env.E2E_ARTIFACTS_DIR ?? join(tmpdir(), 'verivoto-p7-e2e'), 'voter-flow-axe');
   await mkdir(dir, { recursive: true });
-  await writeFile(join(dir, `${screen}-${viewport}-${language}.json`), `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
+  // RNF-2 (M2): one file per browser when the run includes Firefox and WebKit
+  const browser = test.info().project.name === 'chromium' ? '' : `-${test.info().project.name}`;
+  await writeFile(join(dir, `${screen}-${viewport}-${language}${browser}.json`), `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
   // Sensitive values never in the URL or in storage (D-33, D-50)
   const stored = await page.evaluate(() => [...Object.keys(localStorage), ...Object.keys(sessionStorage)]
     .filter((key) => /token|receipt|otp|code/i.test(key)));
@@ -193,10 +195,10 @@ const scenarios: { screen: string; api: Api; go?: (page: Page) => Promise<void>;
 for (const viewport of viewports) {
   for (const language of languages) {
     for (const scenario of scenarios) {
-      test(`H1a axe ${scenario.screen} · ${viewport.width}px · ${language}`, async ({ page }) => {
+      test(`H1a axe ${scenario.screen} · ${viewport.width}px · ${language}`, async ({ page, mockApi }) => {
         test.fail(Boolean(scenario.knownDefect), `${scenario.knownDefect ?? ''} open (docs/evaluation/resultados-p7/defectos.md)`);
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
-        await mockApi(page, scenario.api);
+        await mockApi(page, resolver(scenario.api));
         await page.goto(scenario.path ?? `/votar/${LINK}`);
         await chooseLanguage(page, language);
         await page.locator('main h1, h1').first().waitFor();

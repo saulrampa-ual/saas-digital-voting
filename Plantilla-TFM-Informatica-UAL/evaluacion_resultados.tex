@@ -119,8 +119,76 @@ local evaluada; para RNF-3 y RNF-6 se dispone de la evidencia
 descriptiva de H1b, con cinco participantes, y RNF-4 se acepta con la de las
 sesiones con administradores del 13/11/2026.
 La correspondencia con características de ISO/IEC 25010:2023 está definida
-en el capítulo de requisitos no funcionales; la cobertura experimental por
-característica debe completarse cuando se ejecuten esos protocolos.
+en el capítulo de requisitos no funcionales; la sección siguiente indica la
+evidencia disponible para cada requisito.
+
+\section{Evidencia por requisito no funcional}
+\label{sec:evidencia-rnf}
+La tabla~\ref{tab:evidencia-rnf} resume, para cada requisito no funcional, la
+evidencia disponible a 18/11/2026. «Aceptado» indica que se midió el criterio
+del protocolo y se alcanzó; «evidencia parcial», que hay pruebas o mediciones
+que lo respaldan sin cubrirlo por completo; «sin evaluar», que no hay evidencia
+específica; y «no se cumple», que se midió y no se alcanzó. La prioridad es la
+propuesta en la tabla~\ref{tab:rnf-iso25010}.
+
+\small
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.08\textwidth}|>{\raggedright\arraybackslash}p{0.09\textwidth}|>{\raggedright\arraybackslash}p{0.53\textwidth}|>{\raggedright\arraybackslash}p{0.17\textwidth}|}
+\caption{Evidencia disponible por requisito no funcional.}\label{tab:evidencia-rnf}\\
+\hline
+\textbf{RNF} & \textbf{Prioridad} & \textbf{Evidencia} & \textbf{Estado} \\
+\hline
+\endfirsthead
+\hline
+\textbf{RNF} & \textbf{Prioridad} & \textbf{Evidencia} & \textbf{Estado} \\
+\hline
+\endhead
+\hline
+\multicolumn{4}{r}{Continúa en la página siguiente.}\\
+\endfoot
+\hline
+\endlastfoot
+RNF-1 & Must & 212 comprobaciones axe sin incumplimientos críticos ni serios (consola, flujo del votante y recibo; 1280 y 360 píxeles; español e inglés). La revisión manual con teclado y lector de pantalla no se realizó. & Evidencia parcial (H1a sin decisión) \\
+\hline
+RNF-2 & Should & Barridos a 1280 y 360 píxeles sin incumplimientos críticos ni serios en Chromium y Firefox (212 de 212 cada uno) y en WebKit (211 de 212 en la ejecución completa del 18/11/2026; la restante agotó el tiempo de espera antes de llegar a su pantalla y pasó al repetirla sola el 19/11/2026, sin incumplimientos). Uso real en Safari (iOS) y Chrome (Android) el 18/11/2026. & Aceptado \\
+\hline
+RNF-3 & Must & H1b: 5 de 5 completan acceso, emisión y recibo sin ayuda en 3 minutos o menos. & Aceptado \\
+\hline
+RNF-4 & Should & Sesiones del 13/11/2026: 5 de 5 sin formación previa, máximo 4 minutos. & Aceptado \\
+\hline
+RNF-5 & Should & Interfaz y papeleta en español e inglés; edición bilingüe en el asistente; barridos en ambos idiomas. & Evidencia parcial \\
+\hline
+RNF-6 & Must & H1b: 5 de 5 interpretan correctamente el recibo. & Aceptado \\
+\hline
+RNF-7 & Must & Pantalla de revisión antes de votar; pruebas de que no se vota sin selección y de que la papeleta incompleta muestra su error. & Evidencia parcial \\
+\hline
+RNF-8 & Should & Pantallas de error con salida y reintento seguro del voto no registrado, probados en el flujo del votante. Sin revisión heurística. & Evidencia parcial \\
+\hline
+RNF-9 & Should & Indicador de cuatro pasos y estado del proceso, comprobados en las pruebas del flujo del votante. Sin revisión heurística. & Evidencia parcial \\
+\hline
+RNF-10 & Should & Sin revisión heurística de consistencia. & Sin evaluar \\
+\hline
+RNF-11 & Must & Esquemas de voter-access y ballot-box sin campos que vinculen identidad y voto; la emisión no registra token, recibo ni opción. No protege frente a un operador de ambas bases. & Evidencia parcial \\
+\hline
+RNF-12 & Must & Veinte envíos simultáneos con el mismo token producen un único voto; restricción única en la urna. & Evidencia parcial \\
+\hline
+RNF-13 & Must & Verificación de la cadena de huellas, tabla de acciones administrativas en la que solo se puede añadir y escrutinio bloqueado si la cadena se rompe; cadena íntegra tras H1c. & Evidencia parcial \\
+\hline
+RNF-14 & Must & Bloqueo tras cinco códigos erróneos, espera para reenviar, código de un solo uso, límite de peticiones por dirección, audiencia del token y rutas internas restringidas. & Evidencia parcial \\
+\hline
+RNF-15 & Must & Pruebas HTTP con dos organizaciones en identity, election, voter-access y ballot-box: la otra organización recibe 404 o 403. & Evidencia parcial \\
+\hline
+RNF-16 & Must & Búsqueda, exportación sin datos de voto y borrado o anonimización según el uso del censo, con pruebas en election y voter-access. & Evidencia parcial \\
+\hline
+RNF-17 & Should & H1c: p95 de 2,4 a 4,9 segundos con 500 usuarios simultáneos. & No se cumple \\
+\hline
+RNF-18 & Could & PWA instalada y usada en Android (Chrome) e iOS (Safari) el 18/11/2026. Tras la prueba se sustituyeron los iconos genéricos por los de la marca. & Aceptado \\
+\hline
+\end{longtable}
+\normalsize
+
+En resumen, de los diez requisitos Must, dos están aceptados con su criterio
+(RNF-3 y RNF-6) y los ocho restantes tienen evidencia parcial; entre los Should,
+RNF-2 y RNF-4 están aceptados, RNF-17 no se cumple y RNF-10 no se ha evaluado; RNF-18 (Could) está aceptado.
 
 \section{Validez}
 La cobertura global es baja y desigual (del 41,6\% de ballot-box al 91,2\% del

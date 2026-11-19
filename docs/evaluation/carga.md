@@ -196,3 +196,30 @@ Observaciones (no forman parte del criterio):
   del censo), pero no intervienen en la emisión del voto.
 - `pg-ballot` llegó a 53–56 % de CPU en el pico muestreado; la base de datos de la urna no parece el límite, aunque el
   muestreo cada ~5 s puede perder el pico real.
+
+## Serie B: repetición tras ajustar las colas de conexión (preparada el 18/11/2026)
+
+La serie del 11/11 se mantiene como resultado de esa versión: no se borra ni se sustituye. La serie B mide una versión
+nueva con un cambio concreto, decidido **antes** de medir a partir de lo observado el 11/11 (más de la mitad de las
+conexiones rechazadas por el *gateway* y rechazos del *gateway* a ballot-box):
+
+- *Gateway*: cola de conexiones pendientes (`SO_BACKLOG`) de 1024 (`GATEWAY_SERVER_BACKLOG`); antes, la del sistema.
+- ballot-box y voter-access: `server.tomcat.accept-count` de 1000 (antes, 100 por defecto).
+
+No cambia la lógica del voto, el encadenado de huellas, el secreto del voto ni lo que se registra. El sistema
+operativo puede limitar la cola por debajo de lo pedido; si es así, la serie B lo mostrará igual que la A.
+
+Reglas de la serie B, fijadas antes de ejecutarla:
+
+1. Mismo protocolo, mismas condiciones de ejecución válida, mismo criterio (500 VU a la vez, sin rampa; p95 < 2 s) y
+   mismo equipo. Servicios recompilados desde el commit que incluye el cambio, y ese commit se anota.
+2. Una prueba de humo con 20 VU (`LOAD_RUN=19`, `LOAD_VOTERS=20`), que no cuenta, para comprobar que el stack
+   arranca bien.
+3. Después, **tres ejecuciones consecutivas** (`LOAD_RUN` 20, 21 y 22). Se informan las tres, sea cual sea su
+   resultado. Solo se descarta una ejecución por las causas de entorno ya definidas (condiciones 1 a 7, o respuestas
+   401/404/409/410/422), y se dice cuál y por qué.
+4. Decisión con la misma regla: aceptada si las tres válidas tienen p95 < 2 s; rechazada si alguna válida no lo
+   cumple. No se hacen más series para buscar un resultado favorable.
+5. En la memoria se informan las dos series: «rechazada en la versión del 11/11; con las colas ajustadas,
+   aceptada / rechazada».
+

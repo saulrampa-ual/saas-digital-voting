@@ -1,7 +1,9 @@
-# H1a · Guion de la revisión manual con teclado y NVDA
+# H1a · Guion de la revisión manual con teclado y el Narrador de Windows
 
-Parte manual de H1a (RNF-1). La hace **el autor**. Este guion no contiene ningún resultado: la columna
-`texto_observado_nvda` de las hojas solo se rellena con lo que NVDA lea de verdad. Lo que no se pueda reproducir se
+Parte manual de H1a (RNF-1). La hace **el autor**. Adaptado al Narrador de Windows el 18/11/2026, porque el Narrador no
+funcionó en el equipo del autor (PLAN.md, M1). Las columnas `texto_esperado_nvda` y `texto_observado_nvda` de las
+hojas conservan su nombre, pero se rellenan con lo que lea el Narrador. Este guion no contiene ningún resultado: la columna
+`texto_observado_nvda` de las hojas solo se rellena con lo que el Narrador lea de verdad. Lo que no se pueda reproducir se
 marca «no revisado», nunca «cumple».
 
 - Hoja de las comprobaciones obligatorias: `accesibilidad-manual-obligatorias.csv`.
@@ -10,31 +12,24 @@ marca «no revisado», nunca «cumple».
 
 ## 1. Antes de empezar (10 min)
 
-### 1.1 Versión
+### 1.1 Versión (actualizado el 18/11/2026)
 
-Trabajar sobre `dev` en `06f39be`, sin cambios en `frontend/` (`git status --short frontend` no debe mostrar nada; los
-cambios en `docs/` no afectan a la aplicación). Las correcciones de DEF-05 y DEF-06
-entraron en el commit `9c948cf`, que forma parte de `06f39be`. En PowerShell, desde la raíz del repositorio:
+La revisión se hace sobre la versión que se entrega, no sobre la del 08/11: desde entonces han cambiado pantallas del
+votante (aviso de «Demasiadas peticiones», IMP-50) y el selector de idioma en el móvil (D-64).
+
+1. Antes de nada, hacer el commit pendiente de la PWA y del arnés E2E, para que el árbol de `frontend/` quede limpio.
+2. En PowerShell, desde la raíz del repositorio:
 
 ```powershell
 git rev-parse --short HEAD
 git status --short frontend
-Get-FileHash frontend\src\app\features\voter\steps\ballot-step.component.ts -Algorithm SHA256
-Get-FileHash frontend\src\app\features\voter\receipt-check.page.ts -Algorithm SHA256
-Get-FileHash frontend\tests\e2e\voter-flow.accessibility.spec.ts -Algorithm SHA256
 ```
 
-| Fichero | Valor esperado (PowerShell muestra el SHA-256 en mayúsculas) |
-| --- | --- |
-| `git rev-parse --short HEAD` | `06f39be` |
-| `ballot-step.component.ts` | `353213FB93E633515A271366AAE8B90A5BB1427FC9071DBBDA759CED92FC4F02` |
-| `receipt-check.page.ts` | `0448F477BBA3E5E8D610560CB717A83B5EA22F64229628D7CD75A9E8937211E9` |
-| `voter-flow.accessibility.spec.ts` | `E4D440E2C4DFFDE27435E4B79AA6F09F7743F4AFA9BE2C3BE7ECFE4EF0397F59` |
+`git status --short frontend` no debe mostrar nada (los cambios en `docs/` no afectan a la aplicación). El commit que
+muestra `git rev-parse` se copia en la cabecera del resultado (sección 7): es la versión revisada. Si después de la
+revisión cambia algo en `frontend/src`, las filas de las pantallas afectadas se vuelven a revisar.
 
-Son los ficheros tal como Git los deja en Windows (saltos de línea CRLF). Su contenido es el mismo que se midió el
-05/11 (`402C9EF12240…` y `747D65CBEC86…` eran las huellas de esos ficheros con saltos LF).
-
-Si alguno no coincide, **no se sigue**.
+3. Arrancar el frontend desde ese commit con `npm start` (http://localhost:4200), sin cambios locales.
 
 ### 1.2 Datos sintéticos (no `USAB`)
 
@@ -56,32 +51,53 @@ La consulta del código en Mailpit puede hacerse con el ratón: Mailpit no forma
 
 ### 1.3 Herramientas
 
-- **NVDA** (anotar la versión: menú NVDA → Ayuda → Acerca de). Activar el **Visor de voz** (menú NVDA, Insert+N →
-  Herramientas → Visor de voz): muestra por escrito todo lo que dice NVDA. De ahí se copia el texto literal.
+- **Narrador de Windows** (incluido en Windows 11; anotar la versión de Windows con `winver`).
+  - Se enciende y se apaga con **Windows+Ctrl+Intro**. La tecla del Narrador es **Bloq Mayús** o **Insert**.
+  - Abrir el **resumen de voz** con Narrador+Alt+X y colocarlo al lado del navegador: muestra por escrito lo que dice
+    el Narrador. De ahí se copia el texto literal. Narrador+Ctrl+X copia al portapapeles la última frase leída.
+  - Idioma de la voz: español (Configuración → Accesibilidad → Narrador → Voz). Para B5F-02, en inglés, no hace falta
+    cambiar la voz: se anota el texto, no la pronunciación.
+  - Detalle de lectura (verbosidad): dejar el nivel por defecto y no cambiarlo durante la revisión.
 - **Navegador**: Chrome o Edge (anotar cuál y su versión en `chrome://version` o `edge://version`), ventana de
   1280 px de ancho o más, al 100 % de zoom.
 - **360 px** (solo para medir contraste): DevTools (F12) → barra de dispositivo (Ctrl+Mayús+M) → ancho 360. Cerrar
-  DevTools antes de volver a las comprobaciones con NVDA.
+  DevTools antes de volver a las comprobaciones con el Narrador.
 - **Colour Contrast Analyser** (TPGi): cuentagotas sobre el texto (primer plano) y sobre el fondo; se anota la
   relación que muestra (p. ej. «5,1:1»).
 
-## 2. Teclas de NVDA que se usan
+## 2. Teclas del Narrador que se usan
+
+«Narrador+…» significa mantener Bloq Mayús (o Insert) y pulsar la otra tecla.
 
 | Tecla | Qué hace |
 | --- | --- |
-| Tab / Mayús+Tab | Va al siguiente / anterior control; NVDA lo lee |
+| Tab / Mayús+Tab | Va al siguiente / anterior control; el Narrador lo lee |
 | Intro | Activa el botón o el enlace con foco |
 | Espacio | Marca la opción con foco |
-| Flecha abajo / arriba | En la página (modo exploración): lee la línea siguiente / anterior. Dentro de un grupo de opciones: cambia de opción |
-| Flecha derecha / izquierda | Lee carácter a carácter la línea actual |
-| Insert+Tab | Repite el elemento que tiene el foco |
-| Ctrl | Hace callar a NVDA |
+| Narrador+Espacio | Activa o desactiva el **modo de examen** (lectura de la página con las flechas) |
+| Flecha abajo / arriba | Con el modo de examen activo: lee el elemento siguiente / anterior de la página |
+| Flecha derecha / izquierda | Con el modo de examen activo: lee carácter a carácter |
+| Narrador+Tab | Lee el elemento que tiene el foco (equivale a Insert+Tab de NVDA) |
+| Narrador+X | Repite lo último que ha dicho |
+| Ctrl | Hace callar al Narrador |
 | Ctrl+A, Supr, Fin, Retroceso | Seleccionar todo, borrar, ir al final, borrar el carácter anterior (en un campo) |
 
-En la tecla Insert, «Insert+…» significa mantener Insert y pulsar la otra tecla. Si NVDA está en modo foco y las
-flechas no leen la página, Insert+Espacio vuelve al modo exploración.
+Diferencias con el Narrador que afectan al guion:
+
+- **Grupo de opciones de la papeleta (B2-03):** si al pulsar las flechas el Narrador lee la página en lugar de cambiar
+  de opción, desactivar el modo de examen (Narrador+Espacio), usar las flechas y volver a activarlo. Anotarlo en
+  «notas»: no es un fallo de la aplicación.
+- **Escribir con el modo de examen activo:** fuera de un campo, algunas letras saltan por la página (por ejemplo, H va
+  al siguiente encabezado). Escribir siempre con el foco en el campo.
+- **Palabras del rol y del estado:** el Narrador no dice lo mismo que NVDA. Por ejemplo, puede decir «botón de
+  alternancia, presionado» en lugar de «botón, pulsado». Lo que se comprueba es que el nombre, el rol y el estado
+  estén; no la palabra exacta.
 
 ## 3. Orden de ejecución
+
+Duración estimada: 60–75 min las obligatorias y 20–30 min las recomendadas. Conviene hacerlo en una sola sesión, sin
+recompilar el frontend entre medias. Antes de empezar, poner el idioma en español (botón «ES») y dejar abierto el Visor
+de voz junto al navegador.
 
 1. **Votante A**, a 1280 px y en español: V1-01 → V1-04, B1-01 → B1-03, V2-01, V2-02, B1-04, B2S-01, B2S-02,
    B2-01 → B2-05, B3-01 → B3-04, B4-01 → B4-05, B5P-01, B5P-02, B5N-01, B5F-01 y B5F-02. FOCO-01 se observa
@@ -94,35 +110,35 @@ flechas no leen la página, Insert+Espacio vuelve al modo exploración.
 
 ## 4. Comprobaciones obligatorias
 
-| id | Pantalla y estado | Qué se comprueba | Teclas, en orden | Qué debe anunciar NVDA (correcto) | Qué anoto si no lo anuncia | Bloqueo en esta pantalla |
+| id | Pantalla y estado | Qué se comprueba | Teclas, en orden | Qué debe anunciar el Narrador (correcto) | Qué anoto si no lo anuncia | Bloqueo en esta pantalla |
 | --- | --- | --- | --- | --- | --- | --- |
-| V1-01 | V1 bienvenida: Recién abierto el enlace del votante A | Al cargar, el foco va al título y NVDA lo lee | Ninguna: abrir el enlace y esperar 2 s | «Demo UAL · Elección en curso: Representantes en Junta de Centro» y que es un encabezado de nivel 1 | Copia del Visor de voz lo que se oiga; si no dice nada, pulsa Insert+Tab y copia lo que lea | No: si no se lee solo pero se encuentra con Insert+Tab o con las flechas es incidencia |
-| V1-02 | V1 bienvenida: Recién abierto el enlace del votante A | Se puede leer el estado del proceso | Flecha arriba varias veces desde el título (modo exploración) hasta oír la barra de estado | «Votación abierta · Cierra el <fecha y hora>» | Copia lo que se oiga | No: es información, no impide votar |
-| V1-03 | V1 bienvenida: Recién abierto el enlace del votante A | El selector de idioma tiene nombre y estado y funciona con el teclado | Mayús+Tab desde el título hasta oír «EN»; Intro; escuchar; Mayús+Tab o Tab hasta «ES»; Intro | «EN Inglés, botón, no pulsado» y «ES Español, botón, pulsado» (las palabras del rol y del estado dependen de NVDA); al pulsar EN el texto pasa a inglés y al pulsar ES vuelve a español | Copia lo que se oiga en cada botón | Sí, si no se puede cambiar de idioma con el teclado o no hay forma de saber cuál está activo |
+| V1-01 | V1 bienvenida: Recién abierto el enlace del votante A | Al cargar, el foco va al título y el Narrador lo lee | Ninguna: abrir el enlace y esperar 2 s | «Demo UAL · Elección en curso: Representantes en Junta de Centro» y que es un encabezado de nivel 1 | Copia del resumen de voz lo que se oiga; si no dice nada, pulsa Narrador+Tab y copia lo que lea | No: si no se lee solo pero se encuentra con Narrador+Tab o con las flechas es incidencia |
+| V1-02 | V1 bienvenida: Recién abierto el enlace del votante A | Se puede leer el estado del proceso | Flecha arriba varias veces desde el título (modo de examen) hasta oír la barra de estado | «Votación abierta · Cierra el <fecha y hora>» | Copia lo que se oiga | No: es información, no impide votar |
+| V1-03 | V1 bienvenida: Recién abierto el enlace del votante A | El selector de idioma tiene nombre y estado y funciona con el teclado | Mayús+Tab desde el título hasta oír «EN»; Intro; escuchar; Mayús+Tab o Tab hasta «ES»; Intro | «EN Inglés, botón, no pulsado» y «ES Español, botón, pulsado» (las palabras del rol y del estado dependen del lector); al pulsar EN el texto pasa a inglés y al pulsar ES vuelve a español. Puede oírse antes el nombre del grupo, «Idioma». Las banderas son decorativas: el Narrador no debe leerlas | Copia lo que se oiga en cada botón | Sí, si no se puede cambiar de idioma con el teclado o no hay forma de saber cuál está activo |
 | V1-04 | V1 bienvenida: Recién abierto el enlace del votante A, en español | Se llega a «Empezar» y se activa | Tab desde el título hasta «Empezar»; Intro | «Empezar, botón»; al pulsar Intro pasa a la pantalla del código (B1) | Copia lo que se oiga; anota cuántos Tab hicieron falta | Sí, si «Empezar» no se alcanza con Tab o Intro no hace nada |
-| B1-01 | B1 código: Tras pulsar «Empezar» | El foco va al título de la pantalla nueva y se lee | Ninguna: esperar 2 s | «Código de acceso» y que es un encabezado de nivel 1 | Copia lo que se oiga; si no dice nada, Insert+Tab | No: es incidencia si el contenido se encuentra con las flechas |
+| B1-01 | B1 código: Tras pulsar «Empezar» | El foco va al título de la pantalla nueva y se lee | Ninguna: esperar 2 s | «Código de acceso» y que es un encabezado de nivel 1 | Copia lo que se oiga; si no dice nada, Narrador+Tab | No: es incidencia si el contenido se encuentra con las flechas |
 | B1-02 | B1 código: Tras pulsar «Empezar» | Se puede leer adónde se ha enviado el código | Flecha abajo una vez desde el título | «Hemos enviado un código de 6 cifras a <correo con parte oculta>. Caduca en <N> minutos.» | Copia lo que se oiga | No |
 | B1-03 | B1 código: Tras pulsar «Empezar» | La casilla del código tiene un nombre comprensible | Tab desde el título hasta la primera casilla | «Código de acceso» y que es un campo de edición. Aviso: Playwright vio que la casilla puede llevar el nombre interno de Ionic en inglés («Input 1 of 6»); si es eso lo que oyes, cópialo tal cual | Copia lo que se oiga | No, si aun así se puede escribir el código. Si el nombre está en inglés, es incidencia |
-| B1-04 | B1 código: Después de V2: escribir el código correcto (Mailpit) | Con el código correcto se pasa a la papeleta | Si quedan cifras en las casillas, Retroceso hasta vaciarlas; escribir las 6 cifras del correo (al escribir la sexta se envía solo) | Pasa a la papeleta y NVDA lee la pregunta (ver B2-01) | Copia lo que se oiga | Sí, si no se puede escribir o corregir el código con el teclado |
+| B1-04 | B1 código: Después de V2: escribir el código correcto (Mailpit) | Con el código correcto se pasa a la papeleta | Si quedan cifras en las casillas, Retroceso hasta vaciarlas; escribir las 6 cifras del correo (al escribir la sexta se envía solo) | Pasa a la papeleta y el Narrador lee la pregunta (ver B2-01) | Copia lo que se oiga | Sí, si no se puede escribir o corregir el código con el teclado |
 | B1-05 | B1 código: A 360 px y en EN, con el botón «Resend the code» visible (aparece a los 60 s del envío) | Contraste del texto del botón «Resend the code» / «Reenviar el código» (aviso de axe) | Colour Contrast Analyser: cuentagotas sobre el texto y sobre el fondo del botón | No aplica (medición). Umbral: 4,5:1 | Anota en «notas» el valor (p. ej. «5,1:1»), los colores y el idioma; si no se pudo medir en EN, dilo | No es bloqueo; por debajo de 4,5:1 es incumplimiento serio (WCAG 1.4.3) |
 | V2-01 | V2 código incorrecto: Votante A en B1, antes de escribir el código bueno | El error se anuncia solo, sin buscarlo | En la primera casilla escribir 000000 (se envía solo al teclear la sexta cifra) | «El código no es correcto. Te quedan 4 intentos.» sin pulsar nada más | Copia lo que se oiga; si no se anuncia, busca el mensaje con flecha abajo y anota si lo encuentras | Sí, si el error no se anuncia y no se encuentra navegando; es incidencia si no se anuncia pero se encuentra |
 | V2-02 | V2 código incorrecto: Votante A en B1, antes de escribir el código bueno | Se puede volver a escribir el código | Mayús+Tab o Tab hasta la casilla; Retroceso hasta vaciarla; seguir con B1-04 | Se oye la casilla y se puede borrar y escribir | Copia lo que se oiga | Sí, si no se puede volver a escribir sin ratón |
-| C4-01 | C4 acceso bloqueado: Votante B: abrir su enlace, «Empezar» y escribir 000000 cinco veces (vaciando la casilla entre intento e intento) | Al bloquearse, NVDA anuncia el bloqueo y hasta cuándo dura | Escribir 000000 y, si quedan cifras, Retroceso hasta vaciar; repetir hasta el quinto intento. Si tras el quinto sigue en la pantalla del código, un intento más | «Acceso bloqueado temporalmente» y «Has superado el número de intentos. Por seguridad, espera hasta las <hora> y vuelve a intentarlo.» | Copia lo que se oiga; si no se pudo bloquear, marca «no revisado» y explica por qué en «notas» | Sí, si no hay forma de saber que el acceso está bloqueado ni hasta cuándo |
+| C4-01 | C4 acceso bloqueado: Votante B: abrir su enlace, «Empezar» y escribir 000000 cinco veces (vaciando la casilla entre intento e intento) | Al bloquearse, el Narrador anuncia el bloqueo y hasta cuándo dura | Escribir 000000 y, si quedan cifras, Retroceso hasta vaciar; repetir hasta el quinto intento. Si tras el quinto sigue en la pantalla del código, un intento más | «Acceso bloqueado temporalmente» y «Has superado el número de intentos. Por seguridad, espera hasta las <hora> y vuelve a intentarlo.» | Copia lo que se oiga; si no se pudo bloquear, marca «no revisado» y explica por qué en «notas» | Sí, si no hay forma de saber que el acceso está bloqueado ni hasta cuándo |
 | C4-02 | C4 acceso bloqueado: Votante B: abrir su enlace, «Empezar» y escribir 000000 cinco veces (vaciando la casilla entre intento e intento) | El botón de la pantalla se alcanza y tiene nombre | Tab desde el título | «Volver a intentarlo, botón» | Copia lo que se oiga | No (la persona sabe qué pasa y hasta cuándo) |
 | C4-03 | C4 acceso bloqueado: Votante B: abrir su enlace, «Empezar» y escribir 000000 cinco veces (vaciando la casilla entre intento e intento), a 1280 px y a 360 px | Contraste del texto del botón «Volver a intentarlo» (aviso de axe) | Colour Contrast Analyser: texto y fondo del botón, a cada ancho | No aplica (medición). Umbral: 4,5:1 | Anota el valor de cada ancho en «notas» | No es bloqueo; por debajo de 4,5:1 es incumplimiento serio |
 | B2S-01 | B2 papeleta sin elegir: Votante A recién llegado a la papeleta, sin marcar nada | Continuar sin elegir: el error se anuncia | Tab desde el título hasta «Revisar mi voto» (sin marcar ninguna opción); Intro | «Todavía no has elegido una opción.» sin pulsar nada más | Copia lo que se oiga; si no se anuncia, búscalo con las flechas y anota si lo encuentras | Sí, si no se anuncia y no se encuentra navegando |
 | B2S-02 | B2 papeleta sin elegir: Votante A recién llegado a la papeleta, sin marcar nada, tras el error | Se puede volver a las opciones | Mayús+Tab hasta oír una opción | El nombre de una opción (ver B2-02) | Copia lo que se oiga | Sí, si no se puede volver a las opciones con el teclado |
-| B2-01 | B2 papeleta: Votante A en la papeleta | Al llegar, el foco va a la pregunta y se lee | Ninguna: esperar 2 s al llegar (o Insert+Tab) | «¿Qué candidatura apoyas para la Junta de Centro?» y que es un encabezado de nivel 1 | Copia lo que se oiga | No: es incidencia si se encuentra con las flechas |
-| B2-02 | B2 papeleta: Votante A en la papeleta | Cada opción tiene nombre, rol, estado y posición | Desde la pregunta, Tab hasta la primera opción | «Lista Participa, botón de opción, no marcado, 1 de 3» o similar. Comprueba también: (a) que no diga «lista» al entrar en las opciones (DEF-05); (b) si nombra el grupo. En el código el grupo no tiene nombre propio; si NVDA no lo nombra, anótalo | Copia lo que se oiga | Sí, si no se puede saber qué opción es cada una; que falte el nombre del grupo es incidencia |
+| B2-01 | B2 papeleta: Votante A en la papeleta | Al llegar, el foco va a la pregunta y se lee | Ninguna: esperar 2 s al llegar (o Narrador+Tab) | «¿Qué candidatura apoyas para la Junta de Centro?» y que es un encabezado de nivel 1 | Copia lo que se oiga | No: es incidencia si se encuentra con las flechas |
+| B2-02 | B2 papeleta: Votante A en la papeleta | Cada opción tiene nombre, rol, estado y posición | Desde la pregunta, Tab hasta la primera opción | «Lista Participa, botón de opción, no marcado, 1 de 3» o similar. Comprueba también: (a) que no diga «lista» al entrar en las opciones (DEF-05); (b) si nombra el grupo. En el código el grupo no tiene nombre propio; si el Narrador no lo nombra, anótalo | Copia lo que se oiga | Sí, si no se puede saber qué opción es cada una; que falte el nombre del grupo es incidencia |
 | B2-03 | B2 papeleta: Votante A en la papeleta | Las flechas recorren las opciones y se sabe cuál queda marcada | Flecha abajo, flecha abajo, flecha arriba (dejar marcada «Lista Campus Abierto»); si alguna opción no se marca al moverte, Espacio | Al bajar: «Lista Campus Abierto, … marcado, 2 de 3»; «Voto en blanco, Cuenta como participación, pero no apoya a ninguna opción., … marcado, 3 de 3»; al subir vuelve a «Lista Campus Abierto, marcado» | Copia lo que se oiga en cada pulsación | Sí, si no se puede marcar una opción con el teclado o no se sabe cuál queda marcada |
 | B2-04 | B2 papeleta: Votante A en la papeleta, a 1280 px y a 360 px | Contraste del texto de la primera opción («Lista Participa») sobre su tarjeta (aviso de axe) | Colour Contrast Analyser: texto y fondo de la tarjeta, a cada ancho | No aplica (medición). Umbral: 4,5:1 | Anota el valor de cada ancho en «notas» | No es bloqueo; por debajo de 4,5:1 es incumplimiento serio |
 | B2-05 | B2 papeleta: Con «Lista Campus Abierto» marcada | Se continúa a la revisión | Tab hasta «Revisar mi voto»; Intro | «Revisar mi voto, botón»; pasa a la revisión (B3) | Copia lo que se oiga | Sí, si no se puede continuar con el teclado |
-| B3-01 | B3 confirmación: Tras «Revisar mi voto» | El foco va al título y se lee | Ninguna: esperar 2 s (o Insert+Tab) | «Revisa tu voto» y que es un encabezado de nivel 1 | Copia lo que se oiga | No: es incidencia si se encuentra con las flechas |
+| B3-01 | B3 confirmación: Tras «Revisar mi voto» | El foco va al título y se lee | Ninguna: esperar 2 s (o Narrador+Tab) | «Revisa tu voto» y que es un encabezado de nivel 1 | Copia lo que se oiga | No: es incidencia si se encuentra con las flechas |
 | B3-02 | B3 confirmación: Tras «Revisar mi voto» | Se lee la opción elegida y el aviso antes de confirmar | Flecha abajo varias veces desde el título | «Has elegido», «Lista Campus Abierto», «Aún no has votado. Cuando confirmes, tu voto no se podrá cambiar.» | Copia lo que se oiga | Sí, si no hay forma de saber qué opción se va a confirmar |
 | B3-03 | B3 confirmación: Tras «Revisar mi voto» | Se puede volver atrás sin perder la elección | Tab hasta «Cambiar mi selección»; Intro; en la papeleta, Tab hasta la opción marcada y escuchar; Tab hasta «Revisar mi voto»; Intro | «Cambiar mi selección, botón»; en la papeleta «Lista Campus Abierto» sigue marcada; se vuelve a la revisión | Copia lo que se oiga | No, salvo que la elección cambie sin que se anuncie |
 | B3-04 | B3 confirmación: Tras «Revisar mi voto» | Se confirma el voto con el teclado y se informa de la espera | Tab hasta «Confirmar y votar»; Intro | «Confirmar y votar, botón»; puede oírse «No cierres esta ventana.»; pasa al recibo (B4) | Copia lo que se oiga | Sí, si no se puede confirmar con el teclado |
 | B4-01 | B4 recibo: Tras confirmar | Se anuncia que el voto se ha registrado | Ninguna: esperar 2 s; después, flecha abajo una vez | «Voto registrado» (encabezado de nivel 1) y «Gracias. Tu voto está en la urna.» | Copia lo que se oiga | Sí, si no hay forma de saber que el voto se ha registrado |
-| B4-02 | B4 recibo: Tras confirmar | El código de recibo se puede leer, también carácter a carácter. Incluye el aviso de axe aria-prohibited-attr: el párrafo del código lleva aria-labelledby sin un rol que lo permita | Flecha abajo hasta oír «Código de recibo» y el código; en la línea del código, flecha derecha 5 o 6 veces | «Código de recibo» y luego los 64 caracteres del código; con flecha derecha, un carácter por pulsación | Copia lo que se oiga. Anota si NVDA lee «Código de recibo» como nombre del código, solo el código o las dos cosas | Sí, si el código no se puede leer. Que no lea la etiqueta como nombre es incidencia |
+| B4-02 | B4 recibo: Tras confirmar | El código de recibo se puede leer, también carácter a carácter. Incluye el aviso de axe aria-prohibited-attr: el párrafo del código lleva aria-labelledby sin un rol que lo permita | Flecha abajo hasta oír «Código de recibo» y el código; en la línea del código, flecha derecha 5 o 6 veces | «Código de recibo» y luego los 64 caracteres del código; con flecha derecha, un carácter por pulsación | Copia lo que se oiga. Anota si el Narrador lee «Código de recibo» como nombre del código, solo el código o las dos cosas | Sí, si el código no se puede leer. Que no lea la etiqueta como nombre es incidencia |
 | B4-03 | B4 recibo: Tras confirmar | El código se copia con el teclado y se confirma | Tab hasta «Copiar el código»; Intro | «Copiar el código, botón» y después «Copiado» | Copia lo que se oiga; para comprobar la copia, pega en un bloc de notas (Ctrl+V) | No, si el código se puede leer (B4-02) y apuntar |
 | B4-04 | B4 recibo: A 360 px | Contraste del texto del botón «Copiar el código» (aviso de axe a 360 px) | Colour Contrast Analyser: texto y fondo del botón | No aplica (medición). Umbral: 4,5:1 | Anota el valor en «notas» | No es bloqueo; por debajo de 4,5:1 es incumplimiento serio |
 | B4-05 | B4 recibo: A 1280 px | Se llega a «Comprobar mi recibo» | Tab hasta «Comprobar mi recibo»; Intro | «Comprobar mi recibo», con rol de botón o de enlace; pasa a la comprobación (B5) con el código ya escrito | Copia lo que se oiga | No: la comprobación también puede abrirse escribiendo la dirección |
@@ -140,7 +156,7 @@ flechas no leen la página, Insert+Espacio vuelve al modo exploración.
 
 Solo si se pueden reproducir con datos sintéticos propios; si no, «no revisado».
 
-| id | Pantalla y estado | Qué se comprueba | Teclas, en orden | Qué debe anunciar NVDA (correcto) | Qué anoto si no lo anuncia | Bloqueo en esta pantalla |
+| id | Pantalla y estado | Qué se comprueba | Teclas, en orden | Qué debe anunciar el Narrador (correcto) | Qué anoto si no lo anuncia | Bloqueo en esta pantalla |
 | --- | --- | --- | --- | --- | --- | --- |
 | V3-01 | V3 ya votó: Votante 1 del proceso «presente» (ya votó con el script): enlace, «Empezar», código | Se anuncia que ya ha votado | Ninguna: esperar 2 s tras el código | «Ya has votado» y «Tu voto se registró el <día>. Solo se puede votar una vez.» (o sin el día) | Copia lo que se oiga | Sí, si no se sabe por qué no puede votar |
 | V6-01 | V6 sesión caducada: Votante 5 del proceso «presente»: llegar a la papeleta, esperar más de 15 min sin tocar nada, marcar una opción y pulsar «Revisar mi voto» o «Confirmar y votar» | Se anuncia que la sesión ha caducado y que no ha votado | Las de B2-03 y B2-05 después de la espera | «Tu sesión ha caducado» y «Tu selección no se ha guardado y no has votado. Vuelve a entrar con el mismo enlace.» | Copia lo que se oiga; si no aparece, «no revisado» | Sí, si no se sabe que no ha votado |
@@ -151,11 +167,12 @@ Solo si se pueden reproducir con datos sintéticos propios; si no, «no revisado
 | C3I-01 | C3 enlace no válido: Cambiar un carácter del token en la dirección de cualquier enlace (Ctrl+L, editar, Intro) | Se lee el título y el mensaje al cargar | Ninguna: esperar 2 s; flecha abajo | «Este enlace no es válido» y «Usa el enlace de tu último correo de invitación. …» | Copia lo que se oiga | No |
 | C3E-01 | C3 enlace caducado: Solo si tienes un enlace caducado (30 días después del cierre); si no, «no revisado» | Se lee el título y el mensaje al cargar | Ninguna: esperar 2 s; flecha abajo | «El enlace ha caducado» y «Contacta con tu organización para recibir un enlace nuevo.» | Copia lo que se oiga | No |
 | SSO-01 | Acceso con cuenta institucional (RF-05b): Solo si tienes un proceso con cuenta institucional (la demo no lo crea; si no, «no revisado») | El título y el botón se leen y el botón se activa | Ninguna al llegar; Tab hasta el botón; Intro | «Entra con tu cuenta institucional» (encabezado) y «Entrar con tu cuenta institucional, botón» | Copia lo que se oiga | Sí, si no se puede iniciar la entrada con el teclado |
+| TM-01 | Demasiadas peticiones (IMP-50): reiniciar el *gateway* con `GATEWAY_VOTER_ACCESS_RATE_LIMIT_CAPACITY=3` y `GATEWAY_VOTER_ACCESS_RATE_LIMIT_PER_MINUTE=3`; abrir el enlace de cualquier votante sin usar y recargar la página (F5) hasta que cambie el mensaje. Al terminar, reiniciar el *gateway* sin esas variables | Se anuncia por qué no puede seguir y cuánto esperar | Ninguna: esperar 2 s tras la recarga; flecha abajo | «Demasiadas peticiones» (encabezado) y «Ahora mismo llegan demasiadas peticiones desde tu red. Espera <N> segundos y vuelve a intentarlo.» | Copia lo que se oiga; si no aparece, «no revisado» | Sí, si no se sabe por qué no puede seguir |
 | V8-01 | V8 resultado: Proceso «pasada», votante 5 (igual que V8C-01) | Se lee el título y la información del resultado | Ninguna al llegar; flecha abajo por la página | El título del proceso (encabezado) y los resultados como texto (cada opción con su número de votos) | Copia lo que se oiga | Sí, si el resultado solo se ve en un gráfico sin texto |
 
 ## 6. Cómo se decide
 
-**Bloqueo:** algo que impide a una persona que usa solo teclado y NVDA terminar el acceso, el voto o el recibo sin
+**Bloqueo:** algo que impide a una persona que usa solo teclado y el Narrador terminar el acceso, el voto o el recibo sin
 ayuda de otra persona ni del ratón, o que la lleva a hacer algo distinto de lo que quería sin saberlo. La columna
 «Bloqueo en esta pantalla» lo concreta para cada fila.
 
@@ -180,7 +197,7 @@ Las dos hojas CSV rellenas (en UTF-8, sin cambiar las columnas ni los `id`) y, e
 ```text
 Fecha y hora de la revisión:
 Sistema operativo:
-NVDA, versión:
+Lector de pantalla y versión (Narrador de Windows, versión de Windows …):
 Navegador y versión:
 Commit (git rev-parse --short HEAD):
 SHA-256 de los tres ficheros: coinciden / no coinciden (cuál)

@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-17 · Rama: `dev` (HEAD `91958ff`; cambios locales sin commit) · D2/D5 integradas por el autor (`c48dbab`) · sin push
+Última actualización: 2026-11-18 · Rama: `dev` (HEAD `f0f4482`; cambios locales sin commit) · sin push
 
 ## Hitos
 
@@ -19,6 +19,15 @@
 
 ## Hecho
 
+- 18/11, tarde (sin commit): **IMP-63** hecha. En Firefox y WebKit las POST al mismo origen se saltaban `page.route`
+  (trazas de la segunda ejecución de M2); ahora llegan a un servidor simulado de respaldo (`tests/e2e/support/api-mock.ts`
+  y `mock-router.mjs`, proxy `proxy.e2e.conf.json`, servidor de pruebas en el puerto 4300) con la misma respuesta
+  sintética. Entorno de la IA: Chromium 212/212 y, forzando el salto de las POST, las 56 afectadas pasan. Equipo del
+  autor: Firefox **212/212**; WebKit **211/212** (una prueba agotó el tiempo esperando la casilla del código; repetida sola el 19/11, pasa). RNF-2 aceptado en la tabla 13.2. **M1:** guion y hojas adaptados al Narrador de Windows y a la versión actual; nueva fila
+  recomendada TM-01 (IMP-50). **M5 / IMP-57:** `SO_BACKLOG` 1024 en el *gateway* (`ConnectionBacklogConfiguration`) y
+  `server.tomcat.accept-count` 1000 en ballot-box y voter-access; serie B de H1c definida en `carga.md` antes de
+  medir. **No compilado en el entorno de la IA** (sin Java 25). Revisión del secreto del voto: solo cambian colas de
+  conexión; no hay datos, registros, orden ni tiempos nuevos.
 - 17/11: eliminada `.local/sheet-15min.png` a petición del autor. Memoria compilada dos veces con pdfLaTeX (93 páginas) y presentación compilada dos veces (20 páginas: 14 principales y 6 de reserva); ambos PDFs sin referencias sin resolver.
 
 - 15/11: memoria recompilada dos veces con pdfLaTeX (95 páginas; sin referencias sin resolver). Revisión visual solicitada completada: tabla 13.1 legible en una página y su explicación continúa correctamente en la siguiente; figuras 8.1 y 8.2 legibles, sin solapamientos. Script `node scripts/dev/keycloak-api-audience.mjs` ejecutado contra Keycloak local ya activo; añadió el audience mapper `verivoto-api` a seis clientes (admin, cuatro servicios y Swagger). No se modificó el comportamiento del voto.
@@ -29,6 +38,9 @@
 - 16/11: eliminados a petición del autor los ficheros de vista previa `.local/s-08.png`, `s-13.png`, `sheet0.png`, `sheet1.png`, `t.png` y `tex.tgz`; verificada su ausencia.
 - 17/11: verificados D4, IMP-46 y las pruebas de identity. `mvnw -pl services/identity-service -am test`: 30 pruebas, 0 fallos (incluye 7 HTTP con PostgreSQL 18.6 y 10 unitarias asociadas a D4). Consultados los digest OCI actuales: Keycloak `sha256:3f3c5f8e03c614774b4bd9173b88391fefa4153bfc010d8012d59ad825377332`, Gitleaks `sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f`, Trivy `sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c`; aún no se fijan en los manifiestos.
 - 17/11 (sin commit): **IMP-48** aplicado con los *digest* del autor (Dockerfile de Keycloak, gitleaks y Trivy en `security.yml`). Memoria, `informe.md`, `cierre.md`, `PLAN.md` y `TRACEABILITY.md` con 168 pruebas de backend (identity 30), 312 en total, 23 de integración sobre PostgreSQL en 9 clases y cobertura de líneas del backend 59,1 % (3479/5890; identity 75,2 %); la autorización HTTP de identity deja de figurar como pendiente. **Defensa: 15 minutos** (confirmado por el director): `presentacion.tex` pasa a 14 diapositivas y 6 de reserva; `guion.md` rehecho (≈ 13 min). Pendiente de decisión: prioridades MoSCoW de los RNF (columna «Por validar» de la tabla 7.1).
+- 18/11 (sin commit): tabla 13.2 «Evidencia por requisito no funcional» en `evaluacion_resultados.tex` (Must: 2 aceptados y 8 con evidencia parcial; Should: RNF-4 aceptado, RNF-17 no se cumple, RNF-10 sin evaluar). Plan de mejoras M1–M6 en `PLAN.md` (8.4). Preparadas M2 (`E2E_BROWSERS=all` añade Firefox y WebKit; 636 pruebas listadas, por defecto 212) y M3 (`docs/evaluation/revision-heuristica/`).
+- 18/11, mediodía: **M2, primera ejecución del autor** (636 pruebas a la vez): Chromium 212/212, Firefox 115/212, WebKit 173/212; los 136 fallos son tiempos agotados de 30 s o cierres del navegador (`Protocol error`), ninguno por axe. No concluyente. Ajustes sin commit: 90 s por prueba en Firefox y WebKit, nombre de fichero de axe con el navegador (antes se sobrescribían) y ejecución por motor con 2 *workers*. Comprobado en el entorno de la IA que Chromium sigue igual (16 de 16 en una muestra; 636 pruebas listadas con `E2E_BROWSERS=all`).
+- 18/11, tarde (sin commit): **M2, segunda ejecución** (un motor cada vez): Firefox y WebKit 156/212 cada uno, sin incumplimientos críticos ni serios; las 56 restantes no llegan a su pantalla porque esos motores no pasan las POST por `page.route` (502 del proxy) → IMP-63. **M4** hecha por el autor (PWA instalada en iOS y Android). **D-64, identidad de la PWA:** iconos de marca generados con `scripts/brand/pwa-icons.py` (rsvg-convert) en `frontend/public/icons/` (`any` 72–512, `maskable` 192 y 512, `apple-touch-icon` 180), manifiesto con iconos `any` y `maskable` separados e `id: "./"`, `apple-touch-icon` en `index.html`, banderas del selector visibles en móvil (18×12 px). Verificado en el entorno de la IA (Chrome, Node 22): tamaños de todos los PNG iguales a los declarados, `ng build` correcto con los iconos y el `apple-touch-icon` en `dist/` y en `ngsw.json`; selector a 360 y 390 px, es y en, en voto y recibo: banderas visibles, botones de 44 px de alto (52–54 px de ancho), sin solaparse con el título ni desbordar la página; consola a 360 px comprobada en capturas; barrido axe completo en Chromium 212/212 sin críticos ni serios. **No verificado:** el icono nuevo en un teléfono (hay que reinstalar la PWA) y Vitest (`npm run test:ci`) tras el cambio de estilos. Tabla 13.2: RNF-2 con Firefox, WebKit y dispositivos reales; RNF-18 aceptado.
 
 - H1c: completados en `docs/evaluation/carga.md` los datos del equipo usados en la medición: AMD Ryzen 7 5825U,
   16 GB RAM (15,4 GiB visibles para Windows) y Docker 29.4.0 (build 9d7ad9f). Datos consultados el 11/11/2026.
@@ -210,6 +222,11 @@
 
 
 ## Pendiente
+
+- PWA (D-64): comprobar en el teléfono el icono nuevo tras desinstalar la PWA anterior y volver a instalarla; ejecutar `npm run test:ci`.
+- Backend: `mvnw verify` tras `ConnectionBacklogConfiguration` y los cambios de `application.yml`.
+- H1c, serie B (`carga.md`): recompilar los servicios, humo con 20 VU y tres ejecuciones (`LOAD_RUN` 20–22).
+- M1: revisión con el Narrador según `docs/evaluation/accesibilidad-manual-guion.md`.
 
 > P7 se cerró el 15/11/2026. Los puntos P7.x de esta lista que no se completaron quedan como limitaciones declaradas (`docs/evaluation/resultados-p7/cierre.md`), no como trabajo en curso. D2 y D5 fusionadas por el autor el 15/11/2026 (`c48dbab`; `mvnw verify`: 151 pruebas, 0 fallos); memoria, `informe.md`, `threat-model.md` e `IMPROVEMENTS.md` actualizados. C4: figuras 8.1 y 8.2 y tabla 13.1 revisadas visualmente el 15/11; memoria recompilada (92 páginas) el 16/11 y `keycloak-api-audience.mjs` ejecutado contra Keycloak local. Siguiente paso: A9 y el resto de C4.
 

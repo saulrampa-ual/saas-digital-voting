@@ -1,5 +1,8 @@
 server:
   port: ${BALLOT_BOX_SERVER_PORT:8084}
+  tomcat:
+    # IMP-57 / H1c: connections that wait while the 200 request threads are busy (default 100); beyond it they are refused
+    accept-count: ${BALLOT_BOX_TOMCAT_ACCEPT_COUNT:1000}
 
 spring:
   # D-44: one thread per scheduled task, so delivering administrative actions to identity-service never delays

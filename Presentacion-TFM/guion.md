@@ -98,7 +98,8 @@ Las diapositivas de **reserva** (después de «Gracias») no se presentan: sirve
 > Un recibo de presencia permite explicar la verificación sin revelar el voto, y los cinco participantes lo
 > entendieron. Separar participación y urna con un token de un solo uso controla la unicidad y reduce la vinculación.
 > E ISO/IEC 25010 organiza la evaluación, aunque la evidencia queda incompleta en rendimiento y accesibilidad manual.
-> Los cuatro objetivos están implementados; la aceptación experimental es parcial y así lo declaro.
+> Los cuatro objetivos y los cinco objetivos específicos del anteproyecto tienen evidencia; la aceptación experimental
+> es parcial y así lo declaro.
 
 ## 13. Limitaciones y trabajo futuro (45 s)
 

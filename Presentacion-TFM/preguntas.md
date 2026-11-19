@@ -102,14 +102,23 @@ a la vez sin rampa, que el gateway rechazó en parte, y que los votos de un mism
 encadenarlos. Aun así no se perdió ni duplicó ningún voto.
 
 **¿Cómo lo arreglarías?**
-Primero medir dónde se va el tiempo (no está perfilado). Después: consumir el token antes del bloqueo para acortar la
-sección crítica, ajustar las colas de conexión del gateway y los servicios, y repetir las tres ejecuciones en un
-entorno dimensionado, con el mismo criterio.
+Más de la mitad de las conexiones las rechazó el gateway antes de llegar a ningún servicio: su cola de conexiones
+pendientes era la del sistema (unas 200 en Windows) y la de Tomcat en ballot-box, 100. El primer paso fue ampliar esas
+colas, sin tocar la lógica del voto, y repetir H1c como una serie nueva con el mismo criterio, informando también la
+del 11/11. El token ya se consume antes del bloqueo; lo que queda serializado es el guardado del voto con su huella,
+que es el precio de la cadena por proceso. Si eso fuera el límite, la alternativa sería encadenar por lotes, pero
+afecta al diseño y al secreto del voto, así que lo dejo como trabajo futuro.
 
 **¿Por qué H1a queda «sin decisión» y no aceptada?**
 El criterio exige la parte automática y una revisión manual con teclado y lector de pantalla. La automática da 0
 incumplimientos críticos y serios en 212 comprobaciones, pero la manual no se pudo hacer (NVDA no funcionó en el
 equipo). Aceptarla sin esa parte sería cambiar el criterio.
+
+**Muchos requisitos aparecen con «evidencia parcial». ¿No los cumples?**
+«Parcial» no significa «falla»: significa que hay pruebas que apoyan el requisito, pero no todas las que exigiría
+afirmarlo del todo. En casi todos los casos lo que falta es lo mismo: un despliegue real con usuarios reales, porque
+el trabajo se evaluó en local y con datos sintéticos. Preferí marcarlo así antes que declarar «cumple» algo que solo
+he comprobado en mi entorno. Los cinco objetivos del anteproyecto (OE1–OE5) sí están cumplidos y tienen evidencia.
 
 **¿Qué significa evaluar con ISO/IEC 25010?**
 Cada requisito no funcional se asigna a una característica y subcaracterística del modelo (por ejemplo, autenticidad

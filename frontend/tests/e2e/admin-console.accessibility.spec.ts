@@ -1,9 +1,10 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { test, type MockReply, type MockResolver } from './support/api-mock';
 
 /**
  * H1a (RNF-1), automatic part, second block (A4): axe on the management console (every page and role) and on the
@@ -168,39 +169,36 @@ async function mockKeycloak(page: Page, role: Role): Promise<void> {
   });
 }
 
-async function mockApi(page: Page): Promise<void> {
-  await page.route('**/api/v1/**', (route) => {
-    const url = new URL(route.request().url());
-    const path = url.pathname.replace(/^\/api\/v1/, '');
-    const method = route.request().method();
-    const ok = (body: unknown) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
-    const problem = (status: number) => route.fulfill({ status, contentType: 'application/problem+json',
-      body: JSON.stringify({ type: 'about:blank', title: 'Synthetic', status }) });
-    let m: RegExpMatchArray | null;
-    if (path === '/organizations') return ok(organizations);
-    if ((m = path.match(/^\/organizations\/([^/]+)\/users$/))) return ok({ items: [{ role: 'ADMIN' }, { role: 'CENSUS_MANAGER' }, { role: 'AUDITOR' }], page: 0, size: 100, totalItems: 3 });
-    if ((m = path.match(/^\/organizations\/([^/]+)$/))) return ok(organizations.items.find((o) => o.id === decodeURIComponent(m![1])) ?? organizations.items[0]);
-    if (path === '/processes') return ok(summaries);
-    if ((m = path.match(/^\/processes\/(\d+)\/status-history$/))) return ok(history(+m[1]));
-    if ((m = path.match(/^\/processes\/(\d+)$/))) return ok(processOf(+m[1]));
-    if (path === '/censuses') return ok(censuses);
-    if ((m = path.match(/^\/censuses\/(\d+)\/voters$/))) return ok(+m[1] === 1 ? voters : { items: [], page: 0, size: 20, totalItems: 0 });
-    if ((m = path.match(/^\/censuses\/(\d+)$/))) return ok(censuses.find((c) => c.id === +m![1]) ?? censuses[0]);
-    if ((m = path.match(/^\/voter-access\/processes\/(\d+)\/participation$/))) return ok(participation(+m[1]));
-    if ((m = path.match(/^\/voter-access\/processes\/(\d+)\/notifications$/))) return ok(notifications(+m[1]));
-    if ((m = path.match(/^\/ballot-box\/processes\/(\d+)\/results\/counted-votes$/))) return +m[1] === 2 ? ok(counted) : problem(409);
-    if ((m = path.match(/^\/ballot-box\/processes\/(\d+)\/results$/))) return +m[1] === 2 ? ok(result) : problem(409);
-    if ((m = path.match(/^\/ballot-box\/processes\/(\d+)\/audit-events\/verification$/))) return ok(chainCheck(+m[1]));
-    if ((m = path.match(/^\/ballot-box\/processes\/(\d+)\/audit-events$/))) return ok(auditEvents(+m[1]));
-    if (path === `/ballot-box/public/results/${PUBLIC_ID}/counted-votes`) return ok(counted);
-    if (path === `/ballot-box/public/results/${PUBLIC_ID}`) return ok(result);
-    if (path === '/admin-actions/actors') return ok(actors);
-    if (path === '/admin-actions') return ok(adminActions);
-    if (path === '/api-keys' && method === 'GET') return ok(apiKeys);
-    if (path === '/privacy/search' && method === 'POST') return ok(privacySubject);
-    return problem(404);
-  });
-}
+/** Synthetic management API, for `page.route` and for the fallback server of Firefox and WebKit (IMP-63). */
+const resolver: MockResolver = (method, url) => {
+  const path = url.pathname.replace(/^\/api\/v1/, '');
+  const ok = (body: unknown): MockReply => ({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+  const problem = (status: number): MockReply => ({ status, contentType: 'application/problem+json',
+    body: JSON.stringify({ type: 'about:blank', title: 'Synthetic', status }) });
+  let m: RegExpMatchArray | null;
+  if (path === '/organizations') return ok(organizations);
+  if ((m = path.match(/^\/organizations\/([^/]+)\/users$/))) return ok({ items: [{ role: 'ADMIN' }, { role: 'CENSUS_MANAGER' }, { role: 'AUDITOR' }], page: 0, size: 100, totalItems: 3 });
+  if ((m = path.match(/^\/organizations\/([^/]+)$/))) return ok(organizations.items.find((o) => o.id === decodeURIComponent(m![1])) ?? organizations.items[0]);
+  if (path === '/processes') return ok(summaries);
+  if ((m = path.match(/^\/processes\/(\d+)\/status-history$/))) return ok(history(+m[1]));
+  if ((m = path.match(/^\/processes\/(\d+)$/))) return ok(processOf(+m[1]));
+  if (path === '/censuses') return ok(censuses);
+  if ((m = path.match(/^\/censuses\/(\d+)\/voters$/))) return ok(+m[1] === 1 ? voters : { items: [], page: 0, size: 20, totalItems: 0 });
+  if ((m = path.match(/^\/censuses\/(\d+)$/))) return ok(censuses.find((c) => c.id === +m![1]) ?? censuses[0]);
+  if ((m = path.match(/^\/voter-access\/processes\/(\d+)\/participation$/))) return ok(participation(+m[1]));
+  if ((m = path.match(/^\/voter-access\/processes\/(\d+)\/notifications$/))) return ok(notifications(+m[1]));
+  if ((m = path.match(/^\/ballot-box\/processes\/(\d+)\/results\/counted-votes$/))) return +m[1] === 2 ? ok(counted) : problem(409);
+  if ((m = path.match(/^\/ballot-box\/processes\/(\d+)\/results$/))) return +m[1] === 2 ? ok(result) : problem(409);
+  if ((m = path.match(/^\/ballot-box\/processes\/(\d+)\/audit-events\/verification$/))) return ok(chainCheck(+m[1]));
+  if ((m = path.match(/^\/ballot-box\/processes\/(\d+)\/audit-events$/))) return ok(auditEvents(+m[1]));
+  if (path === `/ballot-box/public/results/${PUBLIC_ID}/counted-votes`) return ok(counted);
+  if (path === `/ballot-box/public/results/${PUBLIC_ID}`) return ok(result);
+  if (path === '/admin-actions/actors') return ok(actors);
+  if (path === '/admin-actions') return ok(adminActions);
+  if (path === '/api-keys' && method === 'GET') return ok(apiKeys);
+  if (path === '/privacy/search' && method === 'POST') return ok(privacySubject);
+  return problem(404);
+};
 
 // ---------- Audit ----------
 
@@ -223,7 +221,9 @@ async function audit(page: Page, screen: string, viewport: string, language: str
   };
   const dir = join(process.env.E2E_ARTIFACTS_DIR ?? join(tmpdir(), 'verivoto-p7-e2e'), 'admin-console-axe');
   await mkdir(dir, { recursive: true });
-  await writeFile(join(dir, `${screen}-${viewport}-${language}.json`), `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
+  // RNF-2 (M2): one file per browser when the run includes Firefox and WebKit
+  const browser = test.info().project.name === 'chromium' ? '' : `-${test.info().project.name}`;
+  await writeFile(join(dir, `${screen}-${viewport}-${language}${browser}.json`), `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
   if (process.env.E2E_SCREENSHOTS) await page.screenshot({ path: join(dir, `${screen}-${viewport}-${language}.png`), fullPage: true });
   expect.soft(summary.counts.critical + summary.counts.serious, `${screen}: ${JSON.stringify(summary.rules)}`).toBe(0);
 }
@@ -273,12 +273,12 @@ const scenarios: Scenario[] = [
 for (const viewport of viewports) {
   for (const language of languages) {
     for (const scenario of scenarios) {
-      test(`H1a axe ${scenario.screen} · ${viewport.width}px · ${language}`, async ({ page }) => {
+      test(`H1a axe ${scenario.screen} · ${viewport.width}px · ${language}`, async ({ page, mockApi }) => {
         const known = scenario.knownDefect;
         test.fail(Boolean(known?.at.includes(`${viewport.name}-${language}`)), `${known?.id ?? ''} open (docs/evaluation/resultados-p7/defectos.md)`);
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
         if (scenario.role) await mockKeycloak(page, scenario.role);
-        await mockApi(page);
+        await mockApi(page, resolver);
         await page.addInitScript((lang) => localStorage.setItem('verivoto.language', lang), language);
         await page.goto(scenario.path);
         await page.locator('h1').first().waitFor();

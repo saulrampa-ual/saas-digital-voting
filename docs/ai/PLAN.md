@@ -262,11 +262,59 @@ anteproyecto.
 
 1. [x] Tabla 7.1 con prioridades propuestas y nota; OE5 en la memoria (IA, 17/11).
 2. [ ] Preguntar Q-13 al tutor (autor).
-3. [ ] Tabla «RNF → evidencia» en el capítulo 13 con lo de la columna «Evidencia actual» (IA, una sesión). Cierra la duda
+3. [x] (18/11, tabla 13.2) Tabla «RNF → evidencia» en el capítulo 13 con lo de la columna «Evidencia actual» (IA, una sesión). Cierra la duda
    del tribunal sobre qué RNF tienen evidencia.
 4. [ ] Revisión C4 final y ensayos de la defensa (ambos).
 5. Mejoras, solo si sobra tiempo y por este orden: revisión manual de accesibilidad (RNF-1), E2E en Firefox y WebKit
    (RNF-2), revisión heurística (RNF-8–10), instalación de la PWA (RNF-18), optimización de H1c (RNF-17), A9 (RF-05a).
+
+### 8.4 Plan de las mejoras (punto 5)
+
+Cada mejora sube el «Estado» de uno o varios RNF en la tabla 13.2. Ninguna es necesaria para los objetivos del
+anteproyecto. Orden: de más valor y menos coste a menos valor y más coste.
+
+| Id | RNF | Qué se hace | Quién y cuánto | Preparado | Resultado en la memoria |
+| --- | --- | --- | --- | --- | --- |
+| M1 | RNF-1 | Revisión manual con teclado y lector de pantalla (`accesibilidad-manual-guion.md`). NVDA no funcionó en el equipo del autor: guion adaptado al Narrador de Windows el 18/11 | Autor, 1–2 h | Guion y hojas CSV | H1a pasa a aceptada o rechazada (tablas 13.1 y 13.2, conclusiones, diapositiva 11) |
+| M2 | RNF-2 | Las 212 comprobaciones E2E también en Firefox y WebKit (motor de Safari) | Autor, 30 min de ejecución. IA analiza y propone correcciones | Hecho: `E2E_BROWSERS=all` en `playwright.config.ts` (636 pruebas listadas; por defecto y en CI sigue solo Chromium) | RNF-2 pasa a aceptado o se registran defectos |
+| M3 | RNF-8, 9, 10 | Revisión heurística de Nielsen por dos personas y cronometraje de la realimentación | Autor y otra persona, 60–90 min cada uno. IA junta las hojas y redacta | Hecho: `docs/evaluation/revision-heuristica/` (protocolo y hoja) | Estado de RNF-8, 9 y 10 en la tabla 13.2 |
+| M4 ✔ (18/11, autor: instalada en iOS y Android; iconos de marca después, D-64) | RNF-18 | Instalar la PWA en Android (Chrome, «Instalar aplicación») e iOS (Safari, «Añadir a pantalla de inicio») a través de un túnel HTTPS, como en las sesiones RNF-4 | Autor, 30 min. IA prepara la lista de comprobación | Túnel ya usado el 13/11 | RNF-18 aceptado o no |
+| M5 | RNF-17 | Perfilar la emisión, ajustar colas del *gateway* y de los servicios (el token ya se consume fuera del bloqueo) y repetir las tres ejecuciones de H1c | IA, 1–2 sesiones de código con revisión del secreto del voto. Autor, ≈ 1 h de k6 | Escenarios k6 y `carga.md` | H1c repetida. El autor la adelanta el 18/11 sin esperar al tutor: colas ajustadas (IMP-57) y serie B definida en `carga.md`, pendiente de ejecutar |
+| M6 | RF-05a | SSO de gestión con las cuentas de la UAL (A9) | Ambos | Sección 2b | Según la respuesta del tutor (pregunta 3 del correo) |
+
+**Comandos del autor para M2** (en `frontend`, con el frontend sin backend, igual que el E2E habitual):
+
+```powershell
+npx playwright install firefox webkit
+$env:E2E_BROWSERS = 'all'
+npx playwright test --project=firefox --workers=2
+npx playwright test --project=webkit --workers=2
+Remove-Item Env:E2E_BROWSERS
+```
+
+**Primera ejecución (18/11/2026, los tres navegadores a la vez):** Chromium 212 de 212; Firefox 115 de 212 y WebKit 173
+de 212. Los 136 fallos son tiempos agotados (30 s) o cierres del navegador por carga, ninguno es un incumplimiento de
+axe: ejecución **no concluyente**. Ajustado el mismo día: 90 s por prueba en Firefox y WebKit, un fichero de resultados
+por navegador y ejecución de cada motor por separado con 2 *workers*.
+
+**Segunda ejecución (18/11/2026, un motor cada vez):** Firefox y WebKit, 156 de 212 cada uno, todas sin
+incumplimientos críticos ni serios. Las 56 restantes fallan siempre igual en los dos motores: sus peticiones POST
+(código, verificación, búsqueda de privacidad) no pasan por el simulacro de Playwright y llegan al proxy (502). Es una
+limitación del arnés (IMP-63), no de la aplicación.
+
+**Tercera ejecución (18/11/2026, tras IMP-63):** con el servidor simulado de respaldo, Firefox **212 de 212** (informe
+de Playwright: 212 esperadas, 0 inesperadas) y sin incumplimientos críticos ni serios en sus 208 resultados de axe.
+WebKit: 211 de 212 y 0 incumplimientos en sus 207 resultados; la restante (V8-results, 1280 px, EN) agotó los 90 s esperando a que la casilla del código dejara de moverse, sin relación con la accesibilidad ni con las POST (la petición del código sí se simuló). Repetida sola el 19/11/2026: pasa. **M2 cerrada: RNF-2 aceptado** (tabla 13.2).
+
+**Calendario propuesto**
+
+| Semana | Mejoras |
+| --- | --- |
+| 18–24/11/2026 | M2 y M1 (autor); M4 si hay túnel |
+| 25/11–6/12/2026 | M3 con la segunda persona |
+| 7–20/12/2026 | M6 solo si el tutor lo pide (M5 adelantada al 18–24/11) |
+| 21/12/2026–15/01/2027 | Pasar resultados a la memoria y a la presentación; C4 final |
+| Desde el 15/01/2027 | Congelar el código; ensayos de la defensa |
 
 ## Calendario orientativo
 
@@ -313,3 +361,6 @@ anteproyecto.
 | 16/11/2026 | IMP-50, A5, C4 | Mensaje del 429 del *gateway* en el flujo del votante (aprobado por el autor); 52 pruebas nuevas de frontend (144 en el entorno de la IA, cobertura 43,2 %; pendiente de la ejecución del autor para pasar las cifras a la memoria); capturas de dos en dos. Sin commit |
 | 16/11/2026 | D4, IMP-46, IMP-48, C4, defensa | D4 implementado con pruebas (incluida la autorización HTTP de identity, `IdentityAuthorizationIntegrationTest`); IMP-46 aplicado; IMP-48 a la espera de los *digest*. Revisión de coherencia y estilo de la memoria (textos que seguían dando por pendientes evaluaciones ya hechas). Presentación de la defensa en `Presentacion-TFM/` (beamer, guion y preguntas). Sin commit |
 | 17/11/2026 | Q-13, sección 8, IMP-48 | Prioridades MoSCoW propuestas en la tabla 7.1; OE5 añadido a la memoria; plan de objetivos del anteproyecto y RNF; IMP-48 aplicado; defensa ajustada a 15 min. Sin commit |
+| 18/11/2026 | 8.3 (punto 3), 8.4 (punto 5) | Tabla 13.2 «Evidencia por requisito no funcional» en la memoria; plan de mejoras M1–M6; preparadas M2 (`E2E_BROWSERS=all`) y M3 (protocolo de revisión heurística). Sin commit |
+| 18/11/2026 | M2, M4, D-64 | M2: Firefox y WebKit 156/212 sin incumplimientos, resto limitado por el arnés (IMP-63). M4 hecha por el autor. Iconos de la PWA, `apple-touch-icon`, `id` del manifiesto y banderas en móvil (D-64). Tabla 13.2: RNF-18 aceptado. Sin commit |
+| 18/11/2026 | IMP-63, M1, M5 | IMP-63 hecha: Firefox 212/212. Guion de M1 adaptado al Narrador (y fila TM-01, IMP-50). M5: colas de conexión ajustadas y serie B de H1c definida. Sin commit |
