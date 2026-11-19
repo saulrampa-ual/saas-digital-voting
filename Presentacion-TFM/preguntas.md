@@ -97,22 +97,31 @@ Es una amenaza a la validez y está declarada. Para reducirla: criterio fijado a
 sin formación previa en VeriVoto, sesiones grabadas y hoja de registro con tiempos.
 
 **¿Por qué falló H1c y por qué no rebajaste el criterio?**
-Porque un criterio que se ajusta después de medir deja de ser una hipótesis. Las causas probables son 500 conexiones
-a la vez sin rampa, que el gateway rechazó en parte, y que los votos de un mismo proceso se guardan de uno en uno para
-encadenarlos. Aun así no se perdió ni duplicó ningún voto.
+Porque un criterio que se ajusta después de medir deja de ser una hipótesis. En la primera serie, el gateway rechazó
+más de la mitad de las conexiones. En la segunda amplié las colas de conexión, fijando antes de medir que se informaría
+completa y no se repetiría para buscar un buen resultado: entraron más votos (339), pero el p95 subió a 7,2 s, porque
+los votos se siguen aceptando a unos 43 por segundo. En la tercera guardé los votos por grupos, en una sola
+transacción: el ritmo apenas cambió (unos 55 por segundo) y solo 17 de 500 respondieron en menos de 2 s. Fijé las
+reglas de cada serie antes de medir y no repetí ninguna para buscar un buen resultado. En ninguna se perdió ni
+duplicó un voto, y la cadena quedó íntegra.
 
 **¿Cómo lo arreglarías?**
-Más de la mitad de las conexiones las rechazó el gateway antes de llegar a ningún servicio: su cola de conexiones
-pendientes era la del sistema (unas 200 en Windows) y la de Tomcat en ballot-box, 100. El primer paso fue ampliar esas
-colas, sin tocar la lógica del voto, y repetir H1c como una serie nueva con el mismo criterio, informando también la
-del 11/11. El token ya se consume antes del bloqueo; lo que queda serializado es el guardado del voto con su huella,
-que es el precio de la cadena por proceso. Si eso fuera el límite, la alternativa sería encadenar por lotes, pero
-afecta al diseño y al secreto del voto, así que lo dejo como trabajo futuro.
+Ya probé lo más evidente. Primero amplié las colas de conexión y después guardé los votos por grupos, con el recibo
+entregado solo tras el encadenado. Ninguna de las dos cambió el ritmo, y un voto aislado ya tarda unos 0,6 s, así que
+el límite está repartido por la cadena gateway, ballot-box y voter-access. El siguiente paso es medir cada tramo, en
+lugar de suponer la causa, y repetir la prueba en un entorno dimensionado y no en un portátil donde k6, cinco servicios
+y Docker comparten CPU. La confirmación por grupos la mantengo porque corrige un caso de commit ambiguo que podía
+permitir votar dos veces.
 
 **¿Por qué H1a queda «sin decisión» y no aceptada?**
 El criterio exige la parte automática y una revisión manual con teclado y lector de pantalla. La automática da 0
 incumplimientos críticos y serios en 212 comprobaciones, pero la manual no se pudo hacer (NVDA no funcionó en el
 equipo). Aceptarla sin esa parte sería cambiar el criterio.
+
+**¿H1c rechazada significa que no cumples los objetivos del anteproyecto?**
+No. El objetivo de evaluación (OE5) pide hacer una prueba de carga y documentar los resultados, incluidos los criterios
+no alcanzados, y eso está hecho. Ningún objetivo exige cumplir el umbral de rendimiento: RNF-17 es un requisito Should
+que la evaluación muestra que no se cumple en esta configuración, con la causa medida.
 
 **Muchos requisitos aparecen con «evidencia parcial». ¿No los cumples?**
 «Parcial» no significa «falla»: significa que hay pruebas que apoyan el requisito, pero no todas las que exigiría

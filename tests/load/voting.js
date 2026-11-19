@@ -1,6 +1,7 @@
 import http from 'k6/http';
 import { check, fail } from 'k6';
 import { SharedArray } from 'k6/data';
+import { Rate } from 'k6/metrics';
 
 const vus = Number(__ENV.VUS || 500);
 const iterations = Number(__ENV.ITERATIONS || 1);
@@ -22,6 +23,10 @@ if (new Set(tokens.slice(0, vus * iterations)).size !== vus * iterations) {
   throw new Error('Los tokens asignados a los VU deben ser distintos.');
 }
 
+// Series C (docs/evaluation/carga.md, rule 4): share of requests that got a response (any HTTP status) in under 2 s.
+// A refused connection (status 0) does not respond, so it counts as outside the threshold. Never fails the run.
+const answeredUnder2s = new Rate('answered_under_2s');
+
 const STATUSES = [0, 201, 400, 401, 403, 404, 409, 410, 422, 423, 429, 500, 502, 503, 504];
 
 export const options = {
@@ -38,6 +43,7 @@ export const options = {
     'http_req_duration{operation:cast_vote}': ['p(95)<2000'],
     // Count per HTTP status only, so the summary export shows them (check-load-run.mjs and the discard rules of
     // docs/evaluation/carga.md). 'count>=0' never fails and does not change what is measured. 0 = no response.
+    answered_under_2s: ['rate>=0'],
     ...Object.fromEntries(STATUSES.map((s) => [`http_reqs{operation:cast_vote,status:${s}}`, ['count>=0']])),
   },
 };
@@ -56,6 +62,8 @@ export default function () {
       tags: { operation: 'cast_vote' },
     },
   );
+
+  answeredUnder2s.add(response.status !== 0 && response.timings.duration < 2000);
 
   check(response, {
     'vote accepted (201)': (res) => res.status === 201,

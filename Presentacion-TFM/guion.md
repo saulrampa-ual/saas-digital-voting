@@ -88,9 +88,9 @@ Las diapositivas de **reserva** (después de «Gracias») no se presentan: sirve
 > con una mediana de 51 segundos, y los cinco entendieron qué significaba. Cinco administradores sin formación previa
 > crearon y programaron una votación en cuatro minutos como máximo, frente a los diez del criterio.
 > La accesibilidad queda sin decisión: la parte automática es favorable, pero no pude hacer la revisión manual con
-> lector de pantalla. Y el rendimiento se rechaza: con 500 usuarios a la vez el p95 fue de 2,4 a 4,9 segundos frente a
-> 2, aunque no se perdió ni duplicó ningún voto. La causa probable es que los votos de un proceso se guardan de uno en
-> uno para encadenarlos.
+> lector de pantalla. Y el rendimiento se rechaza en las tres versiones que medí: con 500 usuarios a la vez no se
+> llega a los 2 segundos, aunque no se perdió ni duplicó ningún voto. Ampliar las colas y guardar los votos por grupos
+> no cambió el ritmo, de unos 50 votos por segundo, así que el límite está en la cadena de servicios.
 > Con cinco participantes, la evidencia es descriptiva, no estadística.
 
 ## 12. Conclusiones (1 min)

@@ -19,6 +19,30 @@
 
 ## Hecho
 
+- 19/11, noche (sin commit): **serie C de H1c, rechazada; H1c cerrada.** `mvnw verify` de ballot-box: 33 pruebas, 0
+  fallos. Humo correcto (20 de 20 en menos de 2 s). Ejecución 30: 231 votos aceptados, 269 conexiones rechazadas y solo
+  17 de 500 respondidas en menos de 2 s; cadena íntegra. No procede la serie D (los votos aceptados también superan los
+  2 s). Memoria (tablas 13.1 y 13.2, secciones de H1c, conclusiones; 93 páginas), diapositivas 11 y de reserva,
+  `guion.md` y `preguntas.md` actualizados; compilan.
+- 19/11, tarde (sin commit): **IMP-64 implementada (D-65)**, a petición del autor, para intentar H1c en una serie C.
+  `GroupCommitVoteWriter` (confirmación por grupos con un escritor por proceso, grupo barajado, recibo solo tras el
+  commit) y arreglo del commit ambiguo (si el recibo del grupo está en la urna, no se revierte el token).
+  `verivoto.voting.max-group-size` (100). Pruebas: `GroupCommitVoteWriterTest` (5), un caso nuevo en
+  `VotingServiceTest` y uno de 40 votos simultáneos con PostgreSQL en `BallotBoxScenariosIntegrationTest`. En el
+  entorno de la IA (javac 21, sin Maven): dominio y application compilan sin avisos nuevos y `GroupCommitVoteWriterTest`
+  pasa 100 de 100 (20 repeticiones de los 5 casos) con un arnés propio; falta el `mvnw verify` del autor. k6: métrica
+  `answered_under_2s` y regla 4 de la serie C en `carga.md` (una conexión rechazada no responde). Revisión del secreto:
+  sin datos, tiempos, registros ni contratos nuevos; el orden dentro del grupo se baraja. Por error, una prueba de
+  `check-load-run.mjs` con `K6_ONLY=1` sobrescribió `.local/load/check-run-26.json` sin los datos de la urna (ya
+  anotados en `carga.md`); se regenera ejecutando `check-load-run.mjs` con `LOAD_RUN=26`.
+- 19/11 (sin commit): **H1c, serie B, cerrada como rechazada.** Entorno local arreglado (administrador de Keycloak,
+  clientes que faltaban, audiencia y secretos; `scripts/dev/keycloak-restore-local-admin.ps1`,
+  `keycloak-missing-clients.mjs`, `keycloak-sync-secrets.mjs`) y arranque reproducible (`start-services.ps1`, que ahora
+  comprueba los puertos, y `stop-services.ps1`). Ejecución válida 26: 339 de 500 aceptados, p95 7211 ms, cadena
+  íntegra. Las colas ampliadas dejan entrar más votos, pero el ritmo sigue en unos 43 por segundo (un voto por
+  transacción). Memoria (tablas 13.1 y 13.2, sección de H1c, conclusiones), diapositivas 11 y de reserva, `guion.md`
+  y `preguntas.md` actualizados; compilan. IMP-64 (confirmación por grupos) registrada como propuesta. No afecta a
+  OE1–OE5.
 - 18/11, tarde (sin commit): **IMP-63** hecha. En Firefox y WebKit las POST al mismo origen se saltaban `page.route`
   (trazas de la segunda ejecución de M2); ahora llegan a un servidor simulado de respaldo (`tests/e2e/support/api-mock.ts`
   y `mock-router.mjs`, proxy `proxy.e2e.conf.json`, servidor de pruebas en el puerto 4300) con la misma respuesta
@@ -225,7 +249,6 @@
 
 - PWA (D-64): comprobar en el teléfono el icono nuevo tras desinstalar la PWA anterior y volver a instalarla; ejecutar `npm run test:ci`.
 - Backend: `mvnw verify` tras `ConnectionBacklogConfiguration` y los cambios de `application.yml`.
-- H1c, serie B (`carga.md`): recompilar los servicios, humo con 20 VU y tres ejecuciones (`LOAD_RUN` 20–22).
 - M1: revisión con el Narrador según `docs/evaluation/accesibilidad-manual-guion.md`.
 
 > P7 se cerró el 15/11/2026. Los puntos P7.x de esta lista que no se completaron quedan como limitaciones declaradas (`docs/evaluation/resultados-p7/cierre.md`), no como trabajo en curso. D2 y D5 fusionadas por el autor el 15/11/2026 (`c48dbab`; `mvnw verify`: 151 pruebas, 0 fallos); memoria, `informe.md`, `threat-model.md` e `IMPROVEMENTS.md` actualizados. C4: figuras 8.1 y 8.2 y tabla 13.1 revisadas visualmente el 15/11; memoria recompilada (92 páginas) el 16/11 y `keycloak-api-audience.mjs` ejecutado contra Keycloak local. Siguiente paso: A9 y el resto de C4.

@@ -63,10 +63,17 @@ interfaz, sin efecto en el resultado. Las tres ejecuciones de carga (H1c) del
 11/11/2026 rechazaron la hipótesis: p95 de 4852, 2402 y 4849~ms frente a
 2000~ms, y entre 219 y 273 conexiones rechazadas de 500 por ejecución, en un
 único equipo Windows, con los servicios fuera de contenedores y sin rampa de
-subida. Como trabajo futuro conviene medir dónde se consume el tiempo del
-registro del voto, que bloquea el proceso para encadenar cada evento, ajustar
-las colas de conexión del \emph{gateway} y de los servicios y repetir la
-medición en un entorno dimensionado, sin cambiar el criterio. RNF-4 se aceptó en las sesiones en línea del 13/11/2026: cinco administradores sin formación previa crearon,
+subida. Una segunda serie, el 19/11/2026, con las colas de conexión del
+\emph{gateway} y de los servicios ampliadas, también la rechazó (p95 de
+7211~ms): entraron más votos, pero el ritmo de aceptación se mantuvo en unos 43
+por segundo. Una tercera serie, con los votos confirmados por grupos en una
+sola transacción y el recibo entregado solo tras el encadenado (IMP-64), también
+la rechazó: solo 17 de 500 peticiones respondieron en menos de dos segundos. El
+ritmo apenas cambió (unos 55 votos por segundo) y un voto aislado ya tarda unos
+0,6 segundos, así que el límite no está solo en la urna. Como trabajo futuro
+queda medir cada tramo de la emisión (\emph{gateway}, ballot-box, consumo del
+token en voter-access) y repetir la prueba en un entorno dimensionado, con el
+mismo criterio. RNF-4 se aceptó en las sesiones en línea del 13/11/2026: cinco administradores sin formación previa crearon,
 configuraron y programaron un proceso sin ayuda en 4 minutos o menos (mediana
 3 minutos), frente a los 10 del criterio; la sesión del 03/11/2026, con solo
 dos participantes sin formación previa y tiempos estimados, no fue

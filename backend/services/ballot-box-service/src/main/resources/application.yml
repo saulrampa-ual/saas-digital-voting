@@ -40,6 +40,9 @@ management:
 verivoto:
   # Day of the incidents (D-18)
   zone: Europe/Madrid
+  voting:
+    # IMP-64: at most this many votes of a process are committed in one transaction (group commit); 1 = one by one
+    max-group-size: ${BALLOT_BOX_MAX_GROUP_SIZE:100}
   # IMP-26: the only Keycloak client allowed on /internal/** (claim azp)
   internal-clients:
     election: election-service

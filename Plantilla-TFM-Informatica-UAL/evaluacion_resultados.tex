@@ -78,7 +78,7 @@ H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas e
 \hline
 H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan acceso, emisión y obtención del recibo en $\leq$ 3 minutos, y al menos 4 de 5 interpretan correctamente el resultado de la verificación. H0b: no se alcanza alguno de esos criterios. & Validado por el tutor & ACEPTADA (09/11/2026). 5 de 5 completan acceso, emisión y recibo sin ayuda en $\leq$ 3 minutos (mediana 51~s, máximo 79~s) y 5 de 5 interpretan correctamente el recibo. \\
 \hline
-H1c & Con 500 usuarios simultáneos, p95 de emisión inferior a dos segundos en tres ejecuciones. & Propuesto & RECHAZADA (H0c; 11/11/2026). p95 de la emisión: 4852, 2402 y 4849~ms, por encima de 2000~ms en las tres ejecuciones. Votos aceptados: 222, 240 y 281 de 500. Cadena íntegra en las tres. \\
+H1c & Con 500 usuarios simultáneos, p95 de emisión inferior a dos segundos en tres ejecuciones. & Propuesto & RECHAZADA (H0c; 11/11/2026). p95 de la emisión: 4852, 2402 y 4849~ms, por encima de 2000~ms en las tres ejecuciones. Votos aceptados: 222, 240 y 281 de 500. Cadena íntegra en las tres. Serie B (19/11/2026, colas de conexión ampliadas): RECHAZADA de nuevo, p95 de 7211~ms y 339 votos aceptados. Serie C (19/11/2026, confirmación por grupos): RECHAZADA, 17 de 500 peticiones respondidas en menos de 2~s. \\
 \hline
 RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin formación previa crean, configuran y programan un proceso de opción única en $\leq$ 10 minutos y sin ayuda. & Validado por el tutor; 10 minutos como valor propuesto & ACEPTADO (13/11/2026). 5 de 5 administradores sin formación previa completan la tarea sin ayuda en $\leq$ 10 minutos (mediana 3 min, máximo 4). \\
 \hline
@@ -93,6 +93,10 @@ El detalle de cada resultado de la tabla~\ref{tab:estado-hipotesis} es el siguie
 
 \textbf{H1c.} RECHAZADA (H0c): tres ejecuciones del 11/11/2026 (procesos sintéticos 10, 11 y 12; 500 usuarios virtuales que empiezan a la vez, un voto cada uno). p95 de la emisión: 4852, 2402 y 4849~ms, por encima de 2000~ms en las tres. Votos aceptados: 222, 240 y 281 de 500; el resto fueron conexiones rechazadas por el \emph{gateway} (273, 260 y 219) y, en la primera, 5 errores 500. En las tres, la cadena quedó íntegra y los votos de la urna coinciden con las respuestas 201 y con la participación. Un único equipo Windows en local; sin extrapolación a producción.
 
+\textbf{H1c, serie B.} RECHAZADA (19/11/2026). Antes de medir se amplió la cola de conexiones pendientes del \emph{gateway} (1024) y la de Tomcat en ballot-box y voter-access (1000), sin tocar la lógica del voto, y se fijó que la serie se informaría completa y no se repetiría para buscar un resultado favorable. En la primera ejecución válida (proceso sintético 9, 500 usuarios virtuales a la vez) se aceptaron 339 votos y se rechazaron 161 conexiones; p95 de 7211~ms (7,3~s el de los votos aceptados), con la cadena íntegra y los votos de la urna iguales a la participación. Una ejecución válida por encima del umbral basta para rechazar la hipótesis. Tres ejecuciones previas (procesos 6, 7 y 8; p95 de 3970 a 4662~ms) no cuentan para la serie porque el \emph{gateway} nuevo no llegó a arrancar y respondió uno anterior; se conservan en \texttt{docs/evaluation/carga.md}.
+
+\textbf{H1c, serie C.} RECHAZADA (19/11/2026). La versión medida confirma los votos por grupos en una sola transacción, con el recibo entregado solo tras el encadenado (IMP-64). Antes de medir se fijó una lectura más estricta del criterio: una conexión rechazada no responde y cuenta fuera del umbral. En la primera ejecución (proceso sintético 11) se aceptaron 231 votos y se rechazaron 269 conexiones; solo 17 de 500 peticiones respondieron en menos de 2~s (p95 de k6, 3878~ms; mediana de los votos aceptados, 3,02~s), con la cadena íntegra. Con esta serie, H1c queda cerrada como rechazada en las tres versiones evaluadas.
+
 \textbf{RNF-4.} ACEPTADO: sesiones en línea del 13/11/2026 (videollamada grabada, consentimiento escrito, escenario sintético), cinco válidas y las cinco sin formación previa en VeriVoto. 5 de 5 crean, configuran y programan el proceso sin ayuda en $\leq$ 10 minutos (mediana 3 min, mínimo 2 y máximo 4; 0 errores; ninguno consultó la guía «Primeros pasos»). Tiempos medidos por el moderador sobre la pantalla compartida y anotados redondeados al minuto; con un máximo de 4 minutos frente a 10, el redondeo no cambia la decisión. Sustituye a la sesión del 03/11/2026, no concluyente (solo 2 de 5 sin formación previa y tiempos estimados).
 
 Con $n = 5$ no hay inferencia estadística: los resultados de H1b y de RNF-4
@@ -106,8 +110,17 @@ Las conexiones se rechazaron en el \emph{gateway} al llegar 500 a la vez y, en
 la primera ejecución, también entre el \emph{gateway} y ballot-box. El registro
 del voto bloquea la fila del proceso para encadenar cada evento de la urna, de
 modo que los votos de un mismo proceso se guardan de uno en uno; es una
-explicación compatible con los tiempos observados, pero no se ha medido dónde
-se consume el tiempo. El criterio no se modifica a la vista del resultado.
+explicación compatible con los tiempos observados. La serie B la confirma: al
+ampliar las colas entran más conexiones, pero los votos se siguen aceptando a
+unos 43 por segundo (339 en 7,9~s), de modo que esperan más y el p95 sube. El
+guardado de un voto por transacción era un límite, pero la serie C muestra que
+no era el único: con la confirmación por grupos el ritmo apenas cambia (unos 55
+votos por segundo), y un voto aislado ya tarda unos 0,6~s. Ese tiempo, unido a la
+concurrencia que admite la cadena \emph{gateway}, ballot-box y voter-access,
+explica el resultado; medir cada tramo queda como trabajo futuro. La
+confirmación por grupos se mantiene porque corrige además un caso de commit
+ambiguo que podía permitir un segundo voto. El criterio no se modifica a la
+vista del resultado.
 
 \section{Integración y requisitos de calidad}
 La integración PostgreSQL de otros repositorios, las pruebas funcionales de extremo a extremo del stack completo y la
@@ -179,7 +192,7 @@ RNF-15 & Must & Pruebas HTTP con dos organizaciones en identity, election, voter
 \hline
 RNF-16 & Must & Búsqueda, exportación sin datos de voto y borrado o anonimización según el uso del censo, con pruebas en election y voter-access. & Evidencia parcial \\
 \hline
-RNF-17 & Should & H1c: p95 de 2,4 a 4,9 segundos con 500 usuarios simultáneos. & No se cumple \\
+RNF-17 & Should & H1c, tres series con 500 usuarios simultáneos: p95 de 2,4 a 4,9 segundos (11/11/2026), de 7,2 segundos con las colas de conexión ampliadas y, con la confirmación por grupos, 17 de 500 peticiones respondidas en menos de 2 segundos (19/11/2026). Ritmo de unos 43 a 55 votos por segundo. & No se cumple \\
 \hline
 RNF-18 & Could & PWA instalada y usada en Android (Chrome) e iOS (Safari) el 18/11/2026. Tras la prueba se sustituyeron los iconos genéricos por los de la marca. & Aceptado \\
 \hline

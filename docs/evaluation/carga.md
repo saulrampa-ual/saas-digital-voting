@@ -213,6 +213,11 @@ Reglas de la serie B, fijadas antes de ejecutarla:
 
 1. Mismo protocolo, mismas condiciones de ejecución válida, mismo criterio (500 VU a la vez, sin rampa; p95 < 2 s) y
    mismo equipo. Servicios recompilados desde el commit que incluye el cambio, y ese commit se anota.
+   Arranque (el script local `.local/arrancar.ps1` del 11/11 ya no existe): con la infraestructura de Compose en
+   marcha, `.\scripts\dev\start-services.ps1 -Build -NoRateLimit`, que compila, arranca los cinco procesos Java con
+   el límite por IP desactivado y espera a que todos respondan `UP`. Se paran con `.\scripts\dev\stop-services.ps1`.
+   Diferencia con la serie A: los servicios se compilan desde el mismo commit justo antes de medir (en la A, los jars
+   eran del 31/10 y el 03/11).
 2. Una prueba de humo con 20 VU (`LOAD_RUN=19`, `LOAD_VOTERS=20`), que no cuenta, para comprobar que el stack
    arranca bien.
 3. Después, **tres ejecuciones consecutivas** (`LOAD_RUN` 20, 21 y 22). Se informan las tres, sea cual sea su
@@ -222,4 +227,82 @@ Reglas de la serie B, fijadas antes de ejecutarla:
    cumple. No se hacen más series para buscar un resultado favorable.
 5. En la memoria se informan las dos series: «rechazada en la versión del 11/11; con las colas ajustadas,
    aceptada / rechazada».
+
+### Registro de la serie B (19/11/2026)
+
+- Arreglos de entorno antes de medir (Keycloak local): administrador `local-admin` recuperado con `kc.sh bootstrap-admin`,
+  clientes `voter-access-service` y `verivoto-voter` creados desde el fichero del realm, audiencia `verivoto-api`
+  añadida y secretos de los clientes de servicio igualados a `infra/.env` (`scripts/dev/keycloak-*.mjs|ps1`). Las bases
+  de datos locales se habían regenerado desde la serie A (organización `LOAD` nueva, procesos desde el #2).
+- Humo (`LOAD_RUN=19`, proceso #2, 20 VU): 20 × `201`, p95 614 ms, cadena íntegra, 20 de 20 marcados. No cuenta.
+- Ejecuciones 20, 21 y 22 (procesos #3, #4 y #5): **descartadas**. k6 se lanzó sin cargar las variables de cada
+  preparación y reutilizó las del humo (20 VU, proceso #2, tokens ya usados): 20 respuestas `409` en cada una y ningún
+  voto en sus procesos. Causa de preparación, no de rendimiento; se repiten con `LOAD_RUN` 23, 24 y 25.
+- Ejecuciones 23, 24 y 25 (procesos #6, #7 y #8; 500 VU, variables comprobadas):
+
+| Ejecución (proceso) | 201 | Sin respuesta (`0`) | p50 | p90 | p95 | p99 | máx. | p95 solo de los 201 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 23 (#6) | 214 | 286 | 0 ms | 3682 ms | **3970 ms** | 4277 ms | 4349 ms | 4200 ms |
+| 24 (#7) | 209 | 291 | 0 ms | 4038 ms | **4248 ms** | 4535 ms | 4630 ms | 4390 ms |
+| 25 (#8) | 287 | 213 | 1515 ms | 4412 ms | **4662 ms** | 4893 ms | 4919 ms | 4760 ms |
+
+  Cadena íntegra y 201 = eventos de voto = personas marcadas en las tres. Los `0` son conexiones rechazadas por
+  `127.0.0.1:8000` antes de llegar a ningún servicio, igual que en la serie A.
+- **No valen como serie B (condición 1).** `.local/logs/api-gateway.out.log` muestra que el *gateway* arrancado con
+  `start-services.ps1` no llegó a escuchar: «Port 8000 was already in use». El puerto lo tenía otro proceso del
+  *gateway* anterior a la serie B, así que no se midió la versión con la cola ampliada. Se informan como medición
+  adicional de la versión anterior (coinciden con la serie A) y la serie B se repite con el *gateway* correcto.
+- Observación para el análisis (no forma parte del criterio): los votos aceptados salen a un ritmo de unos 45–60 por
+  segundo (214–287 en 4,5–5 s) con una mediana de 2,9–3,3 s, compatible con el guardado de uno en uno por proceso
+  (`PESSIMISTIC_WRITE`, IMP-57). Con ese ritmo, 500 votos aceptados tardarían más de 8 s, así que ampliar la cola por
+  sí solo no bastaría para p95 < 2 s.
+- Ejecución 26 (proceso #9), **primera válida de la serie B**: *gateway* nuevo comprobado («Netty started on port 8000»)
+  tras parar un *gateway* antiguo lanzado desde VS Code que ocupaba el puerto. 339 × `201` y 161 conexiones rechazadas
+  (antes, 209–287 y 213–291). p50 4039 ms, p90 6927 ms, **p95 7211 ms**, p99 7446 ms, máx. 7540 ms; p95 de los 201,
+  7,3 s. Cadena íntegra (340 eventos) y 339 de 500 marcados. La cola ampliada deja entrar más conexiones, pero esperan
+  más: los votos se aceptan a unos 43 por segundo (339 en 7,9 s).
+  **Decisión de la serie B: H1c rechazada** (una ejecución válida con p95 ≥ 2 s basta, regla 4). Las ejecuciones 27 y 28
+  se pueden completar para informar las tres, pero no cambian la decisión.
+
+## Serie C: versión con confirmación por grupos (preparada el 19/11/2026, antes de medir)
+
+H1c quedó rechazada en las versiones de las series A y B, y ese resultado se mantiene. La serie C mide una versión
+nueva: confirmación por grupos en ballot-box (IMP-64, D-65), además de las colas de la serie B. Reglas fijadas antes de
+ejecutarla:
+
+1. Mismo protocolo, mismo equipo y mismo criterio: 500 VU a la vez, sin rampa, un voto cada uno. Servicios compilados
+   desde el commit que incluye D-65 (`start-services.ps1 -Build -NoRateLimit`), con el *gateway* comprobado
+   («Netty started on port 8000»). Se anota el commit.
+2. Prueba de humo con 20 VU (`LOAD_RUN=29`, `LOAD_VOTERS=20`), que no cuenta.
+3. Tres ejecuciones consecutivas (`LOAD_RUN` 30, 31 y 32). Se informan las tres. Solo se descarta una por las causas de
+   entorno ya definidas, y se dice cuál y por qué.
+4. **Lectura del criterio.** H1c dice que «al menos el 95 % de las peticiones de emisión responde en menos de dos
+   segundos». Una conexión rechazada no responde, así que cuenta como fuera del umbral aunque k6 le asigne 0 ms. Una
+   ejecución cumple solo si al menos 475 de las 500 peticiones reciben respuesta en menos de 2 s; se informan también el
+   p95 de k6, el p95 de los `201` y el número de conexiones rechazadas. Esta lectura es más estricta que la usada en las
+   series A y B, donde no cambió la decisión.
+5. Decisión: aceptada en esta versión si las tres ejecuciones válidas cumplen el punto 4; rechazada si alguna no lo
+   cumple. En la memoria se informan las tres series.
+6. Si la serie C se rechaza solo por conexiones rechazadas en el sistema operativo (los `201` cumplen y el resto son
+   rechazos TCP), se podrá hacer una única serie D con el *gateway* en un contenedor Linux, declarada como cambio de
+   entorno. No habrá más series después.
+
+### Registro de la serie C (19/11/2026)
+
+- Compilación: `mvnw -pl services/ballot-box-service -am verify`, 33 pruebas de ballot-box, 0 fallos (incluidas las 5 de
+  `GroupCommitVoteWriterTest` y la de integración con 40 votos simultáneos). Servicios recompilados y *gateway*
+  comprobado («Netty started on port 8000», 16:45).
+- Humo (`LOAD_RUN=29`, proceso #10, 20 VU): 20 × `201`, p95 653 ms, 20 de 20 respondidas en menos de 2 s, cadena íntegra.
+- Ejecución 30 (proceso #11, 500 VU): 231 × `201` y 269 conexiones rechazadas; **17 de 500 respondidas en menos de 2 s**
+  (regla 4); p95 de k6 3878 ms, p95 de los `201` 3,96 s y mediana de los `201` 3,02 s. Cadena íntegra (232 eventos) y 231
+  de 500 marcados. Pico muestreado: `pg-main` 94 % y `pg-ballot` 56 % de CPU.
+- **Decisión de la serie C: H1c rechazada** (regla 5). No procede la serie D: no se rechaza solo por conexiones
+  rechazadas, porque los votos aceptados también superan los 2 s (regla 6). Con las reglas fijadas, **H1c queda
+  cerrada**: rechazada en las versiones de las series A, B y C.
+- Análisis (no forma parte del criterio): la confirmación por grupos no cambia el ritmo (unos 55 votos por segundo,
+  frente a 43 en la serie B), así que el guardado en la urna no era el único límite. Un voto aislado ya tarda unos
+  0,6 s (humo: 593 ms de mediana con 20 VU) y ese tiempo, multiplicado por la concurrencia que admite la cadena
+  *gateway* → ballot-box → voter-access, explica el ritmo. No está perfilado: queda como trabajo futuro medir cada
+  tramo (consumo del token en voter-access, con `pg-main` al 94 %, conexiones del *gateway* y de los clientes HTTP
+  internos).
 

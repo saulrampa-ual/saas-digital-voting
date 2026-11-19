@@ -218,7 +218,7 @@
     H1b · usabilidad del votante & 5 de 5 votan con recibo en \(\le\) 3 min; \(\ge\) 4 de 5 lo entienden & \textcolor{acierto}{\textbf{ACEPTADA}}: 5 de 5 (mediana 51 s); 5 de 5 entienden el recibo\\\addlinespace
     RNF-4 · administración & \(\ge\) 4 de 5 crean y programan un proceso en \(\le\) 10 min sin ayuda & \textcolor{acierto}{\textbf{ACEPTADO}}: 5 de 5, máximo 4 min\\\addlinespace
     H1a · accesibilidad & 0 críticos ni serios + revisión manual & \textcolor{pendiente}{\textbf{SIN DECISIÓN}}: parte automática favorable; manual no realizada\\\addlinespace
-    H1c · rendimiento & 500 simultáneos, p95 \(<\) 2 s en 3 ejecuciones & \textcolor{fallo}{\textbf{RECHAZADA}}: p95 2,4--4,9 s; cadena íntegra\\
+    H1c · rendimiento & 500 simultáneos, p95 \(<\) 2 s en 3 ejecuciones & \textcolor{fallo}{\textbf{RECHAZADA}} en tres versiones; cadena siempre íntegra\\
     \bottomrule
   \end{tabular}
   \vspace{6pt}
@@ -252,7 +252,7 @@
     \column{0.48\textwidth}
     \textbf{Trabajo futuro}
     \begin{itemize}\small
-      \item Optimizar y repetir H1c
+      \item Medir cada tramo de la emisión y repetir H1c
       \item Revisión con lector de pantalla
       \item Sustitución del voto (RF-11)
       \item Verificabilidad extremo a extremo y cifrado en cliente
@@ -284,19 +284,20 @@
 \begin{frame}{Reserva: H1c, por qué no se alcanzó el rendimiento}
   \begin{columns}[T]
     \column{0.48\textwidth}
-    \textbf{Lo medido} (11/11/2026, un equipo Windows)
+    \textbf{Lo medido} (un equipo Windows)
     \begin{itemize}\small
-      \item p95 de la emisión: 4852, 2402 y 4849 ms
-      \item Votos aceptados: 222, 240 y 281 de 500
+      \item Serie A (11/11): p95 4852, 2402 y 4849 ms; 222--281 votos aceptados de 500
+      \item Serie B (19/11), colas ampliadas: p95 7211 ms; 339 aceptados
+      \item Serie C (19/11), votos por grupos: 17 de 500 en menos de 2 s
       \item Resto: conexiones rechazadas por el \emph{gateway}
-      \item En las tres: cadena íntegra y recuento coherente
+      \item Siempre: cadena íntegra y recuento coherente
     \end{itemize}
     \column{0.48\textwidth}
-    \textbf{Causas probables y siguiente paso}
+    \textbf{Qué se aprendió}
     \begin{itemize}\small
-      \item 500 conexiones a la vez, sin rampa
-      \item Bloqueo del proceso para encadenar cada voto: se guardan de uno en uno
-      \item Perfilar, ajustar colas y repetir en un entorno dimensionado, \textbf{sin cambiar el criterio}
+      \item Ni las colas ni los grupos cambian el ritmo: 43--55 votos por segundo
+      \item Un voto aislado ya tarda unos 0,6 s: el límite está en la cadena de servicios, no solo en la urna
+      \item Siguiente paso: medir cada tramo y repetir \textbf{sin cambiar el criterio}
     \end{itemize}
   \end{columns}
 \end{frame}
