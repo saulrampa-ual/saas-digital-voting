@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-18 · Rama: `dev` (HEAD `f0f4482`; cambios locales sin commit) · sin push
+Última actualización: 2026-11-20 · Rama: `dev` (HEAD `39d939d`; cambios locales sin commit) · sin push
 
 ## Hitos
 
@@ -19,6 +19,9 @@
 
 ## Hecho
 
+- 20/11: README principal y frontend ampliados con requisitos, preparación de `infra/.env`, arranque local,
+  direcciones y acceso a manuales; creado `backend/README.md` con comandos de inicio de los cinco servicios y
+  comprobaciones de salud. No se ejecutaron builds ni pruebas (cambio documental).
 - 19/11, noche (sin commit): **serie C de H1c, rechazada; H1c cerrada.** `mvnw verify` de ballot-box: 33 pruebas, 0
   fallos. Humo correcto (20 de 20 en menos de 2 s). Ejecución 30: 231 votos aceptados, 269 conexiones rechazadas y solo
   17 de 500 respondidas en menos de 2 s; cadena íntegra. No procede la serie D (los votos aceptados también superan los
@@ -247,11 +250,17 @@
 
 ## Pendiente
 
-- PWA (D-64): comprobar en el teléfono el icono nuevo tras desinstalar la PWA anterior y volver a instalarla; ejecutar `npm run test:ci`.
-- Backend: `mvnw verify` tras `ConnectionBacklogConfiguration` y los cambios de `application.yml`.
-- M1: revisión con el Narrador según `docs/evaluation/accesibilidad-manual-guion.md`.
+- PWA (D-64): comprobar en el teléfono el icono nuevo tras desinstalar la PWA anterior y volver a instalarla.
+- Recuento final: `mvnw verify` completo del backend y `npm run test:coverage` del frontend, para actualizar en la
+  memoria, la presentación e `informe.md` el número de pruebas (ballot-box pasa de 26 a 33; integración, de 23 a 24) y
+  la cobertura. Hoy las cifras publicadas son las del 17/11.
+- M1 (20/11): revisión con el Narrador según `docs/evaluation/accesibilidad-manual-guion.md`.
+- M3: revisión heurística con una segunda persona (`docs/evaluation/revision-heuristica/`).
+- Q-13 y correo de seguimiento al tutor con los resultados del 18–19/11.
+- M6/A9 (SSO @inlumine.ual.es): bloqueado y trabajo futuro (P9). No es posible probarlo en esta fase por falta de acceso a las cuentas y a la configuración institucional; validar con el tutor. Opción oculta en la consola (features.institutionalSso = false, 20/11/2026).
+- M6b (IMP-66): «Identificador institucional» oculto en la interfaz de gestión y plantillas Excel regeneradas (20/11/2026, sin commit). El campo se conserva en el censo y en el backend; la exportación de privacidad lo sigue incluyendo. Falta la revisión del autor, abrir las plantillas y el commit.
 
-> P7 se cerró el 15/11/2026. Los puntos P7.x de esta lista que no se completaron quedan como limitaciones declaradas (`docs/evaluation/resultados-p7/cierre.md`), no como trabajo en curso. D2 y D5 fusionadas por el autor el 15/11/2026 (`c48dbab`; `mvnw verify`: 151 pruebas, 0 fallos); memoria, `informe.md`, `threat-model.md` e `IMPROVEMENTS.md` actualizados. C4: figuras 8.1 y 8.2 y tabla 13.1 revisadas visualmente el 15/11; memoria recompilada (92 páginas) el 16/11 y `keycloak-api-audience.mjs` ejecutado contra Keycloak local. Siguiente paso: A9 y el resto de C4.
+> P7 se cerró el 15/11/2026. Los puntos P7.x de esta lista que no se completaron quedan como limitaciones declaradas (`docs/evaluation/resultados-p7/cierre.md`), no como trabajo en curso. D2 y D5 fusionadas por el autor el 15/11/2026 (`c48dbab`; `mvnw verify`: 151 pruebas, 0 fallos); memoria, `informe.md`, `threat-model.md` e `IMPROVEMENTS.md` actualizados. C4: figuras 8.1 y 8.2 y tabla 13.1 revisadas visualmente el 15/11; memoria recompilada (92 páginas) el 16/11 y `keycloak-api-audience.mjs` ejecutado contra Keycloak local. Siguiente paso: el resto de C4 (A9 bloqueada).
 
 - P7.1: ampliar cobertura unitaria de censo/CSV, validación de claims institucionales, privacidad, recordatorios,
   errores, pruebas del flujo visual del votante y reglas de dominio que aún no tienen pruebas.

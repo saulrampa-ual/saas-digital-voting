@@ -82,7 +82,7 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   Solo después de las sesiones H1b (Mailpit guarda 500 mensajes). Falta instalar k6 y ejecutar. Variables y
   definición de ejecución válida en `docs/evaluation/carga.md`. El autor ejecuta; la IA analiza y cierra H1c.
 - [x] **A8 · Gantt de la memoria** (`IA`, IMP-02): la iteración 3 aún dice «re-voto». **Hecho:** `plan_gantt.tex` ya dice «Iteración 3. Emisión y recibo (RF-09--RF-10)» (comprobado el 08/11/2026).
-- [ ] **A9 · RF-05a** (`IA`, según Q-07): IdP externo de prueba y prueba de inicio de sesión de gestión federado.
+- [ ] **A9 · RF-05a** (`IA`, según Q-07): **Bloqueada (20/11/2026), trabajo futuro (P9).** No es posible probarla en esta fase por falta de acceso a las cuentas `@inlumine.ual.es` y a la configuración institucional. Véase la sección 9.
 - [x] **A10 · Job E2E en CI** (`IA`): Playwright + axe en GitHub Actions (al menos con servicios simulados). **Hecho (15/11/2026: el job de accesibilidad E2E pasa en GitHub en el PR #4 y en `main`)**
   **Borrador (08/11/2026, sin commit, pendiente de revisión del autor):** job `e2e-a11y` en `build.yml` (`ubuntu-latest`,
   Node 24, `npx playwright install --with-deps chromium`, `npm run test:e2e`, artefacto `e2e-a11y-results`). Sin
@@ -154,7 +154,7 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
 
 ## 3. Necesitan al autor
 
-- [ ] **B1 · Responder las preguntas Q-01 a Q-10** (`Autor`).
+- [ ] **B1 · Responder las preguntas Q-01 a Q-13** (`Autor`). Respondidas Q-01 a Q-09, Q-11 y Q-12; abiertas Q-10 (próxima reunión con el tutor) y Q-13 (prioridades de los RNF), comprobado el 20/11/2026.
 - [x] **B2 · Sesión H1b con cinco votantes** (`Autor`, prioritaria): **Hecho (09/11/2026): H1b aceptada**, véase `hoja-registro.md`. montar el escenario `USAB`
   (`docs/evaluation/usabilidad/preparacion-sesion.md`, `censo-sesion.csv`), hacer un ensayo y las cinco sesiones;
   anotar T0/T1/T2 y resultados como cantidades (x de 5) en la hoja de registro (preparadas el 05/11:
@@ -279,8 +279,8 @@ anteproyecto. Orden: de más valor y menos coste a menos valor y más coste.
 | M2 | RNF-2 | Las 212 comprobaciones E2E también en Firefox y WebKit (motor de Safari) | Autor, 30 min de ejecución. IA analiza y propone correcciones | Hecho: `E2E_BROWSERS=all` en `playwright.config.ts` (636 pruebas listadas; por defecto y en CI sigue solo Chromium) | RNF-2 pasa a aceptado o se registran defectos |
 | M3 | RNF-8, 9, 10 | Revisión heurística de Nielsen por dos personas y cronometraje de la realimentación | Autor y otra persona, 60–90 min cada uno. IA junta las hojas y redacta | Hecho: `docs/evaluation/revision-heuristica/` (protocolo y hoja) | Estado de RNF-8, 9 y 10 en la tabla 13.2 |
 | M4 ✔ (18/11, autor: instalada en iOS y Android; iconos de marca después, D-64) | RNF-18 | Instalar la PWA en Android (Chrome, «Instalar aplicación») e iOS (Safari, «Añadir a pantalla de inicio») a través de un túnel HTTPS, como en las sesiones RNF-4 | Autor, 30 min. IA prepara la lista de comprobación | Túnel ya usado el 13/11 | RNF-18 aceptado o no |
-| M5 | RNF-17 | Perfilar la emisión, ajustar colas del *gateway* y de los servicios (el token ya se consume fuera del bloqueo) y repetir las tres ejecuciones de H1c | IA, 1–2 sesiones de código con revisión del secreto del voto. Autor, ≈ 1 h de k6 | Escenarios k6 y `carga.md` | **Hecha (19/11/2026): serie B, H1c rechazada de nuevo** (p95 7211 ms, 339 de 500 aceptados; unos 43 votos por segundo). El autor decide cerrar H1c rechazada; la confirmación por grupos (IMP-64) queda como trabajo futuro. No afecta a los objetivos del anteproyecto: OE5 pide hacer la prueba de carga y documentar también los criterios no alcanzados |
-| M6 | RF-05a | SSO de gestión con las cuentas de la UAL (A9) | Ambos | Sección 2b | Según la respuesta del tutor (pregunta 3 del correo) |
+| M5 | RNF-17 | Perfilar la emisión, ajustar colas del *gateway* y de los servicios (el token ya se consume fuera del bloqueo) y repetir las tres ejecuciones de H1c | IA, 1–2 sesiones de código con revisión del secreto del voto. Autor, ≈ 1 h de k6 | Escenarios k6 y `carga.md` | **Hecha (19/11/2026): serie B, H1c rechazada de nuevo** (p95 7211 ms, 339 de 500 aceptados; unos 43 votos por segundo). Después, IMP-64 (confirmación por grupos, D-65) implementada y medida en la **serie C (19/11/2026): H1c rechazada otra vez** (unos 55 votos por segundo; 17 de 500 en menos de 2 s). H1c cerrada como rechazada; el perfilado del resto de la cadena queda como trabajo futuro (IMP-57). No afecta a los objetivos del anteproyecto: OE5 pide hacer la prueba de carga y documentar también los criterios no alcanzados |
+| M6 | RF-05a | SSO de gestión con las cuentas de la UAL (A9) | Ambos | Sección 2b | Bloqueada (20/11/2026): sin acceso a las cuentas ni a la configuración institucional; trabajo futuro (P9). Véase la sección 9 |
 
 **Comandos del autor para M2** (en `frontend`, con el frontend sin backend, igual que el E2E habitual):
 
@@ -315,6 +315,21 @@ WebKit: 211 de 212 y 0 incumplimientos en sus 207 resultados; la restante (V8-re
 | 7–20/12/2026 | M6 solo si el tutor lo pide (M5 adelantada al 18–24/11) |
 | 21/12/2026–15/01/2027 | Pasar resultados a la memoria y a la presentación; C4 final |
 | Desde el 15/01/2027 | Congelar el código; ensayos de la defensa |
+
+### 8.5 Cambios de interfaz decididos por el autor
+
+| Id | Qué | Motivo | Estado |
+| --- | --- | --- | --- |
+| M6b | Ocultar la columna «Identificador institucional» en la interfaz de gestión | Decisión de que el usuario no vea ese dato | Aplicado sin commit (20/11/2026), pendiente de revisión del autor (IMP-66). El campo se conserva en el censo y en el backend porque lo usan otras funciones (importación, detección de duplicados, búsqueda y exportación de privacidad), pero desaparece de la vista del frontend: tabla del censo, formulario de alta y edición, vista previa y plantillas Excel descargables, textos de ayuda de la importación, motivo de duplicado y búsqueda de privacidad. La exportación de privacidad (derecho de acceso del RGPD, generada por el backend) lo sigue incluyendo |
+
+## 9. Bloqueado o dependiente de terceros
+
+| Id | Qué | Depende de | Estado |
+| --- | --- | --- | --- |
+| M6 / A9 | SSO con cuentas `@inlumine.ual.es` (RF-05a gestión; RF-05b con un IdP real) | Cuentas `@inlumine.ual.es` y configuración institucional (proveedor de identidad de la UAL) que no están disponibles; confirmación del tutor | Bloqueado (20/11/2026): no es posible probarlo en esta fase por falta de acceso a las cuentas y a la configuración institucional. Opción oculta en la consola (`features.institutionalSso = false`). Se deja como trabajo futuro (P9) para cuando se disponga de acceso. |
+| Q-10 | Próxima reunión con el tutor | Respuesta del tutor | Sin respuesta |
+| Q-13 | Prioridades MoSCoW de los RNF (tabla 7.1 con asteriscos) | Confirmación del tutor | Pendiente |
+| D3 | Cabeceras CSP, HSTS y `Referrer-Policy` | Un despliegue (D-53) | Fuera de alcance: el TFM solo se ejecuta en local |
 
 ## Calendario orientativo
 
@@ -366,3 +381,5 @@ WebKit: 211 de 212 y 0 incumplimientos en sus 207 resultados; la restante (V8-re
 | 18/11/2026 | IMP-63, M1, M5 | IMP-63 hecha: Firefox 212/212. Guion de M1 adaptado al Narrador (y fila TM-01, IMP-50). M5: colas de conexión ajustadas y serie B de H1c definida. Sin commit |
 | 19/11/2026 | IMP-64 implementada | Confirmación por grupos (D-65) y arreglo del commit ambiguo; serie C preparada en `carga.md` (reglas fijadas antes de medir). Pendiente: `mvnw verify` y serie C del autor. Sin commit |
 | 19/11/2026 | M5, IMP-64 | Keycloak local recuperado (scripts `scripts/dev/keycloak-*`, `start-services.ps1`). Serie B de H1c: humo correcto; 20–22 descartadas (variables sin cargar); 23–25 contra un *gateway* antiguo; 26 válida y rechazada (p95 7,2 s). H1c cerrada como rechazada; memoria y presentación actualizadas. Sin commit |
+| 20/11/2026 | Revisión del plan | Contrastado con el repositorio: `dev` va 3 commits por delante de `origin/dev` (`f0f4482`, `56746fa`, `39d939d`) y hay 4 ficheros modificados sin commit. M5 actualizada con la serie C. Abiertos: Q-10, Q-13, M1, M3, M6/A9, recuento final de pruebas y cobertura, C4, E2, E3 |
+| 20/11/2026 | M6/A9, M6b | SSO bloqueado y trabajo futuro (sección 9; opción oculta en la consola, IMP-65). M6b aplicado sin commit: «Identificador institucional» fuera de la interfaz de gestión y plantillas Excel regeneradas (IMP-66) |
