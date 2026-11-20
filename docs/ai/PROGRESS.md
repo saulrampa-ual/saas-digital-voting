@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-20 · Rama: `dev` (HEAD `39d939d`; cambios locales sin commit) · sin push
+Última actualización: 2026-11-20 · Rama: `dev` (HEAD `4d0ed29`; cambios locales sin commit) · sin push
 
 ## Hitos
 
@@ -19,6 +19,10 @@
 
 ## Hecho
 
+- 20/11: RNF-18 actualizado en la memoria con la prueba de reinstalación del icono PWA en Android y sus límites;
+  se añadieron dos capturas recortadas en `Plantilla-TFM-Informatica-UAL/Figuras/capturas/`. El acceso usó una
+  ruta sintética sin invitación real y mostró «Página no encontrada»; no se verificó el voto. La memoria se compiló
+  con pdfLaTeX en 96 páginas y se revisó visualmente la tabla y la figura.
 - 20/11: README principal y frontend ampliados con requisitos, preparación de `infra/.env`, arranque local,
   direcciones y acceso a manuales; creado `backend/README.md` con comandos de inicio de los cinco servicios y
   comprobaciones de salud. No se ejecutaron builds ni pruebas (cambio documental).
@@ -250,7 +254,7 @@
 
 ## Pendiente
 
-- PWA (D-64): comprobar en el teléfono el icono nuevo tras desinstalar la PWA anterior y volver a instalarla.
+
 - Recuento final: `mvnw verify` completo del backend y `npm run test:coverage` del frontend, para actualizar en la
   memoria, la presentación e `informe.md` el número de pruebas (ballot-box pasa de 26 a 33; integración, de 23 a 24) y
   la cobertura. Hoy las cifras publicadas son las del 17/11.

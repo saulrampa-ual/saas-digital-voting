@@ -138,7 +138,7 @@ evidencia disponible para cada requisito.
 \section{Evidencia por requisito no funcional}
 \label{sec:evidencia-rnf}
 La tabla~\ref{tab:evidencia-rnf} resume, para cada requisito no funcional, la
-evidencia disponible a 18/11/2026. «Aceptado» indica que se midió el criterio
+evidencia disponible a 20/11/2026. «Aceptado» indica que se midió el criterio
 del protocolo y se alcanzó; «evidencia parcial», que hay pruebas o mediciones
 que lo respaldan sin cubrirlo por completo; «sin evaluar», que no hay evidencia
 específica; y «no se cumple», que se midió y no se alcanzó. La prioridad es la
@@ -194,10 +194,36 @@ RNF-16 & Must & Búsqueda, exportación sin datos de voto y borrado o anonimizac
 \hline
 RNF-17 & Should & H1c, tres series con 500 usuarios simultáneos: p95 de 2,4 a 4,9 segundos (11/11/2026), de 7,2 segundos con las colas de conexión ampliadas y, con la confirmación por grupos, 17 de 500 peticiones respondidas en menos de 2 segundos (19/11/2026). Ritmo de unos 43 a 55 votos por segundo. & No se cumple \\
 \hline
-RNF-18 & Could & PWA instalada y usada en Android (Chrome) e iOS (Safari) el 18/11/2026. Tras la prueba se sustituyeron los iconos genéricos por los de la marca. & Aceptado \\
+RNF-18 & Could & PWA instalada y usada en Android (Chrome) e iOS (Safari) el 18/11/2026. El 20/11/2026 se reinstaló en Android con los iconos de marca y se confirmó que VeriVoto aparece en el menú de aplicaciones. La ruta sintética de prueba mostró «Página no encontrada» al no corresponder a una invitación válida; no se evaluó el flujo de voto. & Aceptado \\
 \hline
 \end{longtable}
 \normalsize
+
+La comprobación adicional de RNF-18 se realizó el 20/11/2026 en un teléfono
+Android: tras reinstalar la PWA, el icono de VeriVoto aparece en el menú de
+aplicaciones. Al abrir la ruta sintética
+\texttt{/votar/icono-prueba}, la interfaz mostró «Página no encontrada», ya
+que no se utilizó una invitación real. Por tanto, esta prueba confirma la
+instalación y la presentación del icono de marca, pero no la autenticación de
+un votante ni la emisión de un voto. Las capturas no permiten identificar el
+modelo del teléfono, la versión de Android ni el navegador utilizado.
+La figura~\ref{fig:pwa-icono-android} recoge ambas capturas.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.47\textwidth}
+    \centering
+    \includegraphics[width=0.92\linewidth]{capturas/pwa-android-apertura-ruta-prueba}
+    \caption{Apertura de la ruta sintética, sin invitación válida.}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.47\textwidth}
+    \centering
+    \includegraphics[width=0.72\linewidth]{capturas/pwa-android-icono-instalado}
+    \caption{Icono de VeriVoto en el menú de aplicaciones.}
+  \end{subfigure}
+  \caption{Comprobación de instalación e icono de la PWA en Android (20/11/2026).}
+  \label{fig:pwa-icono-android}
+\end{figure}
 
 En resumen, de los diez requisitos Must, dos están aceptados con su criterio
 (RNF-3 y RNF-6) y los ocho restantes tienen evidencia parcial; entre los Should,
