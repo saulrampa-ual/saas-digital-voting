@@ -33,8 +33,11 @@ revisión cambia algo en `frontend/src`, las filas de las pantallas afectadas se
 
 ### 1.2 Datos sintéticos (no `USAB`)
 
-1. Arrancar el stack como siempre y cargar la demo de la UAL (`.local\2-cargar-demo.cmd`, que ejecuta
-   `scripts/demo/seed-ual.mjs`). No usar `seed-usab.mjs` ni el escenario `USAB`.
+1. Arrancar el stack como siempre y cargar la demo de la UAL desde la raíz del repositorio, en PowerShell:
+   `$env:DEMO_PASSWORD = '<contraseña de las cuentas de la demo>'; node scripts/demo/seed-ual.mjs`. El script
+   reutiliza lo que ya exista (organización, censos y procesos, por título) y escribe `.local/demo-ual.md`. Si falla
+   con `invalidPasswordHistoryMessage`, repetir con una contraseña nueva (IMP-54). No usar `seed-usab.mjs` ni el
+   escenario `USAB`. (Actualizado el 20/11/2026: el antiguo `.local\2-cargar-demo.cmd` ya no existe.)
 2. Abrir `.local/demo-ual.md`. Tiene los enlaces personales y la dirección de Mailpit, donde llegan los códigos.
    El proceso «en curso» abre unos 90 s después de crearse.
 3. Elegir las personas votantes:
