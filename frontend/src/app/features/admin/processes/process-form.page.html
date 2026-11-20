@@ -171,10 +171,12 @@
                   <ion-radio value="EMAIL_CODE" labelPlacement="end" justify="start">
                     <strong>{{ 'admin.processForm.emailCode' | translate }}</strong><br><small>{{ 'admin.processForm.emailCodeHelp' | translate }}</small>
                   </ion-radio></ion-item>
-                <ion-item lines="none" class="choice" [class.selected]="model().voterAuthentication === 'INSTITUTIONAL_SSO'">
-                  <ion-radio value="INSTITUTIONAL_SSO" labelPlacement="end" justify="start">
-                    <strong>{{ 'admin.processForm.sso' | translate }}</strong><br><small>{{ 'admin.processForm.ssoHelp' | translate }}</small>
-                  </ion-radio></ion-item>
+                @if (showInstitutionalSso()) {
+                  <ion-item lines="none" class="choice" [class.selected]="model().voterAuthentication === 'INSTITUTIONAL_SSO'">
+                    <ion-radio value="INSTITUTIONAL_SSO" labelPlacement="end" justify="start">
+                      <strong>{{ 'admin.processForm.sso' | translate }}</strong><br><small>{{ 'admin.processForm.ssoHelp' | translate }}</small>
+                    </ion-radio></ion-item>
+                }
               </ion-radio-group>
             }
             @case ('ballot') {
