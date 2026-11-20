@@ -20,7 +20,16 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 Set-Location $root
 
-. (Join-Path $root 'scripts\Import-DotEnv.ps1') (Join-Path $root 'infra\.env')
+# Variables are set only while the services start: the Java processes keep their own copy, and the PowerShell session
+# gets its previous values back at the end, so later commands (mvnw verify, npm) do not inherit them.
+$envFile = Join-Path $root 'infra\.env'
+$names = @(Get-Content $envFile | Where-Object { $_ -match '^\s*[A-Za-z_][A-Za-z0-9_]*=' } | ForEach-Object { ($_ -split '=', 2)[0].Trim() }) +
+    @('IDENTITY_DB_USERNAME', 'ELECTION_DB_USERNAME', 'VOTER_ACCESS_DB_USERNAME', 'BALLOT_BOX_DB_USERNAME',
+      'GATEWAY_VOTER_ACCESS_RATE_LIMIT_ENABLED')
+$previous = @{}
+foreach ($n in $names) { $previous[$n] = [Environment]::GetEnvironmentVariable($n, 'Process') }
+try {
+. (Join-Path $root 'scripts\Import-DotEnv.ps1') $envFile
 $env:IDENTITY_DB_USERNAME = 'identity'
 $env:ELECTION_DB_USERNAME = 'election'
 $env:VOTER_ACCESS_DB_USERNAME = 'voter_access'
@@ -63,6 +72,9 @@ foreach ($name in $services.Keys) {
         -RedirectStandardOutput (Join-Path $logs "$name.out.log") -RedirectStandardError (Join-Path $logs "$name.err.log")
     Add-Content -Path $pidFile -Value $process.Id
     Write-Host "Started $name (pid $($process.Id), port $($services[$name]))"
+}
+} finally {
+    foreach ($n in $names) { [Environment]::SetEnvironmentVariable($n, $previous[$n], 'Process') }
 }
 
 $deadline = (Get-Date).AddMinutes(3)

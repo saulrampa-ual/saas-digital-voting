@@ -21,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
         "VOTER_ACCESS_SERVICE_URI=http://127.0.0.1:9",
         "BALLOT_BOX_SERVICE_URI=http://127.0.0.1:9",
+        // Pinned so the test does not depend on the shell (start-services.ps1 -NoRateLimit sets the variable to false)
+        "verivoto.gateway.voter-access-rate-limit.enabled=true",
         "verivoto.gateway.voter-access-rate-limit.capacity=2",
         "verivoto.gateway.voter-access-rate-limit.refill-per-minute=1"})
 class VoterAccessRateLimitIntegrationTest {
