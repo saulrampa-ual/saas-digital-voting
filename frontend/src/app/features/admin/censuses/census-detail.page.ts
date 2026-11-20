@@ -43,11 +43,12 @@ const IMPORT_EXTENSION = /\.xlsx$/i;
 /**
  * Preview of the downloadable Excel template (`public/templates`, one per interface language). Same titles as the
  * form; the example rows are the ones of the file (fictitious, example.com) and pass the `VoterData` rules.
+ * M6b: the institutional ID is kept in the census and the backend but is not shown in the interface.
  */
-const TEMPLATE_COLUMNS = ['fullName', 'email', 'phone', 'institutionalId', 'preferredLanguage'] as const;
+const TEMPLATE_COLUMNS = ['fullName', 'email', 'phone', 'preferredLanguage'] as const;
 const TEMPLATE_ROWS: readonly { values: readonly string[]; language: Lang }[] = [
-  { values: ['María García López', 'maria.garcia@example.com', '600123456', '12345678A'], language: 'es' },
-  { values: ['John Smith', 'john.smith@example.com', '600654321', '87654321B'], language: 'en' },
+  { values: ['María García López', 'maria.garcia@example.com', '600123456'], language: 'es' },
+  { values: ['John Smith', 'john.smith@example.com', '600654321'], language: 'en' },
 ];
 
 /**
@@ -111,7 +112,8 @@ export class CensusDetailPage implements OnDestroy {
   protected readonly formErrors = signal<Partial<Record<VoterField, string>>>({});
   protected readonly formServerError = signal<string | null>(null);
   protected readonly saving = signal(false);
-  protected readonly fields: readonly VoterField[] = ['fullName', 'email', 'phone', 'institutionalId'];
+  /** M6b: institutionalId stays in the form model (an edit keeps the stored value) but has no visible input. */
+  protected readonly fields: readonly VoterField[] = ['fullName', 'email', 'phone'];
   protected readonly maxLength: Record<VoterField, number> = { fullName: 60, email: 100, phone: 15, institutionalId: 50 };
   protected readonly notice = signal<string | null>(null);
   protected readonly pageError = signal<string | null>(null);

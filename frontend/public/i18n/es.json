@@ -466,7 +466,7 @@
       "import": {
         "selectTitle": "Seleccionar fichero",
         "drop": "Arrastra aquí un fichero Excel (.xlsx)",
-        "columns": "Tu fichero debe incluir al menos el nombre completo y el correo electrónico de cada persona. Teléfono, identificador institucional e idioma son opcionales.",
+        "columns": "Tu fichero debe incluir al menos el nombre completo y el correo electrónico de cada persona. Teléfono e idioma son opcionales.",
         "select": "Seleccionar fichero",
         "rules": "Usa un fichero Excel (.xlsx), por ejemplo la plantilla. Hasta 5 MB y 50 000 personas. No se guarda nada hasta que lo confirmes.",
         "summaryTitle": "Resumen de la importación",
@@ -487,7 +487,7 @@
         "more": "…y {{count}} más.",
         "reason": {
           "EMAIL": "el correo ya está en el censo o repetido en el fichero",
-          "INSTITUTIONAL_ID": "el identificador institucional ya está en el censo o repetido en el fichero"
+          "INSTITUTIONAL_ID": "la persona ya está en el censo o repetida en el fichero"
         },
         "invalidHelp": "Corrige el fichero y vuelve a seleccionarlo, o descarta las líneas con error para importar el resto.",
         "readyHelp": "Revisa el resumen y confirma para guardar a las personas nuevas. Los duplicados se omiten.",
@@ -505,7 +505,7 @@
         "template": {
           "open": "Descargar plantilla de ejemplo",
           "title": "Plantilla de ejemplo (Excel)",
-          "explain": "Es un fichero Excel con una columna por dato, en este orden: Nombre completo, Correo electrónico, Teléfono, Identificador institucional e Idioma de las comunicaciones. Incluye una hoja «Instrucciones».",
+          "explain": "Es un fichero Excel con una columna por dato, en este orden: Nombre completo, Correo electrónico, Teléfono e Idioma de las comunicaciones. Incluye una hoja «Instrucciones».",
           "languages": "El teléfono va solo con cifras, sin espacios ni prefijo +. En Idioma elige Español o Inglés en la lista; si lo dejas vacío, se usa español.",
           "required": "Las columnas marcadas con * son obligatorias. Las dos filas de ejemplo (en gris y cursiva) debes borrarlas antes de subir el fichero.",
           "preview": "Vista previa de la plantilla",
