@@ -47,6 +47,10 @@ function readK6(file) {
     durationMs: { p50: round(d.med), p90: round(d['p(90)']), p95: round(d['p(95)']), p99: round(d['p(99)']), max: round(d.max), avg: round(d.avg) },
     httpReqFailedRate: metrics.http_req_failed?.value ?? null,
     checksRate: metrics.checks?.value ?? null,
+    // Series C, rule 4 of carga.md: requests answered (any status) in under 2 s; absent in older summaries
+    answeredUnder2s: metrics.answered_under_2s
+      ? { count: metrics.answered_under_2s.passes, of: metrics.answered_under_2s.passes + metrics.answered_under_2s.fails }
+      : null,
     hasStatusBreakdown: Object.keys(metrics).some((k) => k.startsWith('http_reqs{operation:cast_vote,status:')),
   };
 }
@@ -130,7 +134,7 @@ console.log(`
 H1c · run ${RUN}${result.processId ? ` · process #${result.processId}` : ''}
 - k6: ${k6.iterations} iterations, ${k6.accepted201} × 201; other responses: ${errors}
 - Vote request time (ms): p50 ${d.p50} · p90 ${d.p90} · p95 ${d.p95} · p99 ${d.p99} · max ${d.max}  → p95 < 2000 ms: ${d.p95 < 2000 ? 'YES' : 'NO'}
-- http_req_failed ${k6.httpReqFailedRate} · checks ${k6.checksRate}${result.urn ? `
+${k6.answeredUnder2s ? `- Answered in < 2 s (series C, rule 4): ${k6.answeredUnder2s.count} of ${k6.answeredUnder2s.of}  → at least 95 %: ${k6.answeredUnder2s.count >= 0.95 * k6.answeredUnder2s.of ? 'YES' : 'NO'}\n` : ''}- http_req_failed ${k6.httpReqFailedRate} · checks ${k6.checksRate}${result.urn ? `
 - Urn (${result.urn.status}): chain ${result.urn.chainIntact ? 'intact' : 'BROKEN'} (${result.urn.eventsChecked} events), ${result.urn.voteEvents} vote events
 - Participation: ${result.participation.votesCast} of ${result.participation.eligibleVoters} marked as voters` : '\n- K6_ONLY: urn and participation not checked'}
 - ${discard.length ? `DISCARD and repeat with a new LOAD_RUN: ${discard.join('; ')}` : 'No discard condition from k6'}

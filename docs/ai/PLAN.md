@@ -15,7 +15,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Bloque | Estado |
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
-| Pruebas y medición (P7) | Cerrado el 15/11/2026: 151 pruebas backend (15/11) y 144 frontend (16/11); cobertura de líneas 26–91 % por servicio en backend y 42,0 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
+| Pruebas y medición (P7) | Cerrado el 15/11/2026: 168 pruebas backend (17/11) y 144 frontend (16/11); cobertura de líneas 42–91 % por servicio en backend (59,1 % en conjunto) y 42,0 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
 | Memoria (P8) | En curso: C1 aplicado para H1a, H1b y H1c; C1 y C2 hechos (15/11: capturas, figuras 5.1 y 5.2, cifras de pruebas y cobertura); falta C4 |
 | Publicación | PR #4 fusionado en `main` el 15/11/2026 (`7ee3a57`), con `build` y `security` en verde. Anteproyecto firmado por el director (comunicado por el autor el 15/11/2026) |
 
@@ -37,6 +37,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Q-10 | ¿Qué fecha tiene la próxima revisión con el tutor y qué quiere ver? (marca el orden de C1–C4) | C | **En espera (03/11):** se le envió la memoria actualizada y aún no ha respondido. Las indicaciones de la reunión del 21/10/2026 ya están aplicadas (sección 7) |
 | Q-11 | Resultados de la sesión RNF-4: para cada administrador (A1–A5), ¿terminó crear, configurar y programar un proceso de opción única?, ¿cuánto tardó?, ¿necesitó ayuda (y de qué tipo)? Fecha de la sesión y si firmaron consentimiento | C1 | **Respondida (05/11):** sesión el 03/11/2026, 5 participantes (P01–P05, anónimos), consentimiento firmado, 5 de 5 sin ayuda de personas (D-55). Tiempos **estimados** tras la sesión, no medidos: 5, 5, 11, 3,4 y 3,4 min (uno corregido de 6 a 11 min), sin asignar a nadie. **Solo 2 de 5 sin formación previa.** RNF-4 **no demostrado**; evidencia indicativa (`docs/evaluation/usabilidad/resultados-rnf4-administradores.md`) |
 | Q-12 | SSO con cuentas de la UAL: ¿los 4 compañeros aceptan por escrito que se usen sus correos solo para la prueba, en local y borrándolos después? ¿Tienes una cuenta de Google personal para crear el proyecto de Google Cloud? | A9 | **Respondida (05/11, D-54):** cuenta de Google Cloud creada. Los 4 compañeros dieron su aceptación **verbal** (uso de sus correos solo en la prueba, en local y borrado después). **No hay constancia escrita** y el autor no la pedirá por ahora: se registra como limitación, no como consentimiento documentado |
+| Q-13 | Prioridades MoSCoW de los RNF (tabla 7.1): la memoria propone Must para RNF-1, 3, 6, 7, 11–16 y Should para RNF-2, 4, 5, 8–10 y 17 (RNF-18 sigue Could), marcadas con asterisco. ¿Las confirma el tutor? | Tabla 7.1 sin asteriscos | **Pendiente (17/11/2026):** propuesta aplicada en la memoria; se pregunta al tutor en el próximo correo o reunión |
 
 ---
 
@@ -81,7 +82,7 @@ Orden recomendado: de arriba abajo. Semana del 03/11 al 16/11/2026.
   Solo después de las sesiones H1b (Mailpit guarda 500 mensajes). Falta instalar k6 y ejecutar. Variables y
   definición de ejecución válida en `docs/evaluation/carga.md`. El autor ejecuta; la IA analiza y cierra H1c.
 - [x] **A8 · Gantt de la memoria** (`IA`, IMP-02): la iteración 3 aún dice «re-voto». **Hecho:** `plan_gantt.tex` ya dice «Iteración 3. Emisión y recibo (RF-09--RF-10)» (comprobado el 08/11/2026).
-- [ ] **A9 · RF-05a** (`IA`, según Q-07): IdP externo de prueba y prueba de inicio de sesión de gestión federado.
+- [ ] **A9 · RF-05a** (`IA`, según Q-07): **Bloqueada (20/11/2026), trabajo futuro (P9).** No es posible probarla en esta fase por falta de acceso a las cuentas `@inlumine.ual.es` y a la configuración institucional. Véase la sección 9.
 - [x] **A10 · Job E2E en CI** (`IA`): Playwright + axe en GitHub Actions (al menos con servicios simulados). **Hecho (15/11/2026: el job de accesibilidad E2E pasa en GitHub en el PR #4 y en `main`)**
   **Borrador (08/11/2026, sin commit, pendiente de revisión del autor):** job `e2e-a11y` en `build.yml` (`ubuntu-latest`,
   Node 24, `npx playwright install --with-deps chromium`, `npm run test:e2e`, artefacto `e2e-a11y-results`). Sin
@@ -153,7 +154,7 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
 
 ## 3. Necesitan al autor
 
-- [ ] **B1 · Responder las preguntas Q-01 a Q-10** (`Autor`).
+- [ ] **B1 · Responder las preguntas Q-01 a Q-13** (`Autor`). Respondidas Q-01 a Q-09, Q-11 y Q-12; abiertas Q-10 (próxima reunión con el tutor) y Q-13 (prioridades de los RNF), comprobado el 20/11/2026.
 - [x] **B2 · Sesión H1b con cinco votantes** (`Autor`, prioritaria): **Hecho (09/11/2026): H1b aceptada**, véase `hoja-registro.md`. montar el escenario `USAB`
   (`docs/evaluation/usabilidad/preparacion-sesion.md`, `censo-sesion.csv`), hacer un ensayo y las cinco sesiones;
   anotar T0/T1/T2 y resultados como cantidades (x de 5) en la hoja de registro (preparadas el 05/11:
@@ -176,7 +177,7 @@ el despliegue y D4 si sobra tiempo. Las que más aportan antes de entregar, de m
   (05/11):** commit `4ec0efc` en la rama `feat/voter-access-limit-jwt-audience`, sin fusionar; faltan las pruebas del autor.
 - [ ] **D3 · IMP-32**: cabeceras CSP, HSTS y `Referrer-Policy` en el despliegue del frontal. Solo si hay despliegue: el
   TFM se ejecuta y evalúa en local y no está previsto desplegarlo (05/11, D-53).
-- [ ] **D4 · IMP-11 / IMP-40**: al suspender una organización, deshabilitar sus usuarios y claves de API en Keycloak.
+- [x] **D4 · IMP-11 / IMP-40**: al suspender una organización, deshabilitar sus usuarios y claves de API en Keycloak. **Hecho (16/11/2026, sin commit): IMP-11 e IMP-40 (cuentas y claves); pendiente del `mvnw verify` del autor**
 - [x] **D5 · IMP-27**: comprobar la audiencia del JWT en cada servicio y quitar `verivoto-dev-swagger` en producción **Hecho (15/11/2026: fusionada en `dev`, `c48dbab`; `mvnw verify` del autor con 151 pruebas y 0 fallos)**
   (esta segunda parte solo aplica si hay despliegue, D-53). **En curso (05/11):** commit `72bdfba` en la misma rama que D2, sin fusionar;
   faltan las pruebas del autor y actualizar el realm local (`scripts/dev/keycloak-api-audience.mjs`).
@@ -217,6 +218,118 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 - [x] Plan de trabajo con diagrama de Gantt, tareas y fechas (`plan_gantt.tex`) y seguimiento previsto frente a real.
 - [x] Empezar la implementación sin esperar validación de los módulos.
 - [ ] Próxima reunión: pendiente de que el tutor responda (Q-10).
+
+## 8. Objetivos del anteproyecto y RNF (17/11/2026)
+
+Criterio acordado con el autor: **primero se cumplen los objetivos del anteproyecto firmado** (OE1–OE5, cada uno con
+su evidencia); lo que no exige el anteproyecto se trata como mejora y se hace solo si queda tiempo.
+
+### 8.1 Objetivos del anteproyecto
+
+| OE | Evidencia que pide el anteproyecto | Estado |
+| --- | --- | --- |
+| OE1 | Pruebas de autorización por rol y de aislamiento entre organizaciones | Cumplido: `IdentityAuthorizationIntegrationTest` (17/11) y pruebas de aislamiento de election, voter-access y ballot-box |
+| OE2 | Pruebas de las transiciones de estado y contrato OpenAPI publicado | Cumplido: `ProcessStatusTest`, `VotingProcessTest`; contratos en `openapi/` de cada servicio y Swagger UI |
+| OE3 | Unicidad del token de emisión y ausencia de vínculos entre identidad y voto | Cumplido: 20 envíos simultáneos dan 1 voto; esquema y registros sin vínculo (voter-access y ballot-box) |
+| OE4 | Recálculo independiente del resultado y verificación de la cadena de huellas | Cumplido: recálculo en el navegador (D-37), `ChainVerifierTest`, `TallyResultTest` |
+| OE5 | Informe de evaluación por hipótesis, con los criterios no alcanzados | Cumplido: capítulo 13 e `informe.md` (H1b y RNF-4 aceptados, H1c rechazada, H1a sin decisión) |
+
+La memoria solo tenía OE1–OE4; el 17/11 se añadió OE5 (objetivos, tabla 1.1 y conclusiones) para que coincida con el
+anteproyecto.
+
+### 8.2 RNF: evidencia actual y qué falta
+
+| RNF | Prioridad propuesta | Evidencia actual | ¿Lo exige el anteproyecto? | Acción |
+| --- | --- | --- | --- | --- |
+| RNF-1 Accesibilidad | Must | axe: 212 comprobaciones sin críticos ni serios; revisión manual no hecha | Sí (auditoría WCAG): cumplido con la parte automática | Mejora: revisión manual con Narrador de Windows (autor, 1–2 h). Si se hace, H1a puede decidirse |
+| RNF-2 Adaptable y navegadores | Should | Barridos a 360 y 1280 px; solo Chrome | No | Mejora: E2E en Firefox y WebKit (IA prepara, autor ejecuta) |
+| RNF-3 Uso del votante | Must | H1b aceptada | Sí | — |
+| RNF-4 Uso del administrador | Should | Aceptado (13/11) | No (se hizo igualmente) | — |
+| RNF-5 Idiomas | Should | Barridos en es y en; textos es/en | No | Citar como evidencia en el capítulo 13 |
+| RNF-6 Claridad de la verificación | Must | H1b: 5 de 5 | Sí | — |
+| RNF-7 Prevención de errores | Must | Pantalla de revisión; pruebas «no vota sin selección» y error de papeleta | Indirectamente (OE3) | Citar como evidencia en el capítulo 13 |
+| RNF-8, 9, 10 Mensajes, orientación, consistencia | Should | Indicador de pasos y estados probados; revisión heurística (2 evaluadores) no hecha | No | Mejora: revisión heurística de Nielsen |
+| RNF-11 Secreto | Must | Esquema y registros revisados; pruebas de integración | Sí (OE3) | — |
+| RNF-12 Unicidad | Must | 20 envíos simultáneos dan 1 voto | Sí (OE3) | — |
+| RNF-13 Integridad y trazabilidad | Must | Cadena de huellas, trigger solo añadir, escrutinio bloqueado si se rompe | Sí (OE4) | — |
+| RNF-14 Seguridad de acceso | Must | Límites de código y bloqueo, límite por IP, audiencia JWT, rutas internas, suspensión | Indirectamente (OE1) | Citar como evidencia en el capítulo 13 |
+| RNF-15 Aislamiento | Must | Pruebas HTTP con dos organizaciones en los cuatro servicios | Sí (OE1) | — |
+| RNF-16 Protección de datos | Must | `PrivacyServiceTest`, `PersonalDataServiceTest` (búsqueda, exportación, borrado o anonimización) | No | Citar como evidencia en el capítulo 13 |
+| RNF-17 Rendimiento | Should | H1c rechazada y documentada | Sí (prueba de carga): cumplido al documentarla | Mejora (P9): perfilar, optimizar y repetir |
+| RNF-18 PWA instalable | Could | Manifiesto y *service worker*; instalación no probada | No | Mejora: instalar en Android e iOS |
+
+### 8.3 Orden de trabajo hasta la entrega (27/01/2027)
+
+1. [x] Tabla 7.1 con prioridades propuestas y nota; OE5 en la memoria (IA, 17/11).
+2. [ ] Preguntar Q-13 al tutor (autor).
+3. [x] (18/11, tabla 13.2) Tabla «RNF → evidencia» en el capítulo 13 con lo de la columna «Evidencia actual» (IA, una sesión). Cierra la duda
+   del tribunal sobre qué RNF tienen evidencia.
+4. [ ] Revisión C4 final y ensayos de la defensa (ambos).
+5. Mejoras, solo si sobra tiempo y por este orden: revisión manual de accesibilidad (RNF-1), E2E en Firefox y WebKit
+   (RNF-2), revisión heurística (RNF-8–10), instalación de la PWA (RNF-18), optimización de H1c (RNF-17), A9 (RF-05a).
+
+### 8.4 Plan de las mejoras (punto 5)
+
+Cada mejora sube el «Estado» de uno o varios RNF en la tabla 13.2. Ninguna es necesaria para los objetivos del
+anteproyecto. Orden: de más valor y menos coste a menos valor y más coste.
+
+| Id | RNF | Qué se hace | Quién y cuánto | Preparado | Resultado en la memoria |
+| --- | --- | --- | --- | --- | --- |
+| M1 | RNF-1 | Revisión manual con teclado y lector de pantalla (`accesibilidad-manual-guion.md`). NVDA no funcionó en el equipo del autor: guion adaptado al Narrador de Windows el 18/11 | Autor, 1–2 h | Guion y hojas CSV | H1a pasa a aceptada o rechazada (tablas 13.1 y 13.2, conclusiones, diapositiva 11) |
+| M2 | RNF-2 | Las 212 comprobaciones E2E también en Firefox y WebKit (motor de Safari) | Autor, 30 min de ejecución. IA analiza y propone correcciones | Hecho: `E2E_BROWSERS=all` en `playwright.config.ts` (636 pruebas listadas; por defecto y en CI sigue solo Chromium) | RNF-2 pasa a aceptado o se registran defectos |
+| M3 | RNF-8, 9, 10 | Revisión heurística de Nielsen por dos personas y cronometraje de la realimentación | Autor y otra persona, 60–90 min cada uno. IA junta las hojas y redacta | Hecho: `docs/evaluation/revision-heuristica/` (protocolo y hoja) | Estado de RNF-8, 9 y 10 en la tabla 13.2 |
+| M4 ✔ (18/11, autor: instalada en iOS y Android; iconos de marca después, D-64) | RNF-18 | Instalar la PWA en Android (Chrome, «Instalar aplicación») e iOS (Safari, «Añadir a pantalla de inicio») a través de un túnel HTTPS, como en las sesiones RNF-4 | Autor, 30 min. IA prepara la lista de comprobación | Túnel ya usado el 13/11 | RNF-18 aceptado o no |
+| M5 | RNF-17 | Perfilar la emisión, ajustar colas del *gateway* y de los servicios (el token ya se consume fuera del bloqueo) y repetir las tres ejecuciones de H1c | IA, 1–2 sesiones de código con revisión del secreto del voto. Autor, ≈ 1 h de k6 | Escenarios k6 y `carga.md` | **Hecha (19/11/2026): serie B, H1c rechazada de nuevo** (p95 7211 ms, 339 de 500 aceptados; unos 43 votos por segundo). Después, IMP-64 (confirmación por grupos, D-65) implementada y medida en la **serie C (19/11/2026): H1c rechazada otra vez** (unos 55 votos por segundo; 17 de 500 en menos de 2 s). H1c cerrada como rechazada; el perfilado del resto de la cadena queda como trabajo futuro (IMP-57). No afecta a los objetivos del anteproyecto: OE5 pide hacer la prueba de carga y documentar también los criterios no alcanzados |
+| M6 | RF-05a | SSO de gestión con las cuentas de la UAL (A9) | Ambos | Sección 2b | Bloqueada (20/11/2026): sin acceso a las cuentas ni a la configuración institucional; trabajo futuro (P9). Véase la sección 9 |
+
+**Comandos del autor para M2** (en `frontend`, con el frontend sin backend, igual que el E2E habitual):
+
+```powershell
+npx playwright install firefox webkit
+$env:E2E_BROWSERS = 'all'
+npx playwright test --project=firefox --workers=2
+npx playwright test --project=webkit --workers=2
+Remove-Item Env:E2E_BROWSERS
+```
+
+**Primera ejecución (18/11/2026, los tres navegadores a la vez):** Chromium 212 de 212; Firefox 115 de 212 y WebKit 173
+de 212. Los 136 fallos son tiempos agotados (30 s) o cierres del navegador por carga, ninguno es un incumplimiento de
+axe: ejecución **no concluyente**. Ajustado el mismo día: 90 s por prueba en Firefox y WebKit, un fichero de resultados
+por navegador y ejecución de cada motor por separado con 2 *workers*.
+
+**Segunda ejecución (18/11/2026, un motor cada vez):** Firefox y WebKit, 156 de 212 cada uno, todas sin
+incumplimientos críticos ni serios. Las 56 restantes fallan siempre igual en los dos motores: sus peticiones POST
+(código, verificación, búsqueda de privacidad) no pasan por el simulacro de Playwright y llegan al proxy (502). Es una
+limitación del arnés (IMP-63), no de la aplicación.
+
+**Tercera ejecución (18/11/2026, tras IMP-63):** con el servidor simulado de respaldo, Firefox **212 de 212** (informe
+de Playwright: 212 esperadas, 0 inesperadas) y sin incumplimientos críticos ni serios en sus 208 resultados de axe.
+WebKit: 211 de 212 y 0 incumplimientos en sus 207 resultados; la restante (V8-results, 1280 px, EN) agotó los 90 s esperando a que la casilla del código dejara de moverse, sin relación con la accesibilidad ni con las POST (la petición del código sí se simuló). Repetida sola el 19/11/2026: pasa. **M2 cerrada: RNF-2 aceptado** (tabla 13.2).
+
+**Calendario propuesto**
+
+| Semana | Mejoras |
+| --- | --- |
+| 18–24/11/2026 | M2 y M1 (autor); M4 si hay túnel |
+| 25/11–6/12/2026 | M3 con la segunda persona |
+| 7–20/12/2026 | M6 solo si el tutor lo pide (M5 adelantada al 18–24/11) |
+| 21/12/2026–15/01/2027 | Pasar resultados a la memoria y a la presentación; C4 final |
+| Desde el 15/01/2027 | Congelar el código; ensayos de la defensa |
+
+### 8.5 Cambios de interfaz decididos por el autor
+
+| Id | Qué | Motivo | Estado |
+| --- | --- | --- | --- |
+| M6b | Ocultar la columna «Identificador institucional» en la interfaz de gestión | Decisión de que el usuario no vea ese dato | Aplicado sin commit (20/11/2026), pendiente de revisión del autor (IMP-66). El campo se conserva en el censo y en el backend porque lo usan otras funciones (importación, detección de duplicados, búsqueda y exportación de privacidad), pero desaparece de la vista del frontend: tabla del censo, formulario de alta y edición, vista previa y plantillas Excel descargables, textos de ayuda de la importación, motivo de duplicado y búsqueda de privacidad. La exportación de privacidad (derecho de acceso del RGPD, generada por el backend) lo sigue incluyendo |
+
+## 9. Bloqueado o dependiente de terceros
+
+| Id | Qué | Depende de | Estado |
+| --- | --- | --- | --- |
+| M6 / A9 | SSO con cuentas `@inlumine.ual.es` (RF-05a gestión; RF-05b con un IdP real) | Cuentas `@inlumine.ual.es` y configuración institucional (proveedor de identidad de la UAL) que no están disponibles; confirmación del tutor | Bloqueado (20/11/2026): no es posible probarlo en esta fase por falta de acceso a las cuentas y a la configuración institucional. Opción oculta en la consola (`features.institutionalSso = false`). Se deja como trabajo futuro (P9) para cuando se disponga de acceso. |
+| Q-10 | Próxima reunión con el tutor | Respuesta del tutor | Sin respuesta |
+| Q-13 | Prioridades MoSCoW de los RNF (tabla 7.1 con asteriscos) | Confirmación del tutor | Pendiente |
+| D3 | Cabeceras CSP, HSTS y `Referrer-Policy` | Un despliegue (D-53) | Fuera de alcance: el TFM solo se ejecuta en local |
 
 ## Calendario orientativo
 
@@ -261,3 +374,12 @@ Todas aplicadas en la memoria (ver `Plantilla-TFM-Informatica-UAL/cambios_para_j
 | 15/11/2026 | F6, A10, E1, anteproyecto | PR #4 en `main` con todos los checks en verde; P7 cerrado (evidencia por RF en `TRACEABILITY.md`, `resultados-p7/cierre.md`); anteproyecto firmado. D2 y D5: la rama se fusiona sin conflictos con `dev` (comprobado con `git apply --3way --check`); falta `mvnw verify` del autor |
 | 15/11/2026 | D2, D5, C4 (parcial) | Rama de IMP-21 e IMP-27 fusionada por el autor (`c48dbab`) y verificada: 151 pruebas de backend. Memoria actualizada (151 y 92 pruebas; cobertura 52,4 % en backend). C4 parcial: figuras 8.1 y 8.2 redistribuidas y tabla 13.1 con resultados breves y el detalle en el texto |
 | 16/11/2026 | IMP-50, A5, C4 | Mensaje del 429 del *gateway* en el flujo del votante (aprobado por el autor); 52 pruebas nuevas de frontend (144 en el entorno de la IA, cobertura 43,2 %; pendiente de la ejecución del autor para pasar las cifras a la memoria); capturas de dos en dos. Sin commit |
+| 16/11/2026 | D4, IMP-46, IMP-48, C4, defensa | D4 implementado con pruebas (incluida la autorización HTTP de identity, `IdentityAuthorizationIntegrationTest`); IMP-46 aplicado; IMP-48 a la espera de los *digest*. Revisión de coherencia y estilo de la memoria (textos que seguían dando por pendientes evaluaciones ya hechas). Presentación de la defensa en `Presentacion-TFM/` (beamer, guion y preguntas). Sin commit |
+| 17/11/2026 | Q-13, sección 8, IMP-48 | Prioridades MoSCoW propuestas en la tabla 7.1; OE5 añadido a la memoria; plan de objetivos del anteproyecto y RNF; IMP-48 aplicado; defensa ajustada a 15 min. Sin commit |
+| 18/11/2026 | 8.3 (punto 3), 8.4 (punto 5) | Tabla 13.2 «Evidencia por requisito no funcional» en la memoria; plan de mejoras M1–M6; preparadas M2 (`E2E_BROWSERS=all`) y M3 (protocolo de revisión heurística). Sin commit |
+| 18/11/2026 | M2, M4, D-64 | M2: Firefox y WebKit 156/212 sin incumplimientos, resto limitado por el arnés (IMP-63). M4 hecha por el autor. Iconos de la PWA, `apple-touch-icon`, `id` del manifiesto y banderas en móvil (D-64). Tabla 13.2: RNF-18 aceptado. Sin commit |
+| 18/11/2026 | IMP-63, M1, M5 | IMP-63 hecha: Firefox 212/212. Guion de M1 adaptado al Narrador (y fila TM-01, IMP-50). M5: colas de conexión ajustadas y serie B de H1c definida. Sin commit |
+| 19/11/2026 | IMP-64 implementada | Confirmación por grupos (D-65) y arreglo del commit ambiguo; serie C preparada en `carga.md` (reglas fijadas antes de medir). Pendiente: `mvnw verify` y serie C del autor. Sin commit |
+| 19/11/2026 | M5, IMP-64 | Keycloak local recuperado (scripts `scripts/dev/keycloak-*`, `start-services.ps1`). Serie B de H1c: humo correcto; 20–22 descartadas (variables sin cargar); 23–25 contra un *gateway* antiguo; 26 válida y rechazada (p95 7,2 s). H1c cerrada como rechazada; memoria y presentación actualizadas. Sin commit |
+| 20/11/2026 | Revisión del plan | Contrastado con el repositorio: `dev` va 3 commits por delante de `origin/dev` (`f0f4482`, `56746fa`, `39d939d`) y hay 4 ficheros modificados sin commit. M5 actualizada con la serie C. Abiertos: Q-10, Q-13, M1, M3, M6/A9, recuento final de pruebas y cobertura, C4, E2, E3 |
+| 20/11/2026 | M6/A9, M6b | SSO bloqueado y trabajo futuro (sección 9; opción oculta en la consola, IMP-65). M6b aplicado sin commit: «Identificador institucional» fuera de la interfaz de gestión y plantillas Excel regeneradas (IMP-66) |

@@ -11,7 +11,9 @@ import com.saasvoting.identity.domain.model.ManagementRole;
 import com.saasvoting.identity.domain.model.ManagementUser;
 import com.saasvoting.identity.domain.model.ManagementUserNotFoundException;
 import com.saasvoting.identity.domain.model.OperationNotAllowedException;
+import com.saasvoting.identity.domain.model.Organization;
 import com.saasvoting.identity.domain.model.OrganizationNotFoundException;
+import com.saasvoting.identity.domain.model.OrganizationSuspendedException;
 import com.saasvoting.identity.domain.model.PersonData;
 
 import java.time.Clock;
@@ -46,6 +48,12 @@ public final class ManagementUserService implements ManageUsersUseCase {
     @Override
     public ManagementUser create(Caller caller, String organizationId, PersonData person, ManagementRole role) {
         requireUserManager(caller, organizationId);
+        // IMP-11 (D4): a suspended organization gets no new accounts, which would be enabled
+        organizations.findById(organizationId)
+                .filter(organization -> organization.status() != Organization.Status.ACTIVE)
+                .ifPresent(organization -> {
+                    throw new OrganizationSuspendedException(organizationId);
+                });
         UUID userId = identityProvider.createUser(person, organizationId, role);
         ManagementUser saved;
         try {

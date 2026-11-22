@@ -59,7 +59,8 @@ for (const viewport of viewportCases) {
       };
       const artifactDir = process.env.E2E_ARTIFACTS_DIR ?? join(tmpdir(), 'verivoto-p7-e2e');
       await mkdir(artifactDir, { recursive: true });
-      await writeFile(join(artifactDir, `${viewport.name}-${language.code}-axe.json`),
+      const browser = test.info().project.name === 'chromium' ? '' : `-${test.info().project.name}`;
+      await writeFile(join(artifactDir, `${viewport.name}-${language.code}${browser}-axe.json`),
         `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
 
       await page.keyboard.press('Tab');

@@ -1,0 +1,62 @@
+% Estilo de la presentación de la defensa (TFM VeriVoto, UAL).
+% Para pasar a otra plantilla de la universidad basta con sustituir este fichero: presentacion.tex solo usa
+% los colores y comandos definidos aquí (\ualbloque, \cifra) y los entornos estándar de beamer.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{estilo-ual}[2026/11/16 Estilo de la defensa del TFM]
+
+\RequirePackage[scaled=0.95]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta,backgrounds,positioning}
+
+% Colores tomados de la portada y contraportada de la memoria
+\definecolor{ualturquesa}{RGB}{49,133,156}
+\definecolor{ualoscuro}{RGB}{22,62,78}
+\definecolor{ualclaro}{RGB}{226,240,244}
+\definecolor{acierto}{RGB}{30,120,60}
+\definecolor{fallo}{RGB}{170,40,40}
+\definecolor{pendiente}{RGB}{150,110,10}
+
+\usetheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{structure}{fg=ualturquesa}
+\setbeamercolor{frametitle}{fg=white,bg=ualturquesa}
+\setbeamercolor{title}{fg=ualoscuro}
+\setbeamercolor{block title}{fg=white,bg=ualturquesa}
+\setbeamercolor{block body}{bg=ualclaro}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{blocks}[rounded]
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.4ex,dp=1.2ex,leftskip=1.2em,rightskip=3.2em]{frametitle}%
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north east,inner sep=4pt] at (current page.north east)
+      {\includegraphics[height=7mm]{logos/escudobn.png}};
+  \end{tikzpicture}%
+}
+
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.6ex,dp=1ex,leftskip=1.2em,rightskip=1.2em]{normal text}%
+    \color{ualoscuro}\tiny\insertshortauthor\ \ ·\ \ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber
+  \end{beamercolorbox}%
+}
+
+% Cifra destacada con su explicación debajo
+\newcommand{\cifra}[2]{%
+  \begin{minipage}[t]{\linewidth}\centering
+    {\color{ualturquesa}\fontsize{22}{24}\selectfont\bfseries #1}\\[2pt]
+    {\footnotesize #2}
+  \end{minipage}}
+
+% Caja de color suave para una idea principal
+\newcommand{\ualbloque}[1]{%
+  \begin{tikzpicture}
+    \node[fill=ualclaro,rounded corners=3pt,inner sep=6pt,text width=0.92\linewidth,align=left] {#1};
+  \end{tikzpicture}}
+
+\endinput

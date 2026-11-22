@@ -38,9 +38,10 @@ public class IdentityServiceConfiguration {
     OrganizationService organizationService(
             OrganizationRepository organizations,
             ManagementUserRepository users,
+            ApiKeyRepository keys,
             IdentityProvider identityProvider,
             Clock clock) {
-        return new OrganizationService(organizations, users, identityProvider, clock);
+        return new OrganizationService(organizations, users, keys, identityProvider, clock);
     }
 
     @Bean

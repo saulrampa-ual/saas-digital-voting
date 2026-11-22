@@ -2,23 +2,25 @@
 \label{cap:evaluacion-resultados}
 
 \section{Pruebas disponibles}
-En las últimas ejecuciones registradas terminaron correctamente 151 pruebas
-de backend (\texttt{mvnw verify} del 15/11/2026: gateway 16, identity 13,
-election 58, voter-access 38 y ballot-box 26) y 144 de frontend, en 13 ficheros
+En las últimas ejecuciones registradas terminaron correctamente 168 pruebas
+de backend (\texttt{mvnw verify} del 15/11/2026 y pruebas de identity del
+17/11/2026: gateway 16, identity 30, election 58, voter-access 38 y
+ballot-box 26) y 144 de frontend, en 13 ficheros
 (\texttt{npm run test:coverage} del 16/11/2026); \texttt{npm run build} terminó
 correctamente en la ejecución completa del 13/11/2026. Las pruebas unitarias y de arquitectura cubren reglas
 seleccionadas de permisos, ciclo de vida, importación del censo, acceso del
 votante, consumo del token, cadena de auditoría, escrutinio y separación
 arquitectónica; las añadidas el 15/11/2026 cubren el límite de peticiones por
 dirección del \emph{gateway} y la audiencia que el cliente de administración de
-Keycloak asigna a las claves de API. En frontend se cubren la guarda de rol, el flujo de voto y
+Keycloak asigna a las claves de API, y las del 17/11/2026, la desactivación
+de cuentas y claves al suspender una organización. En frontend se cubren la guarda de rol, el flujo de voto y
 recibo, el retorno SSO con PKCE, componentes del panel de la consola, el
 asistente de creación de procesos, la traducción automática de sus textos, el
 aviso de caducidad de la sesión, el servicio de autenticación, la importación
 del censo en Excel y los estados del flujo del votante (enlace, código,
 papeleta, voto, recibo, resultado y cuenta institucional).
 
-Dieciséis de las pruebas de backend, repartidas en ocho clases, se ejecutan
+Veintitrés de las pruebas de backend, repartidas en nueve clases, se ejecutan
 contra PostgreSQL 18.6 con Testcontainers. Aplican las migraciones Flyway de
 identity, election, voter-access y ballot-box y verifican el trigger
 append-only de acciones administrativas, la participación con fecha sin hora
@@ -28,8 +30,11 @@ voter-access y ballot-box; que el despachador del \emph{outbox} reintenta
 tras un fallo y entrega una sola vez; que veinte intentos simultáneos con el
 mismo token producen exactamente un voto; que ninguna tabla de voter-access
 puede almacenar la opción elegida ni un recibo; y que la emisión no escribe
-en los registros el token, el recibo ni la opción. No cubren la autorización
-HTTP de identity ni todos los repositorios y entidades.
+en los registros el token, el recibo ni la opción. En identity comprueban por
+HTTP que cada rol solo gestiona organizaciones, usuarios, claves de API y
+trazabilidad de su ámbito, que las rutas internas solo aceptan los clientes de
+servicio previstos y que suspender una organización desactiva sus cuentas y
+claves. No cubren todos los repositorios y entidades.
 
 Los barridos de accesibilidad con Playwright y axe de la ejecución completa
 del 13/11/2026 (200
@@ -46,10 +51,10 @@ estados del aviso de demasiadas peticiones (al abrir el enlace, al pedir el
 código y al comprobarlo): sus 12 comprobaciones nuevas, y las 88 anteriores
 repetidas con ellas, no dan incumplimientos críticos ni serios.
 
-La cobertura de líneas JaCoCo, medida en la ejecución del 15/11/2026, es:
-gateway 91,2\% (62/68), identity 26,3\% (208/790), election 74,1\%
-(1316/1777), voter-access 50,4\% (793/1573) y ballot-box 41,6\% (683/1641);
-en conjunto, 52,4\% (3062/5849). En el frontend, medida con Vitest sobre todo
+La cobertura de líneas JaCoCo, con los últimos informes de cada servicio
+(15 a 17/11/2026), es: gateway 91,2\% (62/68), identity 75,2\% (625/831),
+election 74,1\% (1316/1777), voter-access 50,4\% (793/1573) y ballot-box
+41,6\% (683/1641); en conjunto, 59,1\% (3479/5890). En el frontend, medida con Vitest sobre todo
 el código de \texttt{src/app} el 16/11/2026, es del 42,0\% de las líneas
 (960/2287). En el código añadido o modificado desde el análisis del
 04/11/2026, SonarQube midió el 14/11/2026 una cobertura del
@@ -73,7 +78,7 @@ H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas e
 \hline
 H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan acceso, emisión y obtención del recibo en $\leq$ 3 minutos, y al menos 4 de 5 interpretan correctamente el resultado de la verificación. H0b: no se alcanza alguno de esos criterios. & Validado por el tutor & ACEPTADA (09/11/2026). 5 de 5 completan acceso, emisión y recibo sin ayuda en $\leq$ 3 minutos (mediana 51~s, máximo 79~s) y 5 de 5 interpretan correctamente el recibo. \\
 \hline
-H1c & Con 500 usuarios simultáneos, p95 de emisión inferior a dos segundos en tres ejecuciones. & Propuesto & RECHAZADA (H0c; 11/11/2026). p95 de la emisión: 4852, 2402 y 4849~ms, por encima de 2000~ms en las tres ejecuciones. Votos aceptados: 222, 240 y 281 de 500. Cadena íntegra en las tres. \\
+H1c & Con 500 usuarios simultáneos, p95 de emisión inferior a dos segundos en tres ejecuciones. & Propuesto & RECHAZADA (H0c; 11/11/2026). p95 de la emisión: 4852, 2402 y 4849~ms, por encima de 2000~ms en las tres ejecuciones. Votos aceptados: 222, 240 y 281 de 500. Cadena íntegra en las tres. Serie B (19/11/2026, colas de conexión ampliadas): RECHAZADA de nuevo, p95 de 7211~ms y 339 votos aceptados. Serie C (19/11/2026, confirmación por grupos): RECHAZADA, 17 de 500 peticiones respondidas en menos de 2~s. \\
 \hline
 RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin formación previa crean, configuran y programan un proceso de opción única en $\leq$ 10 minutos y sin ayuda. & Validado por el tutor; 10 minutos como valor propuesto & ACEPTADO (13/11/2026). 5 de 5 administradores sin formación previa completan la tarea sin ayuda en $\leq$ 10 minutos (mediana 3 min, máximo 4). \\
 \hline
@@ -88,7 +93,11 @@ El detalle de cada resultado de la tabla~\ref{tab:estado-hipotesis} es el siguie
 
 \textbf{H1c.} RECHAZADA (H0c): tres ejecuciones del 11/11/2026 (procesos sintéticos 10, 11 y 12; 500 usuarios virtuales que empiezan a la vez, un voto cada uno). p95 de la emisión: 4852, 2402 y 4849~ms, por encima de 2000~ms en las tres. Votos aceptados: 222, 240 y 281 de 500; el resto fueron conexiones rechazadas por el \emph{gateway} (273, 260 y 219) y, en la primera, 5 errores 500. En las tres, la cadena quedó íntegra y los votos de la urna coinciden con las respuestas 201 y con la participación. Un único equipo Windows en local; sin extrapolación a producción.
 
-\textbf{RNF-4.} ACEPTADO: sesiones online del 13/11/2026 (videollamada grabada, consentimiento escrito, escenario sintético), cinco válidas y las cinco sin formación previa en VeriVoto. 5 de 5 crean, configuran y programan el proceso sin ayuda en $\leq$ 10 minutos (mediana 3 min, mínimo 2 y máximo 4; 0 errores; ninguno consultó la guía «Primeros pasos»). Tiempos medidos por el moderador sobre la pantalla compartida y anotados redondeados al minuto; con un máximo de 4 minutos frente a 10, el redondeo no cambia la decisión. Sustituye a la sesión del 03/11/2026, no concluyente (solo 2 de 5 sin formación previa y tiempos estimados).
+\textbf{H1c, serie B.} RECHAZADA (19/11/2026). Antes de medir se amplió la cola de conexiones pendientes del \emph{gateway} (1024) y la de Tomcat en ballot-box y voter-access (1000), sin tocar la lógica del voto, y se fijó que la serie se informaría completa y no se repetiría para buscar un resultado favorable. En la primera ejecución válida (proceso sintético 9, 500 usuarios virtuales a la vez) se aceptaron 339 votos y se rechazaron 161 conexiones; p95 de 7211~ms (7,3~s el de los votos aceptados), con la cadena íntegra y los votos de la urna iguales a la participación. Una ejecución válida por encima del umbral basta para rechazar la hipótesis. Tres ejecuciones previas (procesos 6, 7 y 8; p95 de 3970 a 4662~ms) no cuentan para la serie porque el \emph{gateway} nuevo no llegó a arrancar y respondió uno anterior; se conservan en \texttt{docs/evaluation/carga.md}.
+
+\textbf{H1c, serie C.} RECHAZADA (19/11/2026). La versión medida confirma los votos por grupos en una sola transacción, con el recibo entregado solo tras el encadenado (IMP-64). Antes de medir se fijó una lectura más estricta del criterio: una conexión rechazada no responde y cuenta fuera del umbral. En la primera ejecución (proceso sintético 11) se aceptaron 231 votos y se rechazaron 269 conexiones; solo 17 de 500 peticiones respondieron en menos de 2~s (p95 de k6, 3878~ms; mediana de los votos aceptados, 3,02~s), con la cadena íntegra. Con esta serie, H1c queda cerrada como rechazada en las tres versiones evaluadas.
+
+\textbf{RNF-4.} ACEPTADO: sesiones en línea del 13/11/2026 (videollamada grabada, consentimiento escrito, escenario sintético), cinco válidas y las cinco sin formación previa en VeriVoto. 5 de 5 crean, configuran y programan el proceso sin ayuda en $\leq$ 10 minutos (mediana 3 min, mínimo 2 y máximo 4; 0 errores; ninguno consultó la guía «Primeros pasos»). Tiempos medidos por el moderador sobre la pantalla compartida y anotados redondeados al minuto; con un máximo de 4 minutos frente a 10, el redondeo no cambia la decisión. Sustituye a la sesión del 03/11/2026, no concluyente (solo 2 de 5 sin formación previa y tiempos estimados).
 
 Con $n = 5$ no hay inferencia estadística: los resultados de H1b y de RNF-4
 son evidencia descriptiva limitada al prototipo, la configuración y la
@@ -101,12 +110,20 @@ Las conexiones se rechazaron en el \emph{gateway} al llegar 500 a la vez y, en
 la primera ejecución, también entre el \emph{gateway} y ballot-box. El registro
 del voto bloquea la fila del proceso para encadenar cada evento de la urna, de
 modo que los votos de un mismo proceso se guardan de uno en uno; es una
-explicación compatible con los tiempos observados, pero no se ha medido dónde
-se consume el tiempo. El criterio no se modifica a la vista del resultado.
+explicación compatible con los tiempos observados. La serie B la confirma: al
+ampliar las colas entran más conexiones, pero los votos se siguen aceptando a
+unos 43 por segundo (339 en 7,9~s), de modo que esperan más y el p95 sube. El
+guardado de un voto por transacción era un límite, pero la serie C muestra que
+no era el único: con la confirmación por grupos el ritmo apenas cambia (unos 55
+votos por segundo), y un voto aislado ya tarda unos 0,6~s. Ese tiempo, unido a la
+concurrencia que admite la cadena \emph{gateway}, ballot-box y voter-access,
+explica el resultado; medir cada tramo queda como trabajo futuro. La
+confirmación por grupos se mantiene porque corrige además un caso de commit
+ambiguo que podía permitir un segundo voto. El criterio no se modifica a la
+vista del resultado.
 
 \section{Integración y requisitos de calidad}
-La integración PostgreSQL de otros repositorios, la autorización HTTP de
-identity, las pruebas funcionales de extremo a extremo del stack completo y la
+La integración PostgreSQL de otros repositorios, las pruebas funcionales de extremo a extremo del stack completo y la
 accesibilidad manual continúan pendientes; la sesión con votantes (H1b) se realizó el 09/11/2026 y
 las tres ejecuciones de carga (H1c), el 11/11/2026. En consecuencia, la
 evidencia disponible no permite declarar aceptados RNF-1 ni
@@ -115,11 +132,105 @@ local evaluada; para RNF-3 y RNF-6 se dispone de la evidencia
 descriptiva de H1b, con cinco participantes, y RNF-4 se acepta con la de las
 sesiones con administradores del 13/11/2026.
 La correspondencia con características de ISO/IEC 25010:2023 está definida
-en el capítulo de requisitos no funcionales; la cobertura experimental por
-característica debe completarse cuando se ejecuten esos protocolos.
+en el capítulo de requisitos no funcionales; la sección siguiente indica la
+evidencia disponible para cada requisito.
+
+\section{Evidencia por requisito no funcional}
+\label{sec:evidencia-rnf}
+La tabla~\ref{tab:evidencia-rnf} resume, para cada requisito no funcional, la
+evidencia disponible a 20/11/2026. «Aceptado» indica que se midió el criterio
+del protocolo y se alcanzó; «evidencia parcial», que hay pruebas o mediciones
+que lo respaldan sin cubrirlo por completo; «sin evaluar», que no hay evidencia
+específica; y «no se cumple», que se midió y no se alcanzó. La prioridad es la
+propuesta en la tabla~\ref{tab:rnf-iso25010}.
+
+\small
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.08\textwidth}|>{\raggedright\arraybackslash}p{0.09\textwidth}|>{\raggedright\arraybackslash}p{0.53\textwidth}|>{\raggedright\arraybackslash}p{0.17\textwidth}|}
+\caption{Evidencia disponible por requisito no funcional.}\label{tab:evidencia-rnf}\\
+\hline
+\textbf{RNF} & \textbf{Prioridad} & \textbf{Evidencia} & \textbf{Estado} \\
+\hline
+\endfirsthead
+\hline
+\textbf{RNF} & \textbf{Prioridad} & \textbf{Evidencia} & \textbf{Estado} \\
+\hline
+\endhead
+\hline
+\multicolumn{4}{r}{Continúa en la página siguiente.}\\
+\endfoot
+\hline
+\endlastfoot
+RNF-1 & Must & 212 comprobaciones axe sin incumplimientos críticos ni serios (consola, flujo del votante y recibo; 1280 y 360 píxeles; español e inglés). La revisión manual con teclado y lector de pantalla no se realizó. & Evidencia parcial (H1a sin decisión) \\
+\hline
+RNF-2 & Should & Barridos a 1280 y 360 píxeles sin incumplimientos críticos ni serios en Chromium y Firefox (212 de 212 cada uno) y en WebKit (211 de 212 en la ejecución completa del 18/11/2026; la restante agotó el tiempo de espera antes de llegar a su pantalla y pasó al repetirla sola el 19/11/2026, sin incumplimientos). Uso real en Safari (iOS) y Chrome (Android) el 18/11/2026. & Aceptado \\
+\hline
+RNF-3 & Must & H1b: 5 de 5 completan acceso, emisión y recibo sin ayuda en 3 minutos o menos. & Aceptado \\
+\hline
+RNF-4 & Should & Sesiones del 13/11/2026: 5 de 5 sin formación previa, máximo 4 minutos. & Aceptado \\
+\hline
+RNF-5 & Should & Interfaz y papeleta en español e inglés; edición bilingüe en el asistente; barridos en ambos idiomas. & Evidencia parcial \\
+\hline
+RNF-6 & Must & H1b: 5 de 5 interpretan correctamente el recibo. & Aceptado \\
+\hline
+RNF-7 & Must & Pantalla de revisión antes de votar; pruebas de que no se vota sin selección y de que la papeleta incompleta muestra su error. & Evidencia parcial \\
+\hline
+RNF-8 & Should & Pantallas de error con salida y reintento seguro del voto no registrado, probados en el flujo del votante. Sin revisión heurística. & Evidencia parcial \\
+\hline
+RNF-9 & Should & Indicador de cuatro pasos y estado del proceso, comprobados en las pruebas del flujo del votante. Sin revisión heurística. & Evidencia parcial \\
+\hline
+RNF-10 & Should & Sin revisión heurística de consistencia. & Sin evaluar \\
+\hline
+RNF-11 & Must & Esquemas de voter-access y ballot-box sin campos que vinculen identidad y voto; la emisión no registra token, recibo ni opción. No protege frente a un operador de ambas bases. & Evidencia parcial \\
+\hline
+RNF-12 & Must & Veinte envíos simultáneos con el mismo token producen un único voto; restricción única en la urna. & Evidencia parcial \\
+\hline
+RNF-13 & Must & Verificación de la cadena de huellas, tabla de acciones administrativas en la que solo se puede añadir y escrutinio bloqueado si la cadena se rompe; cadena íntegra tras H1c. & Evidencia parcial \\
+\hline
+RNF-14 & Must & Bloqueo tras cinco códigos erróneos, espera para reenviar, código de un solo uso, límite de peticiones por dirección, audiencia del token y rutas internas restringidas. & Evidencia parcial \\
+\hline
+RNF-15 & Must & Pruebas HTTP con dos organizaciones en identity, election, voter-access y ballot-box: la otra organización recibe 404 o 403. & Evidencia parcial \\
+\hline
+RNF-16 & Must & Búsqueda, exportación sin datos de voto y borrado o anonimización según el uso del censo, con pruebas en election y voter-access. & Evidencia parcial \\
+\hline
+RNF-17 & Should & H1c, tres series con 500 usuarios simultáneos: p95 de 2,4 a 4,9 segundos (11/11/2026), de 7,2 segundos con las colas de conexión ampliadas y, con la confirmación por grupos, 17 de 500 peticiones respondidas en menos de 2 segundos (19/11/2026). Ritmo de unos 43 a 55 votos por segundo. & No se cumple \\
+\hline
+RNF-18 & Could & PWA instalada y usada en Android (Chrome) e iOS (Safari) el 18/11/2026. El 20/11/2026 se reinstaló en Android con los iconos de marca y se confirmó que VeriVoto aparece en el menú de aplicaciones. La ruta sintética de prueba mostró «Página no encontrada» al no corresponder a una invitación válida; no se evaluó el flujo de voto. & Aceptado \\
+\hline
+\end{longtable}
+\normalsize
+
+La comprobación adicional de RNF-18 se realizó el 20/11/2026 en un teléfono
+Android: tras reinstalar la PWA, el icono de VeriVoto aparece en el menú de
+aplicaciones. Al abrir la ruta sintética
+\texttt{/votar/icono-prueba}, la interfaz mostró «Página no encontrada», ya
+que no se utilizó una invitación real. Por tanto, esta prueba confirma la
+instalación y la presentación del icono de marca, pero no la autenticación de
+un votante ni la emisión de un voto. Las capturas no permiten identificar el
+modelo del teléfono, la versión de Android ni el navegador utilizado.
+La figura~\ref{fig:pwa-icono-android} recoge ambas capturas.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.47\textwidth}
+    \centering
+    \includegraphics[width=0.92\linewidth]{capturas/pwa-android-apertura-ruta-prueba}
+    \caption{Apertura de la ruta sintética, sin invitación válida.}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.47\textwidth}
+    \centering
+    \includegraphics[width=0.72\linewidth]{capturas/pwa-android-icono-instalado}
+    \caption{Icono de VeriVoto en el menú de aplicaciones.}
+  \end{subfigure}
+  \caption{Comprobación de instalación e icono de la PWA en Android (20/11/2026).}
+  \label{fig:pwa-icono-android}
+\end{figure}
+
+En resumen, de los diez requisitos Must, dos están aceptados con su criterio
+(RNF-3 y RNF-6) y los ocho restantes tienen evidencia parcial; entre los Should,
+RNF-2 y RNF-4 están aceptados, RNF-17 no se cumple y RNF-10 no se ha evaluado; RNF-18 (Could) está aceptado.
 
 \section{Validez}
-La cobertura global es baja y desigual (del 26,3\% de identity al 91,2\% del
+La cobertura global es baja y desigual (del 41,6\% de ballot-box al 91,2\% del
 \emph{gateway} en el backend y 42,0\% en el frontend) y limita la confianza que
 puede atribuirse a la suite; solo el código añadido desde el 04/11/2026 supera
 el 80\%. Las pruebas de

@@ -101,6 +101,20 @@ class VotingServiceTest {
     }
 
     @Test
+    void keepsTheTokenConsumedWhenTheCommitWasAppliedButReportedAsFailed() {
+        // IMP-64: reverting here would let the voter vote again while the first vote is already in the urn
+        doAnswer(invocation -> {
+            ((Supplier<?>) invocation.getArgument(0)).get();
+            throw new IllegalStateException("synthetic: connection lost after the commit");
+        }).when(unitOfWork).inTransaction(any());
+        when(urn.receiptExists(AuditEvent.sha256(RECEIPT), PROCESS_ID)).thenReturn(true);
+
+        assertEquals(RECEIPT, service.castVote(PROCESS_ID, TOKEN, Selection.option(4)));
+
+        verify(voterAccess, never()).revert(TOKEN, PROCESS_ID);
+    }
+
+    @Test
     void rejectsClosedBallotBeforeConsumingToken() {
         when(ballots.find(PROCESS_ID)).thenReturn(Optional.of(ballot(ProcessStatus.OPEN, NOW)));
 

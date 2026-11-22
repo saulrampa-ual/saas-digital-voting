@@ -1,5 +1,8 @@
 server:
   port: ${BALLOT_BOX_SERVER_PORT:8084}
+  tomcat:
+    # IMP-57 / H1c: connections that wait while the 200 request threads are busy (default 100); beyond it they are refused
+    accept-count: ${BALLOT_BOX_TOMCAT_ACCEPT_COUNT:1000}
 
 spring:
   # D-44: one thread per scheduled task, so delivering administrative actions to identity-service never delays
@@ -37,6 +40,9 @@ management:
 verivoto:
   # Day of the incidents (D-18)
   zone: Europe/Madrid
+  voting:
+    # IMP-64: at most this many votes of a process are committed in one transaction (group commit); 1 = one by one
+    max-group-size: ${BALLOT_BOX_MAX_GROUP_SIZE:100}
   # IMP-26: the only Keycloak client allowed on /internal/** (claim azp)
   internal-clients:
     election: election-service

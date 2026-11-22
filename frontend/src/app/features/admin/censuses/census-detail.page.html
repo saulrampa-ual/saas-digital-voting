@@ -248,7 +248,6 @@
               <th scope="col">{{ 'admin.census.form.fullName' | translate }}</th>
               <th scope="col">{{ 'admin.census.form.email' | translate }}</th>
               <th scope="col">{{ 'admin.census.form.phone' | translate }}</th>
-              <th scope="col">{{ 'admin.census.form.institutionalId' | translate }}</th>
               <th scope="col">{{ 'admin.census.language' | translate }}</th>
               @if (canEdit()) { <th scope="col" class="end">{{ 'admin.census.actions' | translate }}</th> }
             </tr>
@@ -259,7 +258,6 @@
                 <td [attr.data-label]="'admin.census.form.fullName' | translate"><strong>{{ v.fullName }}</strong></td>
                 <td class="email" [attr.data-label]="'admin.census.form.email' | translate">{{ v.email }}</td>
                 <td class="nowrap" [attr.data-label]="'admin.census.form.phone' | translate">{{ v.phone ?? '—' }}</td>
-                <td class="nowrap" [attr.data-label]="'admin.census.form.institutionalId' | translate">{{ v.institutionalId ?? '—' }}</td>
                 <td class="nowrap" [attr.data-label]="'admin.census.language' | translate">{{ 'language.' + v.preferredLanguage | translate }}</td>
                 @if (canEdit()) {
                   <td class="end row-actions">

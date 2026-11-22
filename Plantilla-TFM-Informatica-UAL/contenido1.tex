@@ -60,9 +60,9 @@ de plataforma SaaS de votación digital segura y auditable para organizaciones,
 con arquitectura cloud multi-tenant y API abierta, que responda a los huecos
 identificados en autenticación, experiencia móvil y verificación comprensible.
 El prototipo y la evidencia de evaluación disponible se presentan en esta
-memoria; la sesión de usabilidad con votantes (H1b) ya se realizó, la prueba
-de carga (H1c) se ejecutó con resultado desfavorable, y siguen pendientes las
-pruebas de integración y la revisión manual de accesibilidad. Los objetivos del sistema son:
+memoria: la sesión de usabilidad con votantes (H1b) y la de administradores
+(RNF-4) aceptaron sus criterios, la prueba de carga (H1c) dio un resultado
+desfavorable y la revisión manual de accesibilidad no se realizó. Los objetivos del sistema son:
 
 \begin{description}
   \item[OBJ-1.] Implementar y documentar la arquitectura SaaS multi-tenant y la gestión de
@@ -89,6 +89,10 @@ de implementación, documentación y evaluación:
   obtención y verificación de un recibo comprensible.
   \item[OE4.] Implementar y documentar el escrutinio, la publicación de resultados y las
   evidencias de auditoría que permitan revisar su integridad.
+  \item[OE5.] Evaluar la calidad del prototipo con el modelo ISO/IEC 25010:2023
+  mediante pruebas automatizadas, una auditoría de accesibilidad WCAG 2.2 AA,
+  una prueba de carga y una sesión de usabilidad con cinco votantes, y
+  documentar los resultados, incluidos los criterios no alcanzados.
 \end{description}
 
 \section{Preguntas de investigación}
@@ -109,7 +113,9 @@ de implementación, documentación y evaluación:
 La tabla~\ref{tab:trazabilidad-investigacion} conecta cada objetivo
 específico con las preguntas que aborda, los casos de uso implicados y las
 evidencias de calidad que se proponen para evaluarlo. Los umbrales son los
-recogidos en los RNF del proyecto y siguen pendientes de validación.
+recogidos en los RNF del proyecto: los de accesibilidad, usabilidad del
+votante y facilidad de uso del administrador están validados por el tutor y el
+resto son propuestas.
 
 \small
 \setlength{\tabcolsep}{3.5pt}
@@ -135,6 +141,8 @@ OE3 (OBJ-3) & RQ1, RQ2, RQ3 & RF-05b, RF-08, RF-09, RF-10, RF-20; RF-11 \mbox{(D
 \hline
 OE4 (OBJ-4) & RQ2, RQ3 & RF-12, RF-13, RF-14, RF-15, RF-16, RF-19; RF-22 fuera del MVP, sin evidencia de evaluación & RNF-11, RNF-13, RNF-17 & Recalcular el resultado desde votos contabilizables; verificar huellas y registro; medir respuesta del escrutinio. \\
 \hline
+OE5 (OBJ-3, OBJ-4) & RQ1, RQ3 & Todos los del MVP & RNF-1, RNF-3, RNF-4, RNF-6, RNF-17 & Informe de evaluación por hipótesis (H1a, H1b, H1c y RNF-4) que incluye los criterios no alcanzados. \\
+\hline
 \end{longtable}
 \setlength{\tabcolsep}{6pt}
 \normalsize
@@ -147,8 +155,8 @@ gestión y del votante, una API REST documentada y evidencias de presencia e
 integridad del voto. Cada proceso configura el acceso mediante código por
 correo o cuenta institucional. La verificación \emph{cast-as-intended}, la
 resistencia a la coacción y la verificabilidad extremo a extremo no se
-consideran resueltas; la validación empírica de accesibilidad permanece
-pendiente, la de usabilidad del votante se limita a la sesión H1b con cinco
+consideran resueltas; de la validación de accesibilidad solo se completó la
+parte automática, la de usabilidad del votante se limita a la sesión H1b con cinco
 participantes y la prueba de carga local no alcanzó el umbral de RNF-17.
 
 \section{Alcance y supuestos}
@@ -170,9 +178,9 @@ El tutor ha validado como criterios del protocolo los de accesibilidad
 administrador (RNF-4, con 10 minutos como valor propuesto); los demás deben
 validarse con el cliente y el tutor antes de considerarse criterios
 definitivos de aceptación. La implementación está disponible, pero
-la evidencia actual no acredita todos los objetivos de calidad: las pruebas
-de integración de repositorios y flujos y la revisión manual de accesibilidad
-siguen pendientes, y la prueba de carga no alcanzó el umbral propuesto.
+la evidencia actual no acredita todos los objetivos de calidad: la
+integración del resto de repositorios y flujos y la revisión manual de
+accesibilidad siguen pendientes, y la prueba de carga no alcanzó el umbral propuesto.
 
 \section{Delimitación: qué no es este TFM}
 \label{sec:delimitacion}
@@ -225,9 +233,9 @@ sistemática una parte de los defectos.
 \section{Plan de evaluación}
 \label{sec:plan-evaluacion}
 
-La evaluación combina resultados obtenidos con actividades aún pendientes.
-Las hipótesis y umbrales siguientes se mantienen como criterios del protocolo;
-los resultados no disponibles se marcan expresamente como pendientes.
+La evaluación combina resultados obtenidos con partes del protocolo que no
+llegaron a ejecutarse. Las hipótesis y umbrales siguientes se mantienen como
+criterios del protocolo; lo que no se midió se indica expresamente.
 
 \begin{description}
   \item[H1a.] Las pantallas evaluadas del flujo de voto no presentan
@@ -278,7 +286,7 @@ El procedimiento y su estado son los siguientes:
   administradores de organización sin formación previa; al menos cuatro de
   cinco deben crear, configurar y programar un proceso de opción única en
   10 minutos o menos (valor propuesto) y sin ayuda de otras personas (se
-  permite consultar la documentación). En las sesiones online del 13/11/2026,
+  permite consultar la documentación). En las sesiones en línea del 13/11/2026,
   cinco administradores sin formación previa completaron la tarea sin ayuda en
   4 minutos o menos (mediana 3 minutos); la sesión anterior, del 03/11/2026, no
   fue concluyente.
@@ -441,8 +449,9 @@ especificación versión 1.0; este catálogo los resume para dar trazabilidad en
 la memoria. Para no romper la especificación, los identificadores RF-01 a
 RF-19 se conservan. RF-05 se desglosa en los subcasos RF-05a y RF-05b. Los nuevos RF-20 a RF-23 son identificadores locales; la
 columna final indica el código del informe complementario y el hueco que
-motiva cada requisito. Las prioridades nuevas y el alcance del MVP siguen
-pendientes de validación con el tutor.
+motiva cada requisito. El tutor confirmó el alcance del MVP por correo el
+30/10/2026; las prioridades nuevas, marcadas con asterisco, siguen siendo una
+propuesta.
 
 \small
 \setlength{\tabcolsep}{3.5pt}

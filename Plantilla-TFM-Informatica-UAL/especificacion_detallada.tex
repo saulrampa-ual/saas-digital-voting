@@ -5,9 +5,9 @@ Este capítulo desarrolla los flujos de los casos de uso y los requisitos
 de información y calidad recogidos en la especificación de origen. Se
 conservan los códigos para mantener la trazabilidad entre documentos.
 
-\textbf{Nota de alcance.} Las referencias a re-votación o sustitución (RF-11,
-estados “Sustituido” y “re-votación permitida”) proceden de la especificación
-v1.0 y no están implementadas en el MVP (D-03). El estado “Sustituido” se
+\textbf{Nota de alcance.} Las referencias a revotación o sustitución (RF-11,
+estados «Sustituido» y «revotación permitida») proceden de la especificación
+v1.0 y no están implementadas en el MVP (D-03). El estado «Sustituido» se
 conserva en el modelo como referencia de diseño para RF-11 (P9), pero no es
 operativo: la urna registra un único voto aceptado por token de emisión y no
 genera ese estado.
@@ -72,7 +72,7 @@ genera ese estado.
 \item[2] El Sistema muestra los censos existentes
 \item[3] El Gestor elige la acción
 \item[]\textit{Si elige alta manual:}
-\item[3.1] El Sistema solicita nombre, email o teléfono
+\item[3.1] El Sistema solicita nombre, correo electrónico o teléfono
 \item[3.2] El Gestor introduce los datos
 \item[]\textit{Si elige importar un fichero Excel:}
 \item[3.1] El Sistema solicita el fichero Excel (.xlsx) y ofrece una plantilla descargable
@@ -202,7 +202,7 @@ genera ese estado.
 \item[2] El Sistema valida el enlace y que el proceso está abierto
 \item[3] El Sistema solicita la verificación adicional del proceso
 \item[]\textit{Si es un código OTP:}
-\item[3.1] El Sistema envía el código por email
+\item[3.1] El Sistema envía el código por correo electrónico
 \item[3.2] El Votante introduce el código
 \item[3.3] El Sistema valida el código
 \item[4] El Sistema concede acceso a la papeleta
@@ -272,7 +272,7 @@ genera ese estado.
 \textbf{Objetivos asociados:} OBJ-3\par
 \textbf{Requisitos asociados:} RI-6, RI-7, RI-8, RNF-1, RNF-2, RNF-7, RNF-9\par
 \textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) cambia su voto antes del cierre.\par
-\textbf{Precondición:} El proceso está Abierto, permite re-votación y el votante ya ha votado y ha accedido (RF-08).\par
+\textbf{Precondición:} El proceso está Abierto, permite revotación y el votante ya ha votado y ha accedido (RF-08).\par
 \textbf{Flujo normal:}
 \begin{enumerate}
 \item[1] El Votante solicita cambiar su voto
@@ -288,7 +288,7 @@ genera ese estado.
 \item 3: Si la votante cancela, su voto anterior sigue siendo válido
 \item 5: Si el proceso se cierra antes de registrar el nuevo voto, el anterior sigue siendo válido
 \end{itemize}
-\textbf{Comentarios:} Prioridad W (fuera de esta versión; era C en la especificación v1.0). Amplía RF-15. La re-votación mitiga la coacción: el votante puede cambiar su voto hasta el cierre.\par
+\textbf{Comentarios:} Prioridad W (fuera de esta versión; era C en la especificación v1.0). Amplía RF-15. La revotación mitiga la coacción: el votante puede cambiar su voto hasta el cierre.\par
 
 \subsection{RF-12: Publicar y verificar registro de auditoría}
 
@@ -337,7 +337,7 @@ genera ese estado.
 \item 5: Si falla el recuento, el Sistema no publica nada, avisa al Administrador y permite reintentar.
 \item 8: Si no coincide, el Sistema alerta de una incidencia
 \end{itemize}
-\textbf{Comentarios:} Prioridad M. Amplía RF-07. Queda por decidir qué significa «público»: cualquier persona o solo los participantes del proceso.\par
+\textbf{Comentarios:} Prioridad M. Amplía RF-07. En el MVP, cada proceso decide si el resultado lo ven solo las personas del censo, con su enlace personal y un código, o cualquiera con el enlace público.\par
 
 \subsection{RF-14: Consultar panel de participación}
 

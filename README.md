@@ -8,8 +8,8 @@ organizaciones: segura, auditable y con API abierta.
 
 ## Estado
 
-Fase P1 (plataforma). Existe `identity-service` (creación de organizaciones) y el entorno local de
-Keycloak. El seguimiento detallado está en [`docs/ai/PROGRESS.md`](docs/ai/PROGRESS.md).
+El MVP está implementado y las fases P1–P7 están cerradas. La fase P8 (memoria del TFM) está en curso.
+El seguimiento detallado está en [`docs/ai/PROGRESS.md`](docs/ai/PROGRESS.md).
 
 ## Stack
 
@@ -43,6 +43,58 @@ La participación (`voter-access`) y la urna (`ballot-box`) nunca comparten base
 - `prototiposPantallas/` — prototipos de pantallas (referencia del frontend; no modificar).
 - `Plantilla-TFM-Informatica-UAL/` — memoria del TFM en LaTeX.
 - `scripts/` — utilidades de desarrollo.
+
+## Requisitos para desarrollo local
+
+- Docker Desktop con Docker Compose v2.
+- Java 25 (el backend usa Maven Wrapper incluido en `backend/`).
+- Node.js `^22.22.3 || ^24.15.0 || ^26.0.0` y npm 10.9.9 (frontend).
+- Conexión a Internet en el primer arranque para descargar imágenes, dependencias y, para LibreTranslate,
+  modelos de traducción.
+
+## Inicio rápido
+
+1. Desde la raíz del repositorio, copia la plantilla local y completa **todos** sus valores vacíos con
+   contraseñas aleatorias distintas. No compartas ni publiques `infra/.env`:
+
+   ```powershell
+   Copy-Item infra/.env.example infra/.env
+   ```
+
+2. Arranca PostgreSQL, Keycloak, Mailpit y LibreTranslate:
+
+   ```powershell
+   docker compose -f infra/compose.yaml --env-file infra/.env up -d --build
+   docker compose -f infra/compose.yaml --env-file infra/.env ps
+   ```
+
+   Keycloak importa el realm `verivoto` en el primer arranque. El administrador inicial de VeriVoto
+   utiliza `VERIVOTO_SUPERADMIN_EMAIL` y `VERIVOTO_SUPERADMIN_INITIAL_PASSWORD`; Keycloak pedirá cambiar
+   la contraseña inicial. Para ver los correos locales, abre `http://localhost:8025`.
+
+3. En cinco terminales PowerShell separadas, inicia los servicios backend siguiendo
+   [`backend/README.md`](backend/README.md).
+4. En otra terminal, inicia el frontend siguiendo [`frontend/README.md`](frontend/README.md).
+5. Abre `http://localhost:4200/admin`. El acceso de gestión se autentica en Keycloak. Para crear cuentas
+   sintéticas y conocer los permisos de cada rol, consulta el
+   [Manual de roles y simulación](docs/evaluation/resultados-p7/manual-simulacion-roles.md).
+
+### Direcciones locales
+
+| Componente | Dirección |
+| --- | --- |
+| Consola web | `http://localhost:4200/admin` |
+| API gateway | `http://localhost:8000` |
+| Keycloak | `http://localhost:8080` |
+| Mailpit (buzón de pruebas) | `http://localhost:8025` |
+| LibreTranslate | `http://localhost:5000` |
+| PostgreSQL principal | `localhost:5432` |
+| PostgreSQL de la urna | `localhost:5433` |
+
+La guía de [infraestructura local](docs/architecture/local-infrastructure.md) explica los puertos,
+volúmenes y comprobaciones. Para probar contratos y recorridos completos, sigue
+[`docs/architecture/api-testing.md`](docs/architecture/api-testing.md). Los volúmenes de PostgreSQL
+conservan los datos locales al detener Compose; `docker compose down -v` los elimina.
 
 ## Flujo de trabajo
 

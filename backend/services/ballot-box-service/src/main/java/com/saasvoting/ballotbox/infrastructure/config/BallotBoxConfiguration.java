@@ -84,8 +84,9 @@ public class BallotBoxConfiguration {
     @Bean
     VotingService votingService(
             BallotRepository ballots, BallotBoxStore urn, VoterAccessClient voterAccess, ReceiptGenerator receipts,
-            UnitOfWork unitOfWork, Clock clock, @Value("${verivoto.zone:Europe/Madrid}") ZoneId zone) {
-        return new VotingService(ballots, urn, voterAccess, receipts, unitOfWork, clock, zone);
+            UnitOfWork unitOfWork, Clock clock, @Value("${verivoto.zone:Europe/Madrid}") ZoneId zone,
+            @Value("${verivoto.voting.max-group-size:100}") int maxGroupSize) {
+        return new VotingService(ballots, urn, voterAccess, receipts, unitOfWork, clock, zone, maxGroupSize);
     }
 
     @Bean

@@ -34,4 +34,14 @@ public interface IdentityProvider {
 
     /** Deletes the client: no new tokens; tokens already issued expire within minutes. Idempotent. */
     void deleteApiClient(UUID keycloakId);
+
+    /**
+     * IMP-11 (D-52, D4): enables or disables the account of a management user. A disabled account cannot sign in or
+     * refresh its session; tokens already issued expire within minutes. Idempotent; an account that no longer exists
+     * is ignored.
+     */
+    void setUserEnabled(UUID userId, boolean enabled);
+
+    /** IMP-40 (D-52, D4): the same for the client of an API key, which then gets no new tokens. Idempotent. */
+    void setApiClientEnabled(UUID keycloakId, boolean enabled);
 }

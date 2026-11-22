@@ -4,8 +4,9 @@
 \section{Respuesta a las preguntas de investigación}
 \textbf{RQ1.} El prototipo ofrece al votante un recibo y publica evidencias de
 presencia e integridad que pueden explicarse sin revelar la opción escogida.
-La comprensibilidad efectiva no queda demostrada hasta realizar la evaluación
-con usuarios; tampoco se ofrece verificabilidad extremo a extremo.
+En la sesión H1b, los cinco participantes interpretaron correctamente la
+verificación; es evidencia descriptiva, sin inferencia estadística. No se
+ofrece verificabilidad extremo a extremo.
 
 \textbf{RQ2.} La separación entre voter-access y ballot-box, la ausencia de
 identificadores y marcas temporales por voto y el token de un solo uso
@@ -15,8 +16,8 @@ ambas bases o los dispositivos.
 
 \textbf{RQ3.} ISO/IEC 25010:2023 proporciona el marco para organizar los RNF y
 la evaluación. La suite automatizada aporta evidencia inicial de reglas
-seleccionadas y dieciséis pruebas de integración en PostgreSQL (migraciones y
-esquema, aislamiento entre organizaciones, \emph{outbox} y unicidad del voto
+seleccionadas y veintitrés pruebas de integración en PostgreSQL (migraciones y
+esquema, aislamiento entre organizaciones, autorización por rol, \emph{outbox} y unicidad del voto
 ante intentos simultáneos).
 La sesión con cinco votantes aceptó H1b: los cinco completaron el voto y
 obtuvieron el recibo sin ayuda en menos de tres minutos, e interpretaron
@@ -35,7 +36,11 @@ participación, secreto por separación de datos y recibo; la facilidad de uso d
 y la comprensión del recibo se comprobaron con cinco votantes (H1b aceptada,
 evidencia descriptiva), y la accesibilidad requiere completar la revisión
 manual. OBJ-4 y OE4 cuentan con auditoría,
-escrutinio, huellas y resultados; su evaluación de calidad sigue incompleta.
+escrutinio, huellas y resultados. OE5 se cumple en los términos del
+anteproyecto: hay pruebas automatizadas, auditoría automática de accesibilidad,
+prueba de carga y sesión de usabilidad con cinco votantes, y el
+capítulo~\ref{cap:evaluacion-resultados} documenta sus resultados, incluidos
+los no alcanzados (H1c y la parte manual de H1a).
 Por tanto, el cumplimiento funcional implementado no equivale a aceptación
 experimental de todos los objetivos. Las limitaciones y el trabajo futuro de
 la sección~\ref{sec:limitaciones-trabajo-futuro} recogen los protocolos
@@ -43,7 +48,7 @@ pendientes.
 
 \section{Limitaciones y trabajo futuro}
 \label{sec:limitaciones-trabajo-futuro}
-Quedan por ejecutar la integración de repositorios y flujos con PostgreSQL,
+Quedan por ejecutar la integración del resto de repositorios y flujos con PostgreSQL,
 las pruebas E2E del stack completo, la revisión manual de accesibilidad con
 teclado y lector de pantalla (H1a: parte automática favorable; parte manual no realizada; la parte
 automática se midió en el flujo del votante tras corregir las incidencias de
@@ -58,19 +63,24 @@ interfaz, sin efecto en el resultado. Las tres ejecuciones de carga (H1c) del
 11/11/2026 rechazaron la hipótesis: p95 de 4852, 2402 y 4849~ms frente a
 2000~ms, y entre 219 y 273 conexiones rechazadas de 500 por ejecución, en un
 único equipo Windows, con los servicios fuera de contenedores y sin rampa de
-subida. Como trabajo futuro conviene medir dónde se consume el tiempo del
-registro del voto, que bloquea el proceso para encadenar cada evento, ajustar
-las colas de conexión del \emph{gateway} y de los servicios y repetir la
-medición en un entorno dimensionado, sin cambiar el criterio. RNF-4 se aceptó en las sesiones
-online del 13/11/2026: cinco administradores sin formación previa crearon,
+subida. Una segunda serie, el 19/11/2026, con las colas de conexión del
+\emph{gateway} y de los servicios ampliadas, también la rechazó (p95 de
+7211~ms): entraron más votos, pero el ritmo de aceptación se mantuvo en unos 43
+por segundo. Una tercera serie, con los votos confirmados por grupos en una
+sola transacción y el recibo entregado solo tras el encadenado (IMP-64), también
+la rechazó: solo 17 de 500 peticiones respondieron en menos de dos segundos. El
+ritmo apenas cambió (unos 55 votos por segundo) y un voto aislado ya tarda unos
+0,6 segundos, así que el límite no está solo en la urna. Como trabajo futuro
+queda medir cada tramo de la emisión (\emph{gateway}, ballot-box, consumo del
+token en voter-access) y repetir la prueba en un entorno dimensionado, con el
+mismo criterio. RNF-4 se aceptó en las sesiones en línea del 13/11/2026: cinco administradores sin formación previa crearon,
 configuraron y programaron un proceso sin ayuda en 4 minutos o menos (mediana
 3 minutos), frente a los 10 del criterio; la sesión del 03/11/2026, con solo
 dos participantes sin formación previa y tiempos estimados, no fue
-concluyente. Si alguna de las evaluaciones pendientes
-no se completa antes de la entrega, su resultado figura como
-PENDIENTE en la tabla~\ref{tab:estado-hipotesis} y constituye una limitación
-de este trabajo. También se debe ampliar la cobertura global de código, que sigue
-siendo baja (52,4\% de las líneas del backend y 42,0\% de las del frontend),
+concluyente. La parte manual de H1a, que no llegó a realizarse, figura así en
+la tabla~\ref{tab:estado-hipotesis} y constituye una limitación de este
+trabajo. También se debe ampliar la cobertura global de código, que sigue
+siendo baja (59,1\% de las líneas del backend y 42,0\% de las del frontend),
 aunque el código añadido desde el 04/11/2026 supera el 80\%.
 Las propuestas registradas en \texttt{docs/ai/IMPROVEMENTS.md} orientan
 mejoras posteriores. P9 contempla RF-11, RF-22 y RF-23 fuera del MVP actual.

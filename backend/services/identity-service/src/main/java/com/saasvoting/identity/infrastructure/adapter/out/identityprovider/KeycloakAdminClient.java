@@ -6,6 +6,7 @@ import com.saasvoting.identity.domain.model.ManagementRole;
 import com.saasvoting.identity.domain.model.PersonData;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.client.RestClientException;
 import java.net.URI;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -222,6 +224,47 @@ public class KeycloakAdminClient implements IdentityProvider {
             // Already deleted.
         } catch (RestClientException e) {
             throw new IdentityProviderUnavailableException("Could not delete the API client in Keycloak", e);
+        }
+    }
+
+    /** IMP-11 (D4): reads the whole account and writes it back with {@code enabled}, so nothing else changes. */
+    @Override
+    public void setUserEnabled(UUID userId, boolean enabled) {
+        setEnabled("/admin/realms/{realm}/users/{id}", userId, enabled, "user");
+    }
+
+    /** IMP-40 (D4): the same for the client of an API key. */
+    @Override
+    public void setApiClientEnabled(UUID keycloakId, boolean enabled) {
+        setEnabled("/admin/realms/{realm}/clients/{id}", keycloakId, enabled, "API client");
+    }
+
+    private void setEnabled(String path, UUID id, boolean enabled, String what) {
+        try {
+            Map<String, Object> current = restClient.get()
+                    .uri(path, properties.realm(), id)
+                    .headers(headers -> headers.setBearerAuth(token()))
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() { });
+            if (current == null) {
+                throw new IdentityProviderUnavailableException("Keycloak returned no " + what, null);
+            }
+            if (Boolean.valueOf(enabled).equals(current.get("enabled"))) {
+                return;
+            }
+            Map<String, Object> changed = new LinkedHashMap<>(current);
+            changed.put("enabled", enabled);
+            restClient.put()
+                    .uri(path, properties.realm(), id)
+                    .headers(headers -> headers.setBearerAuth(token()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(changed)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (HttpClientErrorException.NotFound e) {
+            // Deleted in Keycloak: nothing left to enable or disable.
+        } catch (RestClientException e) {
+            throw new IdentityProviderUnavailableException("Could not change the " + what + " in Keycloak", e);
         }
     }
 

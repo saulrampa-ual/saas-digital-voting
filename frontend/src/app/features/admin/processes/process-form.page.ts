@@ -11,6 +11,7 @@ import {
   VoteType,
 } from '../../../core/admin/process-api.service';
 import { TextTranslationService } from '../../../core/admin/text-translation.service';
+import { APP_CONFIG } from '../../../core/config/app-config';
 import { AuthService, PROCESS_DRAFT_PREFIX } from '../../../core/auth/auth.service';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
@@ -94,6 +95,9 @@ export class ProcessFormPage implements OnInit {
 
   protected readonly steps = STEPS;
   protected readonly langs: readonly Lang[] = ['es', 'en'];
+  /** A9/M6: the institutional account option is hidden while SSO cannot be tested; a draft that already uses it keeps it. */
+  protected readonly showInstitutionalSso = computed(
+    () => APP_CONFIG.features.institutionalSso || this.model().voterAuthentication === 'INSTITUTIONAL_SSO');
   protected readonly step = signal<Step>('basics');
   protected readonly visited = signal<Set<Step>>(new Set(['basics']));
   protected readonly model = signal<FormModel>(emptyModel());

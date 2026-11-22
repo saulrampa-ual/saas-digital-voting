@@ -1,4 +1,6 @@
-FROM quay.io/keycloak/keycloak:26.8.1
+# IMP-48: pinned by digest (OCI index, all platforms). Update the digest together with the tag:
+#   docker buildx imagetools inspect quay.io/keycloak/keycloak:<version>
+FROM quay.io/keycloak/keycloak:26.8.1@sha256:3f3c5f8e03c614774b4bd9173b88391fefa4153bfc010d8012d59ad825377332
 
 USER root
 

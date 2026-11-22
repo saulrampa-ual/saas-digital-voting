@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-16 · Rama: `dev` (HEAD `6c21190`; cambios locales sin commit) · D2/D5 integradas por el autor (`c48dbab`) · sin push
+Última actualización: 2026-11-20 · Rama: `dev` (HEAD `4d0ed29`; cambios locales sin commit) · sin push
 
 ## Hitos
 
@@ -14,15 +14,64 @@
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Cerrado el 15/11/2026: 151 pruebas backend y 92 frontend, 0 fallos; H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11); RNF-4 aceptado (13/11). Limitaciones en `docs/evaluation/resultados-p7/cierre.md` |
-| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 92 páginas; revisión editorial y visual completa aún pendiente |
+| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 93 páginas y presentación de defensa con 20 diapositivas; revisión editorial y visual completa aún pendiente |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
 ## Hecho
 
+- 20/11: RNF-18 actualizado en la memoria con la prueba de reinstalación del icono PWA en Android y sus límites;
+  se añadieron dos capturas recortadas en `Plantilla-TFM-Informatica-UAL/Figuras/capturas/`. El acceso usó una
+  ruta sintética sin invitación real y mostró «Página no encontrada»; no se verificó el voto. La memoria se compiló
+  con pdfLaTeX en 96 páginas y se revisó visualmente la tabla y la figura.
+- 20/11: README principal y frontend ampliados con requisitos, preparación de `infra/.env`, arranque local,
+  direcciones y acceso a manuales; creado `backend/README.md` con comandos de inicio de los cinco servicios y
+  comprobaciones de salud. No se ejecutaron builds ni pruebas (cambio documental).
+- 19/11, noche (sin commit): **serie C de H1c, rechazada; H1c cerrada.** `mvnw verify` de ballot-box: 33 pruebas, 0
+  fallos. Humo correcto (20 de 20 en menos de 2 s). Ejecución 30: 231 votos aceptados, 269 conexiones rechazadas y solo
+  17 de 500 respondidas en menos de 2 s; cadena íntegra. No procede la serie D (los votos aceptados también superan los
+  2 s). Memoria (tablas 13.1 y 13.2, secciones de H1c, conclusiones; 93 páginas), diapositivas 11 y de reserva,
+  `guion.md` y `preguntas.md` actualizados; compilan.
+- 19/11, tarde (sin commit): **IMP-64 implementada (D-65)**, a petición del autor, para intentar H1c en una serie C.
+  `GroupCommitVoteWriter` (confirmación por grupos con un escritor por proceso, grupo barajado, recibo solo tras el
+  commit) y arreglo del commit ambiguo (si el recibo del grupo está en la urna, no se revierte el token).
+  `verivoto.voting.max-group-size` (100). Pruebas: `GroupCommitVoteWriterTest` (5), un caso nuevo en
+  `VotingServiceTest` y uno de 40 votos simultáneos con PostgreSQL en `BallotBoxScenariosIntegrationTest`. En el
+  entorno de la IA (javac 21, sin Maven): dominio y application compilan sin avisos nuevos y `GroupCommitVoteWriterTest`
+  pasa 100 de 100 (20 repeticiones de los 5 casos) con un arnés propio; falta el `mvnw verify` del autor. k6: métrica
+  `answered_under_2s` y regla 4 de la serie C en `carga.md` (una conexión rechazada no responde). Revisión del secreto:
+  sin datos, tiempos, registros ni contratos nuevos; el orden dentro del grupo se baraja. Por error, una prueba de
+  `check-load-run.mjs` con `K6_ONLY=1` sobrescribió `.local/load/check-run-26.json` sin los datos de la urna (ya
+  anotados en `carga.md`); se regenera ejecutando `check-load-run.mjs` con `LOAD_RUN=26`.
+- 19/11 (sin commit): **H1c, serie B, cerrada como rechazada.** Entorno local arreglado (administrador de Keycloak,
+  clientes que faltaban, audiencia y secretos; `scripts/dev/keycloak-restore-local-admin.ps1`,
+  `keycloak-missing-clients.mjs`, `keycloak-sync-secrets.mjs`) y arranque reproducible (`start-services.ps1`, que ahora
+  comprueba los puertos, y `stop-services.ps1`). Ejecución válida 26: 339 de 500 aceptados, p95 7211 ms, cadena
+  íntegra. Las colas ampliadas dejan entrar más votos, pero el ritmo sigue en unos 43 por segundo (un voto por
+  transacción). Memoria (tablas 13.1 y 13.2, sección de H1c, conclusiones), diapositivas 11 y de reserva, `guion.md`
+  y `preguntas.md` actualizados; compilan. IMP-64 (confirmación por grupos) registrada como propuesta. No afecta a
+  OE1–OE5.
+- 18/11, tarde (sin commit): **IMP-63** hecha. En Firefox y WebKit las POST al mismo origen se saltaban `page.route`
+  (trazas de la segunda ejecución de M2); ahora llegan a un servidor simulado de respaldo (`tests/e2e/support/api-mock.ts`
+  y `mock-router.mjs`, proxy `proxy.e2e.conf.json`, servidor de pruebas en el puerto 4300) con la misma respuesta
+  sintética. Entorno de la IA: Chromium 212/212 y, forzando el salto de las POST, las 56 afectadas pasan. Equipo del
+  autor: Firefox **212/212**; WebKit **211/212** (una prueba agotó el tiempo esperando la casilla del código; repetida sola el 19/11, pasa). RNF-2 aceptado en la tabla 13.2. **M1:** guion y hojas adaptados al Narrador de Windows y a la versión actual; nueva fila
+  recomendada TM-01 (IMP-50). **M5 / IMP-57:** `SO_BACKLOG` 1024 en el *gateway* (`ConnectionBacklogConfiguration`) y
+  `server.tomcat.accept-count` 1000 en ballot-box y voter-access; serie B de H1c definida en `carga.md` antes de
+  medir. **No compilado en el entorno de la IA** (sin Java 25). Revisión del secreto del voto: solo cambian colas de
+  conexión; no hay datos, registros, orden ni tiempos nuevos.
+- 17/11: eliminada `.local/sheet-15min.png` a petición del autor. Memoria compilada dos veces con pdfLaTeX (93 páginas) y presentación compilada dos veces (20 páginas: 14 principales y 6 de reserva); ambos PDFs sin referencias sin resolver.
+
 - 15/11: memoria recompilada dos veces con pdfLaTeX (95 páginas; sin referencias sin resolver). Revisión visual solicitada completada: tabla 13.1 legible en una página y su explicación continúa correctamente en la siguiente; figuras 8.1 y 8.2 legibles, sin solapamientos. Script `node scripts/dev/keycloak-api-audience.mjs` ejecutado contra Keycloak local ya activo; añadió el audience mapper `verivoto-api` a seis clientes (admin, cuatro servicios y Swagger). No se modificó el comportamiento del voto.
 - 15/11 (C4, lectura del PDF de 95 páginas): sin texto ni figuras cortados. Corregidos el ancho de la tabla 1.1, la ruta larga del apéndice A.1 (`\path`) y las filas de P7 y P8 de la tabla 9.2, que aún daban RNF-4 como pendiente. La contraportada queda al límite de espacio: el resumen no admite más texto. Pendiente de la compilación del autor.
 - 16/11 (sin commit): **IMP-50** hecha (mensaje propio del 429 del *gateway* en el flujo del votante, con la espera de `Retry-After` cuando se puede leer). **A5, flujo del votante:** `voter-flow.page.spec.ts` (51 pruebas de la máquina de estados: enlace, código, papeleta, voto, recibo, resultado, cuenta institucional) y un caso más en `voter-api.service.spec.ts`. En el entorno de la IA (Node 22, Linux): Vitest 144 de 144 en 13 ficheros, `ng build` correcto, `tsc` de las pruebas sin errores y cobertura de líneas del frontend 43,2 % (989/2287); Ejecución del autor (16/11, `npm run test:coverage`): 144 de 144 y cobertura de líneas 42,0 % (960/2287), ya en la memoria. **Barrido axe:** tres estados de IMP-50 añadidos a `voter-flow.accessibility.spec.ts`; 100 de 100 sin críticos ni serios (Chrome en el entorno de la IA). Capturas de la memoria agrupadas de dos en dos (figuras 11.1–11.6, tres páginas en lugar de seis). Revisión del secreto del voto: el cambio es solo de interfaz; no añade registros, almacenamiento ni datos nuevos.
+- 16/11, tarde (sin commit): **D4** (IMP-11, IMP-40): suspender una organización desactiva en Keycloak sus cuentas de gestión y los clientes de sus claves activas, y bloquea crear cuentas nuevas; reactivarla las activa (GET y PUT de la representación completa, idempotente; Keycloak primero y estado después). **Autorización HTTP de identity:** `IdentityAuthorizationIntegrationTest` (7 casos con PostgreSQL real y Keycloak simulado) más `OrganizationServiceTest` (5), un caso en `ManagementUserServiceTest` y 4 en `KeycloakAdminClientTest`; `spring-boot-starter-webmvc-test` y `spring-security-test` añadidos a identity. **No compilado en el entorno de la IA** (sin Java 25 ni Maven Central): falta el `mvnw verify` del autor, que debería dar 168 pruebas de backend. **IMP-46** aplicado en `build.yml`; **IMP-48** a la espera de los *digest*. **C4:** revisión de coherencia y estilo de la memoria (objetivos, alcance, plan de evaluación, RQ1, limitaciones, RF-13, SMS, comillas, «revotación», «en línea»). **Defensa:** `Presentacion-TFM/` con `presentacion.tex` (17 diapositivas y 4 de reserva), `estilo-ual.sty`, `guion.md` y `preguntas.md`.
 - 16/11: eliminados de `.local/` `old-fe-src.tgz`, `voter-flow.accessibility.spec.ts` y la carpeta `figs-preview` a petición del autor. Memoria recompilada en dos pasadas con pdfLaTeX: 92 páginas, sin referencias sin resolver.
+- 16/11: eliminados a petición del autor los ficheros de vista previa `.local/s-08.png`, `s-13.png`, `sheet0.png`, `sheet1.png`, `t.png` y `tex.tgz`; verificada su ausencia.
+- 17/11: verificados D4, IMP-46 y las pruebas de identity. `mvnw -pl services/identity-service -am test`: 30 pruebas, 0 fallos (incluye 7 HTTP con PostgreSQL 18.6 y 10 unitarias asociadas a D4). Consultados los digest OCI actuales: Keycloak `sha256:3f3c5f8e03c614774b4bd9173b88391fefa4153bfc010d8012d59ad825377332`, Gitleaks `sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f`, Trivy `sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c`; aún no se fijan en los manifiestos.
+- 17/11 (sin commit): **IMP-48** aplicado con los *digest* del autor (Dockerfile de Keycloak, gitleaks y Trivy en `security.yml`). Memoria, `informe.md`, `cierre.md`, `PLAN.md` y `TRACEABILITY.md` con 168 pruebas de backend (identity 30), 312 en total, 23 de integración sobre PostgreSQL en 9 clases y cobertura de líneas del backend 59,1 % (3479/5890; identity 75,2 %); la autorización HTTP de identity deja de figurar como pendiente. **Defensa: 15 minutos** (confirmado por el director): `presentacion.tex` pasa a 14 diapositivas y 6 de reserva; `guion.md` rehecho (≈ 13 min). Pendiente de decisión: prioridades MoSCoW de los RNF (columna «Por validar» de la tabla 7.1).
+- 18/11 (sin commit): tabla 13.2 «Evidencia por requisito no funcional» en `evaluacion_resultados.tex` (Must: 2 aceptados y 8 con evidencia parcial; Should: RNF-4 aceptado, RNF-17 no se cumple, RNF-10 sin evaluar). Plan de mejoras M1–M6 en `PLAN.md` (8.4). Preparadas M2 (`E2E_BROWSERS=all` añade Firefox y WebKit; 636 pruebas listadas, por defecto 212) y M3 (`docs/evaluation/revision-heuristica/`).
+- 18/11, mediodía: **M2, primera ejecución del autor** (636 pruebas a la vez): Chromium 212/212, Firefox 115/212, WebKit 173/212; los 136 fallos son tiempos agotados de 30 s o cierres del navegador (`Protocol error`), ninguno por axe. No concluyente. Ajustes sin commit: 90 s por prueba en Firefox y WebKit, nombre de fichero de axe con el navegador (antes se sobrescribían) y ejecución por motor con 2 *workers*. Comprobado en el entorno de la IA que Chromium sigue igual (16 de 16 en una muestra; 636 pruebas listadas con `E2E_BROWSERS=all`).
+- 18/11, tarde (sin commit): **M2, segunda ejecución** (un motor cada vez): Firefox y WebKit 156/212 cada uno, sin incumplimientos críticos ni serios; las 56 restantes no llegan a su pantalla porque esos motores no pasan las POST por `page.route` (502 del proxy) → IMP-63. **M4** hecha por el autor (PWA instalada en iOS y Android). **D-64, identidad de la PWA:** iconos de marca generados con `scripts/brand/pwa-icons.py` (rsvg-convert) en `frontend/public/icons/` (`any` 72–512, `maskable` 192 y 512, `apple-touch-icon` 180), manifiesto con iconos `any` y `maskable` separados e `id: "./"`, `apple-touch-icon` en `index.html`, banderas del selector visibles en móvil (18×12 px). Verificado en el entorno de la IA (Chrome, Node 22): tamaños de todos los PNG iguales a los declarados, `ng build` correcto con los iconos y el `apple-touch-icon` en `dist/` y en `ngsw.json`; selector a 360 y 390 px, es y en, en voto y recibo: banderas visibles, botones de 44 px de alto (52–54 px de ancho), sin solaparse con el título ni desbordar la página; consola a 360 px comprobada en capturas; barrido axe completo en Chromium 212/212 sin críticos ni serios. **No verificado:** el icono nuevo en un teléfono (hay que reinstalar la PWA) y Vitest (`npm run test:ci`) tras el cambio de estilos. Tabla 13.2: RNF-2 con Firefox, WebKit y dispositivos reales; RNF-18 aceptado.
 
 - H1c: completados en `docs/evaluation/carga.md` los datos del equipo usados en la medición: AMD Ryzen 7 5825U,
   16 GB RAM (15,4 GiB visibles para Windows) y Docker 29.4.0 (build 9d7ad9f). Datos consultados el 11/11/2026.
@@ -205,7 +254,17 @@
 
 ## Pendiente
 
-> P7 se cerró el 15/11/2026. Los puntos P7.x de esta lista que no se completaron quedan como limitaciones declaradas (`docs/evaluation/resultados-p7/cierre.md`), no como trabajo en curso. D2 y D5 fusionadas por el autor el 15/11/2026 (`c48dbab`; `mvnw verify`: 151 pruebas, 0 fallos); memoria, `informe.md`, `threat-model.md` e `IMPROVEMENTS.md` actualizados. C4: figuras 8.1 y 8.2 y tabla 13.1 revisadas visualmente el 15/11; memoria recompilada (92 páginas) el 16/11 y `keycloak-api-audience.mjs` ejecutado contra Keycloak local. Siguiente paso: A9 y el resto de C4.
+
+- Recuento final: `mvnw verify` completo del backend y `npm run test:coverage` del frontend, para actualizar en la
+  memoria, la presentación e `informe.md` el número de pruebas (ballot-box pasa de 26 a 33; integración, de 23 a 24) y
+  la cobertura. Hoy las cifras publicadas son las del 17/11.
+- M1 (20/11): revisión con el Narrador según `docs/evaluation/accesibilidad-manual-guion.md`.
+- M3: revisión heurística con una segunda persona (`docs/evaluation/revision-heuristica/`).
+- Q-13 y correo de seguimiento al tutor con los resultados del 18–19/11.
+- M6/A9 (SSO @inlumine.ual.es): bloqueado y trabajo futuro (P9). No es posible probarlo en esta fase por falta de acceso a las cuentas y a la configuración institucional; validar con el tutor. Opción oculta en la consola (features.institutionalSso = false, 20/11/2026).
+- M6b (IMP-66): «Identificador institucional» oculto en la interfaz de gestión y plantillas Excel regeneradas (20/11/2026, sin commit). El campo se conserva en el censo y en el backend; la exportación de privacidad lo sigue incluyendo. Falta la revisión del autor, abrir las plantillas y el commit.
+
+> P7 se cerró el 15/11/2026. Los puntos P7.x de esta lista que no se completaron quedan como limitaciones declaradas (`docs/evaluation/resultados-p7/cierre.md`), no como trabajo en curso. D2 y D5 fusionadas por el autor el 15/11/2026 (`c48dbab`; `mvnw verify`: 151 pruebas, 0 fallos); memoria, `informe.md`, `threat-model.md` e `IMPROVEMENTS.md` actualizados. C4: figuras 8.1 y 8.2 y tabla 13.1 revisadas visualmente el 15/11; memoria recompilada (92 páginas) el 16/11 y `keycloak-api-audience.mjs` ejecutado contra Keycloak local. Siguiente paso: el resto de C4 (A9 bloqueada).
 
 - P7.1: ampliar cobertura unitaria de censo/CSV, validación de claims institucionales, privacidad, recordatorios,
   errores, pruebas del flujo visual del votante y reglas de dominio que aún no tienen pruebas.

@@ -14,10 +14,10 @@ recoge el estado final de P7; el detalle y las fuentes están en `docs/evaluatio
 
 ## Pruebas automáticas
 
-- Backend: 151 pruebas, 0 fallos (`mvnw verify`, 15/11/2026): gateway 16, identity 13, election 58, voter-access 38 y
-  ballot-box 26. Dieciséis son de integración sobre PostgreSQL 18.6.
+- Backend: 168 pruebas, 0 fallos (15/11/2026, e identity el 17/11/2026): gateway 16, identity 30, election 58,
+  voter-access 38 y ballot-box 26. Veintitrés son de integración sobre PostgreSQL 18.6.
 - Frontend: 144 pruebas en 13 ficheros, 0 fallos (`npm run test:coverage`, 16/11/2026).
-- Cobertura de líneas (15/11/2026): backend 52,4 % en conjunto (identity 26,3 %, ballot-box 41,6 %, voter-access
+- Cobertura de líneas (15–17/11/2026): backend 59,1 % en conjunto (identity 75,2 %, ballot-box 41,6 %, voter-access
   50,4 %, election 74,1 %, gateway 91,2 %); frontend 42,0 % (16/11). Código nuevo desde el 04/11 según SonarQube: 85,8 % y 87,3 %.
 - Calidad y seguridad: los dos *quality gates* de SonarQube en «Passed» con 0 incidencias abiertas (14/11/2026).
   Workflows `build` (incluido el job de accesibilidad E2E) y `security` en verde en `main` tras el PR #4 (15/11/2026).
@@ -26,7 +26,7 @@ recoge el estado final de P7; el detalle y las fuentes están en `docs/evaluatio
 
 - Parte manual de H1a.
 - RF-05a: inicio de sesión de gestión con un IdP externo (A9).
-- Autorización HTTP de identity y repositorios sin prueba de integración propia.
+- Repositorios sin prueba de integración propia (la autorización HTTP de identity se cubrió el 17/11/2026).
 - E2E funcional con Keycloak y Mailpit reales: los barridos usan servicios simulados.
 - Escenarios k6 de acceso y escrutinio: solo se midió la emisión.
 

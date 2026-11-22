@@ -64,8 +64,7 @@ import { AdminPageComponent } from '../admin-page.component';
                   <tr>
                     <td [attr.data-label]="'admin.privacy.col.census' | translate"><strong>{{ e.census }}</strong><br /><small>{{ e.fullName }}</small></td>
                     <td [attr.data-label]="'admin.privacy.col.contact' | translate">{{ e.email }}
-                      @if (e.phone) { <br /><small>{{ e.phone }}</small> }
-                      @if (e.institutionalId) { <br /><small>{{ 'admin.privacy.institutionalId' | translate }}: {{ e.institutionalId }}</small> }</td>
+                      @if (e.phone) { <br /><small>{{ e.phone }}</small> }</td>
                     <td [attr.data-label]="'admin.privacy.col.added' | translate">{{ e.addedAt | localDate: language() : false }}</td>
                     <td [attr.data-label]="'admin.privacy.col.processes' | translate">
                       @for (p of e.processes; track p.id) {

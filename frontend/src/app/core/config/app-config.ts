@@ -18,6 +18,14 @@ export const APP_CONFIG = {
     /** RF-05b (D-48): public client of the voter PWA for the institutional account (PKCE). */
     voterClientId: 'verivoto-voter',
   },
+  features: {
+    /**
+     * RF-05a/RF-05b (A9, M6): the institutional account (SSO) cannot be tested without @inlumine.ual.es accounts and an
+     * institutional identity provider, so the console hides the «institutional account» option for now. The code stays
+     * in place; set to true to show it again.
+     */
+    institutionalSso: false,
+  },
   languages: ['es', 'en'] as const,
   defaultLanguage: 'es' as const,
 };

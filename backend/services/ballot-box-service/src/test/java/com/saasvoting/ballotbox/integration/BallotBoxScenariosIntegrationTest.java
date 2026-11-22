@@ -24,9 +24,16 @@ import com.saasvoting.ballotbox.domain.model.VoteType;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,6 +154,37 @@ class BallotBoxScenariosIntegrationTest {
         assertFalse(logs.contains(token), "the voting token was logged");
         assertFalse(logs.contains(receipt), "the receipt was logged");
         assertFalse(logs.contains("Taller de fotografía"), "the chosen option was logged");
+    }
+
+    @Test
+    void simultaneousVotesAreStoredInGroupsWithOneUnbrokenChain() throws Exception {
+        // IMP-64: group commit with the real database; every vote counted once and the chain without gaps
+        long processId = 8104;
+        receiver.receiveBallot(ballot(processId, "orgB"));
+        receiver.receiveStatus(processId, ProcessStatus.OPEN);
+        int votes = 40;
+        ExecutorService voters = Executors.newFixedThreadPool(votes);
+        List<Future<String>> receipts = new ArrayList<>();
+        for (int i = 0; i < votes; i++) {
+            String token = "synthetic-voting-token-" + UUID.randomUUID();
+            receipts.add(voters.submit(() -> voting.castVote(processId, token, Selection.option(processId * 10 + 1))));
+        }
+        Set<String> distinct = new HashSet<>();
+        for (Future<String> receipt : receipts) {
+            distinct.add(receipt.get(60, TimeUnit.SECONDS));
+        }
+        voters.shutdown();
+
+        assertEquals(votes, distinct.size());
+        assertEquals(votes, count("select count(*) from votes where process_id = ?", processId));
+        assertEquals(votes, count("select count(*) from audit_events where process_id = ? and event_type = 'VOTE_RECEIVED'",
+                processId));
+        long events = count("select count(*) from audit_events where process_id = ?", processId);
+        assertEquals(events, count("select max(sequence) from audit_events where process_id = ?", processId));
+        assertEquals(events, count("select last_sequence from ballot_snapshots where process_id = ?", processId));
+        for (String receipt : distinct) {
+            assertTrue(voting.receiptPresent(processId, receipt));
+        }
     }
 
     private long count(String sql, Object argument) {

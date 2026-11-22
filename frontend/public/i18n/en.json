@@ -466,7 +466,7 @@
       "import": {
         "selectTitle": "Select file",
         "drop": "Drag an Excel file (.xlsx) here",
-        "columns": "Your file must include at least the full name and the email of each person. Phone, institutional ID and language are optional.",
+        "columns": "Your file must include at least the full name and the email of each person. Phone and language are optional.",
         "select": "Select file",
         "rules": "Use an Excel file (.xlsx), for example the template. Up to 5 MB and 50,000 people. Nothing is saved until you confirm.",
         "summaryTitle": "Import summary",
@@ -487,7 +487,7 @@
         "more": "…and {{count}} more.",
         "reason": {
           "EMAIL": "the email is already in the census or repeated in the file",
-          "INSTITUTIONAL_ID": "the institutional ID is already in the census or repeated in the file"
+          "INSTITUTIONAL_ID": "the person is already in the census or repeated in the file"
         },
         "invalidHelp": "Fix the file and select it again, or discard the lines with errors to import the rest.",
         "readyHelp": "Check the summary and confirm to save the new people. Duplicates are skipped.",
@@ -505,7 +505,7 @@
         "template": {
           "open": "Download example template",
           "title": "Example template (Excel)",
-          "explain": "It is an Excel file with one column per field, in this order: Full name, Email, Phone, Institutional ID and Language for messages. It includes an «Instructions» sheet.",
+          "explain": "It is an Excel file with one column per field, in this order: Full name, Email, Phone and Language for messages. It includes an «Instructions» sheet.",
           "languages": "The phone number has digits only, no spaces or + prefix. In Language, choose Spanish or English from the list; if it is left empty, Spanish is used.",
           "required": "Columns marked with * are required. Delete the two example rows (grey and italic) before uploading the file.",
           "preview": "Template preview",

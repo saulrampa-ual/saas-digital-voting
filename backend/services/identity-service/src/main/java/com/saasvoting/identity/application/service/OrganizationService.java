@@ -1,9 +1,11 @@
 package com.saasvoting.identity.application.service;
 
 import com.saasvoting.identity.application.port.PageResult;
+import com.saasvoting.identity.domain.model.ApiKey;
 import com.saasvoting.identity.application.port.in.ChangeOrganizationStatusUseCase;
 import com.saasvoting.identity.application.port.in.CreateOrganizationUseCase;
 import com.saasvoting.identity.application.port.in.QueryOrganizationsUseCase;
+import com.saasvoting.identity.application.port.out.ApiKeyRepository;
 import com.saasvoting.identity.application.port.out.IdentityProvider;
 import com.saasvoting.identity.application.port.out.ManagementUserRepository;
 import com.saasvoting.identity.application.port.out.OrganizationRepository;
@@ -25,17 +27,23 @@ public final class OrganizationService
         implements CreateOrganizationUseCase, QueryOrganizationsUseCase, ChangeOrganizationStatusUseCase {
 
     private final OrganizationRepository organizations;
+    /** Page size used to walk the management users of an organization when its status changes. */
+    static final int USERS_PAGE_SIZE = 100;
+
     private final ManagementUserRepository users;
+    private final ApiKeyRepository keys;
     private final IdentityProvider identityProvider;
     private final Clock clock;
 
     public OrganizationService(
             OrganizationRepository organizations,
             ManagementUserRepository users,
+            ApiKeyRepository keys,
             IdentityProvider identityProvider,
             Clock clock) {
         this.organizations = Objects.requireNonNull(organizations, "organizations must not be null");
         this.users = Objects.requireNonNull(users, "users must not be null");
+        this.keys = Objects.requireNonNull(keys, "keys must not be null");
         this.identityProvider = Objects.requireNonNull(identityProvider, "identityProvider must not be null");
         this.clock = Objects.requireNonNull(clock, "clock must not be null");
     }
@@ -86,11 +94,28 @@ public final class OrganizationService
                 .orElseThrow(() -> new OrganizationNotFoundException(organizationId));
     }
 
+    /**
+     * IMP-11 and IMP-40 (D-52, D4): suspending an organization disables in the identity provider the accounts of its
+     * management users and the clients of its active API keys; activating it enables them again. The identity provider
+     * goes first and every call is idempotent, so if it fails half-way the status is not stored and repeating the same
+     * request completes the change.
+     */
     @Override
     public Organization changeStatus(Caller caller, String organizationId, Organization.Status status) {
         requireSuperAdmin(caller, "change organization status");
         Organization organization = organizations.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(organizationId));
+        boolean enabled = status == Organization.Status.ACTIVE;
+        for (int page = 0; ; page++) {
+            PageResult<ManagementUser> batch = users.findByOrganization(organizationId, page, USERS_PAGE_SIZE);
+            batch.items().forEach(user -> identityProvider.setUserEnabled(user.id(), enabled));
+            if ((long) (page + 1) * USERS_PAGE_SIZE >= batch.totalItems() || batch.items().isEmpty()) {
+                break;
+            }
+        }
+        keys.findAll(organizationId).stream()
+                .filter(ApiKey::isActive)
+                .forEach(key -> identityProvider.setApiClientEnabled(key.keycloakId(), enabled));
         return organizations.save(organization.withStatus(status));
     }
 

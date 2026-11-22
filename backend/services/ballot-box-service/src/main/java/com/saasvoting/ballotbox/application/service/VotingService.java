@@ -7,10 +7,8 @@ import com.saasvoting.ballotbox.application.port.out.ReceiptGenerator;
 import com.saasvoting.ballotbox.application.port.out.UnitOfWork;
 import com.saasvoting.ballotbox.application.port.out.VoterAccessClient;
 import com.saasvoting.ballotbox.domain.model.AuditEvent;
-import com.saasvoting.ballotbox.domain.model.AuditEventType;
 import com.saasvoting.ballotbox.domain.model.BallotNotFoundException;
 import com.saasvoting.ballotbox.domain.model.BallotSnapshot;
-import com.saasvoting.ballotbox.domain.model.ChainHead;
 import com.saasvoting.ballotbox.domain.model.IncidentKind;
 import com.saasvoting.ballotbox.domain.model.Selection;
 import com.saasvoting.ballotbox.domain.model.VoteNotRecordedException;
@@ -24,36 +22,44 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
  * RF-09 and RF-10 following data-model section 6.2 (D-20): the token is consumed in voter-access first, then the
  * vote, the receipt hash and the VOTE_RECEIVED event are stored in one transaction with the ballot locked. If that
  * fails, the consumption is reverted, so retrying never creates a second vote (RNF-12). The vote, the receipt and
- * the event share nothing and carry no time (RNF-11, D-18); the token is never stored.
+ * the event share nothing and carry no time (RNF-11, D-18); the token is never stored. The store itself is done in
+ * groups by {@link GroupCommitVoteWriter} (IMP-64): the receipt is still returned only after the commit.
  */
 public final class VotingService implements VotingUseCase {
 
     private static final Pattern RECEIPT = Pattern.compile("^[0-9a-f]{64}$");
+    /** Default maximum number of votes of a process committed in one transaction (IMP-64). */
+    public static final int DEFAULT_MAX_GROUP_SIZE = 100;
 
     private final BallotRepository ballots;
     private final BallotBoxStore urn;
     private final VoterAccessClient voterAccess;
-    private final ReceiptGenerator receipts;
     private final UnitOfWork unitOfWork;
     private final Clock clock;
     private final ZoneId zone;
+    private final GroupCommitVoteWriter writer;
 
     public VotingService(BallotRepository ballots, BallotBoxStore urn, VoterAccessClient voterAccess,
             ReceiptGenerator receipts, UnitOfWork unitOfWork, Clock clock, ZoneId zone) {
+        this(ballots, urn, voterAccess, receipts, unitOfWork, clock, zone, DEFAULT_MAX_GROUP_SIZE);
+    }
+
+    public VotingService(BallotRepository ballots, BallotBoxStore urn, VoterAccessClient voterAccess,
+            ReceiptGenerator receipts, UnitOfWork unitOfWork, Clock clock, ZoneId zone, int maxGroupSize) {
         this.ballots = Objects.requireNonNull(ballots, "ballots must not be null");
         this.urn = Objects.requireNonNull(urn, "urn must not be null");
         this.voterAccess = Objects.requireNonNull(voterAccess, "voterAccess must not be null");
-        this.receipts = Objects.requireNonNull(receipts, "receipts must not be null");
         this.unitOfWork = Objects.requireNonNull(unitOfWork, "unitOfWork must not be null");
         this.clock = Objects.requireNonNull(clock, "clock must not be null");
         this.zone = Objects.requireNonNull(zone, "zone must not be null");
+        this.writer = new GroupCommitVoteWriter(ballots, urn, Objects.requireNonNull(receipts, "receipts must not be null"),
+                unitOfWork, clock, maxGroupSize);
     }
 
     @Override
@@ -88,7 +94,7 @@ public final class VotingService implements VotingUseCase {
             throw new VoteNotRecordedException("voter-access did not answer", e);
         }
         try {
-            return unitOfWork.inTransaction(() -> store(processId, selection));
+            return writer.write(processId, selection);
         } catch (RuntimeException e) {
             revertOrRecord(votingToken, processId);
             if (e instanceof VotingClosedException closed) {
@@ -96,22 +102,6 @@ public final class VotingService implements VotingUseCase {
             }
             throw new VoteNotRecordedException("vote not stored", e);
         }
-    }
-
-    private String store(long processId, Selection selection) {
-        ChainHead head = ballots.lockChain(processId);
-        BallotSnapshot locked = ballot(processId);
-        Instant now = clock.instant();
-        if (!locked.isOpenAt(now)) {
-            throw new VotingClosedException(locked.effectiveStatus(now));
-        }
-        urn.addVote(UUID.randomUUID(), processId, selection.blank() ? null : selection.optionId());
-        String receiptCode = receipts.newReceiptCode();
-        String receiptHash = AuditEvent.sha256(receiptCode);
-        urn.addReceipt(receiptHash, processId);
-        // data-model section 5: the payload of a vote event is the hash of the receipt hash.
-        urn.append(AuditEvent.next(head, AuditEventType.VOTE_RECEIVED, now, receiptHash));
-        return receiptCode;
     }
 
     private void revertOrRecord(String votingToken, long processId) {

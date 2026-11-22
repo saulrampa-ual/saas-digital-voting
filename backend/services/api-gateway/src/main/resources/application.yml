@@ -36,6 +36,9 @@ spring:
 # run with GATEWAY_VOTER_ACCESS_RATE_LIMIT_ENABLED=false (and say so in its results).
 verivoto:
   gateway:
+    server:
+      # IMP-57 / H1c: queue of connections waiting to be accepted (SO_BACKLOG); the OS may cap it
+      backlog: ${GATEWAY_SERVER_BACKLOG:1024}
     voter-access-rate-limit:
       enabled: ${GATEWAY_VOTER_ACCESS_RATE_LIMIT_ENABLED:true}
       capacity: ${GATEWAY_VOTER_ACCESS_RATE_LIMIT_CAPACITY:120}
