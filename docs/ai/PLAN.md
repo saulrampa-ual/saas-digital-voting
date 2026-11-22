@@ -15,7 +15,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Bloque | Estado |
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
-| Pruebas y medición (P7) | Cerrado el 15/11/2026: 168 pruebas backend (17/11) y 144 frontend (16/11); cobertura de líneas 42–91 % por servicio en backend (59,1 % en conjunto) y 42,0 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
+| Pruebas y medición (P7) | Cerrado el 15/11/2026. Cifras actuales: 175 pruebas backend (22/11) y 259 frontend (20/11); cobertura de líneas 45–90 % por servicio en backend (59,7 % en conjunto) y 87,8 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
 | Memoria (P8) | En curso: C1 aplicado para H1a, H1b y H1c; C1 y C2 hechos (15/11: capturas, figuras 5.1 y 5.2, cifras de pruebas y cobertura); falta C4 |
 | Publicación | PR #4 fusionado en `main` el 15/11/2026 (`7ee3a57`), con `build` y `security` en verde. Anteproyecto firmado por el director (comunicado por el autor el 15/11/2026) |
 

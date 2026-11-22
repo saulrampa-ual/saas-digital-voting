@@ -2,25 +2,29 @@
 \label{cap:evaluacion-resultados}
 
 \section{Pruebas disponibles}
-En las últimas ejecuciones registradas terminaron correctamente 168 pruebas
-de backend (\texttt{mvnw verify} del 15/11/2026 y pruebas de identity del
-17/11/2026: gateway 16, identity 30, election 58, voter-access 38 y
-ballot-box 26) y 144 de frontend, en 13 ficheros
-(\texttt{npm run test:coverage} del 16/11/2026); \texttt{npm run build} terminó
+En las últimas ejecuciones registradas terminaron correctamente 175 pruebas
+de backend (\texttt{mvnw verify} completo del 22/11/2026: gateway 16,
+identity 30, election 58, voter-access 38 y ballot-box 33) y 259 de frontend,
+en 31 ficheros (\texttt{npm run test:coverage} del 20/11/2026); \texttt{npm run build} terminó
 correctamente en la ejecución completa del 13/11/2026. Las pruebas unitarias y de arquitectura cubren reglas
 seleccionadas de permisos, ciclo de vida, importación del censo, acceso del
 votante, consumo del token, cadena de auditoría, escrutinio y separación
 arquitectónica; las añadidas el 15/11/2026 cubren el límite de peticiones por
 dirección del \emph{gateway} y la audiencia que el cliente de administración de
-Keycloak asigna a las claves de API, y las del 17/11/2026, la desactivación
-de cuentas y claves al suspender una organización. En frontend se cubren la guarda de rol, el flujo de voto y
+Keycloak asigna a las claves de API, las del 17/11/2026, la desactivación
+de cuentas y claves al suspender una organización, y las del 19/11/2026, la
+confirmación de votos por grupos en la urna. En frontend se cubren la guarda de rol, el flujo de voto y
 recibo, el retorno SSO con PKCE, componentes del panel de la consola, el
 asistente de creación de procesos, la traducción automática de sus textos, el
 aviso de caducidad de la sesión, el servicio de autenticación, la importación
 del censo en Excel y los estados del flujo del votante (enlace, código,
-papeleta, voto, recibo, resultado y cuenta institucional).
+papeleta, voto, recibo, resultado y cuenta institucional). Desde el
+20/11/2026 se cubren también las páginas de la consola (inicio, censos,
+procesos, participación y avisos, resultados, auditoría, trazabilidad,
+privacidad y claves de API), los clientes de la API, el recálculo del
+resultado en el navegador y la carga de todas las rutas.
 
-Veintitrés de las pruebas de backend, repartidas en nueve clases, se ejecutan
+Veinticuatro de las pruebas de backend, repartidas en nueve clases, se ejecutan
 contra PostgreSQL 18.6 con Testcontainers. Aplican las migraciones Flyway de
 identity, election, voter-access y ballot-box y verifican el trigger
 append-only de acciones administrativas, la participación con fecha sin hora
@@ -51,12 +55,14 @@ estados del aviso de demasiadas peticiones (al abrir el enlace, al pedir el
 código y al comprobarlo): sus 12 comprobaciones nuevas, y las 88 anteriores
 repetidas con ellas, no dan incumplimientos críticos ni serios.
 
-La cobertura de líneas JaCoCo, con los últimos informes de cada servicio
-(15 a 17/11/2026), es: gateway 91,2\% (62/68), identity 75,2\% (625/831),
-election 74,1\% (1316/1777), voter-access 50,4\% (793/1573) y ballot-box
-41,6\% (683/1641); en conjunto, 59,1\% (3479/5890). En el frontend, medida con Vitest sobre todo
-el código de \texttt{src/app} el 16/11/2026, es del 42,0\% de las líneas
-(960/2287). En el código añadido o modificado desde el análisis del
+La cobertura de líneas JaCoCo del \texttt{mvnw verify} del 22/11/2026 es:
+gateway 90,3\% (65/72), identity 75,2\% (625/831), election 73,6\%
+(1328/1804), voter-access 50,4\% (793/1573) y ballot-box 44,9\% (771/1716);
+en conjunto, 59,7\% (3582/5996). En el frontend, medida con Vitest sobre el
+código de \texttt{src/app} el 20/11/2026, es del 87,8\% de las líneas
+(2543/2896). El total de líneas medidas del frontend pasó de 2287 a 2896
+porque desde esa fecha una prueba carga todas las rutas, de modo que se miden
+todas las páginas y no solo las que alguna prueba importaba. En el código añadido o modificado desde el análisis del
 04/11/2026, SonarQube midió el 14/11/2026 una cobertura del
 85,8\% en el backend y del 87,3\% en el frontend, por encima del mínimo del
 80\% de su \emph{quality gate}; esa métrica combina líneas y condiciones, por
@@ -230,10 +236,11 @@ En resumen, de los diez requisitos Must, dos están aceptados con su criterio
 RNF-2 y RNF-4 están aceptados, RNF-17 no se cumple y RNF-10 no se ha evaluado; RNF-18 (Could) está aceptado.
 
 \section{Validez}
-La cobertura global es baja y desigual (del 41,6\% de ballot-box al 91,2\% del
-\emph{gateway} en el backend y 42,0\% en el frontend) y limita la confianza que
-puede atribuirse a la suite; solo el código añadido desde el 04/11/2026 supera
-el 80\%. Las pruebas de
+La cobertura del backend es baja y desigual (del 44,9\% de ballot-box al
+90,3\% del \emph{gateway}; 59,7\% en conjunto) y limita la confianza que
+puede atribuirse a la suite. En el frontend alcanza el 87,8\% de las líneas,
+aunque una línea cubierta no garantiza que su comportamiento esté comprobado en
+todos los casos. Las pruebas de
 integración comprueban casos concretos de aislamiento entre organizaciones y
 de concurrencia sobre una única instancia; no sustituyen la verificación de
 todos los repositorios y rutas ni la concurrencia real de un despliegue. El rechazo de H1c se limita a la configuración

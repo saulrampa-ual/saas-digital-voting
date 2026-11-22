@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-20 · Rama: `dev` (HEAD `4d0ed29`; cambios locales sin commit) · sin push
+Última actualización: 2026-11-22 · Rama: `dev` (HEAD `b581466`; cambios locales sin commit) · sin push
 
 ## Hitos
 
@@ -19,6 +19,13 @@
 
 ## Hecho
 
+- 22/11 (sin commit): memoria y presentación recompiladas con `pdflatex` en dos pasadas cada una; memoria de 97 páginas y presentación de 20. `latexmk` no pudo ejecutarse porque falta Perl en MiKTeX. La segunda pasada no reporta referencias sin resolver.
+
+- 22/11 (sin commit): recuento final con las ejecuciones del autor. Backend `mvnw verify` completo (22/11, BUILD
+  SUCCESS): 175 pruebas, 0 fallos (gateway 16, identity 30, election 58, voter-access 38, ballot-box 33), 24 de
+  integración sobre PostgreSQL; JaCoCo 59,7 % (3582/5996). Frontend (20/11): 259 pruebas, 87,8 % de líneas (2543/2896).
+  Actualizados la memoria (capítulo 13, validez, conclusiones, resumen es/en, Gantt), la presentación, su guion,
+  `informe.md`, `cierre.md`, `PLAN.md` y `TRACEABILITY.md`. `dev` → `main` hecho por el autor (PR #7, `4fc8dba`).
 - 20/11: RNF-18 actualizado en la memoria con la prueba de reinstalación del icono PWA en Android y sus límites;
   se añadieron dos capturas recortadas en `Plantilla-TFM-Informatica-UAL/Figuras/capturas/`. El acceso usó una
   ruta sintética sin invitación real y mostró «Página no encontrada»; no se verificó el voto. La memoria se compiló
@@ -255,9 +262,6 @@
 ## Pendiente
 
 
-- Recuento final: `mvnw verify` completo del backend y `npm run test:coverage` del frontend, para actualizar en la
-  memoria, la presentación e `informe.md` el número de pruebas (ballot-box pasa de 26 a 33; integración, de 23 a 24) y
-  la cobertura. Hoy las cifras publicadas son las del 17/11.
 - M1 (20/11): revisión con el Narrador según `docs/evaluation/accesibilidad-manual-guion.md`.
 - M3: revisión heurística con una segunda persona (`docs/evaluation/revision-heuristica/`).
 - Q-13 y correo de seguimiento al tutor con los resultados del 18–19/11.

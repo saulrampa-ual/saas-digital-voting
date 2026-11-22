@@ -195,8 +195,8 @@
 \section{Evaluación}
 \begin{frame}{Calidad del código y seguridad}
   \begin{columns}[T]
-    \column{0.24\textwidth}\cifra{312}{pruebas automáticas, 0 fallos\\(168 backend, 144 frontend)}
-    \column{0.24\textwidth}\cifra{23}{de integración sobre PostgreSQL real}
+    \column{0.24\textwidth}\cifra{434}{pruebas automáticas, 0 fallos\\(175 backend, 259 frontend)}
+    \column{0.24\textwidth}\cifra{24}{de integración sobre PostgreSQL real}
     \column{0.24\textwidth}\cifra{212}{comprobaciones axe sin incumplimientos críticos ni serios}
     \column{0.24\textwidth}\cifra{>85\,\%}{cobertura del código nuevo (SonarQube)}
   \end{columns}
@@ -204,7 +204,7 @@
   \begin{itemize}\small
     \item CI en GitHub Actions: pruebas, accesibilidad, Semgrep, Trivy, gitleaks, \texttt{npm audit}
     \item Modelo de amenazas STRIDE; límite de peticiones por IP y audiencia JWT exigida
-    \item Cobertura global de líneas: 59,1\,\% backend y 42,0\,\% frontend (limitación declarada)
+    \item Cobertura de líneas: 59,7\,\% backend (limitación declarada) y 87,8\,\% frontend
   \end{itemize}
 \end{frame}
 

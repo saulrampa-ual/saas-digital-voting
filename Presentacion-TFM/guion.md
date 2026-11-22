@@ -77,10 +77,10 @@ Las diapositivas de **reserva** (después de «Gracias») no se presentan: sirve
 
 ## 10. Calidad y seguridad (1 min)
 
-> Hay 312 pruebas automáticas sin fallos, 23 de ellas contra PostgreSQL real, y 212 comprobaciones de accesibilidad
+> Hay 434 pruebas automáticas sin fallos, 24 de ellas contra PostgreSQL real, y 212 comprobaciones de accesibilidad
 > con axe sin incumplimientos críticos ni serios. El código nuevo supera el 85 % de cobertura en SonarQube, y la
 > integración continua ejecuta Semgrep, Trivy y gitleaks.
-> La cobertura global de líneas, 59 % en backend y 42 % en frontend, es una limitación que declaro.
+> La cobertura de líneas es del 88 % en el frontend; la del backend, 60 %, es una limitación que declaro.
 
 ## 11. Hipótesis: resultados (1 min 30 s)
 
