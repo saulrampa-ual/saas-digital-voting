@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-22 · Rama: `dev` (HEAD `b581466`; cambios locales sin commit) · sin push
+Última actualización: 2026-11-22 · Rama: `dev` (HEAD `cb623e9`; árbol limpio; commits locales sin push)
 
 ## Hitos
 
