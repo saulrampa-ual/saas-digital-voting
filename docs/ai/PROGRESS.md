@@ -13,13 +13,26 @@
 | P4 | 16/11 – 30/11 | Rebanada vertical del voto (RF-06–10, RF-20) | Hecho (todo en `dev`, `cbecfd2`) |
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
-| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Cerrado el 15/11/2026: 151 pruebas backend y 92 frontend, 0 fallos; H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11); RNF-4 aceptado (13/11). Limitaciones en `docs/evaluation/resultados-p7/cierre.md` |
-| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 93 páginas y presentación de defensa con 20 diapositivas; revisión editorial y visual completa aún pendiente |
+| P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Cerrado el 15/11/2026: 151 pruebas backend y 92 frontend, 0 fallos; H1a aceptada el 22/11 tras la revisión manual con el Narrador (M1); H1b aceptada (09/11); H1c rechazada (11/11); RNF-4 aceptado (13/11). Limitaciones en `docs/evaluation/resultados-p7/cierre.md` |
+| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 97 páginas y presentación de defensa con 20 diapositivas; revisión editorial y visual completa aún pendiente |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
 ## Hecho
 
-- 22/11 (sin commit): memoria y presentación recompiladas con `pdflatex` en dos pasadas cada una; memoria de 97 páginas y presentación de 20. `latexmk` no pudo ejecutarse porque falta Perl en MiKTeX. La segunda pasada no reporta referencias sin resolver.
+- 22/11: **M1 hecho, H1a aceptada.** Revisión manual con el Narrador de Windows en Chrome sobre la demo
+  sintética: teclas enviadas por la IA desde la extensión del navegador, anuncios escuchados y confirmados por el
+  autor (las flechas del modo de examen, el autor). Obligatorias 39/39: 37 cumplen, 0 bloqueos, 2 incidencias
+  (IMP-67 nombre «Input N of 6» de las casillas; IMP-68 cuenta atrás leída cada segundo). Contraste de los botones
+  verdes con foco 3,32:1: corregido con aprobación del autor en `frontend/src/styles.scss` (IMP-69) y re-medido
+  (5,26:1, contorno de 3 px visible). Recomendadas: 3/11 revisadas y correctas, 8 sin revisar. Hojas
+  `docs/evaluation/accesibilidad-manual-*.csv` rellenadas; memoria (cap. 13, conclusiones, resumen, especificación),
+  presentación, guion, preguntas, `informe.md`, `cierre.md`, PLAN y pregunta 7 del tutor actualizados. Verificado en
+  Windows: `npm run test:ci` (259/259); E2E de accesibilidad (100/100 con axe; 25 estados, dos anchos y dos idiomas).
+  Memoria recompilada con pdfLaTeX en dos pasadas (97 páginas) y presentación en dos pasadas (20 páginas). Compose
+  parado conservando volúmenes; no había procesos Java activos. Pendiente: revisión visual/editorial de P8, confirmación
+  del tutor sobre el Narrador y seguimiento de IMP-67/68.
+- 22/11: pdfLaTeX recompiló memoria y presentación en dos pasadas cada una; la segunda pasada no informa referencias
+  sin resolver. `latexmk` no se usó porque MiKTeX requiere Perl; compilación directa correcta.
 
 - 22/11 (sin commit): recuento final con las ejecuciones del autor. Backend `mvnw verify` completo (22/11, BUILD
   SUCCESS): 175 pruebas, 0 fallos (gateway 16, identity 30, election 58, voter-access 38, ballot-box 33), 24 de
@@ -262,7 +275,7 @@
 ## Pendiente
 
 
-- M1 (20/11): revisión con el Narrador según `docs/evaluation/accesibilidad-manual-guion.md`.
+- M1: hecho el 22/11; pendiente confirmar con el tutor la aceptación del Narrador.
 - M3: revisión heurística con una segunda persona (`docs/evaluation/revision-heuristica/`).
 - Q-13 y correo de seguimiento al tutor con los resultados del 18–19/11.
 - M6/A9 (SSO @inlumine.ual.es): bloqueado y trabajo futuro (P9). No es posible probarlo en esta fase por falta de acceso a las cuentas y a la configuración institucional; validar con el tutor. Opción oculta en la consola (features.institutionalSso = false, 20/11/2026).
@@ -284,7 +297,7 @@
 - P7.6: materiales listos (`preparacion-sesion.md`, `censo-sesion.csv`, guion, hoja y protocolo alineados con D-49).
   El autor debe montar el escenario `USAB`, hacer un ensayo y realizar las cinco sesiones con votantes; resultados en
   la hoja como cantidades (x de 5).
-- P7.7: completar `docs/evaluation/informe.md` con evidencias posteriores; H1a sin decisión (parte manual no realizada); H1b aceptada (09/11); H1c rechazada (11/11).
+- P7.7: completado el 22/11; `informe.md` y `cierre.md` incluyen H1a aceptada, H1b aceptada (09/11) y H1c rechazada (11/11).
 - P8: enfoque aprobado por el autor. P8.1 corrige el alcance de RF-11 y añade la comparación de planificación;
   los capítulos de diseño técnico, implementación, amenazas, evaluación y conclusiones son borradores basados en
   las evidencias actuales. Se recompiló el PDF de 79 páginas y se inspeccionaron la introducción, el flujo de voto,
@@ -313,7 +326,7 @@ Ver también `docs/ai/PLAN.md` (tareas, preguntas al autor y calendario). **Nove
 3. RNF-4 online (D-57): rellenar los huecos de `rnf4-participantes-online.md`, `node scripts/demo/seed-rnf4.mjs`,
    `cloudflared tunnel --url http://localhost:4200 --http-host-header localhost:4200`, `.local\rnf4-remoto.ps1 -Url <URL>` y
    ensayo completo con R2 desde otra red antes de la primera sesión.
-3. H1b aceptada (10/11) y H1c rechazada (11/11). Siguiente: parte manual de H1a (NVDA), repetir RNF-4 con
+3. H1b aceptada (10/11), H1c rechazada (11/11) y H1a aceptada (22/11, Narrador). Siguiente: confirmación del tutor y repetir RNF-4 con
    administradores sin formación previa y, si el autor lo aprueba, IMP-57 (perfilar la emisión) en P9.
 4. Revisar P8.1–P8.3, corregir la arquitectura objetivo/implementada, completar capturas seguras y ejecutar la
    revisión editorial y visual final de P8.4.

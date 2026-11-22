@@ -113,10 +113,12 @@ lugar de suponer la causa, y repetir la prueba en un entorno dimensionado y no e
 y Docker comparten CPU. La confirmación por grupos la mantengo porque corrige un caso de commit ambiguo que podía
 permitir votar dos veces.
 
-**¿Por qué H1a queda «sin decisión» y no aceptada?**
+**¿Cómo aceptaste H1a?**
 El criterio exige la parte automática y una revisión manual con teclado y lector de pantalla. La automática da 0
-incumplimientos críticos y serios en 212 comprobaciones, pero la manual no se pudo hacer (NVDA no funcionó en el
-equipo). Aceptarla sin esa parte sería cambiar el criterio.
+incumplimientos críticos y serios en 212 comprobaciones. La manual la hice el 22/11/2026 con el Narrador de Windows,
+porque NVDA no funcionó en mi equipo: 39 comprobaciones obligatorias, sin bloqueos y con 2 incidencias menores. El
+contraste de los botones verdes con el foco bajaba a 3,32:1; lo corregí antes de decidir y lo volví a medir (5,26:1).
+La limitación es que es un solo lector de pantalla y que la revisión la hice yo.
 
 **¿H1c rechazada significa que no cumples los objetivos del anteproyecto?**
 No. El objetivo de evaluación (OE5) pide hacer una prueba de carga y documentar los resultados, incluidos los criterios
@@ -148,7 +150,7 @@ memoria detalla el encaje en la sección de encaje con el máster.
 
 **¿Qué cambiarías si empezaras de nuevo?**
 Haría la prueba de carga mucho antes, con una versión mínima del flujo de voto, para diseñar el registro de la urna
-pensando en el rendimiento desde el principio. Y montaría el entorno de accesibilidad manual al inicio.
+pensando en el rendimiento desde el principio. Y montaría el entorno de accesibilidad manual al inicio, porque llegó muy tarde.
 
 **¿Has usado herramientas de inteligencia artificial?**
 Responde con la verdad y con precisión: qué usaste, para qué (código, pruebas, documentación) y cómo lo controlaste

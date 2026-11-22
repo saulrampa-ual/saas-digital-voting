@@ -15,8 +15,8 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Bloque | Estado |
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
-| Pruebas y medición (P7) | Cerrado el 15/11/2026. Cifras actuales: 175 pruebas backend (22/11) y 259 frontend (20/11); cobertura de líneas 45–90 % por servicio en backend (59,7 % en conjunto) y 87,8 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a sin decisión (parte automática favorable; parte manual no realizada); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
-| Memoria (P8) | En curso: C1 aplicado para H1a, H1b y H1c; C1 y C2 hechos (15/11: capturas, figuras 5.1 y 5.2, cifras de pruebas y cobertura); falta C4 |
+| Pruebas y medición (P7) | Cerrado el 15/11/2026. Cifras actuales: 175 pruebas backend (22/11), 259 unitarias frontend y 100 E2E de accesibilidad (22/11); cobertura de líneas 45–90 % por servicio en backend (59,7 % en conjunto) y 87,8 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a aceptada (22/11, revisión manual con Narrador); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
+| Memoria (P8) | En curso: C1 actualizado para H1a, H1b y H1c el 22/11; memoria recompilada (97 páginas) y presentación recompilada (20 diapositivas); falta revisión editorial y visual C4 |
 | Publicación | PR #4 fusionado en `main` el 15/11/2026 (`7ee3a57`), con `build` y `security` en verde. Anteproyecto firmado por el director (comunicado por el autor el 15/11/2026) |
 
 ---
@@ -162,8 +162,8 @@ Guía, versiones y línea base: `docs/architecture/quality-and-security.md` (D-5
   menos 4 de 5 interpretan la verificación.
 - [x] **B3 · Revisión manual de accesibilidad** (`Autor`, parte manual de H1a): teclado y lector de pantalla
   (NVDA o Narrador) en acceso, voto y recibo siguiendo `docs/evaluation/accesibilidad-manual.md`.
-  **Cerrada sin ejecutar (08/11/2026):** NVDA no leía la página en el equipo del autor; se aplica el anexo del guion.
-  H1a queda sin decisión y las hojas CSV se conservan sin rellenar.
+  **Hecho (22/11/2026):** revisión con el Narrador de Windows tras adaptar el guion; 39 comprobaciones obligatorias,
+  0 bloqueos y 2 incidencias documentadas. H1a aceptada tras corregir y volver a medir el contraste de foco.
 - [x] **B4 · RNF-4 con administradores** (`Autor`): sesión realizada (comunicado el 03/11/2026). Falta registrar
   los datos (Q-11 → A12; hecho el 05/11) y fijar la definición de «sin ayuda» (Q-02; hecho, D-55).
 
@@ -232,7 +232,7 @@ su evidencia); lo que no exige el anteproyecto se trata como mejora y se hace so
 | OE2 | Pruebas de las transiciones de estado y contrato OpenAPI publicado | Cumplido: `ProcessStatusTest`, `VotingProcessTest`; contratos en `openapi/` de cada servicio y Swagger UI |
 | OE3 | Unicidad del token de emisión y ausencia de vínculos entre identidad y voto | Cumplido: 20 envíos simultáneos dan 1 voto; esquema y registros sin vínculo (voter-access y ballot-box) |
 | OE4 | Recálculo independiente del resultado y verificación de la cadena de huellas | Cumplido: recálculo en el navegador (D-37), `ChainVerifierTest`, `TallyResultTest` |
-| OE5 | Informe de evaluación por hipótesis, con los criterios no alcanzados | Cumplido: capítulo 13 e `informe.md` (H1b y RNF-4 aceptados, H1c rechazada, H1a sin decisión) |
+| OE5 | Informe de evaluación por hipótesis, con los criterios no alcanzados | Cumplido: capítulo 13 e `informe.md` (H1a, H1b y RNF-4 aceptados; H1c rechazada) |
 
 La memoria solo tenía OE1–OE4; el 17/11 se añadió OE5 (objetivos, tabla 1.1 y conclusiones) para que coincida con el
 anteproyecto.
@@ -275,7 +275,7 @@ anteproyecto. Orden: de más valor y menos coste a menos valor y más coste.
 
 | Id | RNF | Qué se hace | Quién y cuánto | Preparado | Resultado en la memoria |
 | --- | --- | --- | --- | --- | --- |
-| M1 | RNF-1 | Revisión manual con teclado y lector de pantalla (`accesibilidad-manual-guion.md`). NVDA no funcionó en el equipo del autor: guion adaptado al Narrador de Windows el 18/11 | Autor, 1–2 h | Guion y hojas CSV | H1a pasa a aceptada o rechazada (tablas 13.1 y 13.2, conclusiones, diapositiva 11) |
+| M1 | RNF-1 | Revisión manual con teclado y lector de pantalla (`accesibilidad-manual-guion.md`). NVDA no funcionó en el equipo del autor: guion adaptado al Narrador de Windows el 18/11 | Autor, 1–2 h | Guion y hojas CSV | **Hecho (22/11/2026)**: 39/39 obligatorias, 0 bloqueos, 2 incidencias (IMP-67, IMP-68); contraste con foco de los botones verdes 3,32:1, corregido (IMP-69) y re-medido 5,26:1. H1a **aceptada**; `test:ci` 259/259, axe 100/100; memoria y presentación recompiladas. Aplicado en tablas 13.1 y 13.2, conclusiones, resumen, especificación, diapositivas 11 y 13, guion y pregunta 7 del tutor. Pendiente: confirmación del tutor sobre el Narrador |
 | M2 | RNF-2 | Las 212 comprobaciones E2E también en Firefox y WebKit (motor de Safari) | Autor, 30 min de ejecución. IA analiza y propone correcciones | Hecho: `E2E_BROWSERS=all` en `playwright.config.ts` (636 pruebas listadas; por defecto y en CI sigue solo Chromium) | RNF-2 pasa a aceptado o se registran defectos |
 | M3 | RNF-8, 9, 10 | Revisión heurística de Nielsen por dos personas y cronometraje de la realimentación | Autor y otra persona, 60–90 min cada uno. IA junta las hojas y redacta | Hecho: `docs/evaluation/revision-heuristica/` (protocolo y hoja) | Estado de RNF-8, 9 y 10 en la tabla 13.2 |
 | M4 ✔ (18/11, autor: instalada en iOS y Android; iconos de marca después, D-64) | RNF-18 | Instalar la PWA en Android (Chrome, «Instalar aplicación») e iOS (Safari, «Añadir a pantalla de inicio») a través de un túnel HTTPS, como en las sesiones RNF-4 | Autor, 30 min. IA prepara la lista de comprobación | Túnel ya usado el 13/11 | RNF-18 aceptado o no |
@@ -382,4 +382,5 @@ WebKit: 211 de 212 y 0 incumplimientos en sus 207 resultados; la restante (V8-re
 | 19/11/2026 | IMP-64 implementada | Confirmación por grupos (D-65) y arreglo del commit ambiguo; serie C preparada en `carga.md` (reglas fijadas antes de medir). Pendiente: `mvnw verify` y serie C del autor. Sin commit |
 | 19/11/2026 | M5, IMP-64 | Keycloak local recuperado (scripts `scripts/dev/keycloak-*`, `start-services.ps1`). Serie B de H1c: humo correcto; 20–22 descartadas (variables sin cargar); 23–25 contra un *gateway* antiguo; 26 válida y rechazada (p95 7,2 s). H1c cerrada como rechazada; memoria y presentación actualizadas. Sin commit |
 | 20/11/2026 | Revisión del plan | Contrastado con el repositorio: `dev` va 3 commits por delante de `origin/dev` (`f0f4482`, `56746fa`, `39d939d`) y hay 4 ficheros modificados sin commit. M5 actualizada con la serie C. Abiertos: Q-10, Q-13, M1, M3, M6/A9, recuento final de pruebas y cobertura, C4, E2, E3 |
+| 22/11/2026 | M1, C1, C4 | Revisión manual H1a completada con Narrador (39 obligatorias, 0 bloqueos); contraste corregido y re-medido. `test:ci` 259/259 y E2E axe 100/100; memoria (97 páginas) y presentación (20 diapositivas) recompiladas. H1a aceptada; pendiente confirmación del tutor y revisión editorial/visual C4 |
 | 20/11/2026 | M6/A9, M6b | SSO bloqueado y trabajo futuro (sección 9; opción oculta en la consola, IMP-65). M6b aplicado sin commit: «Identificador institucional» fuera de la interfaz de gestión y plantillas Excel regeneradas (IMP-66) |

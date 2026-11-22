@@ -7,7 +7,7 @@ recoge el estado final de P7; el detalle y las fuentes están en `docs/evaluatio
 
 | Elemento | Resultado | Fuente |
 | --- | --- | --- |
-| H1a · accesibilidad | **Sin decisión.** Parte automática favorable: 200 comprobaciones con Playwright y axe sin incumplimientos críticos ni serios (13/11/2026); el 16/11/2026 el flujo del votante suma los 3 estados de IMP-50 (100 de 100 sin críticos ni serios). Parte manual (teclado y lector de pantalla) no realizada | `accesibilidad-axe-*.md`, `accesibilidad-manual.md` |
+| H1a · accesibilidad | **Aceptada** (22/11/2026). Parte automática: 200 comprobaciones con Playwright y axe sin incumplimientos críticos ni serios (13/11/2026); el 16/11/2026 el flujo del votante suma los 3 estados de IMP-50 (100 de 100 sin críticos ni serios). Parte manual con el Narrador de Windows: 39 de 39 obligatorias, 0 bloqueos, 2 incidencias; contraste con foco de los botones verdes corregido y re-medido | `accesibilidad-axe-*.md`, `accesibilidad-manual.md` |
 | H1b · usabilidad del votante | **Aceptada** (09/11/2026): 5 de 5 votan y obtienen el recibo sin ayuda en 3 minutos o menos; 5 de 5 interpretan la verificación. Evidencia descriptiva | `usabilidad/` |
 | H1c · rendimiento | **Rechazada** (11/11/2026): p95 de la emisión 4852, 2402 y 4849 ms con 500 usuarios simultáneos; cadena íntegra en las tres ejecuciones | `carga.md` |
 | RNF-4 · usabilidad de administración | **Aceptado** (13/11/2026): 5 de 5 administradores sin formación previa crean, configuran y programan un proceso sin ayuda en 4 minutos o menos | `usabilidad/` |
@@ -24,7 +24,7 @@ recoge el estado final de P7; el detalle y las fuentes están en `docs/evaluatio
 
 ## Lo que queda sin evidencia (limitaciones declaradas)
 
-- Parte manual de H1a.
+- H1a con otros lectores de pantalla (NVDA, JAWS) y con personas usuarias de lectores de pantalla.
 - RF-05a: inicio de sesión de gestión con un IdP externo (A9).
 - Repositorios sin prueba de integración propia (la autorización HTTP de identity se cubrió el 17/11/2026).
 - E2E funcional con Keycloak y Mailpit reales: los barridos usan servicios simulados.
