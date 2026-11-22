@@ -25,7 +25,7 @@ Preparado el 20/11/2026. Base: `docs/ai/PLAN.md` (preguntas Q-01 a Q-13 y secci�
 | 4 | SSO con cuentas `@inlumine.ual.es` (M6/A9) | Aceptar que quede como trabajo futuro | Texto de limitaciones y tabla de RF | |
 | 5 | Identificador institucional oculto (M6b) | Confirmar que es correcto no mostrarlo | Ninguno (ya aplicado) | |
 | 6 | H1c rechazada (prueba de carga) | Aceptar el resultado documentado | Conclusiones y defensa | |
-| 7 | H1a (accesibilidad manual) | Aceptar el resultado o la decisión pendiente | Tabla 13.1 y conclusiones | |
+| 7 | H1a (accesibilidad manual) | Confirmar la aceptación con el Narrador y la corrección previa | Tabla 13.1 y conclusiones | |
 | 8 | Alcance final del MVP | Confirmar lo que queda fuera | Tablas 1.1 y 4.3 | |
 | 9 | Limitaciones de las sesiones de usabilidad | Aceptar cómo están descritas | Capítulo 13 | |
 | 10 | Revisión heurística (M3) | Si es útil y quién puede ser el segundo evaluador | RNF-8, 9 y 10 | |
@@ -153,16 +153,21 @@ voto.
 **Contexto.** El criterio que él validó (D-49) tiene dos partes: (1) cero incumplimientos críticos o serios con axe,
 que **se cumple** (212 comprobaciones en Chrome, Firefox y WebKit), y (2) una revisión manual con teclado y lector de
 pantalla sin bloqueos. La parte manual no se pudo hacer el 08/11 porque NVDA no leía la página en el equipo del autor.
-El guion se adaptó al **Narrador de Windows** y la revisión (M1) está prevista para el 20/11/2026.
+El guion se adaptó al **Narrador de Windows** y la revisión (M1) se hizo el **22/11/2026** en Chrome con la demo
+sintética: 39 de 39 comprobaciones obligatorias, **0 bloqueos** y 2 incidencias menores (las casillas del código se
+anuncian como «Input 1 of 6», en inglés, y la cuenta atrás para pedir otro código se lee cada segundo). Los botones
+verdes bajaban de 5,26:1 a **3,32:1** de contraste al recibir el foco (mínimo 4,5:1). Según el guion, se corrigió antes de
+decidir (hoja de estilos global, sin la capa blanca de Ionic y con contorno de 3 px) y, medido de nuevo, quedan en 5,26:1.
+Con eso, H1a figura como **aceptada** en la memoria.
 
-**Ejemplo.** Si no aparece ningún bloqueo, H1a pasa a **aceptada**. Si aparece un bloqueo (por ejemplo, el Narrador no
-anuncia la opción elegida en la papeleta), H1a queda **rechazada** en esa versión y el defecto se registra. Si no se
-pudiera terminar, se mantiene «sin decisión».
+**Ejemplo.** Si no le vale el Narrador, H1a volvería a «sin decisión» hasta repetir la revisión con NVDA. Si no le vale
+corregir el contraste antes de decidir, H1a quedaría **rechazada** en la versión inicial y aceptada en la corregida.
 
-**Pregunta.** (Llevar el resultado de M1.) ¿Le vale el Narrador como lector de pantalla para cumplir el criterio, en
-lugar de NVDA?
+**Pregunta.** ¿Le vale el Narrador como lector de pantalla para cumplir el criterio, en lugar de NVDA? ¿Y le parece
+correcto corregir el contraste y volver a medir antes de decidir, como prevé el guion?
 
-**Propuesta.** Aceptar el Narrador, que es el lector incluido en Windows 11.
+**Propuesta.** Aceptar el Narrador, que es el lector incluido en Windows 11, y la corrección previa, porque el guion lo
+prevé y el criterio no se ha relajado.
 
 ## 8. Alcance final del MVP
 

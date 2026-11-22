@@ -43,6 +43,13 @@ ion-button {
   text-transform: none;
   letter-spacing: normal;
 }
+/*
+ * Keyboard focus on filled colored buttons (M1, WCAG 1.4.3): Ionic paints a white layer at 24 % over the button,
+ * which drops white text on the action green from 5.26:1 to 3.32:1. The layer is removed and the focus is shown
+ * with the same 3 px outline in the primary color used by the rest of the app (11:1 against the page background).
+ */
+ion-button.button-solid.ion-color { --background-focused-opacity: 0; }
+ion-button.button-solid.ion-color.ion-focused { outline: 3px solid var(--ion-color-primary); outline-offset: 2px; }
 ion-item[button] { --min-height: 48px; }
 ion-input, ion-textarea, ion-select { --border-radius: var(--vv-radius-control); }
 ion-card {

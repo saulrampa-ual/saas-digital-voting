@@ -2,25 +2,29 @@
 \label{cap:evaluacion-resultados}
 
 \section{Pruebas disponibles}
-En las últimas ejecuciones registradas terminaron correctamente 168 pruebas
-de backend (\texttt{mvnw verify} del 15/11/2026 y pruebas de identity del
-17/11/2026: gateway 16, identity 30, election 58, voter-access 38 y
-ballot-box 26) y 144 de frontend, en 13 ficheros
-(\texttt{npm run test:coverage} del 16/11/2026); \texttt{npm run build} terminó
+En las últimas ejecuciones registradas terminaron correctamente 175 pruebas
+de backend (\texttt{mvnw verify} completo del 22/11/2026: gateway 16,
+identity 30, election 58, voter-access 38 y ballot-box 33) y 259 de frontend,
+en 31 ficheros (\texttt{npm run test:coverage} del 20/11/2026); \texttt{npm run build} terminó
 correctamente en la ejecución completa del 13/11/2026. Las pruebas unitarias y de arquitectura cubren reglas
 seleccionadas de permisos, ciclo de vida, importación del censo, acceso del
 votante, consumo del token, cadena de auditoría, escrutinio y separación
 arquitectónica; las añadidas el 15/11/2026 cubren el límite de peticiones por
 dirección del \emph{gateway} y la audiencia que el cliente de administración de
-Keycloak asigna a las claves de API, y las del 17/11/2026, la desactivación
-de cuentas y claves al suspender una organización. En frontend se cubren la guarda de rol, el flujo de voto y
+Keycloak asigna a las claves de API, las del 17/11/2026, la desactivación
+de cuentas y claves al suspender una organización, y las del 19/11/2026, la
+confirmación de votos por grupos en la urna. En frontend se cubren la guarda de rol, el flujo de voto y
 recibo, el retorno SSO con PKCE, componentes del panel de la consola, el
 asistente de creación de procesos, la traducción automática de sus textos, el
 aviso de caducidad de la sesión, el servicio de autenticación, la importación
 del censo en Excel y los estados del flujo del votante (enlace, código,
-papeleta, voto, recibo, resultado y cuenta institucional).
+papeleta, voto, recibo, resultado y cuenta institucional). Desde el
+20/11/2026 se cubren también las páginas de la consola (inicio, censos,
+procesos, participación y avisos, resultados, auditoría, trazabilidad,
+privacidad y claves de API), los clientes de la API, el recálculo del
+resultado en el navegador y la carga de todas las rutas.
 
-Veintitrés de las pruebas de backend, repartidas en nueve clases, se ejecutan
+Veinticuatro de las pruebas de backend, repartidas en nueve clases, se ejecutan
 contra PostgreSQL 18.6 con Testcontainers. Aplican las migraciones Flyway de
 identity, election, voter-access y ballot-box y verifican el trigger
 append-only de acciones administrativas, la participación con fecha sin hora
@@ -51,12 +55,14 @@ estados del aviso de demasiadas peticiones (al abrir el enlace, al pedir el
 código y al comprobarlo): sus 12 comprobaciones nuevas, y las 88 anteriores
 repetidas con ellas, no dan incumplimientos críticos ni serios.
 
-La cobertura de líneas JaCoCo, con los últimos informes de cada servicio
-(15 a 17/11/2026), es: gateway 91,2\% (62/68), identity 75,2\% (625/831),
-election 74,1\% (1316/1777), voter-access 50,4\% (793/1573) y ballot-box
-41,6\% (683/1641); en conjunto, 59,1\% (3479/5890). En el frontend, medida con Vitest sobre todo
-el código de \texttt{src/app} el 16/11/2026, es del 42,0\% de las líneas
-(960/2287). En el código añadido o modificado desde el análisis del
+La cobertura de líneas JaCoCo del \texttt{mvnw verify} del 22/11/2026 es:
+gateway 90,3\% (65/72), identity 75,2\% (625/831), election 73,6\%
+(1328/1804), voter-access 50,4\% (793/1573) y ballot-box 44,9\% (771/1716);
+en conjunto, 59,7\% (3582/5996). En el frontend, medida con Vitest sobre el
+código de \texttt{src/app} el 20/11/2026, es del 87,8\% de las líneas
+(2543/2896). El total de líneas medidas del frontend pasó de 2287 a 2896
+porque desde esa fecha una prueba carga todas las rutas, de modo que se miden
+todas las páginas y no solo las que alguna prueba importaba. En el código añadido o modificado desde el análisis del
 04/11/2026, SonarQube midió el 14/11/2026 una cobertura del
 85,8\% en el backend y del 87,3\% en el frontend, por encima del mínimo del
 80\% de su \emph{quality gate}; esa métrica combina líneas y condiciones, por
@@ -74,7 +80,7 @@ limitaciones en \texttt{docs/evaluation/informe.md}.
 \endfirsthead
 \hline\textbf{Hipótesis} & \textbf{Criterio del protocolo} & \textbf{Estado del criterio} & \textbf{Resultado medido} \\
 \hline\endhead
-H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo. La auditoría automática no certifica conformidad WCAG. & Validado por el tutor & SIN DECISIÓN. Parte automática favorable: los barridos axe del flujo del votante (100 auditorías desde el 16/11/2026) dan 0 incumplimientos críticos y 0 serios tras corregir dos incidencias. La revisión manual con teclado y lector de pantalla no se realizó. \\
+H1a \mbox{(RNF-1)} & Cero incumplimientos críticos ni serios en las pantallas evaluadas, más revisión manual con teclado y lector de pantalla sin bloqueos en el flujo de acceso, voto y recibo. La auditoría automática no certifica conformidad WCAG. & Validado por el tutor & ACEPTADA (22/11/2026). Parte automática: los barridos axe del flujo del votante (100 auditorías desde el 16/11/2026) dan 0 incumplimientos críticos y 0 serios tras corregir dos incidencias. Revisión manual con teclado y el Narrador de Windows: 39 de 39 comprobaciones obligatorias hechas, 0 bloqueos y 2 incidencias; un contraste por debajo de 4,5:1 con el foco se corrigió y se volvió a medir. \\
 \hline
 H1b \mbox{(RNF-3,} \mbox{RNF-6)} & Los 5 participantes no técnicos completan acceso, emisión y obtención del recibo en $\leq$ 3 minutos, y al menos 4 de 5 interpretan correctamente el resultado de la verificación. H0b: no se alcanza alguno de esos criterios. & Validado por el tutor & ACEPTADA (09/11/2026). 5 de 5 completan acceso, emisión y recibo sin ayuda en $\leq$ 3 minutos (mediana 51~s, máximo 79~s) y 5 de 5 interpretan correctamente el recibo. \\
 \hline
@@ -87,7 +93,7 @@ RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin fo
 
 El detalle de cada resultado de la tabla~\ref{tab:estado-hipotesis} es el siguiente.
 
-\textbf{H1a.} Parte automática favorable; parte manual no realizada. Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de la regla \texttt{aria-required-children}, todos de una misma incidencia en la papeleta; corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Repetido el 08/11/2026 sobre la versión vigente (\texttt{06f39be}), con el mismo resultado. La revisión manual con teclado y lector de pantalla que exige el criterio no se realizó antes del cierre: no es un incumplimiento, sino una parte del protocolo sin ejecutar. Evidencia parcial; sin decisión. El 16/11/2026, con el aviso de demasiadas peticiones, el barrido del flujo del votante pasa a 25 pantallas o estados y 100 auditorías, todas sin incumplimientos críticos ni serios.
+\textbf{H1a.} ACEPTADA (22/11/2026). Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de la regla \texttt{aria-required-children}, todos de una misma incidencia en la papeleta; corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Repetido el 08/11/2026 sobre la versión vigente (\texttt{06f39be}), con el mismo resultado. El 16/11/2026, con el aviso de demasiadas peticiones, el barrido del flujo del votante pasa a 25 pantallas o estados y 100 auditorías, todas sin incumplimientos críticos ni serios. La revisión manual se hizo el 22/11/2026 con el Narrador de Windows y Chrome sobre la demo sintética, siguiendo el guion de 39 comprobaciones obligatorias (acceso, código incorrecto, bloqueo por intentos, papeleta, confirmación, recibo, comprobación del recibo, foco visible y contrastes que axe no pudo calcular) y 11 recomendadas. Las teclas se enviaron desde una extensión del navegador y el autor escuchó y confirmó cada anuncio; las flechas del modo de examen las pulsó el autor. Resultado de las obligatorias: 37 cumplen, 0 bloqueos y 2 incidencias que no impiden votar (las casillas del código se anuncian con el nombre interno de Ionic en inglés, «Input 1 of 6», y la cuenta atrás para pedir otro código se anuncia cada segundo). Los botones verdes de acción bajaban de 5,26:1 a 3,32:1 al recibir el foco, por debajo de 4,5:1; se corrigió la hoja de estilos global (sin la capa blanca de Ionic y con un contorno de 3~px en el color primario) y, medido de nuevo, quedan en 5,26:1. De las recomendadas se revisaron 3 (ya votó, votación aún no abierta y enlace no válido), todas correctas; las otras 8 no se pudieron reproducir con la demo y quedan sin revisar. Los contrastes se calcularon con los estilos del navegador y la fórmula de WCAG~2.2, no con Colour Contrast Analyser. La decisión vale para la versión corregida, un solo lector de pantalla y un navegador, con la revisión hecha por el autor y no por personas usuarias de lectores de pantalla.
 
 \textbf{H1b.} ACEPTADA: sesiones del 09/11/2026 con consentimiento y escenario sintético. Cinco sesiones válidas (P02--P05 y la reserva R1; P01 se invalidó por una incidencia de entorno, porque su entrada del censo ya tenía un voto). 5 de 5 completan acceso, emisión y recibo sin ayuda en $\leq$ 3 minutos (T0--T1: mediana 51~s, mínimo 36~s, máximo 79~s; 0 errores) y 5 de 5 interpretan correctamente el recibo. Una sesión adicional con la segunda reserva (R2) queda fuera del cómputo y tuvo el mismo resultado. Evidencia descriptiva limitada al prototipo, la configuración y la población evaluados.
 
@@ -123,10 +129,9 @@ ambiguo que podía permitir un segundo voto. El criterio no se modifica a la
 vista del resultado.
 
 \section{Integración y requisitos de calidad}
-La integración PostgreSQL de otros repositorios, las pruebas funcionales de extremo a extremo del stack completo y la
-accesibilidad manual continúan pendientes; la sesión con votantes (H1b) se realizó el 09/11/2026 y
-las tres ejecuciones de carga (H1c), el 11/11/2026. En consecuencia, la
-evidencia disponible no permite declarar aceptados RNF-1 ni
+La integración PostgreSQL de otros repositorios, las pruebas funcionales de extremo a extremo del stack completo continúan pendientes; la sesión con votantes (H1b) se realizó el 09/11/2026,
+las tres ejecuciones de carga (H1c), el 11/11/2026, y la revisión manual de accesibilidad (H1a), el 22/11/2026. En consecuencia, la
+evidencia disponible no permite declarar aceptados
 RNF-11--RNF-15 en su conjunto, y RNF-17 no se cumple en la configuración
 local evaluada; para RNF-3 y RNF-6 se dispone de la evidencia
 descriptiva de H1b, con cinco participantes, y RNF-4 se acepta con la de las
@@ -160,7 +165,7 @@ propuesta en la tabla~\ref{tab:rnf-iso25010}.
 \endfoot
 \hline
 \endlastfoot
-RNF-1 & Must & 212 comprobaciones axe sin incumplimientos críticos ni serios (consola, flujo del votante y recibo; 1280 y 360 píxeles; español e inglés). La revisión manual con teclado y lector de pantalla no se realizó. & Evidencia parcial (H1a sin decisión) \\
+RNF-1 & Must & 212 comprobaciones axe sin incumplimientos críticos ni serios (consola, flujo del votante y recibo; 1280 y 360 píxeles; español e inglés). Revisión manual con teclado y el Narrador de Windows (22/11/2026): 0 bloqueos y 2 incidencias; el contraste con foco de los botones verdes se corrigió y se volvió a medir. & Aceptado (H1a) \\
 \hline
 RNF-2 & Should & Barridos a 1280 y 360 píxeles sin incumplimientos críticos ni serios en Chromium y Firefox (212 de 212 cada uno) y en WebKit (211 de 212 en la ejecución completa del 18/11/2026; la restante agotó el tiempo de espera antes de llegar a su pantalla y pasó al repetirla sola el 19/11/2026, sin incumplimientos). Uso real en Safari (iOS) y Chrome (Android) el 18/11/2026. & Aceptado \\
 \hline
@@ -230,10 +235,11 @@ En resumen, de los diez requisitos Must, dos están aceptados con su criterio
 RNF-2 y RNF-4 están aceptados, RNF-17 no se cumple y RNF-10 no se ha evaluado; RNF-18 (Could) está aceptado.
 
 \section{Validez}
-La cobertura global es baja y desigual (del 41,6\% de ballot-box al 91,2\% del
-\emph{gateway} en el backend y 42,0\% en el frontend) y limita la confianza que
-puede atribuirse a la suite; solo el código añadido desde el 04/11/2026 supera
-el 80\%. Las pruebas de
+La cobertura del backend es baja y desigual (del 44,9\% de ballot-box al
+90,3\% del \emph{gateway}; 59,7\% en conjunto) y limita la confianza que
+puede atribuirse a la suite. En el frontend alcanza el 87,8\% de las líneas,
+aunque una línea cubierta no garantiza que su comportamiento esté comprobado en
+todos los casos. Las pruebas de
 integración comprueban casos concretos de aislamiento entre organizaciones y
 de concurrencia sobre una única instancia; no sustituyen la verificación de
 todos los repositorios y rutas ni la concurrencia real de un despliegue. El rechazo de H1c se limita a la configuración
@@ -243,12 +249,11 @@ despliegue dimensionado, y el resultado de H1b, obtenido con cinco participantes
 autoseleccionados en un entorno local, no se extiende a otros votantes,
 dispositivos ni configuraciones. Los resultados aquí consignados se
 limitan a las ejecuciones disponibles y no se extrapolan a producción.
-La parte manual de H1a (teclado y lector de pantalla) no se ejecutó: el
-barrido automático solo cubre las reglas que axe puede decidir y dejó
-avisos sin resolver (contraste sobre fondos que no puede calcular y un
-atributo ARIA del recibo), y no comprueba cómo se anuncian los errores ni el
-orden del foco. Por eso H1a no se declara aceptada ni rechazada y queda como
-evidencia parcial y sin decisión.
+La aceptación de H1a se apoya en un único lector de pantalla (el Narrador
+de Windows) y un navegador, con la revisión hecha por el autor y no por
+personas usuarias de lectores de pantalla; los contrastes se calcularon a
+partir de los estilos del navegador, y 8 de las 11 comprobaciones
+recomendadas quedaron sin revisar porque la demo no reproduce esos estados.
 
 El resultado de RNF-4 tiene sus propias limitaciones: las cinco personas son
 estudiantes autoseleccionados del entorno del autor; la tarea se hizo a

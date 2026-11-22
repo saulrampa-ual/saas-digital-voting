@@ -77,18 +77,19 @@ Las diapositivas de **reserva** (después de «Gracias») no se presentan: sirve
 
 ## 10. Calidad y seguridad (1 min)
 
-> Hay 312 pruebas automáticas sin fallos, 23 de ellas contra PostgreSQL real, y 212 comprobaciones de accesibilidad
+> Hay 434 pruebas automáticas sin fallos, 24 de ellas contra PostgreSQL real, y 212 comprobaciones de accesibilidad
 > con axe sin incumplimientos críticos ni serios. El código nuevo supera el 85 % de cobertura en SonarQube, y la
 > integración continua ejecuta Semgrep, Trivy y gitleaks.
-> La cobertura global de líneas, 59 % en backend y 42 % en frontend, es una limitación que declaro.
+> La cobertura de líneas es del 88 % en el frontend; la del backend, 60 %, es una limitación que declaro.
 
 ## 11. Hipótesis: resultados (1 min 30 s)
 
-> Dos evaluaciones se aceptan. Cinco votantes no técnicos votaron y obtuvieron su recibo en menos de tres minutos,
+> Tres evaluaciones se aceptan. Cinco votantes no técnicos votaron y obtuvieron su recibo en menos de tres minutos,
 > con una mediana de 51 segundos, y los cinco entendieron qué significaba. Cinco administradores sin formación previa
 > crearon y programaron una votación en cuatro minutos como máximo, frente a los diez del criterio.
-> La accesibilidad queda sin decisión: la parte automática es favorable, pero no pude hacer la revisión manual con
-> lector de pantalla. Y el rendimiento se rechaza en las tres versiones que medí: con 500 usuarios a la vez no se
+> La accesibilidad del flujo del votante también se acepta: axe no da incumplimientos críticos ni serios y, en la
+> revisión con el Narrador de Windows, no hubo bloqueos; el contraste con foco de los botones verdes estaba por debajo
+> del mínimo, lo corregí y lo volví a medir. Y el rendimiento se rechaza en las tres versiones que medí: con 500 usuarios a la vez no se
 > llega a los 2 segundos, aunque no se perdió ni duplicó ningún voto. Ampliar las colas y guardar los votos por grupos
 > no cambió el ritmo, de unos 50 votos por segundo, así que el límite está en la cadena de servicios.
 > Con cinco participantes, la evidencia es descriptiva, no estadística.
@@ -97,14 +98,15 @@ Las diapositivas de **reserva** (después de «Gracias») no se presentan: sirve
 
 > Un recibo de presencia permite explicar la verificación sin revelar el voto, y los cinco participantes lo
 > entendieron. Separar participación y urna con un token de un solo uso controla la unicidad y reduce la vinculación.
-> E ISO/IEC 25010 organiza la evaluación, aunque la evidencia queda incompleta en rendimiento y accesibilidad manual.
+> E ISO/IEC 25010 organiza la evaluación, aunque la evidencia queda incompleta en rendimiento.
 > Los cuatro objetivos y los cinco objetivos específicos del anteproyecto tienen evidencia; la aceptación experimental
 > es parcial y así lo declaro.
 
 ## 13. Limitaciones y trabajo futuro (45 s)
 
-> Las limitaciones principales: solo en local, el rendimiento y la revisión manual de accesibilidad. Como trabajo
-> futuro: optimizar y repetir la prueba de carga, la revisión con lector de pantalla, permitir cambiar el voto y
+> Las limitaciones principales: solo en local, el rendimiento y una accesibilidad revisada con un solo lector de
+> pantalla. Como trabajo futuro: optimizar y repetir la prueba de carga, repetir la revisión con NVDA y con personas
+> usuarias de lectores de pantalla, permitir cambiar el voto y
 > avanzar hacia la verificabilidad extremo a extremo y un despliegue real.
 
 ## 14. Gracias (10 s)

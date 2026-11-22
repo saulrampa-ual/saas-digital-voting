@@ -30,10 +30,11 @@ const LOCAL_ACCOUNTS = {
   auditor: { fullName: 'Irene Vega', email: 'irene.vega@ual.test', role: 'AUDITOR' },
 };
 const LOCAL_SUPERADMIN = { username: 'daniel.ortiz@ual.test', email: 'daniel.ortiz@ual.test', firstName: 'Daniel', lastName: 'Ortiz' };
+// Keycloak rejects some characters in person names, such as parentheses (error-person-name-invalid-character)
 const DEMO_MANAGERS = {
-  admin: { fullName: 'Administración UAL (demo)', email: 'admin@ual.test', role: 'ADMIN' },
-  censo: { fullName: 'Gestión de censo UAL (demo)', email: 'censo@ual.test', role: 'CENSUS_MANAGER' },
-  auditor: { fullName: 'Auditoría UAL (demo)', email: 'auditor@ual.test', role: 'AUDITOR' },
+  admin: { fullName: 'Administración UAL demo', email: 'admin@ual.test', role: 'ADMIN' },
+  censo: { fullName: 'Gestión de censo UAL demo', email: 'censo@ual.test', role: 'CENSUS_MANAGER' },
+  auditor: { fullName: 'Auditoría UAL demo', email: 'auditor@ual.test', role: 'AUDITOR' },
 };
 const MANAGERS = MODE === 'accounts' ? LOCAL_ACCOUNTS : DEMO_MANAGERS;
 const voters = (key, label, n) => Array.from({ length: n }, (_, i) => ({

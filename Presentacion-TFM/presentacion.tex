@@ -195,8 +195,8 @@
 \section{Evaluación}
 \begin{frame}{Calidad del código y seguridad}
   \begin{columns}[T]
-    \column{0.24\textwidth}\cifra{312}{pruebas automáticas, 0 fallos\\(168 backend, 144 frontend)}
-    \column{0.24\textwidth}\cifra{23}{de integración sobre PostgreSQL real}
+    \column{0.24\textwidth}\cifra{434}{pruebas automáticas, 0 fallos\\(175 backend, 259 frontend)}
+    \column{0.24\textwidth}\cifra{24}{de integración sobre PostgreSQL real}
     \column{0.24\textwidth}\cifra{212}{comprobaciones axe sin incumplimientos críticos ni serios}
     \column{0.24\textwidth}\cifra{>85\,\%}{cobertura del código nuevo (SonarQube)}
   \end{columns}
@@ -204,7 +204,7 @@
   \begin{itemize}\small
     \item CI en GitHub Actions: pruebas, accesibilidad, Semgrep, Trivy, gitleaks, \texttt{npm audit}
     \item Modelo de amenazas STRIDE; límite de peticiones por IP y audiencia JWT exigida
-    \item Cobertura global de líneas: 59,1\,\% backend y 42,0\,\% frontend (limitación declarada)
+    \item Cobertura de líneas: 59,7\,\% backend (limitación declarada) y 87,8\,\% frontend
   \end{itemize}
 \end{frame}
 
@@ -217,7 +217,7 @@
     \midrule
     H1b · usabilidad del votante & 5 de 5 votan con recibo en \(\le\) 3 min; \(\ge\) 4 de 5 lo entienden & \textcolor{acierto}{\textbf{ACEPTADA}}: 5 de 5 (mediana 51 s); 5 de 5 entienden el recibo\\\addlinespace
     RNF-4 · administración & \(\ge\) 4 de 5 crean y programan un proceso en \(\le\) 10 min sin ayuda & \textcolor{acierto}{\textbf{ACEPTADO}}: 5 de 5, máximo 4 min\\\addlinespace
-    H1a · accesibilidad & 0 críticos ni serios + revisión manual & \textcolor{pendiente}{\textbf{SIN DECISIÓN}}: parte automática favorable; manual no realizada\\\addlinespace
+    H1a · accesibilidad & 0 críticos ni serios + revisión manual & \textcolor{acierto}{\textbf{ACEPTADA}}: axe sin críticos ni serios; Narrador sin bloqueos\\\addlinespace
     H1c · rendimiento & 500 simultáneos, p95 \(<\) 2 s en 3 ejecuciones & \textcolor{fallo}{\textbf{RECHAZADA}} en tres versiones; cadena siempre íntegra\\
     \bottomrule
   \end{tabular}
@@ -231,7 +231,7 @@
   \begin{description}\small
     \item[RQ1] Un recibo de presencia y una página pública permiten explicar la verificación sin revelar el voto: 5 de 5 participantes la interpretaron bien.
     \item[RQ2] Separar participación y urna, sin identificadores ni horas por voto, con un token de un solo uso, controla la unicidad y reduce la vinculación.
-    \item[RQ3] ISO/IEC 25010:2023 organiza los RNF y la evaluación; la evidencia cubre usabilidad e integridad, y queda incompleta en rendimiento y accesibilidad manual.
+    \item[RQ3] ISO/IEC 25010:2023 organiza los RNF y la evaluación; la evidencia cubre usabilidad e integridad, y queda incompleta en rendimiento.
   \end{description}
   \vspace{4pt}
   \ualbloque{\small Los cuatro objetivos y los cinco objetivos específicos del anteproyecto (OE1--OE5) tienen evidencia; la aceptación experimental es parcial y se declara como tal.}
@@ -245,7 +245,7 @@
     \begin{itemize}\small
       \item Solo en local, con datos sintéticos
       \item Rendimiento por debajo del objetivo
-      \item Accesibilidad manual sin realizar
+      \item Accesibilidad revisada con un solo lector de pantalla
       \item SSO de gestión sin un proveedor externo real
       \item Muestras de cinco personas
     \end{itemize}

@@ -30,4 +30,4 @@ Pantallas: códigos de `docs/ai/PROTOTYPES.md`.
 | RF-22 | Aplicar métodos avanzados | No | — | — | — | Fuera del MVP | — |
 | RF-23 | Cifrar papeleta en cliente | No | — | — | — | Fuera del MVP | — |
 
-Columna «Evidencia P7» revisada al cerrar P7 (15/11/2026) contra las clases de prueba de `dev` (`c48dbab`): 168 pruebas de backend (17/11/2026) y 144 de frontend (16/11/2026). Resumen del cierre: `docs/evaluation/resultados-p7/cierre.md`.
+Columna «Evidencia P7» revisada al cerrar P7 (15/11/2026) contra las clases de prueba de `dev` (`c48dbab`): 168 pruebas de backend (17/11/2026) y 144 de frontend (16/11/2026); a 22/11/2026, 175 de backend y 259 de frontend. Resumen del cierre: `docs/evaluation/resultados-p7/cierre.md`.

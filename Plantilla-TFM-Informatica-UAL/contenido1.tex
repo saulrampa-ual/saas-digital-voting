@@ -62,7 +62,7 @@ identificados en autenticación, experiencia móvil y verificación comprensible
 El prototipo y la evidencia de evaluación disponible se presentan en esta
 memoria: la sesión de usabilidad con votantes (H1b) y la de administradores
 (RNF-4) aceptaron sus criterios, la prueba de carga (H1c) dio un resultado
-desfavorable y la revisión manual de accesibilidad no se realizó. Los objetivos del sistema son:
+desfavorable y la accesibilidad del flujo del votante (H1a) se aceptó tras la revisión manual. Los objetivos del sistema son:
 
 \begin{description}
   \item[OBJ-1.] Implementar y documentar la arquitectura SaaS multi-tenant y la gestión de
@@ -179,8 +179,7 @@ administrador (RNF-4, con 10 minutos como valor propuesto); los demás deben
 validarse con el cliente y el tutor antes de considerarse criterios
 definitivos de aceptación. La implementación está disponible, pero
 la evidencia actual no acredita todos los objetivos de calidad: la
-integración del resto de repositorios y flujos y la revisión manual de
-accesibilidad siguen pendientes, y la prueba de carga no alcanzó el umbral propuesto.
+integración del resto de repositorios y flujos sigue pendiente, y la prueba de carga no alcanzó el umbral propuesto.
 
 \section{Delimitación: qué no es este TFM}
 \label{sec:delimitacion}
@@ -262,7 +261,7 @@ descriptiva limitada al prototipo, la configuración y la población evaluados.
 
 El procedimiento y su estado son los siguientes:
 \begin{enumerate}
-  \item [parte automática favorable; parte manual no realizada] Ejecutar una auditoría automática de accesibilidad (por ejemplo,
+  \item [H1a ACEPTADA] Ejecutar una auditoría automática de accesibilidad (por ejemplo,
   axe) en las pantallas evaluadas, con cero incumplimientos críticos ni
   serios, y una revisión manual con teclado y lector de pantalla sin bloqueos
   en el flujo de acceso, voto y recibo. La auditoría automática por sí sola no
@@ -271,9 +270,9 @@ El procedimiento y su estado son los siguientes:
   la papeleta; corregida, el nuevo barrido da 0 críticos y 0 serios. También
   se corrigió el error de formato del recibo, que no se mostraba (axe no lo
   detecta); un tercer barrido con las dos correcciones da 0 críticos y 0
-  serios. La revisión manual con teclado y lector de pantalla no se realizó
-  antes del cierre: es una parte del protocolo sin ejecutar, no un
-  incumplimiento, y H1a queda sin decisión.
+  serios. La revisión manual con teclado y el Narrador de Windows (22/11/2026)
+  no encontró bloqueos; el contraste con foco de los botones de acción
+  (3,32:1) se corrigió y se volvió a medir (5,26:1), y H1a queda aceptada.
   \item [H1b ACEPTADA] Realizar pruebas moderadas con cinco personas no técnicas.
   Pedirles que accedan a una votación de prueba, emitan un voto y comprueben
   el recibo. Registrar éxito sin ayuda, duración, errores y comprensión del
@@ -319,8 +318,9 @@ limitarán al prototipo, configuración y población evaluados; no se
 generalizarán a elecciones oficiales ni a despliegues de producción.
 
 \textbf{Validez de constructo.} Una puntuación de axe no equivale a una
-certificación WCAG; además, la revisión manual de H1a no se realizó, así que la
-conclusión sobre accesibilidad se limita a lo que axe puede decidir;
+certificación WCAG, y la revisión manual de H1a se hizo con un solo lector de
+pantalla y por el autor, así que la conclusión sobre accesibilidad se limita a
+esa configuración;
 completar una tarea no demuestra por sí solo que la
 verificación sea comprensible o confiable; y un test de carga no demuestra
 disponibilidad ni resistencia a ataques. Para reducir estas amenazas se
