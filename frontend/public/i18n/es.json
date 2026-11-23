@@ -900,6 +900,8 @@
       "checking": "Verificando…",
       "resend": "Reenviar el código",
       "resendIn": "Podrás pedir otro código en {{time}}",
+      "resendReady": "Ya puedes pedir otro código.",
+      "digit": "Código de acceso, cifra {{position}} de {{total}}",
       "wrong": "El código no es correcto. Te quedan {{remaining}} intentos.",
       "expired": "El código ha caducado o ya se ha usado. Pide uno nuevo.",
       "tooSoon": "Espera un poco antes de pedir otro código.",

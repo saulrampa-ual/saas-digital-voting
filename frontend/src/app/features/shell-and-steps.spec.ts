@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { adminProviders } from '../../testing/admin-test-doubles';
 import { App } from '../app';
@@ -103,6 +104,8 @@ describe('AccessCodeStepComponent (B1, código de acceso)', () => {
     secondsToResend(): number;
     minutesLeft(): number;
     countdown(): string;
+    resendAnnouncement(): { key: string; params: { time?: string } };
+    nameDigits(element: HTMLElement): Promise<void>;
     clear(): void;
     submit(): void;
     ngOnDestroy(): void;
@@ -155,5 +158,42 @@ describe('AccessCodeStepComponent (B1, código de acceso)', () => {
     busy.step.submit();
     expect(busy.codes).toEqual([]);
     busy.step.ngOnDestroy();
+  });
+
+  it('names the six boxes in the interface language (IMP-67)', async () => {
+    const { step } = open(null);
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('es', { voter: { code: { digit: 'Código de acceso, cifra {{position}} de {{total}}' } } });
+    translate.use('es');
+    const otp = document.createElement('div');
+    for (let i = 0; i < 6; i++) {
+      otp.appendChild(document.createElement('input')).setAttribute('aria-label', `Input ${i + 1} of 6`);
+    }
+    await step.nameDigits(otp);
+    const labels = [...otp.querySelectorAll('input')].map((box) => box.getAttribute('aria-label'));
+    expect(labels[0]).toBe('Código de acceso, cifra 1 de 6');
+    expect(labels[5]).toBe('Código de acceso, cifra 6 de 6');
+    step.ngOnDestroy();
+  });
+
+  it('keeps the visible countdown out of the live region and announces only the start and the end (IMP-68)', async () => {
+    const now = Date.now();
+    const waiting = open({ maskedEmail: 'p***@example.com', expiresAt: new Date(now + 10 * 60_000).toISOString(),
+      resendAvailableAt: new Date(now + 75_000).toISOString() });
+    const start = waiting.step.resendAnnouncement();
+    expect(start.key).toBe('voter.code.resendIn');
+    expect(start.params.time).toMatch(/^1:1\d$/);
+    waiting.fixture.detectChanges();
+    await waiting.fixture.whenStable();
+    const element = waiting.fixture.nativeElement as HTMLElement;
+    expect(element.querySelectorAll('[aria-live]').length).toBe(1);
+    expect(element.querySelector('ion-note')?.hasAttribute('aria-live')).toBe(false);
+    waiting.step.ngOnDestroy();
+
+    TestBed.resetTestingModule();
+    const ready = open({ maskedEmail: 'p***@example.com', expiresAt: new Date(now + 10 * 60_000).toISOString(),
+      resendAvailableAt: new Date(now - 1_000).toISOString() });
+    expect(ready.step.resendAnnouncement().key).toBe('voter.code.resendReady');
+    ready.step.ngOnDestroy();
   });
 });

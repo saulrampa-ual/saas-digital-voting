@@ -19,6 +19,26 @@
 
 ## Hecho
 
+- 23/11 (tarde): **contraportada y tablas de CU (C4, aprobado por el autor).** `resumen_contraportada.tex` (resumen
+  breve, misma letra) en `contra.tex`; filas que no se separan de la siguiente en las tablas de CU
+  (`\cuKeepHline`, `\cuKeepCline`, `\cuSubsection` en `preambulo_cu.tex`, generados por `cu-a-tabla.mjs`). Probado en
+  compilaciones de prueba sin el español de babel (`.local/c4/`). Al convertir todos los CU sale «Lonely \item» por los
+  fragmentos de RF-05 y RF-11 que van a «Otros» (previo, a resolver al convertir). H1c a 200: no sin cambiar RNF-17;
+  opciones A/B/C en la pregunta 6 al tutor. Plan para repetir B1-01 y B1-03 con el Narrador:
+  `docs/evaluation/accesibilidad-manual-repeticion-b1.md`. Sin commit.
+- 23/11: **IMP-67 e IMP-68 aplicadas (aprobadas por el autor), M3 preparada y primera pasada de C4.**
+  `access-code-step.component.ts`: Ionic 9.0.10 nombra cada casilla «Input n of 6» sin API para cambiarlo, así que el
+  paso renombra las seis casillas tras renderizar, en el idioma de la interfaz («Código de acceso, cifra n de 6»,
+  clave `voter.code.digit`) y de nuevo al cambiar de idioma; la cuenta atrás visible deja de ser `aria-live` y una
+  región oculta solo anuncia la espera al enviar el código y «Ya puedes pedir otro código» (`voter.code.resendReady`).
+  2 pruebas nuevas; `ng test` 261/261 y `ng build` sin errores en una copia Linux fuera del repo (Node 22.23); no
+  verificado con Narrador ni E2E (sin Chromium en el entorno). Secreto del voto: solo cambia la plantilla del paso
+  del código; nada nuevo se guarda ni se envía. Memoria: párrafo del SSO comentado en `conclusiones.tex` (pregunta 4
+  al tutor), incidencias de M1 marcadas como corregidas en el código, cabecera «Listados» de Resumen y Abstract
+  corregida (`\markboth`) y fila P7 de la tabla 9.2 al día. Informe de C4 en
+  `Plantilla-TFM-Informatica-UAL/revision-c4-2026-11-23.md` (contraportada desbordada y tablas de CU partidas,
+  pendientes del autor). M3: `revision-heuristica/guion-evaluador.md` y hojas `hoja-E1-autor.csv` y `hoja-E2.csv`.
+  Sin commit.
 - 22/11: **M1 hecho, H1a aceptada.** Revisión manual con el Narrador de Windows en Chrome sobre la demo
   sintética: teclas enviadas por la IA desde la extensión del navegador, anuncios escuchados y confirmados por el
   autor (las flechas del modo de examen, el autor). Obligatorias 39/39: 37 cumplen, 0 bloqueos, 2 incidencias

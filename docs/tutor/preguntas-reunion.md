@@ -1,6 +1,6 @@
 # Preguntas para la reunión con el tutor (Javier Criado)
 
-Preparado el 20/11/2026. Base: `docs/ai/PLAN.md` (preguntas Q-01 a Q-13 y sección 9), `docs/ai/PROGRESS.md`,
+Preparado el 20/11/2026 y actualizado el 22/11/2026. Base: `docs/ai/PLAN.md` (preguntas Q-01 a Q-13 y sección 9), `docs/ai/PROGRESS.md`,
 `docs/ai/IMPROVEMENTS.md`, la memoria y el correo enviado al tutor el 13/11/2026.
 
 ## Cómo usar este documento
@@ -15,6 +15,15 @@ Preparado el 20/11/2026. Base: `docs/ai/PLAN.md` (preguntas Q-01 a Q-13 y secci�
 - Durante la reunión, anotar la respuesta en la columna «Respuesta» de la tabla de resumen y, después, pasarla a
   `PLAN.md` (y a `DECISIONS.md` si cierra una decisión).
 
+## Cambios desde el 20/11/2026
+
+- **M1 hecha (22/11):** H1a aceptada con el Narrador tras corregir el contraste de foco. La pregunta 7 ya no pide
+  «llevar el resultado», sino confirmar el lector y la corrección previa. Se añade la limitación a la pregunta 9.
+- **Cifras finales de pruebas (22/11):** 175 de backend y 259 de frontend (87,8 % de líneas, no «unos 91 %»).
+- **M6b con commit** (`e87aed8`, 20/11) y todo subido a `origin/dev` (`47f0134`).
+- El texto de limitaciones del SSO (pregunta 4) está en `conclusiones.tex` **como comentario** (23/11): si lo aprueba,
+  basta con quitar los `%`.
+
 ## Resumen (por orden de prioridad)
 
 | N.º | Tema | Qué se le pide | Bloquea | Respuesta |
@@ -22,9 +31,9 @@ Preparado el 20/11/2026. Base: `docs/ai/PLAN.md` (preguntas Q-01 a Q-13 y secci�
 | 1 | Formato de los casos de uso en tabla | Aprobar el formato (RF-01 y RF-09 ya convertidos) | Convertir el resto de CU en la memoria | |
 | 2 | Diagramas de casos de uso simplificados | Aprobar los de gestión y votación | Incluirlos en la memoria | |
 | 3 | Prioridades MoSCoW de los RNF (Q-13) | Confirmar o cambiar la tabla 7.1 | Quitar los asteriscos de la tabla 7.1 | |
-| 4 | SSO con cuentas `@inlumine.ual.es` (M6/A9) | Aceptar que quede como trabajo futuro | Texto de limitaciones y tabla de RF | |
-| 5 | Identificador institucional oculto (M6b) | Confirmar que es correcto no mostrarlo | Ninguno (ya aplicado) | |
-| 6 | H1c rechazada (prueba de carga) | Aceptar el resultado documentado | Conclusiones y defensa | |
+| 4 | SSO con cuentas `@inlumine.ual.es` (M6/A9) | Aceptar que quede como trabajo futuro | Quitar el comentario del texto de limitaciones (ya escrito) y tabla de RF | |
+| 5 | Identificador institucional oculto (M6b) | Confirmar que es correcto no mostrarlo | Ninguno (aplicado, `e87aed8`) | |
+| 6 | H1c rechazada (prueba de carga) | Aceptar el resultado documentado; no bajar a 200 sin cambiar RNF-17 (opciones A, B, C) | Conclusiones y defensa | |
 | 7 | H1a (accesibilidad manual) | Confirmar la aceptación con el Narrador y la corrección previa | Tabla 13.1 y conclusiones | |
 | 8 | Alcance final del MVP | Confirmar lo que queda fuera | Tablas 1.1 y 4.3 | |
 | 9 | Limitaciones de las sesiones de usabilidad | Aceptar cómo están descritas | Capítulo 13 | |
@@ -106,7 +115,7 @@ versión y su prueba queda como trabajo futuro».
 **Pregunta.** ¿Le parece bien dejarlo así, como trabajo futuro? ¿Sabe si la universidad facilita un proveedor de
 prueba o cuentas para TFM, o lo dejamos fuera?
 
-**Propuesta.** Dejarlo como trabajo futuro con el texto anterior.
+**Propuesta.** Dejarlo como trabajo futuro con el texto anterior (ya escrito como comentario en `conclusiones.tex`; se activa tras su respuesta).
 
 ## 5. Identificador institucional oculto en la consola (M6b)
 
@@ -121,7 +130,7 @@ porque es un dato suyo; pero el gestor del censo no lo ve en pantalla.
 
 **Pregunta.** ¿Está de acuerdo con este criterio, sobre todo con mantenerlo en la exportación del RGPD?
 
-**Propuesta.** Mantenerlo así (ya aplicado).
+**Propuesta.** Mantenerlo así (ya aplicado, commit `e87aed8` del 20/11/2026).
 
 ## 6. H1c rechazada: prueba de carga
 
@@ -141,8 +150,23 @@ con esa carga en un portátil. H1c queda **rechazada** y documentada como limita
 **Ejemplo.** En la defensa se diría: «H1c se rechazó en las tres versiones evaluadas; la integridad se mantuvo; el
 límite está repartido por la cadena de servicios y perfilarlo es trabajo futuro».
 
-**Pregunta.** ¿Le parece suficiente documentarlo así, o quiere alguna prueba más (por ejemplo, con 200 usuarios para
-ver hasta dónde aguanta)? IMP-64 (confirmación por grupos) estaba anotada como «requiere aprobación del tutor»: ¿la
+**¿Se puede bajar H1c a 200 usuarios?** No sin cambiar el requisito. Los 500 usuarios salen de RNF-17 en la
+especificación y de la hipótesis H1c de la memoria, y se fijaron antes de medir. Cambiar la cifra después de ver el
+resultado sería mover el criterio para aprobar. La especificación dice que los valores de RNF-17 «son propuestos y
+deberán validarse con el cliente», así que el único que puede cambiar la cifra es él, y aun así H1c con 500 seguiría
+rechazada en las tres series. Hay tres opciones:
+
+| Opción | Qué se hace | Qué dice la memoria |
+| --- | --- | --- |
+| A (propuesta) | Nada más | H1c rechazada con 500, como está |
+| B | Una medición **complementaria** con 50, 100 y 200 usuarios, con las reglas escritas antes de medir | H1c sigue rechazada; se añade hasta qué carga cumple el sistema en este equipo, como dato para el trabajo futuro |
+| C | Él cambia RNF-17 a 200 como «cliente» y se mide una H1c nueva | Cambio de requisito posterior a la medición, declarado como tal; la H1c con 500 sigue rechazada |
+
+Con las cifras de la serie C (unos 55 votos por segundo y unos 0,6 s por voto aislado), en 2 segundos el sistema
+atiende del orden de 100 votos, así que es probable que **200 simultáneos tampoco cumplan**. Es una estimación, no una
+medida: solo la opción B lo diría con datos.
+
+**Pregunta.** ¿Le parece suficiente documentarlo así (A) o prefiere la medición complementaria (B)? IMP-64 (confirmación por grupos) estaba anotada como «requiere aprobación del tutor»: ¿la
 mantenemos en el código? No mejoró H1c, pero corrige un caso raro en el que un fallo de red podía permitir un segundo
 voto.
 
@@ -196,7 +220,10 @@ limitaciones que la memoria ya declara:
 - con 5 personas la evidencia es **descriptiva**, sin estadística;
 - en RNF-4 los tiempos se anotaron **redondeados al minuto** (todos entre 2 y 4 minutos, con el límite en 10);
 - las sesiones RNF-4 fueron **online**, por túnel a un entorno local, con documentación permitida (D-55);
-- los participantes son conocidos del autor.
+- los participantes son conocidos del autor;
+- **(nueva, 22/11)** la aceptación de H1a se apoya en **un solo lector de pantalla** (Narrador) y **un navegador**
+  (Chrome), con la revisión hecha por el autor y no por personas que usan lector de pantalla; 8 de las 11
+  comprobaciones recomendadas quedaron sin revisar porque la demo no reproduce esos estados.
 
 **Ejemplo.** En el capítulo 13: «Los tiempos de RNF-4 están redondeados al minuto; como todos están muy por debajo
 del límite, el redondeo no cambia la decisión».
@@ -267,12 +294,13 @@ el repositorio, reunión)?
 
 ## Para llevar a la reunión
 
-- [ ] El PDF de la memoria actualizado (con la tabla 13.2 y OE5).
-- [ ] El resultado de M1 (Narrador), si ya está hecho.
+- [ ] El PDF de la memoria actualizado (recompilado el 22/11/2026, 97 páginas, con la tabla 13.2, OE5 y H1a aceptada).
+- [x] El resultado de M1 (hecho el 22/11: 39 de 39 obligatorias, 0 bloqueos; hojas en
+      `docs/evaluation/accesibilidad-manual-*.csv`).
 - [ ] Los ejemplos de casos de uso en tabla (RF-01 y RF-09) y los dos diagramas simplificados, compilados.
 - [ ] La demo UAL arrancada en local, por si quiere ver la consola o el flujo del votante (`docs/evaluation/simulacion-tutor.md`).
-- [ ] Cifras actuales de pruebas (las de backend tras el `mvnw verify` completo; frontend: 259 pruebas y unos 91 % de
-      líneas cubiertas).
+- [x] Cifras actuales de pruebas (22/11): backend 175 pruebas (cobertura de líneas 44,9–90,3 % por servicio, 59,7 %
+      en conjunto); frontend 259 pruebas y 87,8 % de líneas; E2E de accesibilidad 100 de 100 tras la corrección.
 - [ ] Este documento, para anotar las respuestas.
 
 ## Después de la reunión
