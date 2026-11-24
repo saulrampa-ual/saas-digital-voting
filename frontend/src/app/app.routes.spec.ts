@@ -15,7 +15,9 @@ describe('app routes', () => {
       const component = await (route.loadComponent as () => Promise<unknown>)();
       expect(component, route.path).toBeTruthy();
     }
-  });
+    // Imports every lazy page: about 0,5 s on Linux, but more than the default 5 s on the author's Windows machine with
+    // coverage, where the timeout also left the other suites loading after teardown (23/11/2026).
+  }, 30_000);
 
   it('keeps the institutional account return before the personal link', () => {
     const paths = flatten(routes).map((route) => route.path);

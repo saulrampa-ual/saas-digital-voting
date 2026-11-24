@@ -53,9 +53,10 @@ pendientes.
 Quedan por ejecutar la integración del resto de repositorios y flujos con PostgreSQL,
 y las pruebas E2E del stack completo. H1a se aceptó el 22/11/2026 con un solo lector de
 pantalla (el Narrador de Windows) y un navegador, en una revisión hecha por el autor; queda
-por repetirla con NVDA o JAWS y con personas usuarias de lectores de pantalla, y por
-corregir las dos incidencias registradas (el nombre en inglés de las casillas del código y
-la cuenta atrás anunciada cada segundo). La sesión con cinco votantes (H1b) se realizó el
+por repetirla con NVDA o JAWS y con personas usuarias de lectores de pantalla. Las dos
+incidencias registradas (el nombre en inglés de las casillas del código y la cuenta atrás
+anunciada cada segundo) se han corregido en el código (IMP-67 e IMP-68); falta repetir esas
+dos comprobaciones con el lector. La sesión con cinco votantes (H1b) se realizó el
 09/11/2026 y aceptó la hipótesis; su alcance se limita a cinco participantes
 autoseleccionados y al prototipo y la configuración local evaluados. El
 consentimiento, el guion y la hoja de registro se conservan en
@@ -91,6 +92,13 @@ de diseño para RF-11, pero no es operativo en esta versión: la urna registra u
 único voto aceptado por token de emisión y nunca genera ese estado. Activarlo
 requiere implementar la lógica de sustitución y validarla con pruebas de
 concurrencia y unicidad.
+% [PENDIENTE DEL TUTOR] Pregunta 4 de docs/tutor/preguntas-reunion.md (M6/A9). Quitar los
+% comentarios del párrafo siguiente si el tutor acepta dejar el SSO como trabajo futuro.
+% El inicio de sesión con cuenta institucional (RF-05a y RF-05b) está implementado,
+% pero no se ha podido probar con un proveedor real: requiere cuentas
+% \texttt{@inlumine.ual.es} y una configuración institucional no disponibles en
+% este trabajo. Por ello la opción no se ofrece en la consola de esta versión y su
+% prueba queda como trabajo futuro.
 D-03 y D-05 fueron confirmadas por el tutor el 30/10/2026 mediante correo
 electrónico.
 

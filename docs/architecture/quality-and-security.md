@@ -279,3 +279,17 @@ gates* es la cobertura del código nuevo (< 80 %), que se documenta como limitac
 duplicación 0,0 % en ambos; 0 incidencias abiertas. Las pruebas del backend compilan y pasan (`BUILD SUCCESS` de
 `sonar.ps1`). La cobertura del código nuevo deja de ser una limitación; la cobertura global sigue siendo baja y es la
 que hay que citar como tal si se menciona. Pruebas subidas a `dev` en `f370bc8`.
+
+### Trivy vuelve a fallar por 429 (ejecución del 22/11/2026)
+
+El job `dependencies` falló con `FATAL ... 429 Too Many Requests` al pedir
+`spring-cloud-dependencies-parent-5.0.2.pom` a Maven Central (`Retry-After: 1800`), aunque el job ya resolvía
+`~/.m2` con `mvnw dependency:resolve` y lo montaba en Trivy. Motivo: Trivy pide POM que Maven no descarga (por
+ejemplo, el padre de una versión de BOM que el proyecto sustituye por otra), y desde la 0.76 aborta el análisis ante
+un 429 en lugar de saltarse la dependencia sin avisar.
+
+**Cambio (23/11/2026, sin commit):** `--offline-scan` en `TRIVY_ARGS` de `security.yml`. Trivy deja de pedir POM a
+Maven Central y usa solo `~/.m2` y el proyecto; la base de vulnerabilidades se sigue descargando. **Límite:** una
+dependencia cuyo POM no esté en `~/.m2` puede quedar fuera del análisis sin aviso. Como `dependency:resolve` descarga
+todo lo que Maven usa, afecta como mucho a versiones que el proyecto no usa. Se comprueba en la siguiente ejecución:
+el job debe pasar y `trivy-report.txt` debe listar las dependencias Maven de los cinco servicios.

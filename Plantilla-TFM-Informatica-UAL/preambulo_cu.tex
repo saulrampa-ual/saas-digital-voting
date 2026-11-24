@@ -1,6 +1,7 @@
 % Tabla de casos de uso (observación del tutor, 13/11/2026). Se carga desde main.tex, antes de \begin{document}.
 % longtable y array ya están en main.tex; xcolor lo cargan los .sty sin la opción «table», por eso colortbl.
 \usepackage{colortbl}
+\usepackage{needspace}
 \definecolor{cuHead}{HTML}{E8EEF6}
 \newlength{\cuLab}\setlength{\cuLab}{3.3cm}
 \newlength{\cuNum}\setlength{\cuNum}{1.0cm}
@@ -8,3 +9,16 @@
 \newlength{\cuWide}\setlength{\cuWide}{\dimexpr\cuNum+\cuText+2\tabcolsep+\arrayrulewidth\relax}
 \newlength{\cuAll}\setlength{\cuAll}{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}
 \newcommand{\cuLabel}[1]{\textbf{#1}}
+% Líneas que no dejan punto de corte de página detrás (revisión C4, 23/11/2026). En longtable,
+% \hline y \cline dejan un punto de corte después de la línea aunque la fila acabe en \\*; estas
+% variantes van tras \\* en las filas que deben seguir en la misma página que la siguiente
+% (cabeceras «Flujo normal» y «Excepciones», primeras filas de la tabla). Las genera
+% scripts/memoria/cu-a-tabla.mjs.
+\makeatletter
+\newcommand{\cuKeepHline}{\noalign{\nobreak\hrule\@height\arrayrulewidth\nobreak}}
+\newcommand{\cuKeepCline}{\omit&\multispan{2}{\CT@arc@\leaders\hrule\@height\arrayrulewidth\hfill}\cr
+  \noalign{\nobreak\vskip-\arrayrulewidth}}
+\makeatother
+% Título de un caso de uso en tabla: si no queda sitio para el título y las primeras filas,
+% empieza en la página siguiente, para que el título no quede solo al pie (revisión C4).
+\newcommand{\cuSubsection}[1]{\Needspace{14\baselineskip}\subsection{#1}}

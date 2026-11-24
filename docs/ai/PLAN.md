@@ -15,7 +15,7 @@ Cuando una pregunta de la sección 1 tenga respuesta, se escribe la respuesta y,
 | Bloque | Estado |
 | --- | --- |
 | Desarrollo del MVP (P0–P6, RF-01 a RF-21) | Hecho. Única excepción: RF-05a parcial (falta un IdP externo de prueba) |
-| Pruebas y medición (P7) | Cerrado el 15/11/2026. Cifras actuales: 175 pruebas backend (22/11), 259 unitarias frontend y 100 E2E de accesibilidad (22/11); cobertura de líneas 45–90 % por servicio en backend (59,7 % en conjunto) y 87,8 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a aceptada (22/11, revisión manual con Narrador); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada (11/11, p95 2,4–4,9 s) |
+| Pruebas y medición (P7) | Cerrado el 15/11/2026. Cifras actuales: 175 pruebas backend (22/11), 259 unitarias frontend y 100 E2E de accesibilidad (22/11); cobertura de líneas 45–90 % por servicio en backend (59,7 % en conjunto) y 87,8 % en frontend; RNF-4 aceptado (13/11, 5 de 5 sin formación previa, máximo 4 min); H1a aceptada (22/11, revisión manual con Narrador); H1b aceptada (09/11, 5 de 5 y 5 de 5); H1c rechazada en las series A (11/11), B y C (19/11) |
 | Memoria (P8) | En curso: C1 actualizado para H1a, H1b y H1c el 22/11; memoria recompilada (97 páginas) y presentación recompilada (20 diapositivas); falta revisión editorial y visual C4 |
 | Publicación | PR #4 fusionado en `main` el 15/11/2026 (`7ee3a57`), con `build` y `security` en verde. Anteproyecto firmado por el director (comunicado por el autor el 15/11/2026) |
 
@@ -195,7 +195,8 @@ El resto de `IMPROVEMENTS.md` queda para P9 salvo que se decida otra cosa.
   diagramas conceptuales y texto heredado; capturas seguras de las pantallas (datos sintéticos de la demo UAL). **En curso (13/11/2026):** figura de arquitectura implementada, texto heredado, RF-03 (Excel), figura de secuencia y cifras de pruebas hechos, sin commit; faltan las capturas.
 - [x] **C3 · Aplicar las decisiones Q-01 a Q-04** (`IA`) en la especificación y las tablas 1.1 y 4.3. **Hecho (08/11/2026, D-56)**, adelantado a petición del autor (el plan decía esperar a H1a, H1b y H1c): `contenido1.tex` (tablas 1.1 y 4.3), `especificacion_detallada.tex` (nota de alcance, RF-11 y RI-6) y `conclusiones.tex` (P9).
 - [ ] **C4 · Revisión editorial y visual final** (`Ambos`, P8.4): compilar el PDF, revisar página a página,
-  avisos de maquetación de portada y contraportada; el autor da el visto bueno.
+  avisos de maquetación de portada y contraportada; el autor da el visto bueno. **Primera pasada (23/11/2026):**
+  `Plantilla-TFM-Informatica-UAL/revision-c4-2026-11-23.md` (3 correcciones hechas; contraportada y tablas de CU partidas, pendientes del autor).
 
 ## 6. Cierre
 
@@ -261,7 +262,7 @@ anteproyecto.
 ### 8.3 Orden de trabajo hasta la entrega (27/01/2027)
 
 1. [x] Tabla 7.1 con prioridades propuestas y nota; OE5 en la memoria (IA, 17/11).
-2. [ ] Preguntar Q-13 al tutor (autor).
+2. [ ] Preguntar Q-13 al tutor (autor): pregunta 3 de `docs/tutor/preguntas-reunion.md`, para la reunión.
 3. [x] (18/11, tabla 13.2) Tabla «RNF → evidencia» en el capítulo 13 con lo de la columna «Evidencia actual» (IA, una sesión). Cierra la duda
    del tribunal sobre qué RNF tienen evidencia.
 4. [ ] Revisión C4 final y ensayos de la defensa (ambos).
@@ -277,7 +278,7 @@ anteproyecto. Orden: de más valor y menos coste a menos valor y más coste.
 | --- | --- | --- | --- | --- | --- |
 | M1 | RNF-1 | Revisión manual con teclado y lector de pantalla (`accesibilidad-manual-guion.md`). NVDA no funcionó en el equipo del autor: guion adaptado al Narrador de Windows el 18/11 | Autor, 1–2 h | Guion y hojas CSV | **Hecho (22/11/2026)**: 39/39 obligatorias, 0 bloqueos, 2 incidencias (IMP-67, IMP-68); contraste con foco de los botones verdes 3,32:1, corregido (IMP-69) y re-medido 5,26:1. H1a **aceptada**; `test:ci` 259/259, axe 100/100; memoria y presentación recompiladas. Aplicado en tablas 13.1 y 13.2, conclusiones, resumen, especificación, diapositivas 11 y 13, guion y pregunta 7 del tutor. Pendiente: confirmación del tutor sobre el Narrador |
 | M2 | RNF-2 | Las 212 comprobaciones E2E también en Firefox y WebKit (motor de Safari) | Autor, 30 min de ejecución. IA analiza y propone correcciones | Hecho: `E2E_BROWSERS=all` en `playwright.config.ts` (636 pruebas listadas; por defecto y en CI sigue solo Chromium) | RNF-2 pasa a aceptado o se registran defectos |
-| M3 | RNF-8, 9, 10 | Revisión heurística de Nielsen por dos personas y cronometraje de la realimentación | Autor y otra persona, 60–90 min cada uno. IA junta las hojas y redacta | Hecho: `docs/evaluation/revision-heuristica/` (protocolo y hoja) | Estado de RNF-8, 9 y 10 en la tabla 13.2 |
+| M3 | RNF-8, 9, 10 | Revisión heurística de Nielsen por dos personas y cronometraje de la realimentación | Autor y otra persona, 60–90 min cada uno. IA junta las hojas y redacta | Hecho: `docs/evaluation/revision-heuristica/` (protocolo, hoja y, desde el 23/11, `guion-evaluador.md` con el recorrido y una hoja por evaluador). Sin ejecutar | Estado de RNF-8, 9 y 10 en la tabla 13.2 |
 | M4 ✔ (18/11, autor: instalada en iOS y Android; iconos de marca después, D-64) | RNF-18 | Instalar la PWA en Android (Chrome, «Instalar aplicación») e iOS (Safari, «Añadir a pantalla de inicio») a través de un túnel HTTPS, como en las sesiones RNF-4 | Autor, 30 min. IA prepara la lista de comprobación | Túnel ya usado el 13/11 | RNF-18 aceptado o no |
 | M5 | RNF-17 | Perfilar la emisión, ajustar colas del *gateway* y de los servicios (el token ya se consume fuera del bloqueo) y repetir las tres ejecuciones de H1c | IA, 1–2 sesiones de código con revisión del secreto del voto. Autor, ≈ 1 h de k6 | Escenarios k6 y `carga.md` | **Hecha (19/11/2026): serie B, H1c rechazada de nuevo** (p95 7211 ms, 339 de 500 aceptados; unos 43 votos por segundo). Después, IMP-64 (confirmación por grupos, D-65) implementada y medida en la **serie C (19/11/2026): H1c rechazada otra vez** (unos 55 votos por segundo; 17 de 500 en menos de 2 s). H1c cerrada como rechazada; el perfilado del resto de la cadena queda como trabajo futuro (IMP-57). No afecta a los objetivos del anteproyecto: OE5 pide hacer la prueba de carga y documentar también los criterios no alcanzados |
 | M6 | RF-05a | SSO de gestión con las cuentas de la UAL (A9) | Ambos | Sección 2b | Bloqueada (20/11/2026): sin acceso a las cuentas ni a la configuración institucional; trabajo futuro (P9). Véase la sección 9 |
@@ -320,7 +321,7 @@ WebKit: 211 de 212 y 0 incumplimientos en sus 207 resultados; la restante (V8-re
 
 | Id | Qué | Motivo | Estado |
 | --- | --- | --- | --- |
-| M6b | Ocultar la columna «Identificador institucional» en la interfaz de gestión | Decisión de que el usuario no vea ese dato | Aplicado sin commit (20/11/2026), pendiente de revisión del autor (IMP-66). El campo se conserva en el censo y en el backend porque lo usan otras funciones (importación, detección de duplicados, búsqueda y exportación de privacidad), pero desaparece de la vista del frontend: tabla del censo, formulario de alta y edición, vista previa y plantillas Excel descargables, textos de ayuda de la importación, motivo de duplicado y búsqueda de privacidad. La exportación de privacidad (derecho de acceso del RGPD, generada por el backend) lo sigue incluyendo |
+| M6b | Ocultar la columna «Identificador institucional» en la interfaz de gestión | Decisión de que el usuario no vea ese dato | Aplicado con commit `e87aed8` (20/11/2026) (IMP-66). El campo se conserva en el censo y en el backend porque lo usan otras funciones (importación, detección de duplicados, búsqueda y exportación de privacidad), pero desaparece de la vista del frontend: tabla del censo, formulario de alta y edición, vista previa y plantillas Excel descargables, textos de ayuda de la importación, motivo de duplicado y búsqueda de privacidad. La exportación de privacidad (derecho de acceso del RGPD, generada por el backend) lo sigue incluyendo |
 
 ## 9. Bloqueado o dependiente de terceros
 
@@ -383,4 +384,6 @@ WebKit: 211 de 212 y 0 incumplimientos en sus 207 resultados; la restante (V8-re
 | 19/11/2026 | M5, IMP-64 | Keycloak local recuperado (scripts `scripts/dev/keycloak-*`, `start-services.ps1`). Serie B de H1c: humo correcto; 20–22 descartadas (variables sin cargar); 23–25 contra un *gateway* antiguo; 26 válida y rechazada (p95 7,2 s). H1c cerrada como rechazada; memoria y presentación actualizadas. Sin commit |
 | 20/11/2026 | Revisión del plan | Contrastado con el repositorio: `dev` va 3 commits por delante de `origin/dev` (`f0f4482`, `56746fa`, `39d939d`) y hay 4 ficheros modificados sin commit. M5 actualizada con la serie C. Abiertos: Q-10, Q-13, M1, M3, M6/A9, recuento final de pruebas y cobertura, C4, E2, E3 |
 | 22/11/2026 | M1, C1, C4 | Revisión manual H1a completada con Narrador (39 obligatorias, 0 bloqueos); contraste corregido y re-medido. `test:ci` 259/259 y E2E axe 100/100; memoria (97 páginas) y presentación (20 diapositivas) recompiladas. H1a aceptada; pendiente confirmación del tutor y revisión editorial/visual C4 |
+| 23/11/2026 | IMP-67, IMP-68, M3, C4, M6/A9 | IMP-67 e IMP-68 en el paso del código (261 pruebas en copia Linux); guion de M3 por evaluador; primera pasada de C4; párrafo del SSO comentado en `conclusiones.tex`. Sin commit |
+| 22/11/2026 | Revisión del plan y preguntas al tutor | Contrastado con el repositorio y los chats: `dev` = `origin/dev` (`47f0134`), árbol limpio. `preguntas-reunion.md` actualizado (M1 hecha, cifras finales 175/259, M6b con commit, limitación de H1a en la pregunta 9). Abiertos: Q-10, Q-13, M3, IMP-67/68 (propuestas), texto de limitaciones del SSO, C4, E2, E3 |
 | 20/11/2026 | M6/A9, M6b | SSO bloqueado y trabajo futuro (sección 9; opción oculta en la consola, IMP-65). M6b aplicado sin commit: «Identificador institucional» fuera de la interfaz de gestión y plantillas Excel regeneradas (IMP-66) |

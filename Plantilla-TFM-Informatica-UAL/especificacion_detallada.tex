@@ -15,24 +15,24 @@ genera ese estado.
 \section{Casos de uso}
 \label{sec:casos-uso-detallados}
 
-\subsection{RF-01: Gestionar organizaciones}
+\cuSubsection{RF-01: Gestionar organizaciones}
 \begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
   \caption{RF-01: Gestionar organizaciones.}\label{tab:cu-rf-01}\\
   \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-01: Gestionar organizaciones}} \\ \hline \endfirsthead
   \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-01: Gestionar organizaciones} (continuación)} \\ \hline \endhead
-  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Superadministrador (ACT-1)} \\ \hline
-  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-1} \\ \hline
-  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-1} \\ \hline
-  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Superadministrador (ACT-1) da de alta una organización.} \\ \hline
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Superadministrador (ACT-1)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-1} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-1} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Superadministrador (ACT-1) da de alta una organización.} \\* \cuKeepHline
   \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El usuario está autenticado (RF-04) como Superadministrador.} \\ \hline
-  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\ \cline{2-3}
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
   \cuLabel{} & 1 & El Superadministrador solicita dar de alta una organización \\ \cline{2-3}
   \cuLabel{} & 2 & El Sistema solicita el nombre, identificador y administrador inicial de la organización. \\ \cline{2-3}
   \cuLabel{} & 3 & El Superadministrador introduce los datos solicitados. \\ \cline{2-3}
-  \cuLabel{} & 4 & El Sistema comprueba que el identificador no está en uso. \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema comprueba que el identificador no está en uso. \\* \cuKeepCline
   \cuLabel{} & 5 & El Sistema crea la organización con su espacio de datos aislado y asigna el rol de Administrador de organización al administrador inicial. \\ \hline
   \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{La organización existe con su espacio de datos aislado y el administrador inicial tiene asignado el rol de Administrador de organización.} \\ \hline
-  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\ \cline{2-3}
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
   \cuLabel{} & 4 & Si el identificador ya está en uso, el Sistema informa de la situación y solicita introducir otro identificador. \\ \hline
   \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Ninguno} \\ \hline
 \end{longtable}
@@ -216,17 +216,17 @@ genera ese estado.
 \end{itemize}
 \textbf{Comentarios:} Prioridad M. La verificación adicional configurada (por ejemplo, OTP o autenticación federada) evita que un enlace reenviado permita votar a otra persona. La federación de identidad es una opción de diseño, no un requisito institucional.\par
 
-\subsection{RF-09: Emitir voto}
+\cuSubsection{RF-09: Emitir voto}
 \begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
   \caption{RF-09: Emitir voto.}\label{tab:cu-rf-09}\\
   \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-09: Emitir voto}} \\ \hline \endfirsthead
   \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-09: Emitir voto} (continuación)} \\ \hline \endhead
-  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Votante (ACT-4)} \\ \hline
-  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-3} \\ \hline
-  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-5, RI-6, RI-7, RNF-1, RNF-2, RNF-3, RNF-5, RNF-7, RNF-9} \\ \hline
-  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) emite su voto en un proceso abierto.} \\ \hline
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Votante (ACT-4)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-3} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-5, RI-6, RI-7, RNF-1, RNF-2, RNF-3, RNF-5, RNF-7, RNF-9} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) emite su voto en un proceso abierto.} \\* \cuKeepHline
   \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El votante ha accedido (RF-08) y no tiene un voto contabilizado, o el proceso permite re-votar (RF-11).} \\ \hline
-  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\ \cline{2-3}
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
   \cuLabel{} & 1 & El Sistema muestra la papeleta. \\ \cline{2-3}
   \cuLabel{} & 2 & El Votante selecciona sus opciones \\ \cline{2-3}
   \cuLabel{} & 3 & El Sistema valida la selección según el tipo de papeleta \\ \cline{2-3}
@@ -234,12 +234,12 @@ genera ese estado.
   \cuLabel{} & 5 & El Votante confirma \\ \cline{2-3}
   \cuLabel{} & 6 & El Sistema comprueba que no hay ya un voto contabilizado del votante \\ \cline{2-3}
   \cuLabel{} & 7 & El Sistema registra el voto en la urna. \\ \cline{2-3}
-  \cuLabel{} & 8 & El Sistema marca al votante como «ha votado» \\ \cline{2-3}
+  \cuLabel{} & 8 & El Sistema marca al votante como «ha votado» \\* \cuKeepCline
   \cuLabel{} & 9 & El Sistema confirma la emisión y ofrece el recibo (RF-10) \\ \hline
   \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{El voto está en la urna y el votante figura como votante.} \\ \hline
-  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\ \cline{2-3}
-  \cuLabel{} & 3 & Si la selección no es válida, el Sistema informa y no avanza \\ \cline{2-3}
-  \cuLabel{} & 6 & Si el votante ya votó y no se permite re-votar, el Sistema informa y no registra nada \\ \cline{2-3}
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 3 & Si la selección no es válida, el Sistema informa y no avanza \\* \cuKeepCline
+  \cuLabel{} & 6 & Si el votante ya votó y no se permite re-votar, el Sistema informa y no registra nada \\* \cuKeepCline
   \cuLabel{} & 7 & Si el proceso se cierra mientras vota o falla el registro, el Sistema informa y no queda ningún voto parcial ni duplicado \\ \hline
   \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. El voto se registra en la urna y el votante queda marcado como «ha votado». Como máximo se contabiliza un voto por votante.} \\ \hline
 \end{longtable}

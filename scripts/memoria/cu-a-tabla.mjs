@@ -15,13 +15,14 @@ const crlf = raw.includes('\r\n');
 const src = raw.replace(/\r\n/g, '\n');
 const only = list ? new Set(list.split(',')) : null;
 
-// Block = from a \subsection{RF-…} heading to the next \subsection/\section/\chapter or end of file
+// Block = from a \subsection{RF-…} heading to the next \subsection/\section/\chapter/\cuSubsection or end of file.
+// Converted use cases get \cuSubsection (preambulo_cu.tex), so they are not matched again.
 const HEAD = /\\subsection\{(RF-[0-9]+[a-z]?):\s*([^}]*)\}\n/g;
 const blocks = [];
 for (let m; (m = HEAD.exec(src));) {
   const start = m.index, bodyStart = m.index + m[0].length;
   const rest = src.slice(bodyStart);
-  const next = rest.search(/\\(sub)?section\{|\\chapter\{/);
+  const next = rest.search(/\\(sub)?section\{|\\chapter\{|\\cuSubsection\{/);
   blocks.push({ id: m[1], name: m[2].trim(), start, end: next < 0 ? src.length : bodyStart + next, body: next < 0 ? rest : rest.slice(0, next) });
 }
 
@@ -62,32 +63,44 @@ function actors(desc = '') {
 }
 
 const esc = (s) => s; // texts are already LaTeX
+// Page breaks (revisión C4, 23/11/2026): «\\*» ends a row without allowing a page break after it. The table keeps
+// its first rows (actors to description) together, a block heading (Flujo normal, Excepciones) with its first step,
+// the last flow step with the one before it and the exceptions block whole, so no page ends with a lone heading.
+const end = (keep) => (keep ? '\\\\*' : '\\\\');
+// After «\\*», \cuKeepHline and \cuKeepCline (preambulo_cu.tex) replace \hline and \cline{2-3}: longtable leaves a
+// page break after those rules even when the row ends in «\\*».
+const hl = (keep) => (keep ? '\\cuKeepHline' : '\\hline');
+const cl = (keep) => (keep ? '\\cuKeepCline' : '\\cline{2-3}');
 function table(b, p) {
   const r = [];
-  const row = (label, text) => r.push(`  \\cuLabel{${label}} & \\multicolumn{2}{p{\\cuWide}|}{${esc(text)}} \\\\ \\hline`);
+  const row = (label, text, keep = false) => r.push(`  \\cuLabel{${label}} & \\multicolumn{2}{p{\\cuWide}|}{${esc(text)}} ${end(keep)} ${hl(keep)}`);
   r.push(`\\begin{longtable}{|p{\\cuLab}|p{\\cuNum}|p{\\cuText}|}`);
   r.push(`  \\caption{${b.id}: ${b.name}.}\\label{tab:cu-${b.id.toLowerCase()}}\\\\`);
   r.push(`  \\hline \\multicolumn{3}{|>{\\columncolor{cuHead}}p{\\cuAll}|}{\\textbf{${b.id}: ${b.name}}} \\\\ \\hline \\endfirsthead`);
   r.push(`  \\hline \\multicolumn{3}{|>{\\columncolor{cuHead}}p{\\cuAll}|}{\\textbf{${b.id}: ${b.name}} (continuación)} \\\\ \\hline \\endhead`);
   const act = actors(p.fields['Descripción']);
-  if (act) row('Actores', act);
-  if (p.fields['Objetivos asociados']) row('Objetivos', p.fields['Objetivos asociados']);
-  if (p.fields['Requisitos asociados']) row('Requisitos', p.fields['Requisitos asociados']);
-  if (p.fields['Descripción']) row('Descripción', p.fields['Descripción']);
+  if (act) row('Actores', act, true);
+  if (p.fields['Objetivos asociados']) row('Objetivos', p.fields['Objetivos asociados'], true);
+  if (p.fields['Requisitos asociados']) row('Requisitos', p.fields['Requisitos asociados'], true);
+  if (p.fields['Descripción']) row('Descripción', p.fields['Descripción'], true);
   if (p.fields['Precondición']) row('Precondición', p.fields['Precondición']);
   if (p.flow.length) {
-    r.push(`  \\cuLabel{Flujo normal} & \\textbf{Paso} & \\textbf{Acción} \\\\ \\cline{2-3}`);
+    r.push(`  \\cuLabel{Flujo normal} & \\textbf{Paso} & \\textbf{Acción} \\\\* ${cl(true)}`);
     p.flow.forEach((s, i) => {
       const last = i === p.flow.length - 1;
+      const keep = i === p.flow.length - 2;
       r.push(s.branch !== undefined
-        ? `  \\cuLabel{} & \\multicolumn{2}{p{\\cuWide}|}{\\textit{${s.branch}}} \\\\ ${last ? '\\hline' : '\\cline{2-3}'}`
-        : `  \\cuLabel{} & ${s.step} & ${s.text} \\\\ ${last ? '\\hline' : '\\cline{2-3}'}`);
+        ? `  \\cuLabel{} & \\multicolumn{2}{p{\\cuWide}|}{\\textit{${s.branch}}} ${end(true)} ${last ? hl(true) : cl(true)}`
+        : `  \\cuLabel{} & ${s.step} & ${s.text} ${end(keep)} ${last ? '\\hline' : cl(keep)}`);
     });
   }
   if (p.fields['Postcondición']) row('Postcondición', p.fields['Postcondición']);
   if (p.exceptions.length) {
-    r.push(`  \\cuLabel{Excepciones} & \\textbf{Paso} & \\textbf{Acción} \\\\ \\cline{2-3}`);
-    p.exceptions.forEach((e, i) => r.push(`  \\cuLabel{} & ${e.step} & ${e.text} \\\\ ${i === p.exceptions.length - 1 ? '\\hline' : '\\cline{2-3}'}`));
+    r.push(`  \\cuLabel{Excepciones} & \\textbf{Paso} & \\textbf{Acción} \\\\* ${cl(true)}`);
+    p.exceptions.forEach((e, i) => {
+      const last = i === p.exceptions.length - 1;
+      r.push(`  \\cuLabel{} & ${e.step} & ${e.text} ${end(!last)} ${last ? '\\hline' : cl(true)}`);
+    });
   }
   if (p.fields['Comentarios']) row('Comentarios', p.fields['Comentarios']);
   if (p.other.length) row('Otros', p.other.join(' '));
@@ -101,7 +114,7 @@ for (const b of [...blocks].reverse()) {
   if (!/\\textbf\{Flujo normal:\}/.test(b.body)) { report.push(`${b.id}: sin «Flujo normal», se deja igual`); continue; }
   const p = parse(b);
   if (p.other.length) report.push(`${b.id}: ${p.other.length} fragmento(s) no reconocidos, en la fila «Otros»`);
-  const heading = `\\subsection{${b.id}: ${b.name}}\n`;
+  const heading = `\\cuSubsection{${b.id}: ${b.name}}\n`;
   result = result.slice(0, b.start) + heading + table(b, p) + '\n\n' + result.slice(b.end);
   if (!write) console.log(heading + table(b, p) + '\n');
 }
