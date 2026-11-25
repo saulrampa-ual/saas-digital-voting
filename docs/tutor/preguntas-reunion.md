@@ -5,7 +5,8 @@ Preparado el 20/11/2026 y actualizado el 22/11/2026. Base: `docs/ai/PLAN.md` (pr
 
 ## Cómo usar este documento
 
-- **No mandar más correos.** El tutor tiene pendiente el correo del 13/11/2026 (estado del prototipo y de las
+- **Actualización (24/11/2026):** se decidió enviar un correo nuevo (fuera del hilo) con el estado y las preguntas 1–8, y un resumen de cambios en PDF. La regla siguiente queda sustituida.
+- ~~**No mandar más correos.**~~ El tutor tiene pendiente el correo del 13/11/2026 (estado del prototipo y de las
   evaluaciones, propuesta de casos de uso en tabla, diagramas de casos de uso simplificados y petición de reunión).
   Si se le escriben correos nuevos encima, el hilo se pierde. Se espera a que responda a ese y en la reunión se hacen
   estas preguntas.

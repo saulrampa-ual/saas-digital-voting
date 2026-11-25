@@ -16,9 +16,9 @@ recoge el estado final de P7; el detalle y las fuentes están en `docs/evaluatio
 
 - Backend: 175 pruebas, 0 fallos (`mvnw verify` completo del 22/11/2026): gateway 16, identity 30, election 58,
   voter-access 38 y ballot-box 33. Veinticuatro son de integración sobre PostgreSQL 18.6. Al cerrar P7 eran 168.
-- Frontend: 259 pruebas en 31 ficheros, 0 fallos (`npm run test:coverage`, 20/11/2026). Al cerrar P7 eran 144.
+- Frontend: 261 pruebas en 31 ficheros, 0 fallos (`npm run test:coverage`, 24/11/2026; 259 el 20/11). Al cerrar P7 eran 144.
 - Cobertura de líneas: backend 59,7 % en conjunto el 22/11/2026 (identity 75,2 %, ballot-box 44,9 %, voter-access
-  50,4 %, election 73,6 %, gateway 90,3 %); frontend 87,8 % (2543/2896, 20/11/2026; 42,0 % el 16/11). Código nuevo desde el 04/11 según SonarQube: 85,8 % y 87,3 %.
+  50,4 %, election 73,6 %, gateway 90,3 %); frontend 87,9 % (2560/2913, 24/11/2026; 87,8 % el 20/11; 42,0 % el 16/11). Código nuevo desde el 04/11 según SonarQube: 85,8 % y 87,3 %.
 - Calidad y seguridad: los dos *quality gates* de SonarQube en «Passed» con 0 incidencias abiertas (14/11/2026).
   Workflows `build` (incluido el job de accesibilidad E2E) y `security` en verde en `main` tras el PR #4 (15/11/2026).
 

@@ -50,13 +50,15 @@ y evita duplicar una tabla extensa que se desactualizaría con facilidad.
 \label{sec:material-grafico}
 Las fuentes editables de secuencia y actividad se conservan en
 \texttt{Figuras/diagramas/}. Las capturas de esta sección proceden de la
-consola de gestión en el entorno local de demostración, con la organización
+consola de gestión y del recorrido del votante en el entorno local de demostración, con la organización
 ficticia «Universidad de Almería» de los datos de demostración. Todos los
 datos que muestran son sintéticos (cuentas y votantes del dominio reservado
-\texttt{ual.test}); ninguna contiene datos personales. Se generan con el
-script \texttt{scripts/demo/capturas-memoria.mjs}, que inicia sesión como una
-persona usuaria y guarda las imágenes en \texttt{Figuras/capturas/}, de modo
-que pueden repetirse tras un cambio de la interfaz.
+\texttt{ual.test}); ninguna contiene datos personales. Se generan con los
+scripts \texttt{scripts/demo/capturas-memoria.mjs}, que inicia sesión como una
+persona usuaria de la consola, y \texttt{scripts/demo/capturas-votante.mjs}, que
+recorre el flujo de un votante ficticio de la demostración; ambos guardan las
+imágenes en \texttt{Figuras/capturas/}, de modo que pueden repetirse tras un
+cambio de la interfaz.
 
 La figura~\ref{fig:captura-asistente} muestra el primer paso del asistente de
 creación de un proceso (RF-06) y la figura~\ref{fig:captura-ciclo-vida}, el
@@ -69,6 +71,12 @@ recogen el resultado de un proceso escrutado en la consola y en la página
 pública (RF-15 y RF-16), con las huellas que permiten recalcular el recuento.
 Por último, la figura~\ref{fig:captura-trazabilidad} muestra el registro de
 acciones administrativas (RF-19).
+
+La figura~\ref{fig:captura-votante} recoge el recorrido del votante en el
+tamaño de un teléfono móvil: la bienvenida con el estado del proceso, el
+código de acceso recibido por correo (RF-08), la papeleta y la revisión previa
+a la confirmación (RF-09), y el recibo y su comprobación (RF-10). El recibo
+acredita que el voto está en la urna, no su contenido.
 
 % Dos capturas por página: cada pareja ocupa una página de figuras.
 \begin{figure}[p]
@@ -105,4 +113,27 @@ acciones administrativas (RF-19).
   \includegraphics[width=0.80\textwidth]{capturas/consola-trazabilidad-es}
   \caption{Registro de acciones administrativas de la organización (RF-19). Los nombres corresponden a cuentas ficticias de prueba.}
   \label{fig:captura-trazabilidad}
+\end{figure}
+
+% Recorrido del votante (24/11/2026). Se genera con scripts/demo/capturas-votante.mjs; mientras no existan las
+% imágenes se muestra un recuadro, para que la memoria compile igual.
+\newcommand{\capturaVotante}[2]{%
+  \begin{subfigure}[t]{0.27\textwidth}\centering
+    \IfFileExists{Figuras/capturas/votante-#1-es.png}%
+      {\includegraphics[width=\linewidth]{capturas/votante-#1-es}}%
+      {\fbox{\parbox[c][7.4cm][c]{0.88\linewidth}{\centering\small Captura pendiente:\\ \texttt{votante-#1-es.png}}}}
+    \caption{#2}
+  \end{subfigure}}
+\begin{figure}[p]
+  \centering
+  \capturaVotante{bienvenida}{Bienvenida}\hfill
+  \capturaVotante{codigo}{Código de acceso (RF-08)}\hfill
+  \capturaVotante{papeleta}{Papeleta (RF-09)}
+
+  \vspace{5mm}
+  \capturaVotante{revision}{Revisión y confirmación (RF-09)}\hfill
+  \capturaVotante{recibo}{Voto registrado y recibo (RF-10)}\hfill
+  \capturaVotante{comprobacion}{Comprobación del recibo (RF-10)}
+  \caption{Recorrido del votante en un teléfono móvil, con un votante ficticio de la demostración.}
+  \label{fig:captura-votante}
 \end{figure}

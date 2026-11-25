@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-22 · Rama: `dev` (HEAD `cb623e9`; árbol limpio; commits locales sin push)
+Última actualización: 2026-11-24 · Rama: `dev` (HEAD `b513bc6` = `origin/main`; cambios del 24/11 sin commit)
 
 ## Hitos
 
@@ -14,11 +14,34 @@
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Cerrado el 15/11/2026: 151 pruebas backend y 92 frontend, 0 fallos; H1a aceptada el 22/11 tras la revisión manual con el Narrador (M1); H1b aceptada (09/11); H1c rechazada (11/11); RNF-4 aceptado (13/11). Limitaciones en `docs/evaluation/resultados-p7/cierre.md` |
-| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 97 páginas y presentación de defensa con 20 diapositivas; revisión editorial y visual completa aún pendiente |
+| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 100 páginas y presentación de defensa con 20 diapositivas; revisión editorial y visual completa aún pendiente |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
 ## Hecho
 
+- 24/11 (sin commit): **M1 cerrado.** Con el autor (teclas desde Chrome, él escucha el Narrador): B1-01R, B1-03R y
+  B1-03bR cumplen (IMP-67 e IMP-68 verificadas); recomendadas V8-01, V6-01, V6-02, V7-01 (urna parada) y TM-01 (límite
+  3/min) cumplen, 8 de 11 revisadas en total; V5-01, C3E-01 y SSO-01 no reproducibles con la demo. Hojas CSV
+  actualizadas. Corregido `.sr-only` (solo existía en la consola: el anuncio oculto de IMP-68 se veía en el votante).
+  Anomalía sin reproducir en «Volver a entrar» → IMP-72 (propuesta). Autor: `test:coverage` 261/261, 87,9 % de líneas
+  (2560/2913) y E2E 212/212. Cifras pasadas a memoria (cap. 13, conclusiones, resumen es/en, tabla 9.2), presentación,
+  guion, `informe.md` y `cierre.md`. Capturas del votante hechas con `votante4` (**votó**; ya no quedan votantes sin
+  usar en «presente»): figura 11.7 compilada y revisada visualmente en la página 67; contiene seis capturas
+  sintéticas y no muestra datos personales. Demo: «pasada» tiene 0 votos (la recarga del 22/11 no los emitió).
+- 24/11 (sin commit): **todos los casos de uso en tabla (C4/observación del tutor del 13/11).** `cu-a-tabla.mjs`:
+  pasos en rango («2--4», era el «Lonely \item» de RF-05), fila «Estado en el MVP» (RF-11) y actores fijados para los
+  CU cuya descripción no da «cuando un X (ACT-n)» (RF-03, 04, 05, 13, 15, 17 y 19; RF-03 lleva Gestor de censo y
+  Administrador, como el diagrama). Convertidos los 17 restantes, sin fragmentos en «Otros». Propuesta 6 de C4
+  aplicada: RF-09 ya no menciona re-votar (precondición y excepción 6) y el comentario de RF-10 lo da como versión
+  futura. Memoria compilada con MiKTeX en Windows en dos pasadas: 100 páginas, sin errores fatales ni referencias
+  sin resolver; ninguna tabla de CU deja un título o una cabecera de bloque sola al pie; contraportada sin desbordar.
+  **C4 4, 5 y 6 cerrados.**
+- 24/11 (sin commit): **capturas del votante.** Nuevo `scripts/demo/capturas-votante.mjs` (vista móvil 390 × 844:
+  bienvenida, código, papeleta, revisión, recibo y comprobación; el recorrido confirma un voto de la cuenta sintética
+  configurada). Las seis imágenes se incluyen en la figura 11.7 de `implementacion.tex`. Recompiladas y revisadas
+  visualmente en la página 67. Presentación recompilada con MiKTeX en dos pasadas (20 páginas); sin errores fatales.
+- 24/11: M3 revisada: material completo en `docs/evaluation/revision-heuristica/`; falta ejecutarla (autor y un
+  segundo evaluador). Vídeo de la demo en pausa por decisión del autor.
 - 23/11 (tarde): **contraportada y tablas de CU (C4, aprobado por el autor).** `resumen_contraportada.tex` (resumen
   breve, misma letra) en `contra.tex`; filas que no se separan de la siguiente en las tablas de CU
   (`\cuKeepHline`, `\cuKeepCline`, `\cuSubsection` en `preambulo_cu.tex`, generados por `cu-a-tabla.mjs`). Probado en

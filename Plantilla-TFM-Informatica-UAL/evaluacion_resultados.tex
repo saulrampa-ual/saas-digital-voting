@@ -4,8 +4,8 @@
 \section{Pruebas disponibles}
 En las últimas ejecuciones registradas terminaron correctamente 175 pruebas
 de backend (\texttt{mvnw verify} completo del 22/11/2026: gateway 16,
-identity 30, election 58, voter-access 38 y ballot-box 33) y 259 de frontend,
-en 31 ficheros (\texttt{npm run test:coverage} del 20/11/2026); \texttt{npm run build} terminó
+identity 30, election 58, voter-access 38 y ballot-box 33) y 261 de frontend,
+en 31 ficheros (\texttt{npm run test:coverage} del 24/11/2026); \texttt{npm run build} terminó
 correctamente en la ejecución completa del 13/11/2026. Las pruebas unitarias y de arquitectura cubren reglas
 seleccionadas de permisos, ciclo de vida, importación del censo, acceso del
 votante, consumo del token, cadena de auditoría, escrutinio y separación
@@ -59,8 +59,8 @@ La cobertura de líneas JaCoCo del \texttt{mvnw verify} del 22/11/2026 es:
 gateway 90,3\% (65/72), identity 75,2\% (625/831), election 73,6\%
 (1328/1804), voter-access 50,4\% (793/1573) y ballot-box 44,9\% (771/1716);
 en conjunto, 59,7\% (3582/5996). En el frontend, medida con Vitest sobre el
-código de \texttt{src/app} el 20/11/2026, es del 87,8\% de las líneas
-(2543/2896). El total de líneas medidas del frontend pasó de 2287 a 2896
+código de \texttt{src/app} el 24/11/2026, es del 87,9\% de las líneas
+(2560/2913). El total de líneas medidas del frontend pasó de 2287 a 2896
 porque desde esa fecha una prueba carga todas las rutas, de modo que se miden
 todas las páginas y no solo las que alguna prueba importaba. En el código añadido o modificado desde el análisis del
 04/11/2026, SonarQube midió el 14/11/2026 una cobertura del
@@ -93,7 +93,7 @@ RNF-4 (sin hipótesis) & Al menos 4 de 5 administradores de organización sin fo
 
 El detalle de cada resultado de la tabla~\ref{tab:estado-hipotesis} es el siguiente.
 
-\textbf{H1a.} ACEPTADA (22/11/2026). Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de la regla \texttt{aria-required-children}, todos de una misma incidencia en la papeleta; corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Repetido el 08/11/2026 sobre la versión vigente (\texttt{06f39be}), con el mismo resultado. El 16/11/2026, con el aviso de demasiadas peticiones, el barrido del flujo del votante pasa a 25 pantallas o estados y 100 auditorías, todas sin incumplimientos críticos ni serios. La revisión manual se hizo el 22/11/2026 con el Narrador de Windows y Chrome sobre la demo sintética, siguiendo el guion de 39 comprobaciones obligatorias (acceso, código incorrecto, bloqueo por intentos, papeleta, confirmación, recibo, comprobación del recibo, foco visible y contrastes que axe no pudo calcular) y 11 recomendadas. Las teclas se enviaron desde una extensión del navegador y el autor escuchó y confirmó cada anuncio; las flechas del modo de examen las pulsó el autor. Resultado de las obligatorias: 37 cumplen, 0 bloqueos y 2 incidencias que no impiden votar (las casillas del código se anuncian con el nombre interno de Ionic en inglés, «Input 1 of 6», y la cuenta atrás para pedir otro código se anuncia cada segundo; corregidas después en el código, IMP-67 e IMP-68, a falta de repetir esas dos comprobaciones con el lector). Los botones verdes de acción bajaban de 5,26:1 a 3,32:1 al recibir el foco, por debajo de 4,5:1; se corrigió la hoja de estilos global (sin la capa blanca de Ionic y con un contorno de 3~px en el color primario) y, medido de nuevo, quedan en 5,26:1. De las recomendadas se revisaron 3 (ya votó, votación aún no abierta y enlace no válido), todas correctas; las otras 8 no se pudieron reproducir con la demo y quedan sin revisar. Los contrastes se calcularon con los estilos del navegador y la fórmula de WCAG~2.2, no con Colour Contrast Analyser. La decisión vale para la versión corregida, un solo lector de pantalla y un navegador, con la revisión hecha por el autor y no por personas usuarias de lectores de pantalla.
+\textbf{H1a.} ACEPTADA (22/11/2026). Barrido axe del flujo del votante (05/11/2026; 22 pantallas o estados, 1280 y 360 píxeles, español e inglés; 88 auditorías): el primer barrido dio 8 incumplimientos críticos de la regla \texttt{aria-required-children}, todos de una misma incidencia en la papeleta; corregida, el segundo barrido da 0 críticos y 0 serios. También se corrigió una incidencia que axe no detecta (el error de formato del código de recibo no se mostraba); el tercer barrido, con las dos correcciones, da 0 críticos y 0 serios. Repetido el 08/11/2026 sobre la versión vigente (\texttt{06f39be}), con el mismo resultado. El 16/11/2026, con el aviso de demasiadas peticiones, el barrido del flujo del votante pasa a 25 pantallas o estados y 100 auditorías, todas sin incumplimientos críticos ni serios. La revisión manual se hizo el 22/11/2026 con el Narrador de Windows y Chrome sobre la demo sintética, siguiendo el guion de 39 comprobaciones obligatorias (acceso, código incorrecto, bloqueo por intentos, papeleta, confirmación, recibo, comprobación del recibo, foco visible y contrastes que axe no pudo calcular) y 11 recomendadas. Las teclas se enviaron desde una extensión del navegador y el autor escuchó y confirmó cada anuncio; las flechas del modo de examen las pulsó el autor. Resultado de las obligatorias: 37 cumplen, 0 bloqueos y 2 incidencias que no impiden votar (las casillas del código se anuncian con el nombre interno de Ionic en inglés, «Input 1 of 6», y la cuenta atrás para pedir otro código se anuncia cada segundo; corregidas después en el código, IMP-67 e IMP-68; repetidas esas dos comprobaciones con el lector el 24/11/2026, ambas cumplen, y los nombres de las casillas también cambian al pasar a inglés sin recargar). Los botones verdes de acción bajaban de 5,26:1 a 3,32:1 al recibir el foco, por debajo de 4,5:1; se corrigió la hoja de estilos global (sin la capa blanca de Ionic y con un contorno de 3~px en el color primario) y, medido de nuevo, quedan en 5,26:1. De las recomendadas se revisaron 3 el 22/11/2026 (ya votó, votación aún no abierta y enlace no válido) y otras 5 el 24/11/2026 (resultado, sesión caducada y su botón, voto no registrado con la urna parada y demasiadas peticiones), todas correctas; las 3 restantes (proceso cerrado sin escrutar, enlace caducado y cuenta institucional) no se pueden reproducir con la demo y quedan sin revisar. Los contrastes se calcularon con los estilos del navegador y la fórmula de WCAG~2.2, no con Colour Contrast Analyser. La decisión vale para la versión corregida, un solo lector de pantalla y un navegador, con la revisión hecha por el autor y no por personas usuarias de lectores de pantalla.
 
 \textbf{H1b.} ACEPTADA: sesiones del 09/11/2026 con consentimiento y escenario sintético. Cinco sesiones válidas (P02--P05 y la reserva R1; P01 se invalidó por una incidencia de entorno, porque su entrada del censo ya tenía un voto). 5 de 5 completan acceso, emisión y recibo sin ayuda en $\leq$ 3 minutos (T0--T1: mediana 51~s, mínimo 36~s, máximo 79~s; 0 errores) y 5 de 5 interpretan correctamente el recibo. Una sesión adicional con la segunda reserva (R2) queda fuera del cómputo y tuvo el mismo resultado. Evidencia descriptiva limitada al prototipo, la configuración y la población evaluados.
 
@@ -237,7 +237,7 @@ RNF-2 y RNF-4 están aceptados, RNF-17 no se cumple y RNF-10 no se ha evaluado; 
 \section{Validez}
 La cobertura del backend es baja y desigual (del 44,9\% de ballot-box al
 90,3\% del \emph{gateway}; 59,7\% en conjunto) y limita la confianza que
-puede atribuirse a la suite. En el frontend alcanza el 87,8\% de las líneas,
+puede atribuirse a la suite. En el frontend alcanza el 87,9\% de las líneas,
 aunque una línea cubierta no garantiza que su comportamiento esté comprobado en
 todos los casos. Las pruebas de
 integración comprueban casos concretos de aislamiento entre organizaciones y
@@ -252,7 +252,7 @@ limitan a las ejecuciones disponibles y no se extrapolan a producción.
 La aceptación de H1a se apoya en un único lector de pantalla (el Narrador
 de Windows) y un navegador, con la revisión hecha por el autor y no por
 personas usuarias de lectores de pantalla; los contrastes se calcularon a
-partir de los estilos del navegador, y 8 de las 11 comprobaciones
+partir de los estilos del navegador, y 3 de las 11 comprobaciones
 recomendadas quedaron sin revisar porque la demo no reproduce esos estados.
 
 El resultado de RNF-4 tiene sus propias limitaciones: las cinco personas son

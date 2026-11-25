@@ -26,7 +26,7 @@ for (let m; (m = HEAD.exec(src));) {
   blocks.push({ id: m[1], name: m[2].trim(), start, end: next < 0 ? src.length : bodyStart + next, body: next < 0 ? rest : rest.slice(0, next) });
 }
 
-const FIELDS = ['Objetivos asociados', 'Requisitos asociados', 'Descripción', 'Precondición', 'Postcondición', 'Comentarios'];
+const FIELDS = ['Estado en el MVP', 'Objetivos asociados', 'Requisitos asociados', 'Descripción', 'Precondición', 'Postcondición', 'Comentarios'];
 function parse(b) {
   const out = { fields: {}, flow: [], exceptions: [], other: [] };
   let body = b.body;
@@ -41,7 +41,7 @@ function parse(b) {
   });
   body = body.replace(/\\textbf\{Excepciones y alternativas:\}\s*\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/, (_, items) => {
     for (const line of items.split(/\n(?=\s*\\item)/).map((l) => l.trim()).filter(Boolean)) {
-      const it = line.match(/^\\item\s+([0-9.]+[a-z]?)\s*:\s*([\s\S]*)$/);
+      const it = line.match(/^\\item\s+([0-9.]+[a-z]?(?:--[0-9.]+[a-z]?)?)\s*:\s*([\s\S]*)$/); // «2--4» = range of steps
       if (it) out.exceptions.push({ step: it[1], text: it[2].replace(/\s+/g, ' ') });
       else out.other.push(line);
     }
@@ -56,6 +56,17 @@ function parse(b) {
   return out;
 }
 
+// Actors that the description does not give as «cuando un X (ACT-n)» (several actors, the System or no «cuando»).
+// Checked against the actor table (contenido1.tex) and the use case diagrams.
+const ACTORS = {
+  'RF-03': 'Gestor de censo (ACT-5), Administrador de organización (ACT-2)',
+  'RF-04': 'Superadministrador (ACT-1), Administrador de organización (ACT-2), Gestor de censo (ACT-5), Auditor (ACT-3)',
+  'RF-05': 'Perfiles de gestión (ACT-1, ACT-2, ACT-3, ACT-5), Votante (ACT-4); Proveedor de identidad (ACT-6), si está configurado',
+  'RF-13': 'Sistema (escrutinio automático al cierre); Auditor (ACT-3), Votante (ACT-4)',
+  'RF-15': 'Administrador de organización (ACT-2); Votante (ACT-4), si el proceso lo permite',
+  'RF-17': 'Servicio de notificaciones (ACT-7), Administrador de organización (ACT-2)',
+  'RF-19': 'Auditor (ACT-3), Administrador de organización (ACT-2)',
+};
 // Actor of the use case: the «cuando un X (ACT-n)» part of the description
 function actors(desc = '') {
   const m = desc.match(/cuando (?:un|una|el|la|se)\s+(.*?)(?:\s+(?:da|asigna|crea|programa|accede|emite|quiere|cambia|consulta|genera|exporta|importa|inicia|solicita|lanza)\b|$)/);
@@ -78,7 +89,9 @@ function table(b, p) {
   r.push(`  \\caption{${b.id}: ${b.name}.}\\label{tab:cu-${b.id.toLowerCase()}}\\\\`);
   r.push(`  \\hline \\multicolumn{3}{|>{\\columncolor{cuHead}}p{\\cuAll}|}{\\textbf{${b.id}: ${b.name}}} \\\\ \\hline \\endfirsthead`);
   r.push(`  \\hline \\multicolumn{3}{|>{\\columncolor{cuHead}}p{\\cuAll}|}{\\textbf{${b.id}: ${b.name}} (continuación)} \\\\ \\hline \\endhead`);
-  const act = actors(p.fields['Descripción']);
+  // Use cases out of the MVP (RF-11) keep their status as the first row, so it is read before the flow.
+  if (p.fields['Estado en el MVP']) row('Estado en el MVP', p.fields['Estado en el MVP'], true);
+  const act = ACTORS[b.id] ?? actors(p.fields['Descripción']);
   if (act) row('Actores', act, true);
   if (p.fields['Objetivos asociados']) row('Objetivos', p.fields['Objetivos asociados'], true);
   if (p.fields['Requisitos asociados']) row('Requisitos', p.fields['Requisitos asociados'], true);
