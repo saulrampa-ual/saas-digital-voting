@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-24 · Rama: `dev` (HEAD `b513bc6` = `origin/main`; cambios del 24/11 sin commit)
+Última actualización: 2026-11-26 · Rama: `dev` (HEAD `96617f3`; cambios del 25/11 sin commit)
 
 ## Hitos
 
@@ -19,6 +19,38 @@
 
 ## Hecho
 
+- 26/11 (sin commit): `npm run test:coverage` del autor: **262 pruebas, 87,9 % de líneas (2566/2919)**; pasado a la
+  memoria (cap. 13, tabla 9.2, resumen es/en), presentación, guion, `informe.md` y `cierre.md` (437 pruebas en total).
+  **Presentación**: «El prototipo» con papeleta, recibo y comprobación en el móvil y el resultado en la consola; RNF-8 en
+  la diapositiva de calidad; H1a con las incidencias comprobadas; trabajo futuro con NVDA/JAWS; reserva nueva con el
+  asistente y el resto del recorrido. Compilada en el entorno de la IA (21 páginas, sin errores); guion y preguntas
+  al día.
+- 26/11 (sin commit): **M3 rehecha para repetirla el 27/11.** Las hojas del primer intento no se usan: varias filas
+  contradicen la aplicación (comprobado en pantalla a 360 px y en el código: hay «Copiar el código», «Cambiar mi
+  selección», «Te quedan N intentos», «Paso n de 4»…) y E1 y E2 comparten frases idénticas. `guion-evaluador.md` con
+  reglas, guía de gravedad, preparación, papeles de los votantes y 26 pruebas paso a paso (V1–V15, C1–C11); hojas en
+  blanco con un ejemplo neutro (el anterior hablaba de los intentos y pudo inducir la fila falsa). Visto de paso:
+  «Te quedan 1 intentos» → IMP-73 (propuesta, después de M3). Demo «· 2»: `presente.votante4` votó y `votante5` quedó
+  bloqueado 15 min durante la comprobación.
+- 26/11 (sin commit): **M3 lista para ejecutar.** Hojas `hoja-E1-autor.xlsx` y `hoja-E2.xlsx` (pestañas Instrucciones,
+  con ejemplo y resumen por fórmulas, y Hallazgos con listas de heurísticas, pantallas, RNF y gravedad 0–4) en lugar de
+  los CSV vacíos, que se borraron con permiso del autor. Guion y protocolo: referencias a las hojas, cronometraje de RNF-8
+  ya hecho y forma real de ver «Demasiadas peticiones» (límite bajo). Comprobado: gateway UP, consola y Keycloak responden.
+- 25/11: **ejecuciones del autor.** Demo recargada con `DEMO_SUFFIX=2` (procesos #15–#17; la pasada escrutada con 4
+  votos y cadena íntegra), tras corregir IMP-54 (historial de contraseñas), la detección de una contraseña incorrecta en
+  el login de los scripts y el token caducado durante la espera del escrutinio. **RNF-8**: 16 mediciones (5 del votante
+  con `presente.votante3`, que votó; 11 de la consola, admin y auditor), todas cumplen: realimentación ≤ 35 ms, total ≤
+  857 ms; pasado a la tabla 13.2 (sigue «Evidencia parcial» sin la revisión heurística). `npm run test:ci` 262/262 y
+  E2E IMP-72 en verde. Cifras de frontend de la memoria siguen en 261 y 87,9 % (`test:coverage` del 24/11): actualizar
+  con el próximo `test:coverage`.
+- 25/11 (sin commit): **diagramas de CU tras un interruptor**: `\ifdcunuevo` en `main.tex` (por defecto `\dcunuevofalse`,
+  los PlantUML de siempre); con `\dcunuevotrue`, `cambios_diagrama.tex` usa `dcu_gestion`/`dcu_votacion` con su texto y el
+  apéndice lo explica. Compiladas las dos variantes en el entorno de la IA (100 páginas, sin errores). **Demo**:
+  `seed-ual.mjs` vota cada elección antes de esperar el resto de invitaciones, la elección pasada abre 8 min (antes 4) y
+  `DEMO_SUFFIX` crea un juego nuevo de censos y procesos. **RNF-8**: `scripts/demo/medir-rnf8.mjs` cronometra la
+  realimentación de 5 acciones del votante (vota de verdad) y 3 de la consola, y añade filas a
+  `docs/evaluation/revision-heuristica/rnf8-cronometraje.csv`. **IMP-71** e **IMP-72** hechas (ver IMPROVEMENTS).
+  Nada ejecutado contra el stack: falta que el autor lance la demo, la medición, `npm run test:ci` y el E2E nuevo.
 - 24/11 (sin commit): **M1 cerrado.** Con el autor (teclas desde Chrome, él escucha el Narrador): B1-01R, B1-03R y
   B1-03bR cumplen (IMP-67 e IMP-68 verificadas); recomendadas V8-01, V6-01, V6-02, V7-01 (urna parada) y TM-01 (límite
   3/min) cumplen, 8 de 11 revisadas en total; V5-01, C3E-01 y SSO-01 no reproducibles con la demo. Hojas CSV

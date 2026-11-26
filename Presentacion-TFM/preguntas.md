@@ -118,7 +118,9 @@ El criterio exige la parte automática y una revisión manual con teclado y lect
 incumplimientos críticos y serios en 212 comprobaciones. La manual la hice el 22/11/2026 con el Narrador de Windows,
 porque NVDA no funcionó en mi equipo: 39 comprobaciones obligatorias, sin bloqueos y con 2 incidencias menores. El
 contraste de los botones verdes con el foco bajaba a 3,32:1; lo corregí antes de decidir y lo volví a medir (5,26:1).
-La limitación es que es un solo lector de pantalla y que la revisión la hice yo.
+Las dos incidencias (el nombre en inglés de las casillas del código y la cuenta atrás leída cada segundo) se
+corrigieron y el 24/11/2026 se repitieron esas comprobaciones con el Narrador: cumplen. La limitación es que es un solo
+lector de pantalla y que la revisión la hice yo.
 
 **¿H1c rechazada significa que no cumples los objetivos del anteproyecto?**
 No. El objetivo de evaluación (OE5) pide hacer una prueba de carga y documentar los resultados, incluidos los criterios

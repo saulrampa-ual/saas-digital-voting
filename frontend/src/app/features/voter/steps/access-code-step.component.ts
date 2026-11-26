@@ -11,7 +11,8 @@ import { CodeSent } from '../../../core/voter/voter-api.service';
  * Screen readers (M1): Ionic 9 names each box «Input n of 6» in English and offers no input to change it, so the
  * step renames the six boxes in the interface language once the component has rendered (IMP-67). The visible
  * countdown is not a live region; a hidden one only says when the wait starts and when a new code can be asked
- * for, instead of reading the time every second (IMP-68).
+ * for, instead of reading the time every second (IMP-68). Ionic copies the aria-* attributes of ion-input-otp to the
+ * boxes only when it loads, so after a wrong code the step also links each box to the error itself (IMP-71).
  */
 @Component({
   selector: 'app-access-code-step',
@@ -119,9 +120,10 @@ export class AccessCodeStepComponent implements OnDestroy {
   constructor() {
     effect(() => {
       this.languageChanges();
+      const invalid = Boolean(this.error());
       const element = this.otp()?.nativeElement as OtpElement | undefined;
       if (element) {
-        void this.nameDigits(element);
+        void this.describeDigits(element, invalid);
       }
     });
   }
@@ -141,13 +143,23 @@ export class AccessCodeStepComponent implements OnDestroy {
     clearInterval(this.timer);
   }
 
-  /** Gives each box a name in the interface language («Código de acceso, cifra 1 de 6») (IMP-67). */
-  private async nameDigits(element: OtpElement): Promise<void> {
+  /**
+   * Gives each box a name in the interface language («Código de acceso, cifra 1 de 6») (IMP-67) and, after a wrong
+   * code, marks it as invalid and described by the error message (IMP-71).
+   */
+  private async describeDigits(element: OtpElement, invalid: boolean): Promise<void> {
     await element.componentOnReady?.();
     const boxes = element.querySelectorAll<HTMLInputElement>('input');
-    boxes.forEach((box, index) =>
-      box.setAttribute('aria-label', this.translate.instant('voter.code.digit', { position: index + 1, total: boxes.length })),
-    );
+    boxes.forEach((box, index) => {
+      box.setAttribute('aria-label', this.translate.instant('voter.code.digit', { position: index + 1, total: boxes.length }));
+      if (invalid) {
+        box.setAttribute('aria-invalid', 'true');
+        box.setAttribute('aria-describedby', 'code-error');
+      } else {
+        box.removeAttribute('aria-invalid');
+        box.removeAttribute('aria-describedby');
+      }
+    });
   }
 }
 

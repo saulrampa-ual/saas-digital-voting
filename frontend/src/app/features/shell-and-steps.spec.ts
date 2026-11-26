@@ -105,7 +105,7 @@ describe('AccessCodeStepComponent (B1, código de acceso)', () => {
     minutesLeft(): number;
     countdown(): string;
     resendAnnouncement(): { key: string; params: { time?: string } };
-    nameDigits(element: HTMLElement): Promise<void>;
+    describeDigits(element: HTMLElement, invalid: boolean): Promise<void>;
     clear(): void;
     submit(): void;
     ngOnDestroy(): void;
@@ -169,10 +169,23 @@ describe('AccessCodeStepComponent (B1, código de acceso)', () => {
     for (let i = 0; i < 6; i++) {
       otp.appendChild(document.createElement('input')).setAttribute('aria-label', `Input ${i + 1} of 6`);
     }
-    await step.nameDigits(otp);
+    await step.describeDigits(otp, false);
     const labels = [...otp.querySelectorAll('input')].map((box) => box.getAttribute('aria-label'));
     expect(labels[0]).toBe('Código de acceso, cifra 1 de 6');
     expect(labels[5]).toBe('Código de acceso, cifra 6 de 6');
+    step.ngOnDestroy();
+  });
+
+  it('links every box to the error after a wrong code and unlinks them when it is cleared (IMP-71)', async () => {
+    const { step } = open(null);
+    const otp = document.createElement('div');
+    for (let i = 0; i < 6; i++) otp.appendChild(document.createElement('input'));
+    const boxes = () => [...otp.querySelectorAll('input')];
+    await step.describeDigits(otp, true);
+    expect(boxes().every((box) => box.getAttribute('aria-invalid') === 'true')).toBe(true);
+    expect(boxes().every((box) => box.getAttribute('aria-describedby') === 'code-error')).toBe(true);
+    await step.describeDigits(otp, false);
+    expect(boxes().some((box) => box.hasAttribute('aria-invalid') || box.hasAttribute('aria-describedby'))).toBe(false);
     step.ngOnDestroy();
   });
 

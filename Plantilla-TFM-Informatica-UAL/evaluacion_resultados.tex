@@ -4,8 +4,8 @@
 \section{Pruebas disponibles}
 En las últimas ejecuciones registradas terminaron correctamente 175 pruebas
 de backend (\texttt{mvnw verify} completo del 22/11/2026: gateway 16,
-identity 30, election 58, voter-access 38 y ballot-box 33) y 261 de frontend,
-en 31 ficheros (\texttt{npm run test:coverage} del 24/11/2026); \texttt{npm run build} terminó
+identity 30, election 58, voter-access 38 y ballot-box 33) y 262 de frontend,
+en 31 ficheros (\texttt{npm run test:coverage} del 26/11/2026); \texttt{npm run build} terminó
 correctamente en la ejecución completa del 13/11/2026. Las pruebas unitarias y de arquitectura cubren reglas
 seleccionadas de permisos, ciclo de vida, importación del censo, acceso del
 votante, consumo del token, cadena de auditoría, escrutinio y separación
@@ -59,8 +59,8 @@ La cobertura de líneas JaCoCo del \texttt{mvnw verify} del 22/11/2026 es:
 gateway 90,3\% (65/72), identity 75,2\% (625/831), election 73,6\%
 (1328/1804), voter-access 50,4\% (793/1573) y ballot-box 44,9\% (771/1716);
 en conjunto, 59,7\% (3582/5996). En el frontend, medida con Vitest sobre el
-código de \texttt{src/app} el 24/11/2026, es del 87,9\% de las líneas
-(2560/2913). El total de líneas medidas del frontend pasó de 2287 a 2896
+código de \texttt{src/app} el 26/11/2026, es del 87,9\% de las líneas
+(2566/2919). El total de líneas medidas del frontend pasó de 2287 a 2896
 porque desde esa fecha una prueba carga todas las rutas, de modo que se miden
 todas las páginas y no solo las que alguna prueba importaba. En el código añadido o modificado desde el análisis del
 04/11/2026, SonarQube midió el 14/11/2026 una cobertura del
@@ -165,7 +165,7 @@ propuesta en la tabla~\ref{tab:rnf-iso25010}.
 \endfoot
 \hline
 \endlastfoot
-RNF-1 & Must & 212 comprobaciones axe sin incumplimientos críticos ni serios (consola, flujo del votante y recibo; 1280 y 360 píxeles; español e inglés). Revisión manual con teclado y el Narrador de Windows (22/11/2026): 0 bloqueos y 2 incidencias; el contraste con foco de los botones verdes se corrigió y se volvió a medir. & Aceptado (H1a) \\
+RNF-1 & Must & 212 comprobaciones axe sin incumplimientos críticos ni serios (consola, flujo del votante y recibo; 1280 y 360 píxeles; español e inglés). Revisión manual con teclado y el Narrador de Windows (22/11/2026): 0 bloqueos y 2 incidencias, corregidas y comprobadas de nuevo con el lector el 24/11/2026; el contraste con foco de los botones verdes se corrigió y se volvió a medir. & Aceptado (H1a) \\
 \hline
 RNF-2 & Should & Barridos a 1280 y 360 píxeles sin incumplimientos críticos ni serios en Chromium y Firefox (212 de 212 cada uno) y en WebKit (211 de 212 en la ejecución completa del 18/11/2026; la restante agotó el tiempo de espera antes de llegar a su pantalla y pasó al repetirla sola el 19/11/2026, sin incumplimientos). Uso real en Safari (iOS) y Chrome (Android) el 18/11/2026. & Aceptado \\
 \hline
@@ -179,7 +179,7 @@ RNF-6 & Must & H1b: 5 de 5 interpretan correctamente el recibo. & Aceptado \\
 \hline
 RNF-7 & Must & Pantalla de revisión antes de votar; pruebas de que no se vota sin selección y de que la papeleta incompleta muestra su error. & Evidencia parcial \\
 \hline
-RNF-8 & Should & Pantallas de error con salida y reintento seguro del voto no registrado, probados en el flujo del votante. Sin revisión heurística. & Evidencia parcial \\
+RNF-8 & Should & Pantallas de error con salida y reintento seguro del voto no registrado, probados en el flujo del votante. Cronometraje del 25/11/2026 en el entorno local (\texttt{scripts/demo/medir-rnf8.mjs}): 16 mediciones de 8 acciones que llaman al servidor (5 del votante y 3 de la consola), todas con la primera realimentación visible en 35~ms o menos y terminadas en 857~ms o menos, por debajo del segundo del criterio. Sin revisión heurística de los mensajes. & Evidencia parcial \\
 \hline
 RNF-9 & Should & Indicador de cuatro pasos y estado del proceso, comprobados en las pruebas del flujo del votante. Sin revisión heurística. & Evidencia parcial \\
 \hline

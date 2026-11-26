@@ -58,10 +58,10 @@ Dos personas que **revisan por separado** y después juntan sus hojas:
 
 ## Cómo se registra
 
-Cada persona rellena su copia de `hoja-revision-heuristica.csv` (una fila por problema). Para RNF-8, en las acciones
-que llaman al servidor (pedir código, verificar, votar, importar censo, programar proceso, generar acta) se cronometra
-cuánto tarda en aparecer la primera señal de que algo pasa (spinner, botón desactivado, mensaje) y se anota en
-`tiempo_realimentacion_s`.
+Cada persona rellena su hoja de Excel, `hoja-E1-autor.xlsx` o `hoja-E2.xlsx` (pestaña «Hallazgos», una fila por problema; la pestaña «Instrucciones» explica cada columna y resume los resultados). Para RNF-8, el tiempo de la
+primera señal de las acciones que llaman al servidor ya se midió con `scripts/demo/medir-rnf8.mjs` el 25/11/2026
+(`rnf8-cronometraje.csv`); en la revisión solo se cronometran, si se quiere, importar censo y programar proceso, y se
+anotan en `tiempo_realimentacion_s`.
 
 Después se juntan las dos hojas: los problemas repetidos se unen y a cada uno se le asigna la **mayor** de las dos
 gravedades.

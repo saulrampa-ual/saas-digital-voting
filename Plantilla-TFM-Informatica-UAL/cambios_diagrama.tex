@@ -1,6 +1,43 @@
 \chapter{Diagrama de casos de uso}
 \label{cap:refactorizacion-diagrama}
 
+\ifdcunuevo
+\input{Figuras/diagramas/dcu_estilo.tex}
+Los casos de uso se presentan en dos diagramas: la consola de gestión en la
+figura~\ref{fig:casos-uso-gestion} y la votación en la
+figura~\ref{fig:casos-uso-votacion}. En cada uno, los casos de uso forman una
+sola columna dentro del límite del sistema, con los actores principales a la
+izquierda y los secundarios (sistemas externos) a la derecha. Los diagramas no
+usan relaciones de inclusión ni de extensión: la secuencia de cada caso se
+describe en su tabla del capítulo~\ref{cap:especificacion-detallada}.
+
+\begin{figure}[p]
+  \centering
+  \resizebox{!}{0.85\textheight}{\input{Figuras/diagramas/dcu_gestion.tex}}
+  \caption{Diagrama de casos de uso de la consola de gestión.}
+  \label{fig:casos-uso-gestion}
+\end{figure}
+
+\begin{figure}[p]
+  \centering
+  \resizebox{0.85\textwidth}{!}{\input{Figuras/diagramas/dcu_votacion.tex}}
+  \caption{Diagrama de casos de uso de la votación.}
+  \label{fig:casos-uso-votacion}
+\end{figure}
+
+Las asociaciones entre actores y casos de uso son líneas sin punta de flecha.
+El actor abstracto \emph{Usuario de gestión} reúne lo que comparten los cuatro
+perfiles de gestión, iniciar sesión (RF-04 y RF-05a); Superadministrador,
+Gestor de censo, Administrador de organización y Auditor heredan de él y se
+asocian solo con sus casos propios. El proveedor de identidad aparece como
+actor secundario del inicio de sesión. En la votación, el votante accede con
+su enlace y el código o con su cuenta institucional (RF-05b), y el
+temporizador del sistema representa los avisos programados (RF-17) y el
+escrutinio automático al cierre (RF-13). RF-11 (re-votar) no figura porque
+D-03 lo excluye del MVP.
+\else
+
+
 Para que los nombres y las relaciones se lean con claridad, los casos de uso
 se presentan en dos diagramas PlantUML independientes: gestión y
 configuración en la figura~\ref{fig:casos-uso-gestion}; participación y
@@ -36,3 +73,4 @@ con el votante. RF-11 (re-votar) no figura en el diagrama porque D-03 lo
 excluye del MVP. El punto de extensión de RF-09 se sitúa tras confirmar
 la emisión. RF-19 se asocia a \emph{Usuario con auditoría}; los perfiles
 Administrador y Auditor lo heredan.
+\fi

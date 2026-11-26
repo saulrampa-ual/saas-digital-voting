@@ -1,0 +1,17 @@
+fecha,accion,realimentacion_ms,total_ms,primer_cambio,decision
+2026-11-25 10:21,"Votante: pedir el código («Empezar»)",35,340,"no guardado (filas pasadas desde la consola: el script falló después)",cumple
+2026-11-25 10:21,"Votante: verificar el código (última cifra)",16,857,"no guardado (filas pasadas desde la consola: el script falló después)",cumple
+2026-11-25 10:21,"Votante: revisar el voto (sin servidor)",14,82,"no guardado (filas pasadas desde la consola: el script falló después)",cumple
+2026-11-25 10:21,"Votante: confirmar y votar",10,250,"no guardado (filas pasadas desde la consola: el script falló después)",cumple
+2026-11-25 10:21,"Votante: comprobar el recibo",13,497,"no guardado (filas pasadas desde la consola: el script falló después)",cumple
+2026-11-25 10:30,"Consola: exportar resultados CSV (1)",17,233,"aria-disabled en ion-button",cumple
+2026-11-25 10:30,"Consola: generar acta PDF (1)",9,261,"nodo quitado",cumple
+2026-11-25 10:40,"Consola: exportar resultados CSV (1)",23,134,"aria-disabled en ion-button",cumple
+2026-11-25 10:40,"Consola: generar acta PDF (1)",11,132,"nodo quitado",cumple
+2026-11-25 10:40,"Consola: exportar resultados CSV (2)",20,116,"aria-disabled en ion-button",cumple
+2026-11-25 10:40,"Consola: generar acta PDF (2)",8,144,"nodo quitado",cumple
+2026-11-25 10:40,"Consola: exportar resultados CSV (3)",28,104,"aria-disabled en ion-button",cumple
+2026-11-25 10:40,"Consola: generar acta PDF (3)",7,171,"nodo quitado",cumple
+2026-11-25 10:40,"Consola (auditor): verificar la integridad de la urna (1)",12,136,"ion-spinner añadido",cumple
+2026-11-25 10:40,"Consola (auditor): verificar la integridad de la urna (2)",11,138,"ion-spinner añadido",cumple
+2026-11-25 10:40,"Consola (auditor): verificar la integridad de la urna (3)",12,168,"ion-spinner añadido",cumple
