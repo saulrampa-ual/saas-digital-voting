@@ -1,6 +1,6 @@
 # Revisión heurística (RNF-8, RNF-9 y RNF-10) · mejora M3
 
-Protocolo preparado el 18/11/2026. **Sin ejecutar.** No contiene resultados: la hoja se rellena solo con lo que
+Protocolo preparado el 18/11/2026. **Ejecutado el 27/11/2026** (E1 y E2): resultados en `consolidado.md`. Las hojas se rellenan solo con lo que
 observen las personas evaluadoras.
 
 ## Qué se comprueba

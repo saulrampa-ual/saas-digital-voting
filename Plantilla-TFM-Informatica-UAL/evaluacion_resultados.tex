@@ -179,11 +179,11 @@ RNF-6 & Must & H1b: 5 de 5 interpretan correctamente el recibo. & Aceptado \\
 \hline
 RNF-7 & Must & Pantalla de revisión antes de votar; pruebas de que no se vota sin selección y de que la papeleta incompleta muestra su error. & Evidencia parcial \\
 \hline
-RNF-8 & Should & Pantallas de error con salida y reintento seguro del voto no registrado, probados en el flujo del votante. Cronometraje del 25/11/2026 en el entorno local (\texttt{scripts/demo/medir-rnf8.mjs}): 16 mediciones de 8 acciones que llaman al servidor (5 del votante y 3 de la consola), todas con la primera realimentación visible en 35~ms o menos y terminadas en 857~ms o menos, por debajo del segundo del criterio. Sin revisión heurística de los mensajes. & Evidencia parcial \\
+RNF-8 & Should & Pantallas de error con salida y reintento seguro del voto no registrado, probados en el flujo del votante. Cronometraje del 25/11/2026 en el entorno local (\texttt{scripts/demo/medir-rnf8.mjs}): 16 mediciones de 8 acciones que llaman al servidor (5 del votante y 3 de la consola), todas con la primera realimentación visible en 35~ms o menos y terminadas en 857~ms o menos, por debajo del segundo del criterio. Revisión heurística del 27/11/2026 (dos evaluadores, versión \texttt{41140b0}): ninguno anotó mensajes de error poco claros ni acciones lentas sin señal. & Aceptado \\
 \hline
-RNF-9 & Should & Indicador de cuatro pasos y estado del proceso, comprobados en las pruebas del flujo del votante. Sin revisión heurística. & Evidencia parcial \\
+RNF-9 & Should & Indicador de cuatro pasos y estado del proceso, comprobados en las pruebas del flujo del votante. Revisión heurística del 27/11/2026: los dos evaluadores vieron el paso y el estado en todas las pantallas del votante (360 y 1280 píxeles). & Aceptado \\
 \hline
-RNF-10 & Should & Sin revisión heurística de consistencia. & Sin evaluar \\
+RNF-10 & Should & Revisión heurística de Nielsen del 27/11/2026 por dos evaluadores por separado (el autor y un compañero del máster que no participó en el desarrollo), 15 pruebas del votante y 11 de la consola: 11 problemas tras juntar las hojas, 10 de gravedad 1 y 1 de gravedad 2, ninguno de gravedad alta (3 o 4). Uno de los evaluadores es el autor y conoce la interfaz. & Aceptado \\
 \hline
 RNF-11 & Must & Esquemas de voter-access y ballot-box sin campos que vinculen identidad y voto; la emisión no registra token, recibo ni opción. No protege frente a un operador de ambas bases. & Evidencia parcial \\
 \hline
@@ -232,7 +232,7 @@ La figura~\ref{fig:pwa-icono-android} recoge ambas capturas.
 
 En resumen, de los diez requisitos Must, dos están aceptados con su criterio
 (RNF-3 y RNF-6) y los ocho restantes tienen evidencia parcial; entre los Should,
-RNF-2 y RNF-4 están aceptados, RNF-17 no se cumple y RNF-10 no se ha evaluado; RNF-18 (Could) está aceptado.
+RNF-2, RNF-4, RNF-8, RNF-9 y RNF-10 están aceptados y RNF-17 no se cumple; RNF-18 (Could) está aceptado.
 
 \section{Validez}
 La cobertura del backend es baja y desigual (del 44,9\% de ballot-box al
