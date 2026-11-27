@@ -31,7 +31,8 @@ type Result = 'present' | 'absent' | 'unknownProcess' | 'error' | null;
     <ion-content class="ion-padding">
       <main class="voter">
         <h1 tabindex="-1">{{ 'voter.verify.title' | translate }}</h1>
-        <p>{{ 'voter.verify.intro' | translate }}</p>
+        <!-- IMP-80 (M3): coming from the receipt the code is already typed; say so instead of «type or paste». -->
+        <p>{{ (prefilled ? 'voter.verify.introPrefilled' : 'voter.verify.intro') | translate }}</p>
         <form (submit)="$event.preventDefault(); check()">
           <ion-input
             class="mono"
@@ -108,6 +109,8 @@ export class ReceiptCheckPage {
     (inject(Router).currentNavigation()?.extras.state?.['receiptCode'] as string | undefined)
       ?? (history.state?.receiptCode as string | undefined) ?? '',
   );
+  /** The code arrived from the receipt screen (B4), not typed by the voter. */
+  protected readonly prefilled = this.code() !== '';
   protected readonly busy = signal(false);
   protected readonly formatError = signal(false);
   protected readonly result = signal<Result>(null);

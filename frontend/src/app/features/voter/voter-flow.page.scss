@@ -8,7 +8,16 @@
 .loading { text-align: center; margin-top: 3rem; }
 .eyebrow { font-size: 0.875rem; color: var(--ion-color-medium); margin: 0; text-transform: none; }
 .welcome h1 { margin-top: 0.25rem; }
-.how { padding-left: 1.25rem; line-height: 1.6; }
+.how { padding-left: 1.25rem; line-height: 1.5; }
+// IMP-56 (M3): on a phone the welcome was a few pixels taller than the screen, so it scrolled to show only empty space
+// under «Empezar». Tighter rhythm and no extra space after the button.
+.welcome h1 { margin-bottom: 0.75rem; }
+.welcome ion-button { margin-bottom: 0; }
+@media (max-width: 575.98px) {
+  ion-content.ion-padding { --padding-bottom: 4px; }
+  .welcome h1 { font-size: 1.5rem; }
+  .welcome p, .welcome .how { margin-top: 0; margin-bottom: 0.75rem; }
+}
 .secret { font-weight: 600; }
 ion-button { --min-height: 52px; }
 .secure { text-align: center; margin: 0; font-size: 0.875rem; }

@@ -124,6 +124,7 @@
         "can": "crear censos e importar o editar las personas que pueden votar.",
         "manage": "Gestionar censos",
         "list": "Censos de la organización",
+        "all": "Ver los {{count}} censos",
         "none": "Todavía no hay censos. Crea el primero para que se pueda preparar un proceso.",
         "total": "Censos",
         "people": "Personas en total",
@@ -544,7 +545,7 @@
       "day": "Día",
       "cumulative": "Acumulado",
       "lockTitle": "Los resultados por opción no se muestran hasta el escrutinio.",
-      "lockText": "Aquí solo ves cuántas personas han votado, nunca qué han votado. La participación se cuenta por día, sin horas, para proteger el secreto del voto.",
+      "lockText": "Aquí solo se ve cuántas personas han votado, nunca qué han votado. La participación se cuenta por día, sin horas, para proteger el secreto del voto.",
       "seeResults": "Ver los resultados",
       "titleShort": "Participación"
     },
@@ -977,6 +978,7 @@
     "verify": {
       "title": "Comprobar mi recibo",
       "intro": "Escribe o pega tu código de recibo para comprobar que tu voto está en la urna.",
+      "introPrefilled": "Ya hemos escrito el código de tu recibo. Pulsa «Comprobar» para ver que tu voto está en la urna.",
       "label": "Código de recibo",
       "helper": "64 caracteres (0-9 y a-f)",
       "format": "El código debe tener 64 caracteres entre 0-9 y a-f.",

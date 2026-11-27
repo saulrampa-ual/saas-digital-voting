@@ -47,8 +47,9 @@ import { TranslatePipe } from '@ngx-translate/core';
     .blank-help { font-size: 0.875rem; margin: 0.5rem 0 0; }
     .notice { display: flex; gap: 8px; align-items: flex-start; background: #fff4dc; color: #7a4b00;
       border-radius: var(--vv-radius-control); padding: 12px; margin-bottom: 1rem; }
-    .notice ion-icon { font-size: 1.5rem; flex: none; }
-    .notice p { margin: 0; }
+    /* IMP-79 (M3): the notice is secondary to the choice: same size as the rest of the secondary text */
+    .notice ion-icon { font-size: 1.25rem; flex: none; }
+    .notice p { margin: 0; font-size: 0.9375rem; line-height: 1.4; }
     .actions { display: grid; gap: 12px; }
     ion-button { --min-height: 52px; margin: 0; }
     .wait { text-align: center; }

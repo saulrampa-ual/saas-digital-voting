@@ -124,6 +124,7 @@
         "can": "create censuses and import or edit the people who can vote.",
         "manage": "Manage censuses",
         "list": "Organisation censuses",
+        "all": "See all {{count}} censuses",
         "none": "There are no censuses yet. Create the first one so that a process can be prepared.",
         "total": "Censuses",
         "people": "People in total",
@@ -977,6 +978,7 @@
     "verify": {
       "title": "Check my receipt",
       "intro": "Type or paste your receipt code to check that your vote is in the ballot box.",
+      "introPrefilled": "We have already filled in your receipt code. Press «Check» to see that your vote is in the ballot box.",
       "label": "Receipt code",
       "helper": "64 characters (0-9 and a-f)",
       "format": "The code must have 64 characters from 0-9 and a-f.",

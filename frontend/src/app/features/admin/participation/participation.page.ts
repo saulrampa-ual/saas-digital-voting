@@ -105,6 +105,8 @@ const REFRESH_MS = 15_000;
     .metric span { font-size: 0.875rem; color: #4a5868; }
     .metric strong { font-size: 2rem; color: var(--ion-color-primary); line-height: 1.1; }
     .metric small { color: var(--ion-color-medium); }
+    /* IMP-82 (M3): on a wide screen the cards are as tall as the ring; larger text fills them */
+    @media (min-width: 1000px) { .metric { gap: 6px; } .metric span { font-size: 1rem; } .metric strong { font-size: 2.75rem; } .metric small { font-size: 0.9375rem; } }
     .help { color: var(--ion-color-medium); font-size: 0.875rem; }
     .lock { display: flex; gap: 8px; align-items: flex-start; margin-top: 24px; }
     .lock ion-icon { flex: none; margin-top: 3px; }
