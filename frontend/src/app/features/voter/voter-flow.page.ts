@@ -9,6 +9,7 @@ import {
 import { LanguageService } from '../../core/i18n/language.service';
 import { SsoOutcome, VoterSsoService } from '../../core/voter/voter-sso.service';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
+import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component';
 import { ErrorStateComponent } from '../../shared/error-state/error-state.component';
 import { LocalizedPipe } from '../../shared/pipes/localized.pipe';
 import { LocalDatePipe } from '../../shared/pipes/local-date.pipe';
@@ -41,7 +42,7 @@ type Purpose = 'vote' | 'results';
 @Component({
   selector: 'app-voter-flow',
   imports: [
-    IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonFooter, IonText, IonButton, IonSpinner,
+    IonHeader, IonToolbar, IonTitle, BrandLogoComponent, IonButtons, IonContent, IonFooter, IonText, IonButton, IonSpinner,
     TranslatePipe, LanguageSwitcherComponent, ErrorStateComponent, LocalizedPipe, LocalDatePipe,
     StepIndicatorComponent, AccessCodeStepComponent, BallotStepComponent, ReviewStepComponent, ReceiptStepComponent,
     ResultSummaryComponent, RouterLink,

@@ -15,7 +15,7 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   ROOT, APP, MAILPIT, GW, log, iso, http, demoPassword, readInfraEnv, loadChromium, createKeycloakAdmin, createLogin,
-  ensureOrganization, waitStatus, waitMail, sixDigits, inviteLink,
+  ensureOrganization, waitStatus, waitMail, sixDigits, inviteLink, sleep,
 } from './lib/common.mjs';
 
 const ORG = 'UAL';
@@ -92,7 +92,14 @@ const ELECTIONS = ELECTIONS_BASE.map((e) => ({ ...e, census: e.census + SUFFIX,
 async function vote(election, voter, choice, processId) {
   const link = await inviteLink(voter.email);
   const since = Date.now();
-  await http('POST', `${GW}/api/v1/voter-access/links/${link}/otp`, { ok: [202, 200] });
+  // voter-access learns that the process opened a little after election-service (event): on 422 «not open yet», wait
+  // and ask again (26/11/2026: voting right after the opening time failed with processStatus SCHEDULED)
+  for (let i = 0; ; i++) {
+    const r = await http('POST', `${GW}/api/v1/voter-access/links/${link}/otp`, { ok: [202, 200, 422] });
+    if (r.status !== 422) break;
+    if (i >= 36) throw new Error(`${voter.email}: the process is still not open for voter-access after 3 min`);
+    await sleep(5000);
+  }
   const code = await waitMail(voter.email, since, (t) => !t.includes('/votar/') && sixDigits(t), 'voter code');
   const { data: access } = await http('POST', `${GW}/api/v1/voter-access/links/${link}/otp/verify`, { body: { code } });
   if (access.hasVoted) { log(`${voter.email}: already voted`); return null; }

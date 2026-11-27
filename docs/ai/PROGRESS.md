@@ -19,6 +19,12 @@
 
 ## Hecho
 
+- 26/11 (sin commit): **escudo de VeriVoto en las cabeceras del votante** (IMP-56, a petición del autor): flujo del
+  votante, comprobación del recibo y resultados públicos usan `app-brand-logo` como la consola y la página 404;
+  `tsc` sin errores y visto a 360 px. **Detectado:** el inicio de sesión de Keycloak se muestra con el tema por
+  defecto `keycloak.v2`, no con `verivoto` (el realm en ejecución no tiene `loginTheme=verivoto`, aunque el JSON del
+  realm sí). **Corregido el 26/11 con permiso del autor** (API de administración, `loginTheme=verivoto`; comprobado:
+  carga el tema propio). Causa sin identificar: ningún script cambia `loginTheme`; si vuelve a pasar, revisar el realm.
 - 26/11 (sin commit): `npm run test:coverage` del autor: **262 pruebas, 87,9 % de líneas (2566/2919)**; pasado a la
   memoria (cap. 13, tabla 9.2, resumen es/en), presentación, guion, `informe.md` y `cierre.md` (437 pruebas en total).
   **Presentación**: «El prototipo» con papeleta, recibo y comprobación en el móvil y el resultado en la consola; RNF-8 en

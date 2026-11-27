@@ -1,8 +1,7 @@
 # Revisión heurística (M3) · guion paso a paso para cada persona evaluadora
 
-Versión del 26/11/2026 (sustituye a la del 23/11). Complementa a `protocolo.md`, que dice qué se mide y cómo se
-decide. **Sin ejecutar.** Las hojas del 26/11 se descartaron porque varias filas no coincidían con lo que muestra la
-aplicación y las dos hojas tenían frases idénticas.
+Versión del 27/11/2026 (sustituye a la del 26/11). Complementa a `protocolo.md`, que dice qué se mide y cómo se
+decide. Cada prueba va numerada y en un bloque propio: dice qué enlace o cuenta usar, qué hacer y qué mirar.
 
 ## 0. Reglas (léelas antes de empezar)
 
@@ -27,7 +26,7 @@ aplicación y las dos hojas tenían frases idénticas.
 
 Las gravedades 3 y 4 deciden que RNF-10 no se cumple: antes de poner un 3 o un 4, repite la prueba para confirmarlo.
 
-## 1. Preparación (la hace el autor, unos 15 min, antes de cada sesión)
+## 1. Preparación (la hace el autor, unos 30 min, antes de cada sesión)
 
 1. Arrancar todo en PowerShell, desde la raíz del repositorio:
    ```powershell
@@ -39,41 +38,50 @@ Las gravedades 3 y 4 deciden que RNF-10 no se cumple: antes de poner un 3 o un 4
 2. Cargar **una demo nueva para cada evaluador** (unos 12 min; se crean las elecciones «… · E1» o «… · E2»):
    ```powershell
    $env:DEMO_PASSWORD = '<contraseña de la demo>'
-   $env:DEMO_SUFFIX = 'E1'      # 'E2' en la sesión de la segunda persona
+   $env:DEMO_SUFFIX = 'E2'      # 'E1' en la sesión del autor
    node scripts/demo/seed-ual.mjs
    ```
    Debe terminar con `intact=true` y `DONE`.
-3. Abrir `.local/demo-ual.md`: enlaces de cada votante de **esa** demo. Abrir Mailpit (`http://localhost:8025`): ahí
-   llegan los códigos del votante y los de inicio de sesión de la consola.
+3. Abrir `.local/demo-ual.md` y comprobar que la fecha de «Generado» es la de hoy y los títulos acaban en «· E2».
 4. Copiar el commit (`git rev-parse --short HEAD`) en la celda `commit` de la primera fila de la hoja y arrastrarlo.
+   Si hay cambios sin commit en el frontend, escribir `<commit> + cambios sin commit`.
 5. En Chrome: una ventana normal para el votante y una **ventana de incógnito por cada cuenta de la consola**. Para ver
    el votante en móvil: DevTools (F12) → icono de dispositivo (Ctrl+Mayús+M) → «Dimensiones: 360 × 640».
-6. Dar a la persona evaluadora este guion, `protocolo.md` y su hoja (`hoja-E1-autor.xlsx` o `hoja-E2.xlsx`).
+6. Dar a la persona evaluadora este guion, `protocolo.md`, su hoja (`hoja-E2.xlsx`) y `.local/demo-ual.md`.
    Durante la sesión el autor no explica la interfaz; solo ayuda con cuestiones técnicas (un servicio caído, un
-   enlace que no abre).
+   enlace que no abre) y hace los pasos de PowerShell de las pruebas 11, 16 y 29.
 
-Papeles de los votantes de la demo «· E1» o «· E2» (los mismos en las dos):
+## 2. Dónde están los enlaces y los códigos
 
-| Votante | Para qué | Estado al cargar la demo |
-| --- | --- | --- |
-| `presente.votante1` | Ya has votado (V8) | Ya votó |
-| `presente.votante3` | Recorrido completo (V1–V7) | Libre: **vota** en V6 |
-| `presente.votante4` | Bloqueo por intentos (V11) | Libre: queda bloqueado 15 min |
-| `presente.votante5` | Sesión caducada (V9) y voto no registrado (V10) | Libre |
-| `futura.votante1` | Votación no abierta (V12) | Proceso aún no abierto |
-| `pasada.votante5` | Resultado (V13) | Proceso escrutado |
+- **Enlaces de los votantes:** en `.local/demo-ual.md`. Cada elección es una sección y cada votante una fila; el enlace
+  está en la columna «Enlace personal». Cada prueba de abajo dice la sección y la fila exactas.
+- **Códigos de 6 cifras** (del votante y de la consola): en Mailpit, `http://localhost:8025`. Déjalo abierto en una
+  pestaña. Usa siempre **el correo más reciente para ese votante o esa cuenta**.
+- **Consola:** `http://localhost:4200/admin`, con el usuario de la tabla «Cuentas de gestión» de `demo-ual.md`, la
+  contraseña que te dé el autor y el código de Mailpit.
 
-## 2. Cómo rellenar la hoja
+| Votante | Sección de `demo-ual.md` | Fila | Pruebas |
+| --- | --- | --- | --- |
+| `presente.votante5` | «Elección en curso: Representantes en Junta de Centro · E2» | Votante 5 | 1, 10, 11 y 15 |
+| `presente.votante3` | «Elección en curso: Representantes en Junta de Centro · E2» | Votante 3 | 2 a 8 |
+| `presente.votante1` | «Elección en curso: Representantes en Junta de Centro · E2» | Votante 1 | 9 |
+| `presente.votante4` | «Elección en curso: Representantes en Junta de Centro · E2» | Votante 4 | 12 |
+| `futura.votante1` | «Elección futura: Presupuestos participativos 2027 · E2» | Votante 1 | 13 |
+| `pasada.votante5` | «Elección pasada: Delegación de curso 2026 · E2» | Votante 5 | 14 |
+| `futura.votante2` | «Elección futura: Presupuestos participativos 2027 · E2» | Votante 2 | 16 |
+
+## 3. Cómo rellenar la hoja
 
 Solo la pestaña **«Hallazgos»**, celdas amarillas. Los desplegables ponen el texto exacto; `pantalla` admite también
-texto libre. La pestaña «Instrucciones» explica cada columna y cuenta los problemas de gravedad alta.
+texto libre. Rellena **todas** las columnas de cada fila (también `rnf`); `tiempo_realimentacion_s` solo si
+cronometras. La pestaña «Instrucciones» explica cada columna y cuenta los problemas de gravedad alta.
 
-Ejemplo de **formato** (los textos de los ejemplos de este guion son ficticios: no los copies, escribe lo tuyo):
+Ejemplo de **formato** (los textos son ficticios: no los copies, escribe lo tuyo):
 
 | evaluador | fecha | commit | pantalla | ancho_px | heuristica | descripcion | gravedad_0a4 | tiempo_realimentacion_s | rnf | propuesta |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| E1 | 27/11/2026 | 96617f3 | Votante · Papeleta | 360 | 4. Consistencia y estándares | El botón principal es verde aquí y azul en la pantalla anterior | 1 | | RNF-10 | Usar el mismo color |
-| E1 | 27/11/2026 | 96617f3 | Votante · Votación cerrada | 1280 | | no revisado | | | | La demo no tiene un proceso cerrado sin escrutar |
+| E2 | 28/11/2026 | 96617f3 | Votante · Papeleta | 360 | 4. Consistencia y estándares | El botón principal es verde aquí y azul en la pantalla anterior | 1 | | RNF-10 | Usar el mismo color |
+| E2 | 28/11/2026 | 96617f3 | Votante · Demasiadas peticiones | 360 | | no revisado | | | | No se reiniciaron los servicios con el límite bajo |
 
 Qué RNF elegir:
 
@@ -84,164 +92,250 @@ Qué RNF elegir:
   distintos, patrones de error o de confirmación distintos.
 - **Otro** para cualquier otro problema de usabilidad.
 
-## 3. Pruebas del votante
+### Lo que miras en TODAS las pantallas del votante
 
-Hazlas **primero a 360 px** (móvil) y, al final, repite V1, V4 y V6 a **1280 px**. En **cada** pantalla del votante
-mira también: ¿se ve en qué paso estás («Paso n de 4»)? ¿Se ve el estado del proceso (abierto, hora de cierre)? Si
-falta, fila con RNF-9.
+| Pregunta | Si falla, RNF |
+| --- | --- |
+| ¿Se ve en qué paso estoy («Paso n de 4»)? | RNF-9 |
+| ¿Se ve el estado del proceso (abierto, hora de cierre)? | RNF-9 |
+| Si hay un error, ¿dice **qué ha pasado** y **qué hago ahora**? | RNF-8 |
+| ¿Esto se ve o se llama distinto que en otra pantalla? | RNF-10 |
 
-**Empieza por V9**: necesita 15 minutos de espera y se hace en paralelo con las demás.
+## 4. Orden de la sesión (resumen)
 
-### V9 · Sesión caducada (empezar al principio) — `presente.votante5`
+| N.º | Prueba | Quién | Ancho |
+| --- | --- | --- | --- |
+| 1 | V9 Sesión caducada · parte A (dejarla esperando) | `presente.votante5` | 360 |
+| 2–8 | V1 Bienvenida, V2 Código, V3 Código incorrecto, V4 Papeleta, V5 Revisión, V6 Recibo, V7 Comprobación del recibo | `presente.votante3` | 360 |
+| 9 | V8 Ya has votado | `presente.votante1` | 360 |
+| 10 | V9 Sesión caducada · parte B (a los 16 min) | `presente.votante5` | 360 |
+| 11 | V10 Voto no registrado (opcional) | `presente.votante5` + autor | 360 |
+| 12 | V11 Bloqueo por intentos | `presente.votante4` | 360 |
+| 13 | V12 Votación no abierta | `futura.votante1` | 360 |
+| 14 | V13 Resultado | `pasada.votante5` | 360 |
+| 15 | V1, V4 y V6 a 1280 px | `presente.votante5` | 1280 |
+| 16 | V14 Demasiadas peticiones (opcional) | `futura.votante2` + autor | 360 |
+| 17–27 | Consola: C1, C6, C7, C8, C9, C10, C11, C2, C3, C4, C5 | cuentas de gestión | 1280 |
+| 28–29 | V15 Votación cerrada (necesita el proceso de la prueba 26) | votante del censo nuevo + autor | 360 |
 
-1. Abre su enlace en una pestaña aparte. Pulsa «Empezar».
-2. Copia el código de Mailpit (el correo más reciente para `presente.votante5`) y escríbelo.
-3. En la papeleta **no toques nada** y apunta la hora. Sigue con V1 en otra pestaña.
-4. Pasados **16 minutos**, vuelve, marca una opción, pulsa «Revisar mi voto» y después «Confirmar y votar».
-5. Observa: ¿el mensaje dice qué ha pasado y si has votado o no? ¿Dice cómo seguir? Pulsa el botón que ofrezca.
+## 5. Pruebas del votante
 
-Ejemplo de fila (si vieras un problema): `Votante · Sesión caducada | 360 | 9. Reconocer, diagnosticar y recuperarse de
-errores | <lo que veas> | <0–4> | | RNF-8 | <tu propuesta>`.
+Hazlas a **360 px** salvo la prueba 15. Cada votante, en **su propia pestaña** de la ventana normal.
 
-### V10 · Voto no registrado (opcional, justo después de V9) — `presente.votante5`
+### Prueba 1 · V9 Sesión caducada · parte A (dejarla esperando)
 
-1. Vuelve a entrar con el mismo enlace hasta la pantalla «Revisa tu voto». No pulses «Confirmar».
-2. Avisa al autor, que para la urna en PowerShell:
-   `Stop-Process -Id ((Get-Content .local\logs\pids.txt)[3])`
-3. Pulsa «Confirmar y votar». Observa el mensaje y el botón que ofrece.
-4. El autor reinicia los servicios (`stop-services.ps1` y `start-services.ps1`). Si no se hace, fila `no revisado`.
+- **Enlace:** sección «Elección en curso · E2», fila **Votante 5**. Pestaña nueva, solo para esta prueba.
+- **Pasos:**
+  1. Pulsa «Empezar».
+  2. Escribe el código de Mailpit (el más reciente para `presente.votante5`).
+  3. En la papeleta **no toques nada**. Apunta la hora: ________
+  4. Deja esta pestaña quieta y sigue con la prueba 2. Volverás aquí en la prueba 10.
 
-### V1 · Bienvenida — `presente.votante3`
+### Pruebas 2 a 8 · recorrido completo con `presente.votante3`
 
-1. Abre su enlace. No pulses nada todavía.
-2. Observa: ¿se entiende qué es, hasta cuándo se puede votar y qué va a pasar? ¿Se ve el botón para empezar sin
-   desplazar la pantalla? ¿Funcionan los botones ES / EN?
+- **Enlace:** sección «Elección en curso · E2», fila **Votante 3**. Pestaña nueva. Las pruebas 2 a 8 se hacen
+  **seguidas en esta misma pestaña**.
 
-### V2 · Código de acceso — `presente.votante3`
+#### Prueba 2 · V1 Bienvenida
 
-1. Pulsa «Empezar». Observa: ¿se entiende dónde llega el código, cuántas cifras tiene y cuánto dura? Toca la primera
-   casilla.
-2. Mira el texto que hay bajo el botón «Continuar» y espera a que cambie.
+- **Pasos:** abre el enlace y no pulses nada.
+- **Qué mirar:** ¿se entiende qué es, hasta cuándo se puede votar y qué va a pasar? ¿Se ve el botón para empezar sin
+  desplazar la pantalla? ¿Funcionan los botones ES / EN?
 
-### V3 · Código incorrecto — `presente.votante3`
+#### Prueba 3 · V2 Código de acceso
 
-1. Escribe `000000` **una sola vez** (más veces bloquearía al votante 3).
-2. Observa el mensaje: ¿dice qué ha pasado y qué hacer? ¿Dice cuántos intentos quedan?
+- **Pasos:** pulsa «Empezar». Toca la primera casilla. Mira el texto bajo el botón «Continuar» y espera a que cambie.
+- **Qué mirar:** ¿se entiende dónde llega el código, cuántas cifras tiene y cuánto dura?
 
-### V4 · Papeleta — `presente.votante3`
+#### Prueba 4 · V3 Código incorrecto
 
-1. Escribe el código correcto de Mailpit (el más reciente).
-2. Observa la pregunta y las opciones. Marca una opción y después otra: ¿se distingue cuál está marcada?
-3. Pulsa «Revisar mi voto» **sin** marcar nada (recarga si ya marcaste) para ver el error, y después marca una.
+- **Pasos:** escribe `000000` **una sola vez** (más veces bloquearía a este votante).
+- **Qué mirar:** ¿el mensaje dice qué ha pasado, qué hacer y cuántos intentos quedan?
 
-### V5 · Revisión — `presente.votante3`
+#### Prueba 5 · V4 Papeleta
 
-1. Pulsa «Revisar mi voto». Observa: ¿se ve qué has elegido y que aún no has votado?
-2. Busca cómo cambiar la elección, úsalo y vuelve a la revisión.
+- **Pasos:**
+  1. Escribe el código correcto de Mailpit (el más reciente).
+  2. Pulsa «Revisar mi voto» **sin marcar nada** y mira el error.
+  3. Marca una opción y después otra.
+- **Qué mirar:** la pregunta y las opciones. ¿Se distingue cuál está marcada? ¿El error dice qué hacer?
 
-### V6 · Recibo — `presente.votante3` (aquí se vota de verdad)
+#### Prueba 6 · V5 Revisión
 
-1. Pulsa «Confirmar y votar». Observa: ¿queda claro que has votado? ¿Se ve el código de recibo entero?
-2. Usa el botón para copiar el código y pégalo en un bloc de notas (lo necesitas en V7).
+- **Pasos:** pulsa «Revisar mi voto». Busca cómo cambiar la elección, úsalo y vuelve a la revisión.
+- **Qué mirar:** ¿se ve qué has elegido y que aún no has votado?
 
-### V7 · Comprobación del recibo — `presente.votante3`
+#### Prueba 7 · V6 Recibo (aquí se vota de verdad)
 
-1. Pulsa «Comprobar mi recibo». Si el código no aparece ya escrito, pégalo y pulsa «Comprobar».
-2. Escribe después un código inventado de 64 caracteres y otro de 10 caracteres. Observa los mensajes.
+- **Pasos:** pulsa «Confirmar y votar». Usa el botón para copiar el código de recibo y pégalo en un bloc de notas.
+- **Qué mirar:** ¿queda claro que has votado? ¿Se ve el código de recibo entero?
 
-### V8 · Ya has votado — `presente.votante1`
+#### Prueba 8 · V7 Comprobación del recibo
 
-1. Abre su enlace, «Empezar», código de Mailpit. Observa el mensaje.
+- **Pasos:**
+  1. Pulsa «Comprobar mi recibo». Si el código no aparece ya escrito, pégalo y pulsa «Comprobar».
+  2. Escribe un código inventado de 64 caracteres y pulsa «Comprobar».
+  3. Escribe un código de 10 caracteres y pulsa «Comprobar».
+- **Qué mirar:** los mensajes de los tres casos.
 
-### V11 · Bloqueo por intentos — `presente.votante4`
+### Prueba 9 · V8 Ya has votado
 
-1. Abre su enlace, «Empezar» y escribe `000000` **cinco veces**, mirando el mensaje cada vez.
-2. Observa la pantalla de bloqueo: ¿dice por qué y hasta cuándo? Pulsa el botón que ofrezca.
+- **Enlace:** sección «Elección en curso · E2», fila **Votante 1**. Pestaña nueva.
+- **Pasos:** «Empezar» y el código de Mailpit.
+- **Qué mirar:** ¿el mensaje dice que ya votó y qué puede hacer?
 
-### V12 · Votación no abierta — `futura.votante1`
+### Prueba 10 · V9 Sesión caducada · parte B
 
-1. Abre su enlace. Observa: ¿se entiende que aún no se puede votar y cuándo se podrá?
+- **Cuándo:** cuando hayan pasado **16 minutos** desde la hora de la prueba 1.
+- **Enlace:** ninguno nuevo. Vuelve a **la pestaña de la prueba 1** (no abras el enlace otra vez).
+- **Pasos:** marca una opción, pulsa «Revisar mi voto» y después «Confirmar y votar». Pulsa el botón que ofrezca.
+- **Qué mirar:** ¿el mensaje dice qué ha pasado y si has votado o no? ¿Dice cómo seguir?
 
-### V13 · Resultado — `pasada.votante5`
+### Prueba 11 · V10 Voto no registrado (opcional)
 
-1. Abre su enlace y pulsa «Ver el resultado»; escribe el código de Mailpit.
-2. Observa: ¿se entiende el resultado, la participación y qué significa «Resultado verificado»?
+- **Enlace:** el mismo de la prueba 1 (sección «Elección en curso · E2», fila **Votante 5**).
+- **Pasos:**
+  1. Entra hasta la pantalla «Revisa tu voto». **No pulses «Confirmar».**
+  2. Avisa al autor, que para la urna en PowerShell: `Stop-Process -Id ((Get-Content .local\logs\pids.txt)[3])`
+  3. Pulsa «Confirmar y votar». Pulsa el botón que ofrezca.
+  4. El autor reinicia los servicios (`.\scripts\dev\stop-services.ps1` y `.\scripts\dev\start-services.ps1`).
+- **Qué mirar:** ¿el mensaje dice que el voto no se ha registrado y qué hacer?
+- Si no se hace: fila `no revisado`.
 
-### V14 · Demasiadas peticiones (opcional)
+### Prueba 12 · V11 Bloqueo por intentos
 
-Solo si el autor ha reiniciado los servicios con el límite bajo (`$env:GATEWAY_VOTER_ACCESS_RATE_LIMIT_CAPACITY='3'`
-y `$env:GATEWAY_VOTER_ACCESS_RATE_LIMIT_PER_MINUTE='3'` antes de `start-services.ps1`): recarga cuatro veces el
-enlace de `presente.votante4` y observa el mensaje. Si no, fila `no revisado`. Después hay que reiniciar los servicios
-sin esas variables.
+- **Enlace:** sección «Elección en curso · E2», fila **Votante 4**. Pestaña nueva.
+- **Pasos:** «Empezar» y escribe `000000` **cinco veces**, mirando el mensaje cada vez. Pulsa el botón que ofrezca la
+  pantalla de bloqueo.
+- **Qué mirar:** ¿cada mensaje dice cuántos intentos quedan? ¿La pantalla de bloqueo dice por qué y hasta cuándo?
 
-### V15 · Votación cerrada
+### Prueba 13 · V12 Votación no abierta
 
-La demo no tiene un proceso cerrado y sin escrutar: fila `no revisado`.
+- **Enlace:** sección «Elección futura · E2», fila **Votante 1**. Pestaña nueva.
+- **Qué mirar:** ¿se entiende que aún no se puede votar y cuándo se podrá?
 
-## 4. Pruebas de la consola (1280 px)
+### Prueba 14 · V13 Resultado
 
-Cada cuenta en su ventana de incógnito. Entrar: `http://localhost:4200/admin`, usuario, contraseña de la demo y el
-código de 6 cifras de Mailpit. En todas, para RNF-10, compara con las pantallas anteriores: ¿misma palabra para la
-misma acción, botón principal en el mismo sitio, mismos mensajes de error y de confirmación?
+- **Enlace:** sección «Elección pasada · E2», fila **Votante 5**. Pestaña nueva.
+- **Pasos:** pulsa «Ver el resultado» y escribe el código de Mailpit.
+- **Qué mirar:** ¿se entiende el resultado, la participación y qué significa «Resultado verificado»?
 
-### C1 · Inicio y «Primeros pasos» — `admin@ual.test`
+### Prueba 15 · V1, V4 y V6 a 1280 px
 
-1. Observa la pantalla de inicio y la guía «Primeros pasos». Sigue uno de sus enlaces y vuelve.
+- **Antes:** quita el modo móvil de DevTools (Ctrl+Mayús+M otra vez). Haz esta prueba **después** de la 10 y la 11.
+- **Enlace:** el de la prueba 1 (sección «Elección en curso · E2», fila **Votante 5**), que aún no ha votado.
+- **Pasos:** bienvenida (V1) → «Empezar» → código de Mailpit → papeleta (V4) → marca una opción → «Revisar mi voto» →
+  «Confirmar y votar» → recibo (V6).
+- **Qué mirar:** lo mismo que en las pruebas 2, 5 y 7, ahora en pantalla grande.
 
-### C2 · Censos e importación de Excel — `censo@ual.test`
+### Prueba 16 · V14 Demasiadas peticiones (opcional)
 
-1. Entra en «Censos», crea un censo nuevo («Prueba E1») y ábrelo.
-2. Descarga la plantilla de Excel, borra las filas de ejemplo, escribe tres personas inventadas con correo
-   `@ual.test` y súbela. Observa la validación y confirma la importación.
-3. Sube otra vez la plantilla con un error a propósito (un correo sin «@»). Observa el mensaje.
-4. Opcional (RNF-8): cronometra la importación con DevTools → Performance (marcar «Screenshots») y anota en
-   `tiempo_realimentacion_s` los segundos desde el clic hasta la primera señal (indicador, mensaje), no hasta el final.
+- **Antes (autor, en PowerShell, desde la raíz del repositorio):**
+  ```powershell
+  .\scripts\dev\stop-services.ps1
+  $env:GATEWAY_VOTER_ACCESS_RATE_LIMIT_CAPACITY = '3'
+  $env:GATEWAY_VOTER_ACCESS_RATE_LIMIT_PER_MINUTE = '3'
+  .\scripts\dev\start-services.ps1
+  ```
+- **Enlace:** sección «Elección futura · E2», fila **Votante 2**. Pestaña nueva.
+- **Pasos:** recarga la página (F5) **cuatro o cinco veces seguidas**, rápido.
+- **Qué mirar:** ¿el mensaje dice qué ha pasado y cuánto esperar? ¿Ofrece cómo seguir?
+- **Después (autor), obligatorio:** quitar el límite y reiniciar.
+  ```powershell
+  Remove-Item Env:GATEWAY_VOTER_ACCESS_RATE_LIMIT_CAPACITY, Env:GATEWAY_VOTER_ACCESS_RATE_LIMIT_PER_MINUTE
+  .\scripts\dev\stop-services.ps1
+  .\scripts\dev\start-services.ps1
+  ```
+- Si no se hace: fila `no revisado`.
 
-### C3 · Alta y edición de una persona — `censo@ual.test`
+## 6. Pruebas de la consola (1280 px)
 
-1. En el censo «Prueba E1», añade una persona a mano, edítala y bórrala. Observa las confirmaciones.
+Cada cuenta en su ventana de incógnito. En todas, para RNF-10, compara con las pantallas anteriores: ¿misma palabra
+para la misma acción, botón principal en el mismo sitio, mismos mensajes de error y de confirmación?
 
-### C4 · Asistente de proceso (4 pasos) — `admin@ual.test`
+El orden está pensado para que la prueba 28 funcione: las pruebas que usan la urna (17 a 23) van antes de crear el
+proceso nuevo.
 
-1. «Procesos» → nuevo proceso con el censo «Prueba E1». Recorre los 4 pasos.
-2. En el paso de fechas pon un cierre anterior a la apertura y pulsa «Siguiente». Observa el mensaje.
-3. Corrige y crea el proceso.
+### Prueba 17 · C1 Inicio y «Primeros pasos» — `admin@ual.test`
 
-### C5 · Ciclo de vida — `admin@ual.test`
+- **Pasos:** entra. Mira la pantalla de inicio y la guía «Primeros pasos». Sigue uno de sus enlaces y vuelve.
 
-1. En el proceso creado, prográmalo. Observa la confirmación y el estado. Opcional: cronometra «Programar».
+### Prueba 18 · C6 Participación — `admin@ual.test`
 
-### C6 · Participación — `admin@ual.test`
+- **Pasos:** «Participación», proceso «Representantes en Junta de Centro · E2».
+- **Qué mirar:** ¿se entienden los recuentos y la gráfica?
 
-1. «Participación», proceso «Elección en curso · E1». Observa los recuentos y la gráfica.
+### Prueba 19 · C7 Resultados y acta — `admin@ual.test`
 
-### C7 · Resultados y acta — `admin@ual.test`
+- **Pasos:** «Resultados», proceso «Delegación de curso 2026 · E2». Exporta el CSV y genera el acta en PDF; abre los dos.
 
-1. «Resultados», proceso «Elección pasada · E1». Exporta el CSV y genera el acta en PDF; abre los dos ficheros.
+### Prueba 20 · C8 Claves de API — `admin@ual.test`
 
-### C8 · Claves de API — `admin@ual.test`
+- **Pasos:** crea una clave. Mira qué se avisa y cuándo. Revócala.
 
-1. Crea una clave. Observa qué se avisa y cuándo. Revócala.
+### Prueba 21 · C9 Privacidad — `admin@ual.test`
 
-### C9 · Privacidad — `admin@ual.test`
+- **Pasos:** busca `presente.votante2@ual.test` y exporta sus datos. **No** borres a nadie.
 
-1. Busca `presente.votante2@ual.test` y exporta sus datos. **No** borres a nadie.
+### Prueba 22 · C10 Auditoría y verificación de la urna — `auditor@ual.test`
 
-### C10 · Auditoría y verificación de la urna — `auditor@ual.test`
+- **Pasos:** «Auditoría», proceso «Delegación de curso 2026 · E2». Pulsa «Verificar integridad ahora».
+- **Qué mirar:** el resultado y la tabla.
 
-1. «Auditoría», proceso «Elección pasada · E1». Pulsa «Verificar integridad ahora». Observa el resultado y la tabla.
+### Prueba 23 · C11 Trazabilidad — `auditor@ual.test`
 
-### C11 · Trazabilidad — `auditor@ual.test`
+- **Pasos:** «Trazabilidad»: filtra por un día y por una persona. Mira los resultados y la paginación.
 
-1. «Trazabilidad»: filtra por un día y por una persona. Observa los resultados y la paginación.
+### Prueba 24 · C2 Censos e importación de Excel — `censo@ual.test`
 
-## 5. Al terminar
+- **Pasos:**
+  1. Entra en «Censos», crea un censo nuevo («Prueba E2») y ábrelo.
+  2. Descarga la plantilla de Excel, borra las filas de ejemplo, escribe tres personas inventadas con correo
+     `@ual.test` y súbela. Mira la validación y confirma la importación.
+  3. Sube otra vez la plantilla con un error a propósito (un correo sin «@»). Mira el mensaje.
+  4. Opcional (RNF-8): cronometra la importación con DevTools → Performance (marcar «Screenshots») y anota en
+     `tiempo_realimentacion_s` los segundos desde el clic hasta la primera señal (indicador, mensaje), no hasta el final.
 
-1. Repasa la hoja: cada fila tiene pantalla, heurística, descripción y gravedad; las gravedades 3 y 4 están
+### Prueba 25 · C3 Alta y edición de una persona — `censo@ual.test`
+
+- **Pasos:** en el censo «Prueba E2», añade una persona a mano, edítala y bórrala. Mira las confirmaciones.
+  Las tres personas importadas en la prueba 24 deben quedarse (se usan en la prueba 28).
+
+### Prueba 26 · C4 Asistente de proceso (4 pasos) — `admin@ual.test`
+
+- **Pasos:**
+  1. «Procesos» → nuevo proceso con el censo «Prueba E2». Recorre los 4 pasos.
+  2. En el paso de fechas pon un cierre anterior a la apertura y pulsa «Siguiente». Mira el mensaje.
+  3. Corrige las fechas así: **apertura dentro de 10 minutos y cierre 5 minutos después de la apertura**. Apunta la
+     hora de cierre: ________
+  4. Crea el proceso.
+
+### Prueba 27 · C5 Ciclo de vida — `admin@ual.test`
+
+- **Pasos:** en el proceso creado, pulsa «Programar» **antes de la hora de apertura**. Opcional: cronometra «Programar».
+- **Qué mirar:** la confirmación y el estado.
+
+### Pruebas 28 y 29 · V15 Votación cerrada
+
+- **Antes (autor), justo después de la prueba 27 y antes de la hora de cierre:** parar la urna, para que el proceso se
+  quede cerrado y sin escrutar:
+  `Stop-Process -Id ((Get-Content .local\logs\pids.txt)[3])`
+- **Prueba 28 · enlace:** en Mailpit, la invitación a una de las tres personas del censo «Prueba E2» (llega al programar
+  el proceso). Copia el enlace personal del correo. **No lo abras todavía.**
+- **Prueba 29 · cuándo:** cuando haya pasado la hora de cierre de la prueba 26 (espera 1 minuto más).
+  - **Pasos:** cambia a 360 px, abre ese enlace en una pestaña nueva de la ventana normal.
+  - **Qué mirar:** ¿se entiende que la votación está cerrada, desde cuándo y qué pasará después (resultado)?
+- **Después (autor):** reiniciar los servicios (`.\scripts\dev\stop-services.ps1` y `.\scripts\dev\start-services.ps1`).
+- Si la pantalla no sale o el proceso ya aparece escrutado: fila `no revisado` y avisar al autor.
+
+## 7. Al terminar
+
+1. Repasa la hoja: cada fila tiene pantalla, heurística, descripción, gravedad y RNF; las gravedades 3 y 4 están
    confirmadas repitiendo la prueba.
-2. Guarda la hoja y dásela al autor. No la compartas con la otra persona evaluadora.
+2. Comprueba que las pruebas que no hiciste tienen su fila `no revisado`.
+3. Guarda la hoja y dásela al autor. No la compartas con la otra persona evaluadora.
 
-## 6. Juntar las hojas (autor, cuando estén las dos)
+## 8. Juntar las hojas (autor, cuando estén las dos)
 
 1. Pasarme las dos hojas. Las uno: los problemas que describen lo mismo se fusionan en una fila con la **mayor**
    gravedad, y compruebo en la aplicación los que sean de gravedad 3 o 4 antes de decidir.
@@ -249,7 +343,7 @@ misma acción, botón principal en el mismo sitio, mismos mensajes de error y de
    corrección solo con tu aprobación; después se repiten esas pruebas.
 3. Paso el resultado a la tabla 13.2, `informe.md` y `PLAN.md`.
 
-## 7. Limitación que se declarará
+## 9. Limitación que se declarará
 
 E1 es el autor del sistema: conoce la interfaz y puede pasar por alto problemas. Por eso la decisión se toma con las
 dos hojas juntas y no con una sola, y esto se anota en el capítulo 13. Si la segunda persona no puede hacer la
