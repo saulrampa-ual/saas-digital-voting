@@ -148,8 +148,8 @@ public class PdfMinutesRenderer implements MinutesRenderer {
 
         private void header() {
             pdf.rect(page, 0, SimplePdfDocument.PAGE_HEIGHT - 8, SimplePdfDocument.PAGE_WIDTH, 8, 0.08f, 0.21f, 0.36f);
-            pdf.text(page, MARGIN, y - 4, Font.BOLD, 10, "VeriVoto", MUTED);
-            y -= 30;
+            logo();
+            y -= 36;
             pdf.text(page, MARGIN, y, Font.BOLD, 18, label.get("title"), INK);
             y -= 24;
             for (String line : SimplePdfDocument.wrap(Font.BOLD, 14, c.title(), CONTENT)) {
@@ -160,6 +160,24 @@ public class PdfMinutesRenderer implements MinutesRenderer {
             pdf.text(page, MARGIN, y, Font.REGULAR, 10, label.get("subtitle").formatted(c.organizationId(), c.processId()),
                     MUTED);
             y -= 14;
+        }
+
+        /**
+         * IMP-75: shield and «VeriVoto» wordmark, the same drawing as the app (brand-logo, 48 x 56 units): outline in
+         * navy, check mark and «Voto» in green (darker than the app's mint so that it reads on white paper).
+         */
+        private void logo() {
+            float top = y + 12;
+            float height = 26;
+            pdf.strokePath(page, MARGIN, top, height, 56,
+                    "24 3 m 43 10 l 43 27 l 43 40 34 49 24 53 c 14 49 5 40 5 27 c 5 10 l h 16 15 m 32 15 l",
+                    3.5f, 0.08f, 0.21f, 0.36f);
+            pdf.strokePath(page, MARGIN, top, height, 56, "15 31 m 22 38 l 34 23 l", 3.5f, 0.12f, 0.48f, 0.35f);
+            float textX = MARGIN + height * 48 / 56 + 8;
+            float baseline = top - 19;
+            pdf.textRgb(page, textX, baseline, Font.BOLD, 18, "Veri", 0.08f, 0.21f, 0.36f);
+            pdf.textRgb(page, textX + SimplePdfDocument.width(Font.BOLD, 18, "Veri"), baseline, Font.BOLD, 18, "Voto",
+                    0.12f, 0.48f, 0.35f);
         }
 
         private void section(String title) {

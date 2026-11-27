@@ -80,6 +80,8 @@ td.nowrap { white-space: nowrap; }
   tr { border-top: 1px solid var(--vv-border-color); padding: 10px 0; }
   td { border: 0; padding: 2px 0; display: flex; gap: 8px; }
   td[data-label]::before { content: attr(data-label); flex: 0 0 40%; color: var(--ion-color-medium); font-size: 0.875rem; }
+  // IMP-74 (M3): the value is a flex item; without min-width: 0 a long e-mail cannot wrap and is cut off.
+  td.email { min-width: 0; overflow-wrap: anywhere; }
   .end { text-align: left; }
   .row-actions { padding-top: 8px; }
   .row-actions ion-button { margin: 0 6px 0 0; }

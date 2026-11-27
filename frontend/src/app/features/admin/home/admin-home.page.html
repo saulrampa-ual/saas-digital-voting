@@ -228,7 +228,8 @@
           <article class="card flush" aria-labelledby="home-census-list">
             <h4 class="card-title" id="home-census-list">{{ 'admin.home.census.list' | translate }}</h4>
             <ul class="rows">
-              @for (c of censuses()!; track c.id) {
+              <!-- IMP-82 (M3): at most 5 rows, so a long list does not leave the attention card mostly empty -->
+              @for (c of censuses()!.slice(0, 5); track c.id) {
                 <li>
                   <a class="row-link" [routerLink]="['/admin/censos', c.id]">
                     <span class="row-main">{{ c.name }}</span>
@@ -240,6 +241,9 @@
                 </li>
               }
             </ul>
+            @if (censuses()!.length > 5) {
+              <a class="link" routerLink="/admin/censos">{{ 'admin.home.census.all' | translate: { count: n(censuses()!.length) } }}</a>
+            }
           </article>
           <article class="card" aria-labelledby="home-census-attention">
             <h4 class="card-title" id="home-census-attention">{{ 'admin.home.attention.title' | translate }}</h4>

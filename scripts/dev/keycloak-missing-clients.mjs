@@ -1,6 +1,7 @@
-// Local development only. Creates in the realm "verivoto" the clients of infra/keycloak/realm/verivoto-realm.json that
-// the realm does not have yet (Keycloak only imports that file when the realm does not exist, so a realm imported
-// before a client was added to the file lacks it), with their service-account roles. Existing clients are never
+// Local development only. Creates in the realm "verivoto" the realm roles and the clients of
+// infra/keycloak/realm/verivoto-realm.json that the realm does not have yet (Keycloak only imports that file when
+// the realm does not exist, so a realm imported before a role or client was added to the file lacks it), with their
+// service-account roles. Existing clients are never
 // changed. Secrets come from infra/.env, as in the import; the script prints client ids only, never secrets or tokens.
 //
 // Usage, from the repository root, with Keycloak running (infra/compose.yaml) and infra/.env present:
@@ -24,6 +25,16 @@ const { data: tokenData } = await http('POST', `${KC}/realms/master/protocol/ope
 const token = tokenData.access_token;
 const api = `${KC}/admin/realms/${REALM}`;
 
+// Realm roles of the file that the realm lacks (IMP-78: a realm imported before 31/10/2026 has no INTEGRATION role,
+// and creating an API key fails). Created first, because the service accounts below may need them.
+const { data: existingRoles } = await http('GET', `${api}/roles?first=0&max=1000`, { token });
+const missingRoles = (realm.roles?.realm ?? []).filter((r) => !existingRoles.some((e) => e.name === r.name));
+for (const role of missingRoles) {
+  await http('POST', `${api}/roles`, { token, body: { name: role.name, description: role.description } });
+  log(`realm role created: ${role.name}`);
+}
+if (!missingRoles.length) log('no realm role missing');
+
 const { data: existing } = await http('GET', `${api}/clients?first=0&max=1000`, { token });
 const missing = realm.clients.filter((c) => !existing.some((e) => e.clientId === c.clientId));
 if (!missing.length) log('no client missing');
@@ -41,4 +52,4 @@ for (const client of missing) {
   await http('POST', `${api}/users/${account.id}/role-mappings/realm`, { token, body: representations });
   log(`service account roles of ${client.clientId}: ${roles.join(', ')}`);
 }
-log(`done: ${missing.length} client(s) created`);
+log(`done: ${missingRoles.length} realm role(s) and ${missing.length} client(s) created`);
