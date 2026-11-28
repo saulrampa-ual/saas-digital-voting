@@ -83,6 +83,16 @@ práctica proporcionó la soltura técnica necesaria para construir la PWA
 Angular/Ionic de VeriVoto y su modelo de autorización basado en tokens JWT y
 roles por organización.
 
+El autor cursa, además, la especialidad en Big Data del máster. VeriVoto no
+es un sistema de datos masivos ni se presenta como tal, pero tres asignaturas
+de la especialidad aportan criterios concretos al diseño y a la evaluación:
+Bases de Datos a Gran Escala, en la separación de una base de datos por
+servicio, con la urna en una instancia aparte, y en el aislamiento por
+organización; Infraestructura Big Data, en la ejecución del sistema como
+servicios en contenedores y en la prueba de carga (H1c); y Visualización de
+Datos, en los paneles de participación y de resultados. Estas asignaturas se
+señalan como «especialidad Big Data» en la tabla~\ref{tab:encaje-master}.
+
 La tabla~\ref{tab:encaje-master} relaciona cada asignatura con su aportación
 al proyecto y con el contexto en el que esa competencia se aplicó antes de
 este trabajo.
@@ -110,9 +120,11 @@ Seguridad Informática & Autenticación, modelado de amenazas, privacidad, prueb
 \hline
 Integración de Tecnologías y Servicios & Proveedor de identidad opcional, API, webhooks y servicios de notificación. & Experiencia: APIs de proceso en Spring Boot expuestas mediante Apigee e integración asíncrona con Apache Kafka. Prácticas: servicio de notificaciones Web Push, Pull Requests e integración continua con GitHub Actions. \\
 \hline
-Bases de Datos a Gran Escala & Modelo multi-tenant, separación de datos y registro de auditoría. & Prácticas: modelado de datos con Prisma sobre MySQL/MariaDB; relaciones entre clientes, proyectos y tareas, y trazabilidad mediante historial en TaskVoid. \\
+Bases de Datos a Gran Escala (especialidad Big Data) & Modelo multi-tenant, una base de datos por servicio y urna en una instancia aparte, separación de datos y registro de auditoría. & Prácticas: modelado de datos con Prisma sobre MySQL/MariaDB; relaciones entre clientes, proyectos y tareas, y trazabilidad mediante historial en TaskVoid. \\
 \hline
-Visualización de Datos & Paneles de participación y presentación de resultados agregados. & Prácticas: panel con gráficas (ng2-charts) en TaskFlow y módulo de Planificación con diagrama de Gantt en TaskVoid. \\
+Visualización de Datos (especialidad Big Data) & Paneles de participación y presentación de resultados agregados. & Prácticas: panel con gráficas (ng2-charts) en TaskFlow y módulo de Planificación con diagrama de Gantt en TaskVoid. \\
+\hline
+Infraestructura Big Data (especialidad Big Data) & Ejecución como servicios en contenedores con bases de datos separadas y prueba de carga con 500 usuarios simultáneos (H1c). & Prácticas: contenedores Docker y \texttt{docker-compose} para levantar varios servicios. Experiencia: microservicios distribuidos con Apache Kafka en el sector bancario. \\
 \hline
 Planificación de las TIC & Planificación, estimación de costes y análisis de alternativas de servicio. & Prácticas: planificación semanal, estimación en horas y Pull Requests con plantilla de pruebas y despliegue. Experiencia: gestión ágil con Jira y Trello y control de versiones con Git Flow. \\
 \hline
