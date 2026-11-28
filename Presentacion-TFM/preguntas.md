@@ -122,6 +122,14 @@ Las dos incidencias (el nombre en inglés de las casillas del código y la cuent
 corrigieron y el 24/11/2026 se repitieron esas comprobaciones con el Narrador: cumplen. La limitación es que es un solo
 lector de pantalla y que la revisión la hice yo.
 
+**¿Cómo evaluaste los mensajes, la orientación y la consistencia (RNF-8, 9 y 10)? Uno de los evaluadores eras tú.**
+Con una revisión heurística de Nielsen el 27/11/2026: dos evaluadores por separado, yo y un compañero del máster que no
+participó en el desarrollo, cada uno con su propia demo y sin ver la hoja del otro, sobre la misma versión. Al juntar
+las hojas quedaron 11 problemas, 10 cosméticos y 1 menor; ninguno grave, que era el criterio. Que yo conozca la
+interfaz es una limitación declarada: por eso la decisión se toma con las dos hojas, y de hecho 9 de los 11 problemas
+los encontró el compañero. Dos evaluadores es el mínimo; Nielsen recomienda de tres a cinco. Los 11 los corregí
+después, sin cambiar la decisión, que se tomó sobre la versión revisada.
+
 **¿H1c rechazada significa que no cumples los objetivos del anteproyecto?**
 No. El objetivo de evaluación (OE5) pide hacer una prueba de carga y documentar los resultados, incluidos los criterios
 no alcanzados, y eso está hecho. Ningún objetivo exige cumplir el umbral de rendimiento: RNF-17 es un requisito Should
