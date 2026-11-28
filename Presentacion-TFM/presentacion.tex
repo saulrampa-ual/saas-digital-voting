@@ -181,13 +181,20 @@
 % ---------------------------------------------------------------- 9
 \section{Prototipo}
 \begin{frame}{El prototipo}
+  % Votante en el móvil (capturas de scripts/demo/capturas-votante.mjs, 24/11/2026) y resultado en la consola
   \begin{columns}[T]
-    \column{0.5\textwidth}\centering
-    \includegraphics[width=\linewidth]{capturas/consola-proceso-nuevo-es}\\
-    \footnotesize Asistente de creación (RF-06)
-    \column{0.5\textwidth}\centering
+    \column{0.16\textwidth}\centering
+    \includegraphics[width=\linewidth]{capturas/votante-papeleta-es}\\
+    \scriptsize Papeleta (RF-09)
+    \column{0.16\textwidth}\centering
+    \includegraphics[width=\linewidth]{capturas/votante-recibo-es}\\
+    \scriptsize Recibo (RF-10)
+    \column{0.16\textwidth}\centering
+    \includegraphics[width=\linewidth]{capturas/votante-comprobacion-es}\\
+    \scriptsize Comprobación (RF-10)
+    \column{0.46\textwidth}\centering
     \includegraphics[width=\linewidth]{capturas/consola-resultados-es}\\
-    \footnotesize Resultado, acta y huellas (RF-15, RF-16)
+    \scriptsize Resultado, acta y huellas en la consola (RF-15, RF-16)
   \end{columns}
 \end{frame}
 
@@ -195,7 +202,7 @@
 \section{Evaluación}
 \begin{frame}{Calidad del código y seguridad}
   \begin{columns}[T]
-    \column{0.24\textwidth}\cifra{434}{pruebas automáticas, 0 fallos\\(175 backend, 259 frontend)}
+    \column{0.24\textwidth}\cifra{437}{pruebas automáticas, 0 fallos\\(175 backend, 262 frontend)}
     \column{0.24\textwidth}\cifra{24}{de integración sobre PostgreSQL real}
     \column{0.24\textwidth}\cifra{212}{comprobaciones axe sin incumplimientos críticos ni serios}
     \column{0.24\textwidth}\cifra{>85\,\%}{cobertura del código nuevo (SonarQube)}
@@ -204,7 +211,8 @@
   \begin{itemize}\small
     \item CI en GitHub Actions: pruebas, accesibilidad, Semgrep, Trivy, gitleaks, \texttt{npm audit}
     \item Modelo de amenazas STRIDE; límite de peticiones por IP y audiencia JWT exigida
-    \item Cobertura de líneas: 59,7\,\% backend (limitación declarada) y 87,8\,\% frontend
+    \item Cobertura de líneas: 59,7\,\% backend (limitación declarada) y 87,9\,\% frontend
+    \item RNF-8: 16 acciones cronometradas; primera señal en \(\le\) 35\,ms y todas terminadas en menos de 1\,s
   \end{itemize}
 \end{frame}
 
@@ -217,7 +225,8 @@
     \midrule
     H1b · usabilidad del votante & 5 de 5 votan con recibo en \(\le\) 3 min; \(\ge\) 4 de 5 lo entienden & \textcolor{acierto}{\textbf{ACEPTADA}}: 5 de 5 (mediana 51 s); 5 de 5 entienden el recibo\\\addlinespace
     RNF-4 · administración & \(\ge\) 4 de 5 crean y programan un proceso en \(\le\) 10 min sin ayuda & \textcolor{acierto}{\textbf{ACEPTADO}}: 5 de 5, máximo 4 min\\\addlinespace
-    H1a · accesibilidad & 0 críticos ni serios + revisión manual & \textcolor{acierto}{\textbf{ACEPTADA}}: axe sin críticos ni serios; Narrador sin bloqueos\\\addlinespace
+    H1a · accesibilidad & 0 críticos ni serios + revisión manual & \textcolor{acierto}{\textbf{ACEPTADA}}: axe sin críticos ni serios; Narrador sin bloqueos y 2 incidencias corregidas y comprobadas\\\addlinespace
+    RNF-8, 9 y 10 · interacción & Revisión heurística (2 evaluadores): ningún problema grave & \textcolor{acierto}{\textbf{ACEPTADOS}}: 11 problemas menores\\\addlinespace
     H1c · rendimiento & 500 simultáneos, p95 \(<\) 2 s en 3 ejecuciones & \textcolor{fallo}{\textbf{RECHAZADA}} en tres versiones; cadena siempre íntegra\\
     \bottomrule
   \end{tabular}
@@ -247,13 +256,13 @@
       \item Rendimiento por debajo del objetivo
       \item Accesibilidad revisada con un solo lector de pantalla
       \item SSO de gestión sin un proveedor externo real
-      \item Muestras de cinco personas
+      \item Muestras de cinco personas; revisión heurística con dos evaluadores, uno de ellos el autor
     \end{itemize}
     \column{0.48\textwidth}
     \textbf{Trabajo futuro}
     \begin{itemize}\small
       \item Medir cada tramo de la emisión y repetir H1c
-      \item Revisión con lector de pantalla
+      \item Revisión con NVDA o JAWS y con personas usuarias de lectores de pantalla
       \item Sustitución del voto (RF-11)
       \item Verificabilidad extremo a extremo y cifrado en cliente
       \item Despliegue con CSP, HSTS y secretos gestionados
@@ -299,6 +308,23 @@
       \item Un voto aislado ya tarda unos 0,6 s: el límite está en la cadena de servicios, no solo en la urna
       \item Siguiente paso: medir cada tramo y repetir \textbf{sin cambiar el criterio}
     \end{itemize}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Reserva: asistente de creación y recorrido del votante}
+  \begin{columns}[T]
+    \column{0.5\textwidth}\centering
+    \includegraphics[width=\linewidth]{capturas/consola-proceso-nuevo-es}\\
+    \footnotesize Asistente de creación, paso 1 de 4 (RF-06)
+    \column{0.16\textwidth}\centering
+    \includegraphics[width=\linewidth]{capturas/votante-bienvenida-es}\\
+    \scriptsize Bienvenida
+    \column{0.16\textwidth}\centering
+    \includegraphics[width=\linewidth]{capturas/votante-codigo-es}\\
+    \scriptsize Código (RF-08)
+    \column{0.16\textwidth}\centering
+    \includegraphics[width=\linewidth]{capturas/votante-revision-es}\\
+    \scriptsize Revisión (RF-09)
   \end{columns}
 \end{frame}
 

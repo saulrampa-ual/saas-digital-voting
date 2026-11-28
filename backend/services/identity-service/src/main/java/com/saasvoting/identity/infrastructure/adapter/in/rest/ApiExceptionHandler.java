@@ -80,7 +80,8 @@ public class ApiExceptionHandler {
     ProblemDetail identityProviderUnavailable(IdentityProviderUnavailableException e) {
         log.error("Identity provider error", e);
         return problem(HttpStatus.SERVICE_UNAVAILABLE,
-                "No se ha podido contactar con el servicio de identidad. Inténtalo de nuevo más tarde.");
+                "El servicio de identidad no ha podido completar la operación. Inténtalo de nuevo más tarde y, si sigue "
+                        + "fallando, avisa al administrador de la plataforma.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

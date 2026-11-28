@@ -99,11 +99,19 @@ export function createKeycloakAdmin(env, password) {
   async function setPassword(adm, username) {
     const u = await user(adm, username);
     if (!u) throw new Error(`Keycloak user not found: ${username}`);
-    await http('PUT', `${KC}/admin/realms/${REALM}/users/${u.id}/reset-password`, { token: adm, body: { type: 'password', value: password, temporary: false } });
+    // IMP-54: with passwordHistory(3) a second run with the same DEMO_PASSWORD gets 400 invalidPasswordHistoryMessage;
+    // usually the password was already set by an earlier run, so the script goes on; if it is an older one, the login
+    // fails right after with a message asking for a new DEMO_PASSWORD
+    const reset = await http('PUT', `${KC}/admin/realms/${REALM}/users/${u.id}/reset-password`, { token: adm, ok: [200, 204, 400],
+      body: { type: 'password', value: password, temporary: false } });
+    if (reset.status === 400) {
+      if (!JSON.stringify(reset.data ?? '').includes('invalidPasswordHistoryMessage')) throw new Error(`reset-password ${username} -> 400 ${JSON.stringify(reset.data)}`);
+      log(`password already used by an earlier run, kept: ${username}`);
+    }
     await http('PUT', `${KC}/admin/realms/${REALM}/users/${u.id}`, { token: adm, body: { requiredActions: [], emailVerified: true } });
     // Unlock in case brute-force detection locked it during earlier attempts
     await http('DELETE', `${KC}/admin/realms/${REALM}/attack-detection/brute-force/users/${u.id}`, { token: adm, ok: [200, 204, 404] });
-    log(`password set: ${username}`);
+    if (reset.status !== 400) log(`password set: ${username}`);
   }
   async function ensureSuperadmin(adm, u) { // realm-level account with role SUPERADMIN (no organization)
     let found = await user(adm, u.username);
@@ -152,7 +160,15 @@ export function createLogin(browser, password) {
       const since = Date.now();
       await page.click('#kc-login');
       for (let i = 0; i < 40 && !code; i++) {
-        const otp = page.locator('input[type="text"]:visible, input[type="number"]:visible, input[inputmode="numeric"]:visible, input[autocomplete="one-time-code"]:visible').first();
+        // A wrong password shows the login form again with an error: check it before looking for the code field, and
+        // never take the username field for it (25/11/2026: the script waited 2 min for a code that was never sent)
+        const error = page.locator('.kc-feedback-text, #input-error, .pf-v5-c-alert__title').first();
+        if (await error.count() && await error.isVisible()) {
+          throw new Error(`Login error for ${username}: ${(await error.innerText()).slice(0, 120)}. If DEMO_PASSWORD was used `
+            + 'before but is not the current password, run again with a new DEMO_PASSWORD (12+ characters).');
+        }
+        const otp = page.locator(['input[type="text"]', 'input[type="number"]', 'input[inputmode="numeric"]', 'input[autocomplete="one-time-code"]']
+          .map((s) => `${s}:visible:not(#username):not(#password)`).join(', ')).first();
         if (await otp.count()) {
           const value = await waitMail(email, since, (t) => sixDigits(t), 'login code');
           await otp.fill(value);
@@ -161,8 +177,6 @@ export function createLogin(browser, password) {
           for (let j = 0; j < 20 && !code; j++) await sleep(500);
           break;
         }
-        const error = page.locator('.kc-feedback-text, #input-error, .pf-v5-c-alert__title').first();
-        if (await error.count() && await error.isVisible()) throw new Error(`Login error for ${username}: ${(await error.innerText()).slice(0, 120)}`);
         await sleep(500);
       }
       grab(page.url());
@@ -210,9 +224,17 @@ export async function ensureScheduledProcess(token, body) {
   return p;
 }
 
+/**
+ * Waits for a process status. `token` may be a function that returns a new access token: long waits outlive the
+ * token (25/11/2026: 401 while the past election was being tallied), so on a 401 it asks for a new one and goes on.
+ */
 export async function waitStatus(token, id, wanted, minutes) {
+  const renew = typeof token === 'function' ? token : null;
+  let current = renew ? await renew() : token;
   for (let i = 0; i < minutes * 12; i++) {
-    const { data } = await http('GET', `${GW}/api/v1/processes/${id}`, { token });
+    const res = await http('GET', `${GW}/api/v1/processes/${id}`, { token: current, ok: renew ? [200, 401] : [200] });
+    if (res.status === 401) { current = await renew(); continue; }
+    const { data } = res;
     if (wanted.includes(data.status)) return data;
     await sleep(5000);
   }

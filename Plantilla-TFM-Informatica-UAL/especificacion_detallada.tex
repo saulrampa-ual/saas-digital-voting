@@ -37,184 +37,191 @@ genera ese estado.
   \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Ninguno} \\ \hline
 \end{longtable}
 
-\subsection{RF-02: Gestionar roles y permisos}
+\cuSubsection{RF-02: Gestionar roles y permisos}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-02: Gestionar roles y permisos.}\label{tab:cu-rf-02}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-02: Gestionar roles y permisos}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-02: Gestionar roles y permisos} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Administrador de organización (ACT-2)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-1} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-2} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) asigna o cambia el rol de un usuario de su organización (el Superadministrador (ACT-1) puede hacerlo en cualquier organización).} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El usuario está autenticado y el usuario destino pertenece a la organización.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Administrador solicita gestionar usuarios y roles \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema muestra los usuarios de la organización con su rol \\ \cline{2-3}
+  \cuLabel{} & 3 & El Administrador selecciona un usuario o solicita crear uno nuevo \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema muestra los roles asignables \\ \cline{2-3}
+  \cuLabel{} & 5 & El Administrador selecciona el rol \\* \cuKeepCline
+  \cuLabel{} & 6 & El Sistema guarda el rol y aplica sus permisos desde la siguiente acción del usuario \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{El usuario tiene el nuevo rol y sus permisos efectivos.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 5 & Si se intenta dejar la organización sin Administrador, el Sistema lo impide e informa \\* \cuKeepCline
+  \cuLabel{} & 5 & Si el actor no puede asignar ese rol, el Sistema deniega la operación \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. Se asume que solo un Superadministrador puede asignar el rol de Superadministrador.} \\ \hline
+\end{longtable}
 
-\textbf{Objetivos asociados:} OBJ-1\par
-\textbf{Requisitos asociados:} RI-2\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) asigna o cambia el rol de un usuario de su organización (el Superadministrador (ACT-1) puede hacerlo en cualquier organización).\par
-\textbf{Precondición:} El usuario está autenticado y el usuario destino pertenece a la organización.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Administrador solicita gestionar usuarios y roles
-\item[2] El Sistema muestra los usuarios de la organización con su rol
-\item[3] El Administrador selecciona un usuario o solicita crear uno nuevo
-\item[4] El Sistema muestra los roles asignables
-\item[5] El Administrador selecciona el rol
-\item[6] El Sistema guarda el rol y aplica sus permisos desde la siguiente acción del usuario
-\end{enumerate}
-\textbf{Postcondición:} El usuario tiene el nuevo rol y sus permisos efectivos.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 5: Si se intenta dejar la organización sin Administrador, el Sistema lo impide e informa
-\item 5: Si el actor no puede asignar ese rol, el Sistema deniega la operación
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. Se asume que solo un Superadministrador puede asignar el rol de Superadministrador.\par
+\cuSubsection{RF-03: Gestionar censo}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-03: Gestionar censo.}\label{tab:cu-rf-03}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-03: Gestionar censo}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-03: Gestionar censo} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Gestor de censo (ACT-5), Administrador de organización (ACT-2)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-2} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-3, RNF-4} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Administrador da de alta, importa o modifica votantes del censo.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El Gestor de censo está autenticado.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Gestor solicita gestionar el censo \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema muestra los censos existentes \\ \cline{2-3}
+  \cuLabel{} & 3 & El Gestor elige la acción \\ \cline{2-3}
+  \cuLabel{} & \multicolumn{2}{p{\cuWide}|}{\textit{Si elige alta manual:}} \\* \cuKeepCline
+  \cuLabel{} & 3.1 & El Sistema solicita nombre, correo electrónico o teléfono \\ \cline{2-3}
+  \cuLabel{} & 3.2 & El Gestor introduce los datos \\ \cline{2-3}
+  \cuLabel{} & \multicolumn{2}{p{\cuWide}|}{\textit{Si elige importar un fichero Excel:}} \\* \cuKeepCline
+  \cuLabel{} & 3.1 & El Sistema solicita el fichero Excel (.xlsx) y ofrece una plantilla descargable \\ \cline{2-3}
+  \cuLabel{} & 3.2 & El Gestor selecciona el fichero \\ \cline{2-3}
+  \cuLabel{} & 3.3 & El Sistema valida el fichero y muestra un resumen (altas, duplicados, errores) \\ \cline{2-3}
+  \cuLabel{} & 3.4 & El Gestor confirma la importación \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema detecta duplicados y no los da de alta \\* \cuKeepCline
+  \cuLabel{} & 5 & El Sistema guarda los cambios e informa del resultado \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{El censo está actualizado y sin duplicados.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 3.3 & Si el fichero no es válido, el Sistema informa de las líneas erróneas y permite descartarlas o cancelar \\* \cuKeepCline
+  \cuLabel{} & 4 & Si hay duplicados, el Sistema los omite e informa de cuáles \\* \cuKeepCline
+  \cuLabel{} & 5 & Si el censo pertenece a un proceso abierto, el Sistema rechaza altas y bajas e informa \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. Se asume que el censo queda congelado mientras el proceso está abierto. La consola ofrece la importación solo en Excel (.xlsx), con plantilla en español e inglés; la API mantiene la importación CSV por compatibilidad.} \\ \hline
+\end{longtable}
 
-\subsection{RF-03: Gestionar censo}
+\cuSubsection{RF-04: Autenticar usuario de gestión}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-04: Autenticar usuario de gestión.}\label{tab:cu-rf-04}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-04: Autenticar usuario de gestión}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-04: Autenticar usuario de gestión} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Superadministrador (ACT-1), Administrador de organización (ACT-2), Gestor de censo (ACT-5), Auditor (ACT-3)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-1} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-2} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Superadministrador, Administrador, Gestor de censo o Auditor desea iniciar sesión.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{La cuenta existe y está activa.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Usuario solicita iniciar sesión \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema solicita usuario y contraseña \\ \cline{2-3}
+  \cuLabel{} & 3 & El Usuario introduce sus credenciales \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema valida las credenciales \\ \cline{2-3}
+  \cuLabel{} & 5 & El Sistema solicita el segundo factor \\ \cline{2-3}
+  \cuLabel{} & 6 & El Usuario introduce el segundo factor \\ \cline{2-3}
+  \cuLabel{} & 7 & El Sistema valida el segundo factor \\* \cuKeepCline
+  \cuLabel{} & 8 & El Sistema inicia la sesión y muestra la pantalla de inicio de su rol \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Sesión iniciada con el rol y la organización correspondientes.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 4 & Si las credenciales son incorrectas, el Sistema informa del error y permite reintentar. \\* \cuKeepCline
+  \cuLabel{} & 7 & Si el código del segundo factor es incorrecto o ha caducado, el Sistema informa del error y permite reintentar o solicitar un nuevo código. \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. La autenticación se realiza mediante el mecanismo configurado para la plataforma. Como opción de diseño, podrá integrarse un proveedor de identidad compatible con OIDC/SSO (RF-05); no se exige una cuenta institucional. El segundo factor podrá realizarse mediante un código enviado al correo electrónico del usuario.} \\ \hline
+\end{longtable}
 
-\textbf{Objetivos asociados:} OBJ-2\par
-\textbf{Requisitos asociados:} RI-3, RNF-4\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Administrador da de alta, importa o modifica votantes del censo.\par
-\textbf{Precondición:} El Gestor de censo está autenticado.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Gestor solicita gestionar el censo
-\item[2] El Sistema muestra los censos existentes
-\item[3] El Gestor elige la acción
-\item[]\textit{Si elige alta manual:}
-\item[3.1] El Sistema solicita nombre, correo electrónico o teléfono
-\item[3.2] El Gestor introduce los datos
-\item[]\textit{Si elige importar un fichero Excel:}
-\item[3.1] El Sistema solicita el fichero Excel (.xlsx) y ofrece una plantilla descargable
-\item[3.2] El Gestor selecciona el fichero
-\item[3.3] El Sistema valida el fichero y muestra un resumen (altas, duplicados, errores)
-\item[3.4] El Gestor confirma la importación
-\item[4] El Sistema detecta duplicados y no los da de alta
-\item[5] El Sistema guarda los cambios e informa del resultado
-\end{enumerate}
-\textbf{Postcondición:} El censo está actualizado y sin duplicados.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 3.3: Si el fichero no es válido, el Sistema informa de las líneas erróneas y permite descartarlas o cancelar
-\item 4: Si hay duplicados, el Sistema los omite e informa de cuáles
-\item 5: Si el censo pertenece a un proceso abierto, el Sistema rechaza altas y bajas e informa
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. Se asume que el censo queda congelado mientras el proceso está abierto. La consola ofrece la importación solo en Excel (.xlsx), con plantilla en español e inglés; la API mantiene la importación CSV por compatibilidad.\par
+\cuSubsection{RF-05: Iniciar sesión (RF-05a gestión y RF-05b votante)}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-05: Iniciar sesión (RF-05a gestión y RF-05b votante).}\label{tab:cu-rf-05}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-05: Iniciar sesión (RF-05a gestión y RF-05b votante)}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-05: Iniciar sesión (RF-05a gestión y RF-05b votante)} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Perfiles de gestión (ACT-1, ACT-2, ACT-3, ACT-5), Votante (ACT-4); Proveedor de identidad (ACT-6), si está configurado} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-1, OBJ-3} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-2, RI-3} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá permitir que los perfiles de gestión (RF-05a) y los votantes (RF-05b) inicien sesión mediante el mecanismo de autenticación habilitado para la plataforma o el proceso. La integración con un proveedor de identidad (ACT-6), por ejemplo mediante OIDC/SSO, es una opción de diseño.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{La cuenta está activa o, en el caso del votante, pertenece al censo del proceso. Si se usa un proveedor externo, este está configurado y disponible.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El usuario solicita iniciar sesión y elige uno de los mecanismos habilitados \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema solicita las credenciales o inicia el flujo del proveedor de identidad, si está configurado \\ \cline{2-3}
+  \cuLabel{} & 3 & El usuario se autentica con el mecanismo seleccionado \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema valida la respuesta y comprueba la cuenta, el rol y, cuando corresponda, la pertenencia al censo \\* \cuKeepCline
+  \cuLabel{} & 5 & El Sistema inicia la sesión o concede el acceso al proceso \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Sesión iniciada con el rol y el ámbito de organización o proceso correspondientes.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 3 & Si el usuario cancela o no se autentica, el Sistema vuelve a la pantalla de inicio \\* \cuKeepCline
+  \cuLabel{} & 2--4 & Si el proveedor no responde, las credenciales son incorrectas o la respuesta no es válida, el Sistema informa y permite reintentar o usar otro mecanismo habilitado \\* \cuKeepCline
+  \cuLabel{} & 4 & Si la cuenta no tiene un rol autorizado o el votante no figura en el censo, el Sistema deniega el acceso e informa \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad Should. El requisito describe el inicio de sesión de forma independiente del proveedor y del protocolo. OIDC/SSO es una alternativa de diseño que deberá concretarse si se adopta; no implica SSO institucional obligatorio.} \\ \hline
+\end{longtable}
 
-\subsection{RF-04: Autenticar usuario de gestión}
+\cuSubsection{RF-06: Crear y configurar proceso de votación}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-06: Crear y configurar proceso de votación.}\label{tab:cu-rf-06}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-06: Crear y configurar proceso de votación}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-06: Crear y configurar proceso de votación} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Administrador de organización (ACT-2)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-2} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-4, RI-5, RNF-4} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) crea y configura un proceso de votación, incluyendo la definición del tipo de voto y de la papeleta.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El Administrador está autenticado y existe un censo (RF-03).} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Administrador solicita crear un proceso \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema solicita título y descripción \\ \cline{2-3}
+  \cuLabel{} & 3 & El Administrador introduce el título y la descripción. \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema solicita el calendario (apertura y cierre) \\ \cline{2-3}
+  \cuLabel{} & 5 & El Administrador introduce fechas y horas \\ \cline{2-3}
+  \cuLabel{} & 6 & El Sistema solicita el censo participante. \\ \cline{2-3}
+  \cuLabel{} & 7 & El Administrador selecciona el censo participante. \\ \cline{2-3}
+  \cuLabel{} & 8 & El Sistema solicita definir la papeleta. \\ \cline{2-3}
+  \cuLabel{} & 9 & El Sistema muestra los tipos de voto disponibles: opción única y sí/no/abstención. \\ \cline{2-3}
+  \cuLabel{} & 10 & El Administrador selecciona el tipo de voto. \\* \cuKeepCline
+  \cuLabel{} & 11 & El Administrador introduce las opciones y decide si habilita el voto en blanco. \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{El proceso de votación existe en estado Borrador con su papeleta definida.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 12 & Si existen datos incompletos o incoherentes en el proceso o en la papeleta, el Sistema informa del error y permite corregir los datos sin guardar. \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. Incluye la definición del tipo de voto y de la papeleta.} \\ \hline
+\end{longtable}
 
-\textbf{Objetivos asociados:} OBJ-1\par
-\textbf{Requisitos asociados:} RI-2\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Superadministrador, Administrador, Gestor de censo o Auditor desea iniciar sesión.\par
-\textbf{Precondición:} La cuenta existe y está activa.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Usuario solicita iniciar sesión
-\item[2] El Sistema solicita usuario y contraseña
-\item[3] El Usuario introduce sus credenciales
-\item[4] El Sistema valida las credenciales
-\item[5] El Sistema solicita el segundo factor
-\item[6] El Usuario introduce el segundo factor
-\item[7] El Sistema valida el segundo factor
-\item[8] El Sistema inicia la sesión y muestra la pantalla de inicio de su rol
-\end{enumerate}
-\textbf{Postcondición:} Sesión iniciada con el rol y la organización correspondientes.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 4: Si las credenciales son incorrectas, el Sistema informa del error y permite reintentar.
-\item 7: Si el código del segundo factor es incorrecto o ha caducado, el Sistema informa del error y permite reintentar o solicitar un nuevo código.
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. La autenticación se realiza mediante el mecanismo configurado para la plataforma. Como opción de diseño, podrá integrarse un proveedor de identidad compatible con OIDC/SSO (RF-05); no se exige una cuenta institucional. El segundo factor podrá realizarse mediante un código enviado al correo electrónico del usuario.\par
+\cuSubsection{RF-07: Gestionar ciclo de vida del proceso}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-07: Gestionar ciclo de vida del proceso.}\label{tab:cu-rf-07}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-07: Gestionar ciclo de vida del proceso}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-07: Gestionar ciclo de vida del proceso} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Administrador de organización (ACT-2)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-2} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-4, RI-9} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) programa y archiva un proceso, y el Sistema lo abre y lo cierra automáticamente en las fechas fijadas.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El proceso existe y el Administrador está autenticado.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Administrador solicita programar el proceso \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema valida que el proceso está completo. \\ \cline{2-3}
+  \cuLabel{} & 3 & El Sistema cambia el proceso a Programado \\ \cline{2-3}
+  \cuLabel{} & 4 & Al llegar la fecha de apertura, el Sistema cambia el proceso a Abierto y habilita el acceso de los votantes (RF-08) \\ \cline{2-3}
+  \cuLabel{} & 5 & Al llegar la fecha de cierre, el Sistema cambia el proceso a Cerrado y deja de aceptar votos \\ \cline{2-3}
+  \cuLabel{} & 6 & El Sistema publica la huella final de la urna (RF-12), inicia el escrutinio (RF-13) y, al terminar, cambia el proceso a Escrutado \\ \cline{2-3}
+  \cuLabel{} & 7 & El Administrador solicita archivar el proceso \\* \cuKeepCline
+  \cuLabel{} & 8 & El Sistema cambia el proceso a Archivado \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Estado del proceso actualizado y registrado (RF-19).} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 2 & Si el proceso está incompleto, el Sistema informa y no lo programa. \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. Lo amplían RF-13 (escrutinio al cerrar) y RF-17 (avisos). No se permite abrir ni cerrar un proceso manualmente de forma anticipada; la apertura y el cierre se realizan automáticamente en las fechas configuradas.} \\ \hline
+\end{longtable}
 
-\subsection{RF-05: Iniciar sesión (RF-05a gestión y RF-05b votante)}
-
-\textbf{Objetivos asociados:} OBJ-1, OBJ-3\par
-\textbf{Requisitos asociados:} RI-2, RI-3\par
-\textbf{Descripción:} El sistema deberá permitir que los perfiles de gestión (RF-05a) y los votantes (RF-05b) inicien sesión mediante el mecanismo de autenticación habilitado para la plataforma o el proceso. La integración con un proveedor de identidad (ACT-6), por ejemplo mediante OIDC/SSO, es una opción de diseño.\par
-\textbf{Precondición:} La cuenta está activa o, en el caso del votante, pertenece al censo del proceso. Si se usa un proveedor externo, este está configurado y disponible.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El usuario solicita iniciar sesión y elige uno de los mecanismos habilitados
-\item[2] El Sistema solicita las credenciales o inicia el flujo del proveedor de identidad, si está configurado
-\item[3] El usuario se autentica con el mecanismo seleccionado
-\item[4] El Sistema valida la respuesta y comprueba la cuenta, el rol y, cuando corresponda, la pertenencia al censo
-\item[5] El Sistema inicia la sesión o concede el acceso al proceso
-\end{enumerate}
-\textbf{Postcondición:} Sesión iniciada con el rol y el ámbito de organización o proceso correspondientes.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 3: Si el usuario cancela o no se autentica, el Sistema vuelve a la pantalla de inicio
-\item 2--4: Si el proveedor no responde, las credenciales son incorrectas o la respuesta no es válida, el Sistema informa y permite reintentar o usar otro mecanismo habilitado
-\item 4: Si la cuenta no tiene un rol autorizado o el votante no figura en el censo, el Sistema deniega el acceso e informa
-\end{itemize}
-\textbf{Comentarios:} Prioridad Should. El requisito describe el inicio de sesión de forma independiente del proveedor y del protocolo. OIDC/SSO es una alternativa de diseño que deberá concretarse si se adopta; no implica SSO institucional obligatorio.\par
-
-\subsection{RF-06: Crear y configurar proceso de votación}
-
-\textbf{Objetivos asociados:} OBJ-2\par
-\textbf{Requisitos asociados:} RI-4, RI-5, RNF-4\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) crea y configura un proceso de votación, incluyendo la definición del tipo de voto y de la papeleta.\par
-\textbf{Precondición:} El Administrador está autenticado y existe un censo (RF-03).\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Administrador solicita crear un proceso
-\item[2] El Sistema solicita título y descripción
-\item[3] El Administrador introduce el título y la descripción.
-\item[4] El Sistema solicita el calendario (apertura y cierre)
-\item[5] El Administrador introduce fechas y horas
-\item[6] El Sistema solicita el censo participante.
-\item[7] El Administrador selecciona el censo participante.
-\item[8] El Sistema solicita definir la papeleta.
-\item[9] El Sistema muestra los tipos de voto disponibles: opción única y sí/no/abstención.
-\item[10] El Administrador selecciona el tipo de voto.
-\item[11] El Administrador introduce las opciones y decide si habilita el voto en blanco.
-\end{enumerate}
-\textbf{Postcondición:} El proceso de votación existe en estado Borrador con su papeleta definida.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 12: Si existen datos incompletos o incoherentes en el proceso o en la papeleta, el Sistema informa del error y permite corregir los datos sin guardar.
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. Incluye la definición del tipo de voto y de la papeleta.\par
-
-\subsection{RF-07: Gestionar ciclo de vida del proceso}
-
-\textbf{Objetivos asociados:} OBJ-2\par
-\textbf{Requisitos asociados:} RI-4, RI-9\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) programa y archiva un proceso, y el Sistema lo abre y lo cierra automáticamente en las fechas fijadas.\par
-\textbf{Precondición:} El proceso existe y el Administrador está autenticado.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Administrador solicita programar el proceso
-\item[2] El Sistema valida que el proceso está completo.
-\item[3] El Sistema cambia el proceso a Programado
-\item[4] Al llegar la fecha de apertura, el Sistema cambia el proceso a Abierto y habilita el acceso de los votantes (RF-08)
-\item[5] Al llegar la fecha de cierre, el Sistema cambia el proceso a Cerrado y deja de aceptar votos
-\item[6] El Sistema publica la huella final de la urna (RF-12), inicia el escrutinio (RF-13) y, al terminar, cambia el proceso a Escrutado
-\item[7] El Administrador solicita archivar el proceso
-\item[8] El Sistema cambia el proceso a Archivado
-\end{enumerate}
-\textbf{Postcondición:} Estado del proceso actualizado y registrado (RF-19).\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 2: Si el proceso está incompleto, el Sistema informa y no lo programa.
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. Lo amplían RF-13 (escrutinio al cerrar) y RF-17 (avisos). No se permite abrir ni cerrar un proceso manualmente de forma anticipada; la apertura y el cierre se realizan automáticamente en las fechas configuradas.\par
-
-\subsection{RF-08: Acceder como votante}
-
-\textbf{Objetivos asociados:} OBJ-3\par
-\textbf{Requisitos asociados:} RI-3, RI-12, RNF-1, RNF-2, RNF-3, RNF-5, RNF-9\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) accede a la papeleta de un proceso abierto; el código lo envía el Servicio de notificaciones (ACT-7).\par
-\textbf{Precondición:} El proceso está Abierto, el votante está en el censo y ha recibido su enlace personal (RF-17).\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Votante abre su enlace personal
-\item[2] El Sistema valida el enlace y que el proceso está abierto
-\item[3] El Sistema solicita la verificación adicional del proceso
-\item[]\textit{Si es un código OTP:}
-\item[3.1] El Sistema envía el código por correo electrónico
-\item[3.2] El Votante introduce el código
-\item[3.3] El Sistema valida el código
-\item[4] El Sistema concede acceso a la papeleta
-\end{enumerate}
-\textbf{Postcondición:} El votante está identificado para ese proceso.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 2: Si el enlace no es válido o ha caducado, el Sistema informa y no concede acceso
-\item 2: Si el proceso no está abierto, el Sistema informa de su estado y calendario
-\item 3.3: Si el código es incorrecto o ha caducado, el Sistema permite reintentar o reenviarlo.
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. La verificación adicional configurada (por ejemplo, OTP o autenticación federada) evita que un enlace reenviado permita votar a otra persona. La federación de identidad es una opción de diseño, no un requisito institucional.\par
+\cuSubsection{RF-08: Acceder como votante}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-08: Acceder como votante.}\label{tab:cu-rf-08}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-08: Acceder como votante}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-08: Acceder como votante} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Votante (ACT-4)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-3} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-3, RI-12, RNF-1, RNF-2, RNF-3, RNF-5, RNF-9} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) accede a la papeleta de un proceso abierto; el código lo envía el Servicio de notificaciones (ACT-7).} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El proceso está Abierto, el votante está en el censo y ha recibido su enlace personal (RF-17).} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Votante abre su enlace personal \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema valida el enlace y que el proceso está abierto \\ \cline{2-3}
+  \cuLabel{} & 3 & El Sistema solicita la verificación adicional del proceso \\ \cline{2-3}
+  \cuLabel{} & \multicolumn{2}{p{\cuWide}|}{\textit{Si es un código OTP:}} \\* \cuKeepCline
+  \cuLabel{} & 3.1 & El Sistema envía el código por correo electrónico \\ \cline{2-3}
+  \cuLabel{} & 3.2 & El Votante introduce el código \\ \cline{2-3}
+  \cuLabel{} & 3.3 & El Sistema valida el código \\* \cuKeepCline
+  \cuLabel{} & 4 & El Sistema concede acceso a la papeleta \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{El votante está identificado para ese proceso.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 2 & Si el enlace no es válido o ha caducado, el Sistema informa y no concede acceso \\* \cuKeepCline
+  \cuLabel{} & 2 & Si el proceso no está abierto, el Sistema informa de su estado y calendario \\* \cuKeepCline
+  \cuLabel{} & 3.3 & Si el código es incorrecto o ha caducado, el Sistema permite reintentar o reenviarlo. \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. La verificación adicional configurada (por ejemplo, OTP o autenticación federada) evita que un enlace reenviado permita votar a otra persona. La federación de identidad es una opción de diseño, no un requisito institucional.} \\ \hline
+\end{longtable}
 
 \cuSubsection{RF-09: Emitir voto}
 \begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
@@ -225,7 +232,7 @@ genera ese estado.
   \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-3} \\* \cuKeepHline
   \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-5, RI-6, RI-7, RNF-1, RNF-2, RNF-3, RNF-5, RNF-7, RNF-9} \\* \cuKeepHline
   \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) emite su voto en un proceso abierto.} \\* \cuKeepHline
-  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El votante ha accedido (RF-08) y no tiene un voto contabilizado, o el proceso permite re-votar (RF-11).} \\ \hline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El votante ha accedido (RF-08) y no tiene un voto contabilizado.} \\ \hline
   \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
   \cuLabel{} & 1 & El Sistema muestra la papeleta. \\ \cline{2-3}
   \cuLabel{} & 2 & El Votante selecciona sus opciones \\ \cline{2-3}
@@ -239,235 +246,244 @@ genera ese estado.
   \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{El voto está en la urna y el votante figura como votante.} \\ \hline
   \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
   \cuLabel{} & 3 & Si la selección no es válida, el Sistema informa y no avanza \\* \cuKeepCline
-  \cuLabel{} & 6 & Si el votante ya votó y no se permite re-votar, el Sistema informa y no registra nada \\* \cuKeepCline
+  \cuLabel{} & 6 & Si el votante ya votó, el Sistema informa y no registra nada \\* \cuKeepCline
   \cuLabel{} & 7 & Si el proceso se cierra mientras vota o falla el registro, el Sistema informa y no queda ningún voto parcial ni duplicado \\ \hline
   \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. El voto se registra en la urna y el votante queda marcado como «ha votado». Como máximo se contabiliza un voto por votante.} \\ \hline
 \end{longtable}
 
-\subsection{RF-10: Obtener y verificar recibo del voto}
+\cuSubsection{RF-10: Obtener y verificar recibo del voto}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-10: Obtener y verificar recibo del voto.}\label{tab:cu-rf-10}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-10: Obtener y verificar recibo del voto}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-10: Obtener y verificar recibo del voto} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Votante (ACT-4)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-3, OBJ-4} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-6, RI-8, RNF-1, RNF-2, RNF-3, RNF-6} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) quiere comprobar que su voto consta en la urna.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El votante ha emitido un voto (RF-09).} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Sistema genera un recibo del voto. \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema entrega el recibo al votante \\ \cline{2-3}
+  \cuLabel{} & 3 & El Votante solicita verificar su recibo \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema busca el recibo en la urna publicada \\* \cuKeepCline
+  \cuLabel{} & 5 & El Sistema informa de que el voto consta en la urna \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Ninguna.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 4 & Si el recibo no se encuentra, el Sistema informa de que el voto no consta \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. Amplía RF-09. Si en una versión futura se permite volver a votar (RF-11), el recibo anterior se marcará como sustituido.} \\ \hline
+\end{longtable}
 
-\textbf{Objetivos asociados:} OBJ-3, OBJ-4\par
-\textbf{Requisitos asociados:} RI-6, RI-8, RNF-1, RNF-2, RNF-3, RNF-6\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) quiere comprobar que su voto consta en la urna.\par
-\textbf{Precondición:} El votante ha emitido un voto (RF-09).\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Sistema genera un recibo del voto.
-\item[2] El Sistema entrega el recibo al votante
-\item[3] El Votante solicita verificar su recibo
-\item[4] El Sistema busca el recibo en la urna publicada
-\item[5] El Sistema informa de que el voto consta en la urna
-\end{enumerate}
-\textbf{Postcondición:} Ninguna.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 4: Si el recibo no se encuentra, el Sistema informa de que el voto no consta
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. Amplía RF-09. Si el votante vuelve a votar (RF-11), el recibo anterior se marca como sustituido.\par
+\cuSubsection{RF-11: Re-votar}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-11: Re-votar.}\label{tab:cu-rf-11}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-11: Re-votar}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-11: Re-votar} (continuación)} \\ \hline \endhead
+  \cuLabel{Estado en el MVP} & \multicolumn{2}{p{\cuWide}|}{No implementado. D-03 excluye RF-11 del MVP; la exclusión fue confirmada por el tutor el 30/10/2026 mediante correo electrónico, y el caso de uso permanece como trabajo futuro (P9). Se conserva aquí por trazabilidad con la especificación v1.0.} \\* \cuKeepHline
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Votante (ACT-4)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-3} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-6, RI-7, RI-8, RNF-1, RNF-2, RNF-7, RNF-9} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) cambia su voto antes del cierre.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El proceso está Abierto, permite revotación y el votante ya ha votado y ha accedido (RF-08).} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Votante solicita cambiar su voto \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema informa de que el nuevo voto sustituirá al anterior \\ \cline{2-3}
+  \cuLabel{} & 3 & El Votante confirma \\ \cline{2-3}
+  \cuLabel{} & 4 & El Votante emite el nuevo voto (RF-09) \\ \cline{2-3}
+  \cuLabel{} & 5 & El Sistema registra el nuevo voto y marca el anterior como sustituido sin borrarlo \\* \cuKeepCline
+  \cuLabel{} & 6 & El Sistema entrega el nuevo recibo \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Solo cuenta el último voto del votante.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 3 & Si la votante cancela, su voto anterior sigue siendo válido \\* \cuKeepCline
+  \cuLabel{} & 5 & Si el proceso se cierra antes de registrar el nuevo voto, el anterior sigue siendo válido \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad W (fuera de esta versión; era C en la especificación v1.0). Amplía RF-15. La revotación mitiga la coacción: el votante puede cambiar su voto hasta el cierre.} \\ \hline
+\end{longtable}
 
-\subsection{RF-11: Re-votar}
+\cuSubsection{RF-12: Publicar y verificar registro de auditoría}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-12: Publicar y verificar registro de auditoría.}\label{tab:cu-rf-12}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-12: Publicar y verificar registro de auditoría}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-12: Publicar y verificar registro de auditoría} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Auditor (ACT-3)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-4} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-9} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Auditor (ACT-3) consulta y verifica el registro de la urna, o un Votante (ACT-4) consulta la huella publicada.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{Existe un proceso con eventos en la urna.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Auditor solicita ver el registro de auditoría de un proceso \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema muestra los eventos de la urna (apertura, votos recibidos sin identidad, sustituciones, cierre) con su huella \\ \cline{2-3}
+  \cuLabel{} & 3 & El Auditor solicita verificar la integridad \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema comprueba la integridad del registro. \\ \cline{2-3}
+  \cuLabel{} & 5 & El Sistema informa del resultado de la verificación \\ \cline{2-3}
+  \cuLabel{} & \multicolumn{2}{p{\cuWide}|}{\textit{Si el proceso está cerrado:}} \\* \cuKeepCline
+  \cuLabel{} & 6 & El Sistema muestra la huella final publicada, que cualquier Votante puede consultar \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Ninguna.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 2 & Si el proceso no tiene eventos, el Sistema informa \\* \cuKeepCline
+  \cuLabel{} & 5 & Si la cadena está rota, el Sistema alerta al Auditor y al Administrador y marca una incidencia de integridad \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad S.} \\ \hline
+\end{longtable}
 
-\textbf{Estado en el MVP:} No implementado. D-03 excluye RF-11 del MVP; la exclusión fue confirmada por el tutor el 30/10/2026 mediante correo electrónico, y el caso de uso permanece como trabajo futuro (P9). Se conserva aquí por trazabilidad con la especificación v1.0.\par
+\cuSubsection{RF-13: Escrutar y verificar resultado}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-13: Escrutar y verificar resultado.}\label{tab:cu-rf-13}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-13: Escrutar y verificar resultado}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-13: Escrutar y verificar resultado} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Sistema (escrutinio automático al cierre); Auditor (ACT-3), Votante (ACT-4)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-4} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-4, RI-6, RI-10, RNF-6} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un proceso se cierra y el Sistema lanza automáticamente el escrutinio; después, un Auditor (ACT-3) o un Votante (ACT-4) verifica el resultado.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El proceso está Cerrado.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Sistema lanza el escrutinio al cerrarse el proceso \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema obtiene los votos contabilizables (el último de cada votante). \\ \cline{2-3}
+  \cuLabel{} & 3 & El Sistema cuenta los votos por opción. \\ \cline{2-3}
+  \cuLabel{} & 4 & El Sistema calcula la participación. \\ \cline{2-3}
+  \cuLabel{} & 5 & El Sistema guarda el resultado y publica su huella. \\ \cline{2-3}
+  \cuLabel{} & 6 & El Auditor o el Votante solicita verificar el resultado \\ \cline{2-3}
+  \cuLabel{} & 7 & El Sistema muestra los datos públicos necesarios para recalcularlo \\* \cuKeepCline
+  \cuLabel{} & 8 & El Sistema informa de si el resultado coincide \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Proceso en estado Escrutado con resultado y huella publicados.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 5 & Si falla el recuento, el Sistema no publica nada, avisa al Administrador y permite reintentar. \\* \cuKeepCline
+  \cuLabel{} & 8 & Si no coincide, el Sistema alerta de una incidencia \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. Amplía RF-07. En el MVP, cada proceso decide si el resultado lo ven solo las personas del censo, con su enlace personal y un código, o cualquiera con el enlace público.} \\ \hline
+\end{longtable}
 
-\textbf{Objetivos asociados:} OBJ-3\par
-\textbf{Requisitos asociados:} RI-6, RI-7, RI-8, RNF-1, RNF-2, RNF-7, RNF-9\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Votante (ACT-4) cambia su voto antes del cierre.\par
-\textbf{Precondición:} El proceso está Abierto, permite revotación y el votante ya ha votado y ha accedido (RF-08).\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Votante solicita cambiar su voto
-\item[2] El Sistema informa de que el nuevo voto sustituirá al anterior
-\item[3] El Votante confirma
-\item[4] El Votante emite el nuevo voto (RF-09)
-\item[5] El Sistema registra el nuevo voto y marca el anterior como sustituido sin borrarlo
-\item[6] El Sistema entrega el nuevo recibo
-\end{enumerate}
-\textbf{Postcondición:} Solo cuenta el último voto del votante.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 3: Si la votante cancela, su voto anterior sigue siendo válido
-\item 5: Si el proceso se cierra antes de registrar el nuevo voto, el anterior sigue siendo válido
-\end{itemize}
-\textbf{Comentarios:} Prioridad W (fuera de esta versión; era C en la especificación v1.0). Amplía RF-15. La revotación mitiga la coacción: el votante puede cambiar su voto hasta el cierre.\par
+\cuSubsection{RF-14: Consultar panel de participación}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-14: Consultar panel de participación.}\label{tab:cu-rf-14}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-14: Consultar panel de participación}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-14: Consultar panel de participación} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Administrador de organización (ACT-2)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-4} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-3, RI-7} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) consulta la participación de un proceso.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El Administrador está autenticado.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Administrador solicita el panel de participación \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema muestra el número de votantes del censo, los votos emitidos y el porcentaje de participación. \\* \cuKeepCline
+  \cuLabel{} & 3 & El Sistema actualiza el panel mientras el proceso está abierto. \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Ninguna.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 2 & Si el proceso aún no está abierto, el Sistema muestra solo el censo \\* \cuKeepCline
+  \cuLabel{} & 2 & Si el proceso está cerrado, muestra la participación final \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. Ninguna vista muestra el recuento por opción antes del cierre.} \\ \hline
+\end{longtable}
 
-\subsection{RF-12: Publicar y verificar registro de auditoría}
+\cuSubsection{RF-15: Consultar y exportar resultados}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-15: Consultar y exportar resultados.}\label{tab:cu-rf-15}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-15: Consultar y exportar resultados}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-15: Consultar y exportar resultados} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Administrador de organización (ACT-2); Votante (ACT-4), si el proceso lo permite} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-4} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-10} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2), o un Votante (ACT-4) si el proceso lo permite, consulta y exporta los resultados.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El proceso está Escrutado.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El usuario solicita ver los resultados \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema comprueba que el usuario puede verlos \\ \cline{2-3}
+  \cuLabel{} & 3 & El Sistema muestra los resultados con gráficos y participación. \\ \cline{2-3}
+  \cuLabel{} & 4 & El usuario solicita exportarlos \\* \cuKeepCline
+  \cuLabel{} & 5 & El Sistema genera el fichero en formato CSV y lo entrega. \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Ninguna.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 2 & Si el proceso no está escrutado, el Sistema informa de que aún no hay resultados \\* \cuKeepCline
+  \cuLabel{} & 2 & Si el usuario no tiene permiso, el Sistema deniega el acceso \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. Los resultados pueden ser consultados por el Administrador de organización y por los votantes cuando el proceso lo permita. La exportación de resultados se realiza únicamente en formato CSV.} \\ \hline
+\end{longtable}
 
-\textbf{Objetivos asociados:} OBJ-4\par
-\textbf{Requisitos asociados:} RI-9\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Auditor (ACT-3) consulta y verifica el registro de la urna, o un Votante (ACT-4) consulta la huella publicada.\par
-\textbf{Precondición:} Existe un proceso con eventos en la urna.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Auditor solicita ver el registro de auditoría de un proceso
-\item[2] El Sistema muestra los eventos de la urna (apertura, votos recibidos sin identidad, sustituciones, cierre) con su huella
-\item[3] El Auditor solicita verificar la integridad
-\item[4] El Sistema comprueba la integridad del registro.
-\item[5] El Sistema informa del resultado de la verificación
-\item[]\textit{Si el proceso está cerrado:}
-\item[6] El Sistema muestra la huella final publicada, que cualquier Votante puede consultar
-\end{enumerate}
-\textbf{Postcondición:} Ninguna.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 2: Si el proceso no tiene eventos, el Sistema informa
-\item 5: Si la cadena está rota, el Sistema alerta al Auditor y al Administrador y marca una incidencia de integridad
-\end{itemize}
-\textbf{Comentarios:} Prioridad S.\par
+\cuSubsection{RF-16: Generar acta de resultados en PDF}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-16: Generar acta de resultados en PDF.}\label{tab:cu-rf-16}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-16: Generar acta de resultados en PDF}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-16: Generar acta de resultados en PDF} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Administrador de organización (ACT-2)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-4} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-10} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) genera el acta de un proceso.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El proceso está Escrutado y el Administrador está autenticado.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Administrador solicita el acta \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema compone el acta (proceso, calendario, censo, participación, resultado y huellas) \\ \cline{2-3}
+  \cuLabel{} & 3 & El Sistema genera el PDF y lo ofrece para descarga \\* \cuKeepCline
+  \cuLabel{} & 4 & El Administrador lo descarga \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Acta disponible en PDF con huella.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & Si el proceso no está escrutado, el Sistema informa de que el acta no está disponible \\* \cuKeepCline
+  \cuLabel{} & 3 & Si falla la generación, el Sistema informa y permite reintentar \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad S. Amplía RF-15. El contenido del acta debe validarse con las exigencias de cada organización.} \\ \hline
+\end{longtable}
 
-\subsection{RF-13: Escrutar y verificar resultado}
+\cuSubsection{RF-17: Enviar notificaciones}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-17: Enviar notificaciones.}\label{tab:cu-rf-17}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-17: Enviar notificaciones}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-17: Enviar notificaciones} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Servicio de notificaciones (ACT-7), Administrador de organización (ACT-2)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-3} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-11, RI-12} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando se programa, abre o cierra un proceso y el Sistema avisa a los votantes mediante el Servicio de notificaciones (ACT-7). El Administrador de organización (ACT-2) configura las plantillas y los canales.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El proceso está programado y el Administrador ha configurado plantillas y canales.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Sistema inicia el envío de invitaciones al programarse el proceso \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema genera el enlace personal de cada votante (RF-08) y compone el mensaje en su idioma \\ \cline{2-3}
+  \cuLabel{} & 3 & El Sistema entrega los mensajes al Servicio de notificaciones \\ \cline{2-3}
+  \cuLabel{} & 4 & El Servicio de notificaciones informa del resultado de entrega \\ \cline{2-3}
+  \cuLabel{} & 5 & El Sistema registra el estado de cada envío \\ \cline{2-3}
+  \cuLabel{} & 6 & En las fechas configuradas, el Sistema envía recordatorios a quien aún no ha votado \\* \cuKeepCline
+  \cuLabel{} & 7 & Al cierre, el Sistema envía el aviso de cierre \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Votantes avisados y estado de envío registrado.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 4 & Si una entrega falla, el Sistema reintenta y la marca; el Administrador puede consultar los fallos \\* \cuKeepCline
+  \cuLabel{} & 2 & Si un votante no tiene dato de contacto para el canal, el Sistema lo omite y lo lista. \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad M. Amplía RF-08.} \\ \hline
+\end{longtable}
 
-\textbf{Objetivos asociados:} OBJ-4\par
-\textbf{Requisitos asociados:} RI-4, RI-6, RI-10, RNF-6\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un proceso se cierra y el Sistema lanza automáticamente el escrutinio; después, un Auditor (ACT-3) o un Votante (ACT-4) verifica el resultado.\par
-\textbf{Precondición:} El proceso está Cerrado.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Sistema lanza el escrutinio al cerrarse el proceso
-\item[2] El Sistema obtiene los votos contabilizables (el último de cada votante).
-\item[3] El Sistema cuenta los votos por opción.
-\item[4] El Sistema calcula la participación.
-\item[5] El Sistema guarda el resultado y publica su huella.
-\item[6] El Auditor o el Votante solicita verificar el resultado
-\item[7] El Sistema muestra los datos públicos necesarios para recalcularlo
-\item[8] El Sistema informa de si el resultado coincide
-\end{enumerate}
-\textbf{Postcondición:} Proceso en estado Escrutado con resultado y huella publicados.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 5: Si falla el recuento, el Sistema no publica nada, avisa al Administrador y permite reintentar.
-\item 8: Si no coincide, el Sistema alerta de una incidencia
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. Amplía RF-07. En el MVP, cada proceso decide si el resultado lo ven solo las personas del censo, con su enlace personal y un código, o cualquiera con el enlace público.\par
+\cuSubsection{RF-18: Gestionar privacidad de datos (RGPD)}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-18: Gestionar privacidad de datos (RGPD).}\label{tab:cu-rf-18}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-18: Gestionar privacidad de datos (RGPD)}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-18: Gestionar privacidad de datos (RGPD)} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Administrador de organización (ACT-2)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-1} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-2, RI-3} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) exporta o borra los datos personales de un interesado a petición de este.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El Administrador está autenticado.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El Administrador solicita la gestión de privacidad \\ \cline{2-3}
+  \cuLabel{} & \multicolumn{2}{p{\cuWide}|}{\textit{Si exporta datos de un interesado:}} \\* \cuKeepCline
+  \cuLabel{} & 2.1 & El Administrador identifica al interesado. \\ \cline{2-3}
+  \cuLabel{} & 2.2 & El Sistema compila sus datos personales y los exporta en formato legible por máquina. \\ \cline{2-3}
+  \cuLabel{} & \multicolumn{2}{p{\cuWide}|}{\textit{Si borra datos de un interesado:}} \\* \cuKeepCline
+  \cuLabel{} & 3.1 & El Administrador identifica al interesado y confirma la solicitud de borrado. \\* \cuKeepCline
+  \cuLabel{} & 3.2 & El Sistema borra o anonimiza sus datos personales. \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Los datos del interesado han sido exportados o borrados, según la solicitud.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 3.2 & Si el interesado ya votó, el Sistema anonimiza sus datos personales y conserva el voto y el registro de auditoría. \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad S. El voto no es exportable por interesado porque no está vinculado a su identidad. Si el votante ya ha votado, se anonimizan sus datos personales y se conserva el voto.} \\ \hline
+\end{longtable}
 
-\subsection{RF-14: Consultar panel de participación}
-
-\textbf{Objetivos asociados:} OBJ-4\par
-\textbf{Requisitos asociados:} RI-3, RI-7\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) consulta la participación de un proceso.\par
-\textbf{Precondición:} El Administrador está autenticado.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Administrador solicita el panel de participación
-\item[2] El Sistema muestra el número de votantes del censo, los votos emitidos y el porcentaje de participación.
-\item[3] El Sistema actualiza el panel mientras el proceso está abierto.
-\end{enumerate}
-\textbf{Postcondición:} Ninguna.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 2: Si el proceso aún no está abierto, el Sistema muestra solo el censo
-\item 2: Si el proceso está cerrado, muestra la participación final
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. Ninguna vista muestra el recuento por opción antes del cierre.\par
-
-\subsection{RF-15: Consultar y exportar resultados}
-
-\textbf{Objetivos asociados:} OBJ-4\par
-\textbf{Requisitos asociados:} RI-10\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2), o un Votante (ACT-4) si el proceso lo permite, consulta y exporta los resultados.\par
-\textbf{Precondición:} El proceso está Escrutado.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El usuario solicita ver los resultados
-\item[2] El Sistema comprueba que el usuario puede verlos
-\item[3] El Sistema muestra los resultados con gráficos y participación.
-\item[4] El usuario solicita exportarlos
-\item[5] El Sistema genera el fichero en formato CSV y lo entrega.
-\end{enumerate}
-\textbf{Postcondición:} Ninguna.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 2: Si el proceso no está escrutado, el Sistema informa de que aún no hay resultados
-\item 2: Si el usuario no tiene permiso, el Sistema deniega el acceso
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. Los resultados pueden ser consultados por el Administrador de organización y por los votantes cuando el proceso lo permita. La exportación de resultados se realiza únicamente en formato CSV.\par
-
-\subsection{RF-16: Generar acta de resultados en PDF}
-
-\textbf{Objetivos asociados:} OBJ-4\par
-\textbf{Requisitos asociados:} RI-10\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) genera el acta de un proceso.\par
-\textbf{Precondición:} El proceso está Escrutado y el Administrador está autenticado.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Administrador solicita el acta
-\item[2] El Sistema compone el acta (proceso, calendario, censo, participación, resultado y huellas)
-\item[3] El Sistema genera el PDF y lo ofrece para descarga
-\item[4] El Administrador lo descarga
-\end{enumerate}
-\textbf{Postcondición:} Acta disponible en PDF con huella.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 1: Si el proceso no está escrutado, el Sistema informa de que el acta no está disponible
-\item 3: Si falla la generación, el Sistema informa y permite reintentar
-\end{itemize}
-\textbf{Comentarios:} Prioridad S. Amplía RF-15. El contenido del acta debe validarse con las exigencias de cada organización.\par
-
-\subsection{RF-17: Enviar notificaciones}
-
-\textbf{Objetivos asociados:} OBJ-3\par
-\textbf{Requisitos asociados:} RI-11, RI-12\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando se programa, abre o cierra un proceso y el Sistema avisa a los votantes mediante el Servicio de notificaciones (ACT-7). El Administrador de organización (ACT-2) configura las plantillas y los canales.\par
-\textbf{Precondición:} El proceso está programado y el Administrador ha configurado plantillas y canales.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Sistema inicia el envío de invitaciones al programarse el proceso
-\item[2] El Sistema genera el enlace personal de cada votante (RF-08) y compone el mensaje en su idioma
-\item[3] El Sistema entrega los mensajes al Servicio de notificaciones
-\item[4] El Servicio de notificaciones informa del resultado de entrega
-\item[5] El Sistema registra el estado de cada envío
-\item[6] En las fechas configuradas, el Sistema envía recordatorios a quien aún no ha votado
-\item[7] Al cierre, el Sistema envía el aviso de cierre
-\end{enumerate}
-\textbf{Postcondición:} Votantes avisados y estado de envío registrado.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 4: Si una entrega falla, el Sistema reintenta y la marca; el Administrador puede consultar los fallos
-\item 2: Si un votante no tiene dato de contacto para el canal, el Sistema lo omite y lo lista.
-\end{itemize}
-\textbf{Comentarios:} Prioridad M. Amplía RF-08.\par
-
-\subsection{RF-18: Gestionar privacidad de datos (RGPD)}
-
-\textbf{Objetivos asociados:} OBJ-1\par
-\textbf{Requisitos asociados:} RI-2, RI-3\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Administrador de organización (ACT-2) exporta o borra los datos personales de un interesado a petición de este.\par
-\textbf{Precondición:} El Administrador está autenticado.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El Administrador solicita la gestión de privacidad
-\item[]\textit{Si exporta datos de un interesado:}
-\item[2.1] El Administrador identifica al interesado.
-\item[2.2] El Sistema compila sus datos personales y los exporta en formato legible por máquina.
-\item[]\textit{Si borra datos de un interesado:}
-\item[3.1] El Administrador identifica al interesado y confirma la solicitud de borrado.
-\item[3.2] El Sistema borra o anonimiza sus datos personales.
-\end{enumerate}
-\textbf{Postcondición:} Los datos del interesado han sido exportados o borrados, según la solicitud.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 3.2: Si el interesado ya votó, el Sistema anonimiza sus datos personales y conserva el voto y el registro de auditoría.
-\end{itemize}
-\textbf{Comentarios:} Prioridad S. El voto no es exportable por interesado porque no está vinculado a su identidad. Si el votante ya ha votado, se anonimizan sus datos personales y se conserva el voto.\par
-
-\subsection{RF-19: Consultar trazabilidad de acciones}
-
-\textbf{Objetivos asociados:} OBJ-4\par
-\textbf{Requisitos asociados:} RI-13\par
-\textbf{Descripción:} El sistema deberá comportarse como se describe a continuación cuando un Auditor (ACT-3) o un Administrador de organización (ACT-2) consulta las acciones administrativas registradas.\par
-\textbf{Precondición:} El usuario está autenticado. El Sistema registra automáticamente cada acción administrativa.\par
-\textbf{Flujo normal:}
-\begin{enumerate}
-\item[1] El usuario solicita la trazabilidad
-\item[2] El Sistema solicita filtros (fechas, usuario, tipo de acción, proceso)
-\item[3] El usuario los introduce
-\item[4] El Sistema muestra las acciones: quién, qué, sobre qué objeto y cuándo
-\end{enumerate}
-\textbf{Postcondición:} Ninguna.\par
-\textbf{Excepciones y alternativas:}
-\begin{itemize}
-\item 4: Si no hay resultados, el Sistema informa
-\end{itemize}
-\textbf{Comentarios:} Prioridad S. El registro lo hace el Sistema en cada caso de uso de administración y no se puede editar. El Administrador solo ve las acciones de su organización.\par
+\cuSubsection{RF-19: Consultar trazabilidad de acciones}
+\begin{longtable}{|p{\cuLab}|p{\cuNum}|p{\cuText}|}
+  \caption{RF-19: Consultar trazabilidad de acciones.}\label{tab:cu-rf-19}\\
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-19: Consultar trazabilidad de acciones}} \\ \hline \endfirsthead
+  \hline \multicolumn{3}{|>{\columncolor{cuHead}}p{\cuAll}|}{\textbf{RF-19: Consultar trazabilidad de acciones} (continuación)} \\ \hline \endhead
+  \cuLabel{Actores} & \multicolumn{2}{p{\cuWide}|}{Auditor (ACT-3), Administrador de organización (ACT-2)} \\* \cuKeepHline
+  \cuLabel{Objetivos} & \multicolumn{2}{p{\cuWide}|}{OBJ-4} \\* \cuKeepHline
+  \cuLabel{Requisitos} & \multicolumn{2}{p{\cuWide}|}{RI-13} \\* \cuKeepHline
+  \cuLabel{Descripción} & \multicolumn{2}{p{\cuWide}|}{El sistema deberá comportarse como se describe a continuación cuando un Auditor (ACT-3) o un Administrador de organización (ACT-2) consulta las acciones administrativas registradas.} \\* \cuKeepHline
+  \cuLabel{Precondición} & \multicolumn{2}{p{\cuWide}|}{El usuario está autenticado. El Sistema registra automáticamente cada acción administrativa.} \\ \hline
+  \cuLabel{Flujo normal} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 1 & El usuario solicita la trazabilidad \\ \cline{2-3}
+  \cuLabel{} & 2 & El Sistema solicita filtros (fechas, usuario, tipo de acción, proceso) \\ \cline{2-3}
+  \cuLabel{} & 3 & El usuario los introduce \\* \cuKeepCline
+  \cuLabel{} & 4 & El Sistema muestra las acciones: quién, qué, sobre qué objeto y cuándo \\ \hline
+  \cuLabel{Postcondición} & \multicolumn{2}{p{\cuWide}|}{Ninguna.} \\ \hline
+  \cuLabel{Excepciones} & \textbf{Paso} & \textbf{Acción} \\* \cuKeepCline
+  \cuLabel{} & 4 & Si no hay resultados, el Sistema informa \\ \hline
+  \cuLabel{Comentarios} & \multicolumn{2}{p{\cuWide}|}{Prioridad S. El registro lo hace el Sistema en cada caso de uso de administración y no se puede editar. El Administrador solo ve las acciones de su organización.} \\ \hline
+\end{longtable}
 
 \section{Requisitos de información}
 \label{sec:datos-detallados}

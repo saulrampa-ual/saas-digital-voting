@@ -390,6 +390,20 @@ body[data-page-id="login-login-email-otp"] #kc-page-title { white-space: normal;
   .vv-voter-hint { margin-bottom: 12px; }
 }
 
+/* IMP-81 (M3): on desktop the logo and the message are centred in the panel; the trust points stay a left-aligned
+   list (easier to read), centred as a block */
+@media (min-width: 768px) and (min-height: 521px) {
+  #kc-header-wrapper.pf-v5-c-brand, #kc-header-wrapper { align-items: center; text-align: center; }
+  .vv-brand { justify-content: center; font-size: clamp(50px, 4.2vw, 68px); } /* larger than the claim: it is the brand */
+  .vv-hero { display: flex; flex-direction: column; align-items: center; margin-top: clamp(20px, 3.5vh, 32px); }
+  .vv-claim { margin-left: auto; margin-right: auto; font-size: clamp(22px, 1.8vw, 28px); } /* secondary to the brand */
+  .vv-points { text-align: left; }
+}
+@media (min-width: 768px) and (min-height: 521px) and (max-height: 760px) { .vv-brand { font-size: 46px; } .vv-hero { margin-top: 18px; } }
+/* The claim on one line when the panel is wide enough (from 1024 px); its size follows the panel width */
+@media (min-width: 1024px) and (min-height: 521px) {
+  .vv-claim { max-width: none; white-space: nowrap; font-size: clamp(18px, 1.6vw, 28px); }
+}
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
 /* SR15: way out of the error page («Volver a iniciar sesión») */

@@ -71,25 +71,30 @@ Las diapositivas de **reserva** (después de «Gracias») no se presentan: sirve
 
 ## 9. El prototipo (1 min)
 
-> A la izquierda, el asistente para crear una votación en cuatro pasos. A la derecha, el resultado tras el cierre: el
-> recuento es automático y se acompaña del acta y de las huellas. La consola también tiene un panel de participación,
-> que solo da cifras agregadas, y el registro de acciones administrativas.
+> Así lo ve el votante en el móvil: la papeleta, el recibo con su código y la comprobación de que el voto está en la
+> urna, que no dice qué se votó. A la derecha, el resultado en la consola tras el cierre: el recuento es automático y
+> se acompaña del acta y de las huellas. El asistente de creación y el resto del recorrido están en la reserva.
 
 ## 10. Calidad y seguridad (1 min)
 
-> Hay 434 pruebas automáticas sin fallos, 24 de ellas contra PostgreSQL real, y 212 comprobaciones de accesibilidad
+> Hay 437 pruebas automáticas sin fallos, 24 de ellas contra PostgreSQL real, y 212 comprobaciones de accesibilidad
 > con axe sin incumplimientos críticos ni serios. El código nuevo supera el 85 % de cobertura en SonarQube, y la
 > integración continua ejecuta Semgrep, Trivy y gitleaks.
 > La cobertura de líneas es del 88 % en el frontend; la del backend, 60 %, es una limitación que declaro.
+> Además cronometré 16 acciones que llaman al servidor: la primera señal en pantalla llega en menos de 40 milisegundos
+> y todas terminan en menos de un segundo, que es lo que pide RNF-8.
 
 ## 11. Hipótesis: resultados (1 min 30 s)
 
-> Tres evaluaciones se aceptan. Cinco votantes no técnicos votaron y obtuvieron su recibo en menos de tres minutos,
+> Cuatro evaluaciones se aceptan. Cinco votantes no técnicos votaron y obtuvieron su recibo en menos de tres minutos,
 > con una mediana de 51 segundos, y los cinco entendieron qué significaba. Cinco administradores sin formación previa
 > crearon y programaron una votación en cuatro minutos como máximo, frente a los diez del criterio.
 > La accesibilidad del flujo del votante también se acepta: axe no da incumplimientos críticos ni serios y, en la
 > revisión con el Narrador de Windows, no hubo bloqueos; el contraste con foco de los botones verdes estaba por debajo
-> del mínimo, lo corregí y lo volví a medir. Y el rendimiento se rechaza en las tres versiones que medí: con 500 usuarios a la vez no se
+> del mínimo, lo corregí y lo volví a medir, y las dos incidencias menores que salieron las corregí y las comprobé de
+> nuevo con el lector. La revisión heurística de Nielsen, con dos evaluadores por separado, no encontró ningún
+> problema grave: once menores, que ya corregí, así que los mensajes, la orientación y la consistencia se aceptan.
+> Y el rendimiento se rechaza en las tres versiones que medí: con 500 usuarios a la vez no se
 > llega a los 2 segundos, aunque no se perdió ni duplicó ningún voto. Ampliar las colas y guardar los votos por grupos
 > no cambió el ritmo, de unos 50 votos por segundo, así que el límite está en la cadena de servicios.
 > Con cinco participantes, la evidencia es descriptiva, no estadística.
@@ -104,8 +109,8 @@ Las diapositivas de **reserva** (después de «Gracias») no se presentan: sirve
 
 ## 13. Limitaciones y trabajo futuro (45 s)
 
-> Las limitaciones principales: solo en local, el rendimiento y una accesibilidad revisada con un solo lector de
-> pantalla. Como trabajo futuro: optimizar y repetir la prueba de carga, repetir la revisión con NVDA y con personas
+> Las limitaciones principales: solo en local, el rendimiento, una accesibilidad revisada con un solo lector de
+> pantalla y una revisión heurística en la que uno de los dos evaluadores soy yo. Como trabajo futuro: optimizar y repetir la prueba de carga, repetir la revisión con NVDA y con personas
 > usuarias de lectores de pantalla, permitir cambiar el voto y
 > avanzar hacia la verificabilidad extremo a extremo y un despliegue real.
 

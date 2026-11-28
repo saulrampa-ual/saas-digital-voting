@@ -1,6 +1,6 @@
 # PROGRESS · VeriVoto
 
-Última actualización: 2026-11-22 · Rama: `dev` (HEAD `cb623e9`; árbol limpio; commits locales sin push)
+Última actualización: 2026-11-26 · Rama: `dev` (HEAD `96617f3`; cambios del 25/11 sin commit)
 
 ## Hitos
 
@@ -14,11 +14,77 @@
 | P5 | 30/11 – 14/12 | Auditoría, escrutinio y resultados (RF-12–16), modelo de amenazas | Hecho (todo en `dev`, `4dd72fc`) |
 | P6 | 14/12 – 31/12 | Consola y transversales (RF-05b, RF-17–19, RF-21) | Hecho (todo en `dev`, `ffc4f7f`) |
 | P7 | 01/01 – 06/01/2027 | Pruebas y medición (H4) | Cerrado el 15/11/2026: 151 pruebas backend y 92 frontend, 0 fallos; H1a aceptada el 22/11 tras la revisión manual con el Narrador (M1); H1b aceptada (09/11); H1c rechazada (11/11); RNF-4 aceptado (13/11). Limitaciones en `docs/evaluation/resultados-p7/cierre.md` |
-| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 97 páginas y presentación de defensa con 20 diapositivas; revisión editorial y visual completa aún pendiente |
+| P8 | 01/12 – 27/01/2027 | Memoria del TFM | En curso: criterios y resultados de P7 incorporados; PDF recompilado con 100 páginas y presentación de defensa con 20 diapositivas; revisión editorial y visual completa aún pendiente |
 | P9 | Tras la entrega | Post-MVP: RF-11, RF-22, RF-23 | Fuera de alcance |
 
 ## Hecho
 
+- 28/11 (sin commit): **M2 repetida por el autor** tras las correcciones de M3: Firefox 213/213 (13,5 min) y WebKit 213/213 (11,6 min), sin incumplimientos de axe. Tabla 13.2 (RNF-2) y `PLAN.md` actualizados.
+- 27/11 (sin commit): preguntas para el tutor actualizadas con M3 (reunión el lunes 30/11 por la tarde); presentación: fila «RNF-8, 9 y 10 · ACEPTADOS» en «Hipótesis: resultados» y la limitación del evaluador autor (compilada aparte, sin desbordes nuevos); guion (diapositivas 11 y 13) y pregunta nueva del tribunal sobre M3. M2 ya estaba cerrada (RNF-2 aceptado el 18–19/11); fila de `PLAN.md` actualizada. Firefox y WebKit repetidos el 28/11 (213/213 cada uno).
+- 27/11 (sin commit): **correcciones de M3** aprobadas por el autor sobre `41140b0`: IMP-56, IMP-74, IMP-75, IMP-78, IMP-79, IMP-80 (código relleno con aviso), IMP-81 e IMP-82; IMP-83 descartada (D-62). Frontend comprobado en una copia Linux: `npm run test:ci` 262/262, `npm run build` sin avisos y Playwright/axe 221/221 (1280 y 360 px, es y en) con la API simulada; capturas a 360 × 640 y 1280 px. Acta (ballot-box) compilada y renderizada aparte con JDK 25: escudo y nombre, sigue en una página. `mvnw clean verify` del autor (27/11, 20:02): **BUILD SUCCESS** en los 6 módulos (gateway 16, election 58, voter-access 38 y ballot-box 33 pruebas; identity sin fallos); los «Connection refused» del log son IMP-55. Tema de Keycloak comprobado solo con una maqueta estática. Siguiente: el autor arranca los servicios, revisa en su navegador (login, acta, censos en móvil) y hace commit en una rama `fix/m3-heuristic-findings`.
+- 27/11 (sin commit): **M3 terminada.** E2 (compañero del máster) hizo las 28 pruebas del manual sobre `41140b0`; `hoja-E2.xlsx` con 9 filas (5 de su tabla y 4 de su Word con capturas; gravedad 1 y heurística 8 de estas 4 confirmadas por E2 a través del autor). `revision-heuristica/consolidado.md`: 11 problemas, máximo gravedad 2, ninguno de 3 o 4 → **RNF-8, RNF-9 y RNF-10 aceptados**. Tabla 13.2 y resumen en `evaluacion_resultados.tex` (sin compilar), `informe.md` y `PLAN.md` actualizados. IMP-79 a IMP-83 registradas. Siguiente: el autor compila la memoria, revisa y hace commit; decide qué correcciones de M3 se aplican (rama propia).
+- 27/11 (sin commit): **M3 · E1 terminada** (autor, commit evaluado `41140b0`). Votante V1–V15 a 360 px y V1/V4/V6 a 1280 px; consola C1–C11 a 1280 px. Hoja `hoja-E1-autor.xlsx`: 2 hallazgos, ninguno de gravedad 3 o 4 (espacio vacío bajo «Empezar», gravedad 1; correos cortados en el censo a 360 px, gravedad 2; los dos con RNF «Otro»). Guion reescrito con 29 pruebas numeradas (en `41140b0`). C8 falló al principio porque el realm local no tenía el rol `INTEGRATION` (IMP-78); el autor lo creó y C8 se repitió bien. Mejoras IMP-74 a IMP-78 registradas, sin aplicar hasta terminar M3. Siguiente: sesión de E2 con `DEMO_SUFFIX=E2` y crear antes el rol si falta; después juntar las dos hojas.
+- 26/11 (sin commit): **escudo de VeriVoto en las cabeceras del votante** (IMP-56, a petición del autor): flujo del
+  votante, comprobación del recibo y resultados públicos usan `app-brand-logo` como la consola y la página 404;
+  `tsc` sin errores y visto a 360 px. **Detectado:** el inicio de sesión de Keycloak se muestra con el tema por
+  defecto `keycloak.v2`, no con `verivoto` (el realm en ejecución no tiene `loginTheme=verivoto`, aunque el JSON del
+  realm sí). **Corregido el 26/11 con permiso del autor** (API de administración, `loginTheme=verivoto`; comprobado:
+  carga el tema propio). Causa sin identificar: ningún script cambia `loginTheme`; si vuelve a pasar, revisar el realm.
+- 26/11 (sin commit): `npm run test:coverage` del autor: **262 pruebas, 87,9 % de líneas (2566/2919)**; pasado a la
+  memoria (cap. 13, tabla 9.2, resumen es/en), presentación, guion, `informe.md` y `cierre.md` (437 pruebas en total).
+  **Presentación**: «El prototipo» con papeleta, recibo y comprobación en el móvil y el resultado en la consola; RNF-8 en
+  la diapositiva de calidad; H1a con las incidencias comprobadas; trabajo futuro con NVDA/JAWS; reserva nueva con el
+  asistente y el resto del recorrido. Compilada en el entorno de la IA (21 páginas, sin errores); guion y preguntas
+  al día.
+- 26/11 (sin commit): **M3 rehecha para repetirla el 27/11.** Las hojas del primer intento no se usan: varias filas
+  contradicen la aplicación (comprobado en pantalla a 360 px y en el código: hay «Copiar el código», «Cambiar mi
+  selección», «Te quedan N intentos», «Paso n de 4»…) y E1 y E2 comparten frases idénticas. `guion-evaluador.md` con
+  reglas, guía de gravedad, preparación, papeles de los votantes y 26 pruebas paso a paso (V1–V15, C1–C11); hojas en
+  blanco con un ejemplo neutro (el anterior hablaba de los intentos y pudo inducir la fila falsa). Visto de paso:
+  «Te quedan 1 intentos» → IMP-73 (propuesta, después de M3). Demo «· 2»: `presente.votante4` votó y `votante5` quedó
+  bloqueado 15 min durante la comprobación.
+- 26/11 (sin commit): **M3 lista para ejecutar.** Hojas `hoja-E1-autor.xlsx` y `hoja-E2.xlsx` (pestañas Instrucciones,
+  con ejemplo y resumen por fórmulas, y Hallazgos con listas de heurísticas, pantallas, RNF y gravedad 0–4) en lugar de
+  los CSV vacíos, que se borraron con permiso del autor. Guion y protocolo: referencias a las hojas, cronometraje de RNF-8
+  ya hecho y forma real de ver «Demasiadas peticiones» (límite bajo). Comprobado: gateway UP, consola y Keycloak responden.
+- 25/11: **ejecuciones del autor.** Demo recargada con `DEMO_SUFFIX=2` (procesos #15–#17; la pasada escrutada con 4
+  votos y cadena íntegra), tras corregir IMP-54 (historial de contraseñas), la detección de una contraseña incorrecta en
+  el login de los scripts y el token caducado durante la espera del escrutinio. **RNF-8**: 16 mediciones (5 del votante
+  con `presente.votante3`, que votó; 11 de la consola, admin y auditor), todas cumplen: realimentación ≤ 35 ms, total ≤
+  857 ms; pasado a la tabla 13.2 (sigue «Evidencia parcial» sin la revisión heurística). `npm run test:ci` 262/262 y
+  E2E IMP-72 en verde. Cifras de frontend de la memoria siguen en 261 y 87,9 % (`test:coverage` del 24/11): actualizar
+  con el próximo `test:coverage`.
+- 25/11 (sin commit): **diagramas de CU tras un interruptor**: `\ifdcunuevo` en `main.tex` (por defecto `\dcunuevofalse`,
+  los PlantUML de siempre); con `\dcunuevotrue`, `cambios_diagrama.tex` usa `dcu_gestion`/`dcu_votacion` con su texto y el
+  apéndice lo explica. Compiladas las dos variantes en el entorno de la IA (100 páginas, sin errores). **Demo**:
+  `seed-ual.mjs` vota cada elección antes de esperar el resto de invitaciones, la elección pasada abre 8 min (antes 4) y
+  `DEMO_SUFFIX` crea un juego nuevo de censos y procesos. **RNF-8**: `scripts/demo/medir-rnf8.mjs` cronometra la
+  realimentación de 5 acciones del votante (vota de verdad) y 3 de la consola, y añade filas a
+  `docs/evaluation/revision-heuristica/rnf8-cronometraje.csv`. **IMP-71** e **IMP-72** hechas (ver IMPROVEMENTS).
+  Nada ejecutado contra el stack: falta que el autor lance la demo, la medición, `npm run test:ci` y el E2E nuevo.
+- 24/11 (sin commit): **M1 cerrado.** Con el autor (teclas desde Chrome, él escucha el Narrador): B1-01R, B1-03R y
+  B1-03bR cumplen (IMP-67 e IMP-68 verificadas); recomendadas V8-01, V6-01, V6-02, V7-01 (urna parada) y TM-01 (límite
+  3/min) cumplen, 8 de 11 revisadas en total; V5-01, C3E-01 y SSO-01 no reproducibles con la demo. Hojas CSV
+  actualizadas. Corregido `.sr-only` (solo existía en la consola: el anuncio oculto de IMP-68 se veía en el votante).
+  Anomalía sin reproducir en «Volver a entrar» → IMP-72 (propuesta). Autor: `test:coverage` 261/261, 87,9 % de líneas
+  (2560/2913) y E2E 212/212. Cifras pasadas a memoria (cap. 13, conclusiones, resumen es/en, tabla 9.2), presentación,
+  guion, `informe.md` y `cierre.md`. Capturas del votante hechas con `votante4` (**votó**; ya no quedan votantes sin
+  usar en «presente»): figura 11.7 compilada y revisada visualmente en la página 67; contiene seis capturas
+  sintéticas y no muestra datos personales. Demo: «pasada» tiene 0 votos (la recarga del 22/11 no los emitió).
+- 24/11 (sin commit): **todos los casos de uso en tabla (C4/observación del tutor del 13/11).** `cu-a-tabla.mjs`:
+  pasos en rango («2--4», era el «Lonely \item» de RF-05), fila «Estado en el MVP» (RF-11) y actores fijados para los
+  CU cuya descripción no da «cuando un X (ACT-n)» (RF-03, 04, 05, 13, 15, 17 y 19; RF-03 lleva Gestor de censo y
+  Administrador, como el diagrama). Convertidos los 17 restantes, sin fragmentos en «Otros». Propuesta 6 de C4
+  aplicada: RF-09 ya no menciona re-votar (precondición y excepción 6) y el comentario de RF-10 lo da como versión
+  futura. Memoria compilada con MiKTeX en Windows en dos pasadas: 100 páginas, sin errores fatales ni referencias
+  sin resolver; ninguna tabla de CU deja un título o una cabecera de bloque sola al pie; contraportada sin desbordar.
+  **C4 4, 5 y 6 cerrados.**
+- 24/11 (sin commit): **capturas del votante.** Nuevo `scripts/demo/capturas-votante.mjs` (vista móvil 390 × 844:
+  bienvenida, código, papeleta, revisión, recibo y comprobación; el recorrido confirma un voto de la cuenta sintética
+  configurada). Las seis imágenes se incluyen en la figura 11.7 de `implementacion.tex`. Recompiladas y revisadas
+  visualmente en la página 67. Presentación recompilada con MiKTeX en dos pasadas (20 páginas); sin errores fatales.
+- 24/11: M3 revisada: material completo en `docs/evaluation/revision-heuristica/`; falta ejecutarla (autor y un
+  segundo evaluador). Vídeo de la demo en pausa por decisión del autor.
 - 23/11 (tarde): **contraportada y tablas de CU (C4, aprobado por el autor).** `resumen_contraportada.tex` (resumen
   breve, misma letra) en `contra.tex`; filas que no se separan de la siguiente en las tablas de CU
   (`\cuKeepHline`, `\cuKeepCline`, `\cuSubsection` en `preambulo_cu.tex`, generados por `cu-a-tabla.mjs`). Probado en

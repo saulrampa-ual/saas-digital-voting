@@ -139,9 +139,12 @@ const POLL_MS = 5_000;
     .metric span { font-size: 0.875rem; color: #4a5868; }
     .metric strong { font-size: 2rem; color: var(--ion-color-primary); line-height: 1.1; }
     .metric small { color: var(--ion-color-medium); }
+    /* IMP-82 (M3): wide cards with little content: larger figures, same as the participation panel */
+    @media (min-width: 1000px) { .metric { gap: 6px; } .metric span { font-size: 1rem; } .metric strong { font-size: 2.75rem; } .metric small { font-size: 0.9375rem; } }
     .question { color: #4a5868; margin: -4px 0 16px; }
     .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
-    @media (min-width: 1000px) { .grid { grid-template-columns: 3fr 2fr; align-items: start; } .grid .card { margin: 0; } }
+    /* IMP-82 (M3): both cards as tall as the row, so there is no empty grey space under «Resultado verificado» */
+    @media (min-width: 1000px) { .grid { grid-template-columns: 3fr 2fr; align-items: stretch; } .grid .card { margin: 0; } }
     .help { color: var(--ion-color-medium); font-size: 0.875rem; }
     .link { overflow-wrap: anywhere; font-size: 0.8125rem; background: #f2f4f7; padding: 8px; border-radius: 6px; }
     .side ion-button { margin: 0 0 8px; }

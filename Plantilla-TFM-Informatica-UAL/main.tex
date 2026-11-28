@@ -69,7 +69,12 @@
 
 
 \usepackage{UAL}
-\usetikzlibrary{arrows.meta,backgrounds}
+\usetikzlibrary{arrows.meta,backgrounds,shapes.geometric,positioning,calc}
+% Diagramas de casos de uso (propuesta del 13/11/2026, pendiente del tutor). Con \dcunuevotrue la memoria usa los dos
+% diagramas simplificados (Figuras/diagramas/dcu_*.tex, generados por scripts/memoria/dcu.py); con \dcunuevofalse, los
+% diagramas PlantUML anteriores. Si el tutor los aprueba, basta con cambiar la línea siguiente.
+\newif\ifdcunuevo
+\dcunuevofalse
 % Evita fallos al alternar motores cuando main.aux conserva transparencias
 % generadas por pdfTeX y el editor compila con XeTeX/Tectonic.
 \makeatletter

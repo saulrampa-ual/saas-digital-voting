@@ -1,11 +1,12 @@
 # Preguntas para la reunión con el tutor (Javier Criado)
 
-Preparado el 20/11/2026 y actualizado el 22/11/2026. Base: `docs/ai/PLAN.md` (preguntas Q-01 a Q-13 y sección 9), `docs/ai/PROGRESS.md`,
+Preparado el 20/11/2026 y actualizado el 27/11/2026 (reunión prevista el lunes 30/11/2026 por la tarde). Base: `docs/ai/PLAN.md` (preguntas Q-01 a Q-13 y sección 9), `docs/ai/PROGRESS.md`,
 `docs/ai/IMPROVEMENTS.md`, la memoria y el correo enviado al tutor el 13/11/2026.
 
 ## Cómo usar este documento
 
-- **No mandar más correos.** El tutor tiene pendiente el correo del 13/11/2026 (estado del prototipo y de las
+- **Actualización (24/11/2026):** se decidió enviar un correo nuevo (fuera del hilo) con el estado y las preguntas 1–8, y un resumen de cambios en PDF. La regla siguiente queda sustituida.
+- ~~**No mandar más correos.**~~ El tutor tiene pendiente el correo del 13/11/2026 (estado del prototipo y de las
   evaluaciones, propuesta de casos de uso en tabla, diagramas de casos de uso simplificados y petición de reunión).
   Si se le escriben correos nuevos encima, el hilo se pierde. Se espera a que responda a ese y en la reunión se hacen
   estas preguntas.
@@ -14,6 +15,18 @@ Preparado el 20/11/2026 y actualizado el 22/11/2026. Base: `docs/ai/PLAN.md` (pr
   detalle.
 - Durante la reunión, anotar la respuesta en la columna «Respuesta» de la tabla de resumen y, después, pasarla a
   `PLAN.md` (y a `DECISIONS.md` si cierra una decisión).
+
+## Cambios desde el 22/11/2026
+
+- **M3 hecha (27/11):** revisión heurística de Nielsen con dos evaluadores por separado (el autor y un compañero del
+  máster que no participó en el desarrollo), sobre la versión `41140b0`. 11 problemas tras juntar las hojas (10 de
+  gravedad 1 y 1 de gravedad 2), ninguno de gravedad 3 o 4: **RNF-8, RNF-9 y RNF-10 pasan a «Aceptado»** en la
+  tabla 13.2. Detalle en `docs/evaluation/revision-heuristica/consolidado.md`. La pregunta 10 cambia: ya no pide
+  permiso, sino que confirme cómo se presenta.
+- **Correcciones de M3 aplicadas después de la revisión** (IMP-56, IMP-74, IMP-75, IMP-78 a IMP-82), con
+  `mvnw clean verify` en verde y las pruebas del frontend (262) y de accesibilidad en verde. Commits `9acbfa0`,
+  `ae632e9` y `10ef702` en `dev`.
+- **Reunión:** el lunes 30/11/2026 por la tarde (Q-10).
 
 ## Cambios desde el 20/11/2026
 
@@ -37,7 +50,7 @@ Preparado el 20/11/2026 y actualizado el 22/11/2026. Base: `docs/ai/PLAN.md` (pr
 | 7 | H1a (accesibilidad manual) | Confirmar la aceptación con el Narrador y la corrección previa | Tabla 13.1 y conclusiones | |
 | 8 | Alcance final del MVP | Confirmar lo que queda fuera | Tablas 1.1 y 4.3 | |
 | 9 | Limitaciones de las sesiones de usabilidad | Aceptar cómo están descritas | Capítulo 13 | |
-| 10 | Revisión heurística (M3) | Si es útil y quién puede ser el segundo evaluador | RNF-8, 9 y 10 | |
+| 10 | Revisión heurística (M3), hecha | Confirmar que vale con un compañero como segundo evaluador y cómo se declara que el primero es el autor | Tabla 13.2 (ya actualizada) | |
 | 11 | Entrega al director y entrega oficial | Fechas y qué se entrega | Calendario final | |
 | 12 | Defensa | Plantilla, demo y formato | Presentación | |
 | 13 | Próximas revisiones (Q-10) | Cuándo y qué quiere ver | Calendario de C4 | |
@@ -232,19 +245,30 @@ del límite, el redondeo no cambia la decisión».
 
 **Propuesta.** Mantenerlas como están.
 
-## 10. Revisión heurística (M3, opcional)
+## 10. Revisión heurística (M3), hecha el 27/11/2026
 
-**Contexto.** RNF-8, RNF-9 y RNF-10 (mensajes, orientación y consistencia) no tienen evaluación propia. Está preparada
-una revisión heurística de Nielsen (`docs/evaluation/revision-heuristica/`) con **dos evaluadores** que revisan por
-separado (60–90 minutos cada uno). El segundo no puede haber participado en el desarrollo.
+**Contexto.** RNF-8, RNF-9 y RNF-10 (mensajes, orientación y consistencia) no tenían evaluación propia. El 27/11/2026
+se hizo la revisión heurística de Nielsen (`docs/evaluation/revision-heuristica/`): **dos evaluadores por separado**,
+el autor (E1) y un compañero del máster que no participó en el desarrollo (E2), cada uno con su propia demo, 15
+pruebas del votante (a 360 y 1280 px) y 11 de la consola, sobre la versión `41140b0`.
 
-**Ejemplo.** Si tras juntar las dos hojas no queda ningún problema de gravedad 3 o 4, RNF-10 se cumple; si además toda
-la realimentación tarda 1 segundo o menos, RNF-8 también.
+**Resultado.** Tras juntar las hojas quedan 11 problemas distintos (2 de E1 y 9 de E2), 10 de gravedad 1 y 1 de
+gravedad 2 (correos cortados en el censo en el móvil); **ninguno de gravedad 3 o 4**. Ninguno de los dos anotó
+mensajes de error poco claros ni pantallas del votante sin el paso o el estado. Con el cronometraje del 25/11 (16
+acciones, primera señal en 35 ms o menos), RNF-8, RNF-9 y RNF-10 quedan **aceptados**. Los 11 problemas se corrigieron
+después, con la decisión ya tomada sobre `41140b0`.
 
-**Pregunta.** ¿Merece la pena hacerla antes de la entrega? ¿Vale un compañero del máster como segundo evaluador, o
-prefiere que sea otra persona (por ejemplo, él mismo)?
+**Ejemplo.** En la tabla 13.2 la fila de RNF-10 dice «dos evaluadores por separado, … ninguno de gravedad alta. Uno de
+los evaluadores es el autor y conoce la interfaz». Si prefiere otra redacción o un tercer evaluador, solo cambia esa
+fila y la consolidación.
 
-**Propuesta.** Hacerla entre el 25/11 y el 06/12 con un compañero del máster.
+**Preguntas.**
+
+- ¿Le vale un compañero del máster como segundo evaluador, sin nombrarlo en la memoria?
+- ¿Basta con declarar como limitación que el primer evaluador es el autor y que dos es el mínimo (Nielsen recomienda
+  de tres a cinco)?
+
+**Propuesta.** Dejarlo como está: dos evaluadores, limitación declarada en la tabla 13.2 y en la consolidación.
 
 ## 11. Entrega al director y entrega oficial
 
@@ -301,6 +325,7 @@ el repositorio, reunión)?
 - [ ] La demo UAL arrancada en local, por si quiere ver la consola o el flujo del votante (`docs/evaluation/simulacion-tutor.md`).
 - [x] Cifras actuales de pruebas (22/11): backend 175 pruebas (cobertura de líneas 44,9–90,3 % por servicio, 59,7 %
       en conjunto); frontend 259 pruebas y 87,8 % de líneas; E2E de accesibilidad 100 de 100 tras la corrección.
+- [x] El resultado de M3 (27/11: RNF-8, 9 y 10 aceptados; `revision-heuristica/consolidado.md` y las dos hojas).
 - [ ] Este documento, para anotar las respuestas.
 
 ## Después de la reunión

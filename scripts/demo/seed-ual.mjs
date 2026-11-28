@@ -6,6 +6,8 @@
 // Usage, from the repository root, with the whole stack running (infra, five services, gateway):
 //   set DEMO_PASSWORD=<password for the demo management accounts>
 //   node scripts/demo/seed-ual.mjs
+// DEMO_SUFFIX (optional, e.g. 2): creates a new set of censuses and processes whose names end in « · 2», with fresh
+// voters, instead of reusing the existing ones (once all the voters of a run have voted, a new run needs a suffix).
 // Reads infra/.env (Keycloak bootstrap admin). Writes the access summary to .local/demo-ual.md (git-ignored).
 // The log never prints tokens, codes, personal links or passwords. Shared helpers: lib/common.mjs.
 
@@ -13,13 +15,14 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   ROOT, APP, MAILPIT, GW, log, iso, http, demoPassword, readInfraEnv, loadChromium, createKeycloakAdmin, createLogin,
-  ensureOrganization, waitStatus, waitMail, sixDigits, inviteLink,
+  ensureOrganization, waitStatus, waitMail, sixDigits, inviteLink, sleep,
 } from './lib/common.mjs';
 
 const ORG = 'UAL';
 const PASSWORD = demoPassword();
 // SEED_MODE=accounts: only named local test accounts (no censuses, processes or votes)
 const MODE = process.env.SEED_MODE ?? 'demo';
+const SUFFIX = process.env.DEMO_SUFFIX ? ` · ${process.env.DEMO_SUFFIX}` : '';
 const chromium = loadChromium();
 const kc = createKeycloakAdmin(readInfraEnv(), PASSWORD);
 
@@ -42,12 +45,13 @@ const voters = (key, label, n) => Array.from({ length: n }, (_, i) => ({
   institutionalId: `UAL-${key.toUpperCase()}-${i + 1}`, preferredLanguage: i % 3 === 2 ? 'en' : 'es',
 }));
 
-const ELECTIONS = [
+const ELECTIONS_BASE = [
   {
     key: 'pasada', census: 'Demo UAL · Censo elección pasada',
     title: { es: 'Demo UAL · Elección pasada: Delegación de curso 2026', en: 'UAL demo · Past election: Class delegate 2026' },
     description: { es: 'Votación ficticia ya cerrada y escrutada.', en: 'Fictitious vote, already closed and tallied.' },
-    times: () => ({ opensAt: iso(Date.now() + 90_000), closesAt: iso(Date.now() + 90_000 + 240_000) }), resultsVisibility: 'PUBLIC_LINK',
+    // 8 min open: on 22/11/2026 the 4 min window closed before the votes were cast (slow invitation queue, IMP-70)
+    times: () => ({ opensAt: iso(Date.now() + 90_000), closesAt: iso(Date.now() + 90_000 + 480_000) }), resultsVisibility: 'PUBLIC_LINK',
     ballot: { voteType: 'SINGLE_CHOICE', blankVoteEnabled: true,
       question: { es: '¿Quién debe ser la delegación del curso?', en: 'Who should be the class delegate?' },
       options: [
@@ -80,12 +84,22 @@ const ELECTIONS = [
     voters: voters('futura', 'Elección futura', 4), votes: [],
   },
 ];
+// With DEMO_SUFFIX every census and title gets the suffix, so the run creates new ones (titles are the match key)
+const ELECTIONS = ELECTIONS_BASE.map((e) => ({ ...e, census: e.census + SUFFIX,
+  title: { es: e.title.es + SUFFIX, en: e.title.en + SUFFIX } }));
 
 // ---------- voter (link + code, like the PWA) ----------
 async function vote(election, voter, choice, processId) {
   const link = await inviteLink(voter.email);
   const since = Date.now();
-  await http('POST', `${GW}/api/v1/voter-access/links/${link}/otp`, { ok: [202, 200] });
+  // voter-access learns that the process opened a little after election-service (event): on 422 «not open yet», wait
+  // and ask again (26/11/2026: voting right after the opening time failed with processStatus SCHEDULED)
+  for (let i = 0; ; i++) {
+    const r = await http('POST', `${GW}/api/v1/voter-access/links/${link}/otp`, { ok: [202, 200, 422] });
+    if (r.status !== 422) break;
+    if (i >= 36) throw new Error(`${voter.email}: the process is still not open for voter-access after 3 min`);
+    await sleep(5000);
+  }
   const code = await waitMail(voter.email, since, (t) => !t.includes('/votar/') && sixDigits(t), 'voter code');
   const { data: access } = await http('POST', `${GW}/api/v1/voter-access/links/${link}/otp/verify`, { body: { code } });
   if (access.hasVoted) { log(`${voter.email}: already voted`); return null; }
@@ -140,10 +154,10 @@ try {
     if (p.status === 'DRAFT') { await http('POST', `${GW}/api/v1/processes/${p.id}/schedule`, { token: admin }); log(`process scheduled: ${e.key}`); }
   }
 
-  for (const e of ELECTIONS) for (const v of e.voters) summary.links[v.email] = await inviteLink(v.email);
-  log('invitations received for every voter');
-
+  // Votes first, election by election, and the links of the rest afterwards: waiting for every invitation before
+  // voting let the past election close with no votes on 22/11/2026.
   for (const e of ELECTIONS.filter((x) => x.votes.length)) {
+    for (const v of e.voters.slice(0, e.votes.length)) summary.links[v.email] = await inviteLink(v.email);
     const st = await waitStatus(admin, e.processId, ['OPEN', 'CLOSED', 'TALLIED', 'ARCHIVED'], 6);
     if (st.status !== 'OPEN') { log(`${e.key}: status ${st.status}, no new votes`); continue; }
     for (let i = 0; i < e.votes.length; i++) {
@@ -152,14 +166,19 @@ try {
     }
   }
 
+  for (const e of ELECTIONS) for (const v of e.voters) summary.links[v.email] ??= await inviteLink(v.email);
+  log('invitations received for every voter');
+
   const past = ELECTIONS[0];
   log('waiting for the past election to close and be tallied…');
-  await waitStatus(admin, past.processId, ['TALLIED', 'ARCHIVED'], 10);
+  // The admin token expires during the wait: a new login when the gateway answers 401
+  let adminNow = admin;
+  await waitStatus(async () => adminNow = await login(MANAGERS.admin.email), past.processId, ['TALLIED', 'ARCHIVED'], 10);
   log('past election tallied');
   const auditor = await login(MANAGERS.auditor.email);
   const { data: chain } = await http('POST', `${GW}/api/v1/ballot-box/processes/${past.processId}/audit-events/verification`, { token: auditor });
   log(`auditor verification of the past election: intact=${chain.intact}, events=${chain.eventsChecked}`);
-  for (const e of ELECTIONS) summary.processes[e.key] = (await http('GET', `${GW}/api/v1/processes/${e.processId}`, { token: admin })).data;
+  for (const e of ELECTIONS) summary.processes[e.key] = (await http('GET', `${GW}/api/v1/processes/${e.processId}`, { token: adminNow })).data;
   }
 } finally {
   if (browser) await browser.close();

@@ -35,7 +35,9 @@ export type VerificationState = 'checking' | 'ok' | 'mismatch' | 'error';
     </section>
   `,
   styles: `
-    .verification { border: 2px solid #c9d2dd; border-radius: var(--vv-radius-card, 12px); padding: 16px 20px; background: #fff; }
+    /* IMP-82 (M3): in a grid row it takes the height of the row (no grey gap under it) */
+    :host { display: block; }
+    .verification { box-sizing: border-box; height: 100%; border: 2px solid #c9d2dd; border-radius: var(--vv-radius-card, 12px); padding: 16px 20px; background: #fff; }
     .verification.ok { border-color: var(--ion-color-success); }
     .verification.mismatch, .verification.error { border-color: var(--ion-color-danger); }
     h3 { display: flex; gap: 8px; align-items: center; margin: 0 0 4px; font-size: 1.125rem; }

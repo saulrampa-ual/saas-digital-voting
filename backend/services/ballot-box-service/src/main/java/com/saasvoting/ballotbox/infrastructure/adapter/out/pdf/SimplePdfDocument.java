@@ -85,6 +85,26 @@ final class SimplePdfDocument {
                 .append(" re f\n");
     }
 
+    /** Text in an RGB colour, with its baseline at (x, y) from the bottom-left corner of the page. */
+    void textRgb(int page, float x, float y, Font font, float size, String text, float r, float g, float b) {
+        pages.get(page).append("BT ").append(num(r)).append(' ').append(num(g)).append(' ').append(num(b))
+                .append(" rg /").append(font.resource).append(' ').append(num(size)).append(" Tf ").append(num(x))
+                .append(' ').append(num(y)).append(" Td ").append(literal(text)).append(" Tj ET\n");
+    }
+
+    /**
+     * Stroked path given in a drawing of {@code boxWidth} x {@code boxHeight} units with the y axis pointing down (as
+     * in SVG), scaled to {@code height} points and placed with its top-left corner at (x, top). The path uses only
+     * the PDF operators m, l, c and h; round caps and joins.
+     */
+    void strokePath(int page, float x, float top, float height, float boxHeight, String path, float width, float r,
+            float g, float b) {
+        float scale = height / boxHeight;
+        pages.get(page).append("q ").append(num(scale)).append(" 0 0 ").append(num(-scale)).append(' ').append(num(x))
+                .append(' ').append(num(top)).append(" cm 1 J 1 j ").append(num(width)).append(" w ").append(num(r))
+                .append(' ').append(num(g)).append(' ').append(num(b)).append(" RG ").append(path).append(" S Q\n");
+    }
+
     /** Width of the text in points, with the metrics of the standard font. */
     static float width(Font font, float size, String text) {
         if (font == Font.MONO) {

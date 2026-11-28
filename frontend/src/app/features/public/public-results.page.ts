@@ -9,6 +9,7 @@ import { verifyResult } from '../../core/results/result-verifier';
 import { Result } from '../../core/results/results.model';
 import { ErrorStateComponent } from '../../shared/error-state/error-state.component';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
+import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component';
 import { LocalDatePipe } from '../../shared/pipes/local-date.pipe';
 import { LocalizedPipe } from '../../shared/pipes/localized.pipe';
 import { ResultSummaryComponent } from '../../shared/result-summary/result-summary.component';
@@ -22,13 +23,13 @@ import { VerificationState } from '../../shared/result-verification/result-verif
 @Component({
   selector: 'app-public-results',
   imports: [
-    IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonSpinner, RouterLink, TranslatePipe, LocalDatePipe,
+    IonHeader, IonToolbar, IonTitle, BrandLogoComponent, IonButtons, IonContent, IonSpinner, RouterLink, TranslatePipe, LocalDatePipe,
     LocalizedPipe, LanguageSwitcherComponent, ErrorStateComponent, ResultSummaryComponent,
   ],
   template: `
     <ion-header>
       <ion-toolbar color="tertiary">
-        <ion-title>VeriVoto</ion-title>
+        <ion-title><app-brand-logo /></ion-title>
         <ion-buttons slot="end"><app-language-switcher /></ion-buttons>
       </ion-toolbar>
     </ion-header>

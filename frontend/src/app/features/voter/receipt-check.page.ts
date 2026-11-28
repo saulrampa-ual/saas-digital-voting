@@ -7,6 +7,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { VoterApiError, VoterApiService } from '../../core/voter/voter-api.service';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
+import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component';
 
 type Result = 'present' | 'absent' | 'unknownProcess' | 'error' | null;
 
@@ -17,20 +18,21 @@ type Result = 'present' | 'absent' | 'unknownProcess' | 'error' | null;
 @Component({
   selector: 'app-receipt-check',
   imports: [
-    IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonFooter, IonInput, IonButton, IonSpinner, IonText,
+    IonHeader, IonToolbar, IonTitle, BrandLogoComponent, IonButtons, IonContent, IonFooter, IonInput, IonButton, IonSpinner, IonText,
     IonIcon, TranslatePipe, LanguageSwitcherComponent,
   ],
   template: `
     <ion-header>
       <ion-toolbar color="tertiary">
-        <ion-title>VeriVoto</ion-title>
+        <ion-title><app-brand-logo /></ion-title>
         <ion-buttons slot="end"><app-language-switcher /></ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
       <main class="voter">
         <h1 tabindex="-1">{{ 'voter.verify.title' | translate }}</h1>
-        <p>{{ 'voter.verify.intro' | translate }}</p>
+        <!-- IMP-80 (M3): coming from the receipt the code is already typed; say so instead of «type or paste». -->
+        <p>{{ (prefilled ? 'voter.verify.introPrefilled' : 'voter.verify.intro') | translate }}</p>
         <form (submit)="$event.preventDefault(); check()">
           <ion-input
             class="mono"
@@ -107,6 +109,8 @@ export class ReceiptCheckPage {
     (inject(Router).currentNavigation()?.extras.state?.['receiptCode'] as string | undefined)
       ?? (history.state?.receiptCode as string | undefined) ?? '',
   );
+  /** The code arrived from the receipt screen (B4), not typed by the voter. */
+  protected readonly prefilled = this.code() !== '';
   protected readonly busy = signal(false);
   protected readonly formatError = signal(false);
   protected readonly result = signal<Result>(null);
